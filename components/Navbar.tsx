@@ -26,7 +26,7 @@ const NavLink: React.FC<{ pageName: string; currentPage: string; onClick: () => 
 const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage, onQuickMealClick }) => {
     const { t } = useTranslation();
     const { user } = useAuth();
-    const navItems = ['Dashboard', 'Food Diary', 'Reports', 'Profile', 'Settings'];
+    const navItems = ['Dashboard', 'Profile', 'Settings'];
 
     const getInitials = (name: string | null | undefined) => {
         if (!name) return '';
