@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import { useLanguage, Language } from '../contexts/LanguageContext';
-import { SettingsIcon, RkIcon, HelpIcon, LogoutIcon, GlobeIcon, PlusIcon, ChatGptIcon } from './icons';
+import { SettingsIcon, RkIcon, HelpIcon, LogoutIcon, GlobeIcon, PlusIcon } from './icons';
 import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar: React.FC<{ activeTab: string, setActiveTab: (tab: string) => void }> = ({ activeTab, setActiveTab }) => {
