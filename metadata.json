@@ -1,0 +1,5 @@
+{
+  "name": "CalorieCounter Profile & Goals",
+  "description": "A user profile page for a calorie counting application, allowing users to manage personal information, fitness goals, and track their progress over time.",
+  "requestFramePermissions": []
+}

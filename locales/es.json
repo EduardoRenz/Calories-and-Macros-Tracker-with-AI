@@ -1,0 +1,93 @@
+{
+  "navbar": {
+    "dashboard": "Panel",
+    "food_diary": "Diario de Comida",
+    "reports": "Informes",
+    "profile": "Perfil",
+    "settings": "Ajustes",
+    "log_food": "Añadir Comida"
+  },
+  "dashboard": {
+    "title": "Panel de Hoy",
+    "add_food": "Añadir Comida",
+    "calories": "Calorías",
+    "protein": "Proteína",
+    "carbs": "Carbohidratos",
+    "fats": "Grasas",
+    "calories_remaining": "Calorías Restantes",
+    "doing_great": "¡Lo estás haciendo genial!",
+    "macro_split": "División de Macros"
+  },
+  "meals": {
+    "summary_title": "Resumen de Comidas",
+    "breakfast": "Desayuno",
+    "lunch": "Almuerzo",
+    "dinner": "Cena",
+    "snacks": "Snacks",
+    "protein": "Proteína",
+    "carbs": "Carbs",
+    "fats": "Grasas",
+    "no_items_logged": "No hay alimentos registrados"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "tabs": {
+      "settings": "Ajustes de Perfil",
+      "progress": "Progreso"
+    },
+    "upload_picture": "Subir nueva foto",
+    "personal_info": {
+      "title": "Información Personal",
+      "age": "Edad",
+      "height": "Altura (cm)",
+      "weight": "Peso (kg)",
+      "gender": "Género",
+      "female": "Femenino",
+      "male": "Masculino",
+      "other": "Otro"
+    },
+    "fitness_goals": {
+      "title": "Metas de Fitness",
+      "primary_goal": "Meta Principal",
+      "lose_weight": "Perder Peso",
+      "maintain_weight": "Mantener Peso",
+      "gain_muscle": "Ganar Músculo",
+      "target_weight": "Peso Objetivo (kg)",
+      "activity_level": "Nivel de Actividad",
+      "sedentary": "Sedentario",
+      "lightly_active": "Ligeramente Activo",
+      "moderately_active": "Moderadamente Activo",
+      "very_active": "Muy Activo"
+    },
+    "update_profile": "Actualizar Perfil",
+    "progress_summary": {
+      "title": "Resumen de Progreso",
+      "current_weight": "Peso Actual",
+      "weight_to_go": "Peso Restante",
+      "daily_calorie_target": "Objetivo Diario de Calorías"
+    },
+    "weight_progress": "Progreso de Peso",
+    "goal_progress": "Progreso de Meta",
+    "complete": "Completado"
+  },
+  "settings": {
+    "title": "Ajustes de App y Gestión de API",
+    "subtitle": "Gestiona las preferencias de tu aplicación y las integraciones de servicios de IA.",
+    "sidebar": {
+      "general": "General",
+      "api_tokens": "Tokens de API de IA",
+      "logout": "Cerrar Sesión",
+      "help": "Ayuda",
+      "settings": "Ajustes"
+    },
+    "general": {
+      "title": "Ajustes Generales",
+      "language": "Idioma"
+    },
+    "tokens": {
+      "title": "Tokens de API de IA",
+      "add_token": "Añadir Token API",
+      "remove": "Eliminar"
+    }
+  }
+}

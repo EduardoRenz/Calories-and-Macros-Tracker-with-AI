@@ -1,0 +1,93 @@
+{
+  "navbar": {
+    "dashboard": "Dashboard",
+    "food_diary": "Food Diary",
+    "reports": "Reports",
+    "profile": "Profile",
+    "settings": "Settings",
+    "log_food": "Log Food"
+  },
+  "dashboard": {
+    "title": "Today's Dashboard",
+    "add_food": "Add Food",
+    "calories": "Calories",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fats": "Fats",
+    "calories_remaining": "Calories Remaining",
+    "doing_great": "You're doing great!",
+    "macro_split": "Macro Split"
+  },
+  "meals": {
+    "summary_title": "Meal Summary",
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snacks": "Snacks",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fats": "Fats",
+    "no_items_logged": "No items logged"
+  },
+  "profile": {
+    "title": "My Profile",
+    "tabs": {
+      "settings": "Profile Settings",
+      "progress": "Progress"
+    },
+    "upload_picture": "Upload new picture",
+    "personal_info": {
+      "title": "Personal Information",
+      "age": "Age",
+      "height": "Height (cm)",
+      "weight": "Weight (kg)",
+      "gender": "Gender",
+      "female": "Female",
+      "male": "Male",
+      "other": "Other"
+    },
+    "fitness_goals": {
+      "title": "Fitness Goals",
+      "primary_goal": "Primary Goal",
+      "lose_weight": "Lose Weight",
+      "maintain_weight": "Maintain Weight",
+      "gain_muscle": "Gain Muscle",
+      "target_weight": "Target Weight (kg)",
+      "activity_level": "Activity Level",
+      "sedentary": "Sedentary",
+      "lightly_active": "Lightly Active",
+      "moderately_active": "Moderately Active",
+      "very_active": "Very Active"
+    },
+    "update_profile": "Update Profile",
+    "progress_summary": {
+      "title": "Progress Summary",
+      "current_weight": "Current Weight",
+      "weight_to_go": "Weight to Go",
+      "daily_calorie_target": "Daily Calorie Target"
+    },
+    "weight_progress": "Weight Progress",
+    "goal_progress": "Goal Progress",
+    "complete": "Complete"
+  },
+  "settings": {
+    "title": "App Settings and API Management",
+    "subtitle": "Manage your application preferences and AI service integrations.",
+    "sidebar": {
+      "general": "General",
+      "api_tokens": "AI API Tokens",
+      "logout": "Logout",
+      "help": "Help",
+      "settings": "Settings"
+    },
+    "general": {
+      "title": "General Settings",
+      "language": "Language"
+    },
+    "tokens": {
+      "title": "AI API Tokens",
+      "add_token": "Add API Token",
+      "remove": "Remove"
+    }
+  }
+}
