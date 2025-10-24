@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import Navbar from './components/Navbar';
+import BottomNavbar from './components/BottomNavbar';
 import DashboardPage from './components/DashboardPage';
 import ProfilePage from './components/ProfilePage';
 import SettingsPage from './components/SettingsPage';
@@ -56,7 +57,7 @@ const App: React.FC = () => {
             setCurrentPage={setCurrentPage} 
             onQuickMealClick={() => setIsQuickMealOpen(true)}
           />
-          <main className="p-6 lg:p-8">
+          <main className="p-6 lg:p-8 pb-24 md:pb-6 lg:pb-8">
             {currentPage === 'dashboard' && <DashboardPage ref={dashboardRef} />}
             {currentPage === 'profile' && <ProfilePage />}
             {currentPage === 'settings' && <SettingsPage />}
@@ -66,6 +67,11 @@ const App: React.FC = () => {
               </div>
             )}
           </main>
+          <BottomNavbar
+             currentPage={currentPage} 
+             setCurrentPage={setCurrentPage} 
+             onQuickMealClick={() => setIsQuickMealOpen(true)}
+          />
         </div>
       </div>
       <QuickMealModal 

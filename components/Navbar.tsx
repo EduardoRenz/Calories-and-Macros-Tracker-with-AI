@@ -1,5 +1,5 @@
 import React from 'react';
-import { HealthPalLogo, SparklesIcon } from './icons';
+import { HealthPalLogo, SparklesIcon, SettingsIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -51,10 +51,17 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage, onQuickMea
             <div className="flex items-center gap-4">
                 <button 
                     onClick={onQuickMealClick}
-                    className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm flex items-center gap-2"
+                    className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm hidden md:flex items-center gap-2"
                 >
                     <SparklesIcon className="w-5 h-5"/>
                     <span>{t('navbar.quick_meal')}</span>
+                </button>
+                <button 
+                    onClick={() => setCurrentPage('settings')}
+                    className="p-2 rounded-full md:hidden text-healthpal-text-secondary hover:bg-healthpal-card"
+                    aria-label={t('navbar.settings')}
+                >
+                    <SettingsIcon className="w-6 h-6"/>
                 </button>
                 <div className="w-10 h-10 bg-healthpal-card rounded-full flex items-center justify-center border-2 border-healthpal-border overflow-hidden">
                    {user?.photoURL ? (
