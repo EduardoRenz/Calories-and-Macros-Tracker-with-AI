@@ -19,3 +19,5 @@ A simple Calorie and Macros Tracker based on your profile and goals wich uses AI
 ---
 
 Made with https://aistudio.google.com/
+
+Design: https://stitch.withgoogle.com/projects/7078330482415495118
