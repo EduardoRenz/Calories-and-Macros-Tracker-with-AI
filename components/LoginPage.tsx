@@ -1,60 +1,62 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { HealthPalLogo } from './icons';
+import { HealthPalLogo, GoogleIcon } from './icons';
 
 const LoginPage: React.FC = () => {
-  const { signIn, loading } = useAuth();
-  const [email, setEmail] = useState('test@example.com');
-  const [password, setPassword] = useState('password'); // Will be ignored by mock auth
+  const { signInWithGoogle, loading } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleSignIn = async () => {
     if (!loading) {
-        signIn(email, password);
+        setError(null);
+        try {
+            await signInWithGoogle();
+        } catch (error: any) {
+            console.error("Failed to sign in", error);
+            if (error?.code === 'auth/unauthorized-domain') {
+                setError("This domain is not authorized for Google Sign-In. Please check your Firebase Console settings.");
+            } else if (error?.message) {
+                 setError(error.message);
+            } else {
+                setError("Failed to sign in. Please try again.");
+            }
+        }
     }
   };
 
   return (
     <div className="bg-healthpal-dark min-h-screen flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-sm">
-            <form onSubmit={handleSubmit} className="bg-healthpal-panel p-8 rounded-2xl border border-healthpal-border text-center shadow-2xl">
+            <div className="bg-healthpal-panel p-8 rounded-2xl border border-healthpal-border text-center shadow-2xl">
                 <div className="flex justify-center items-center gap-4 mb-4">
                     <HealthPalLogo className="h-10 w-10 text-healthpal-green" />
                     <h1 className="text-3xl font-bold text-healthpal-text-primary">CalorieApp</h1>
                 </div>
                 <p className="text-healthpal-text-secondary mb-8">
-                    Sign in to track your meals. Any password will work.
+                    Sign in to track your meals, analyze food with AI, and reach your fitness goals.
                 </p>
-                <div className="space-y-4 text-left">
-                    <div>
-                        <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">Email</label>
-                        <input 
-                            type="email" 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
-                            required 
-                            className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" 
-                        />
+                
+                {error && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg mb-4 text-sm">
+                        {error}
                     </div>
-                     <div>
-                        <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">Password</label>
-                        <input 
-                            type="password" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
-                            required 
-                            className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" 
-                        />
-                    </div>
-                </div>
+                )}
+                
                 <button
-                    type="submit"
+                    onClick={handleGoogleSignIn}
                     disabled={loading}
-                    className="w-full mt-8 bg-healthpal-green text-black font-semibold py-3 px-4 rounded-lg hover:brightness-110 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-white text-gray-800 font-semibold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
-                    {loading ? 'Signing In...' : 'Sign In'}
+                    {loading ? (
+                         <span>Loading...</span>
+                    ) : (
+                        <>
+                            <GoogleIcon className="w-5 h-5" />
+                            <span>Sign in with Google</span>
+                        </>
+                    )}
                 </button>
-            </form>
+            </div>
         </div>
     </div>
   );

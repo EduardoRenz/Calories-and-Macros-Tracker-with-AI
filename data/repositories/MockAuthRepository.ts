@@ -27,12 +27,11 @@ export class MockAuthRepository implements AuthRepository {
     }
 
     async signIn(email: string, password?: string): Promise<User | null> {
-        // Ignore password as requested
         const user: User = {
             uid: `mock-uid-${email.replace(/[@.]/g, '-')}`, // Create a stable UID from email
             email: email,
             displayName: email.split('@')[0].replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            photoURL: `https://i.pravatar.cc/150?u=${email}`,
+            photoURL: `https://ui-avatars.com/api/?name=${email}&background=random`,
         };
         currentUser = user;
         setMockUser(user);
@@ -41,8 +40,16 @@ export class MockAuthRepository implements AuthRepository {
     }
 
     async signInWithGoogle(): Promise<User | null> {
-        // Not implemented in mock
-        throw new Error("Google Sign-In is not supported in Mock Auth mode.");
+        const user: User = {
+            uid: 'mock-google-user-123',
+            email: 'user@example.com',
+            displayName: 'Demo User',
+            photoURL: 'https://ui-avatars.com/api/?name=Demo+User&background=AFFF34&color=101614',
+        };
+        currentUser = user;
+        setMockUser(user);
+        this.notifyListeners();
+        return user;
     }
 
     async signOut(): Promise<void> {

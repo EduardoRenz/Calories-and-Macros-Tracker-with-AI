@@ -1,9 +1,12 @@
-# Macros and Calorie Tracker with AI
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
-<img width="1600" height="1408" alt="screen" src="https://github.com/user-attachments/assets/380c6c21-0c5d-4a9c-a529-d224cf189dc5" />
+# Run and deploy your AI Studio app
 
-A simple Calorie and Macros Tracker based on your profile and goals wich uses AI tu quick get ingredients info and register.
+This contains everything you need to run your app locally.
 
+View your app in AI Studio: https://ai.studio/apps/drive/15Gzoaml2qCGeO2C4AHEczXPfqg5grOm4
 
 ## Run Locally
 
@@ -15,9 +18,3 @@ A simple Calorie and Macros Tracker based on your profile and goals wich uses AI
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
-
----
-
-Made with https://aistudio.google.com/
-
-Design: https://stitch.withgoogle.com/projects/7078330482415495118

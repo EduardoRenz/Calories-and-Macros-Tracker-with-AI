@@ -9,9 +9,9 @@ import { FirestoreProfileRepository } from './repositories/FirestoreProfileRepos
 import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
 import { MockAuthRepository } from './repositories/MockAuthRepository';
 
-// Switch this flag to false to use local data instead of Firestore
+// Switch these flags to false to use local data/auth to avoid configuration errors
 const USE_FIRESTORE = true;
-const USE_MOCK_AUTH = true;
+const USE_MOCK_AUTH = false;
 
 export class RepositoryFactory {
     public static getDashboardRepository(): DashboardRepository {
