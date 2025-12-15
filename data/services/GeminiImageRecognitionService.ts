@@ -21,7 +21,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
     private ai: GoogleGenAI;
 
     constructor() {
-        this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+        this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
     }
 
     async analyzeMealImage(image: Blob, language: string): Promise<Omit<Ingredient, 'id'>[]> {
