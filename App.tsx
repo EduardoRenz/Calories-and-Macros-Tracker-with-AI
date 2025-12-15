@@ -5,7 +5,6 @@ import SettingsPage from './components/SettingsPage';
 import QuickMealModal from './components/QuickMealModal';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { useAuth } from './contexts/AuthContext';
-import { RepositoryFactory } from './data/RepositoryFactory';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
