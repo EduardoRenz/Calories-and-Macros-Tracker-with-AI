@@ -1,13 +1,13 @@
 
 import React, { useState, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon } from './icons';
-import MacroProgressCard from './MacroProgressCard';
-import MealSummaryCard from './MealSummaryCard';
-import MacroSplitChart from './MacroSplitChart';
+import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
+import MacroProgressCard from '@/components/MacroProgressCard';
+import MealSummaryCard from '@/components/MealSummaryCard';
+import MacroSplitChart from '@/components/MacroSplitChart';
 import { useTranslation } from '../hooks/useTranslation';
 import { DashboardData, Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { DashboardRepository } from '../domain/repositories/DashboardRepository';
-import AddIngredientModal from './AddIngredientModal';
+import AddIngredientModal from '@/components/AddIngredientModal';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 
 const getFormattedDate = (date: Date) => date.toISOString().split('T')[0];
@@ -17,7 +17,7 @@ const DashboardPage = forwardRef((props, ref) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<keyof MealSummary | null>(null);
 
@@ -58,7 +58,7 @@ const DashboardPage = forwardRef((props, ref) => {
     setSelectedMealType(mealType);
     setIsModalOpen(true);
   };
-  
+
   const handleAddIngredient = async (ingredient: Omit<Ingredient, 'id'>) => {
     if (!selectedMealType || !data) return;
     const updatedData = await dashboardRepository.addIngredient(data.date, selectedMealType, ingredient);
@@ -81,7 +81,7 @@ const DashboardPage = forwardRef((props, ref) => {
   }).format(currentDate);
 
   if (isLoading || !data) {
-      return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
+    return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
   }
 
   const caloriesRemaining = data.macros.calories.goal - data.macros.calories.current;
@@ -89,7 +89,7 @@ const DashboardPage = forwardRef((props, ref) => {
 
   return (
     <>
-      <AddIngredientModal 
+      <AddIngredientModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleAddIngredient}
@@ -104,7 +104,7 @@ const DashboardPage = forwardRef((props, ref) => {
         <div className="flex items-center gap-2">
           {!isToday && (
             <button onClick={handleGoToToday} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
-                {t('dashboard.today')}
+              {t('dashboard.today')}
             </button>
           )}
           <button onClick={() => handleDateChange(-1)} className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors">
@@ -148,9 +148,9 @@ const DashboardPage = forwardRef((props, ref) => {
             color="bg-healthpal-fats"
           />
           <div className="md:col-span-2">
-            <MealSummaryCard 
-              meals={data.meals} 
-              onAddIngredient={handleOpenModal} 
+            <MealSummaryCard
+              meals={data.meals}
+              onAddIngredient={handleOpenModal}
               onRemoveIngredient={handleRemoveIngredient}
             />
           </div>

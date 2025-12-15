@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { EditIcon } from './icons';
+
 import { useTranslation } from '../hooks/useTranslation';
 import { UserProfile, WeightEntry } from '../domain/entities/profile';
 import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { CalorieCalculationService } from '../domain/services/CalorieCalculationService';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { useAuth } from '../contexts/AuthContext';
+import { EditIcon } from '@/components/icons';
 
 
 // --- Reusable Chart Components ---
@@ -33,17 +34,17 @@ const WeightProgressChart: React.FC<{ data: WeightEntry[] }> = ({ data }) => {
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-                        <XAxis 
-                            dataKey="date" 
-                            stroke="#A0A0A0" 
-                            fontSize={12} 
-                            tickLine={false} 
+                        <XAxis
+                            dataKey="date"
+                            stroke="#A0A0A0"
+                            fontSize={12}
+                            tickLine={false}
                             axisLine={false}
-                            tickFormatter={formatDateTick} 
+                            tickFormatter={formatDateTick}
                         />
                         <YAxis stroke="#A0A0A0" fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 2', 'dataMax + 2']} />
-                        <Tooltip 
-                            contentStyle={{ backgroundColor: '#1A201C', border: '1px solid #34453D', borderRadius: '0.75rem' }} 
+                        <Tooltip
+                            contentStyle={{ backgroundColor: '#1A201C', border: '1px solid #34453D', borderRadius: '0.75rem' }}
                             labelFormatter={formatTooltipLabel}
                         />
                         <Line type="monotone" dataKey="weight" stroke="#AFFF34" strokeWidth={2} dot={{ r: 4, fill: '#AFFF34' }} activeDot={{ r: 6, stroke: '#1A201C', strokeWidth: 2 }} />
@@ -143,7 +144,7 @@ const ProfilePage: React.FC = () => {
         const updatedProfile = await profileRepository.getProfile();
         setProfile(updatedProfile);
         setIsSaving(false);
-        
+
         setShowSaveMessage(true);
         setTimeout(() => setShowSaveMessage(false), 2000);
     };
@@ -151,21 +152,21 @@ const ProfilePage: React.FC = () => {
     const goalProgressPercentage = useMemo(() => {
         if (!profile || profile.weightHistory.length === 0) return 0;
         const startWeight = profile.weightHistory[0]?.weight;
-        
+
         const { targetWeight } = profile.fitnessGoals;
         const currentWeight = profile.personalInfo.weight;
-        
+
         const totalWeightToChange = Math.abs(startWeight - targetWeight);
         if (totalWeightToChange === 0) return profile.fitnessGoals.primaryGoal === 'maintain' ? 100 : 0;
-        
+
         const weightChanged = startWeight - currentWeight;
         const progress = (profile.fitnessGoals.primaryGoal === 'lose' ? weightChanged : -weightChanged);
 
         const percentage = Math.round((progress / totalWeightToChange) * 100);
-        
+
         return Math.max(0, Math.min(percentage, 100));
     }, [profile]);
-    
+
     if (isLoading) {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('profile.loading')}</div>;
     }
@@ -179,15 +180,15 @@ const ProfilePage: React.FC = () => {
     return (
         <div className="text-healthpal-text-primary">
             <h2 className="text-3xl font-bold my-8">{t('profile.title')}</h2>
-            
+
             <div className="flex border-b border-healthpal-border mb-8">
-                <button 
+                <button
                     onClick={() => setActiveTab('settings')}
                     className={`pb-2 px-1 mr-6 text-md font-medium ${activeTab === 'settings' ? 'text-healthpal-green border-b-2 border-healthpal-green' : 'text-healthpal-text-secondary'}`}
                 >
                     {t('profile.tabs.settings')}
                 </button>
-                <button 
+                <button
                     onClick={() => setActiveTab('progress')}
                     className={`pb-2 px-1 text-md font-medium ${activeTab === 'progress' ? 'text-healthpal-green border-b-2 border-healthpal-green' : 'text-healthpal-text-secondary'}`}
                 >
@@ -229,11 +230,11 @@ const ProfilePage: React.FC = () => {
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.height')}</label>
                                 <input type="number" name="height" value={profile.personalInfo.height} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
                             </div>
-                             <div>
+                            <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.weight')}</label>
                                 <input type="number" name="weight" value={profile.personalInfo.weight} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
                             </div>
-                             <div>
+                            <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.gender')}</label>
                                 <select name="gender" value={profile.personalInfo.gender} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
                                     <option value="female">{t('profile.personal_info.female')}</option>
@@ -256,11 +257,11 @@ const ProfilePage: React.FC = () => {
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                             <div>
+                            <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.fitness_goals.target_weight')}</label>
                                 <input type="number" name="targetWeight" value={profile.fitnessGoals.targetWeight} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
                             </div>
-                             <div>
+                            <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.fitness_goals.activity_level')}</label>
                                 <select name="activityLevel" value={profile.fitnessGoals.activityLevel} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
                                     <option value="sedentary">{t('profile.fitness_goals.sedentary')}</option>
@@ -271,10 +272,10 @@ const ProfilePage: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                     <div className="flex justify-end items-center gap-4">
+                    <div className="flex justify-end items-center gap-4">
                         {showSaveMessage && <p className="text-healthpal-green text-sm">{t('profile.update_success')}</p>}
-                        <button 
-                            onClick={handleUpdateProfile} 
+                        <button
+                            onClick={handleUpdateProfile}
                             disabled={isSaving}
                             className="bg-healthpal-green text-black font-bold py-3 px-6 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50 disabled:cursor-not-allowed"
                         >
@@ -292,16 +293,16 @@ const ProfilePage: React.FC = () => {
                             <span className="text-healthpal-text-secondary">{t('profile.progress_summary.current_weight')}</span>
                             <span className="font-bold text-lg">{profile.personalInfo.weight} kg</span>
                         </div>
-                         <div className="flex justify-between items-center mb-6">
+                        <div className="flex justify-between items-center mb-6">
                             <span className="text-healthpal-text-secondary">{t('profile.progress_summary.weight_to_go')}</span>
                             <span className="font-bold text-lg bg-healthpal-yellow text-black px-3 py-1 rounded-md">{weightToGo.toFixed(1)} kg</span>
                         </div>
-                         <div className="bg-healthpal-panel p-4 rounded-lg text-center">
+                        <div className="bg-healthpal-panel p-4 rounded-lg text-center">
                             <span className="text-healthpal-text-secondary text-sm">{t('profile.progress_summary.daily_calorie_target')}</span>
                             <p className="font-bold text-2xl text-healthpal-green">{calorieGoal} kcal</p>
                         </div>
                     </div>
-                    
+
                     <WeightProgressChart data={profile.weightHistory} />
 
                     <GoalProgressChart percentage={goalProgressPercentage} />
