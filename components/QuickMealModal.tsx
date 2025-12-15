@@ -9,9 +9,9 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 
 interface QuickMealModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess: () => void;
 }
 
 const getMealTypeForCurrentTime = (): keyof MealSummary => {
@@ -54,7 +54,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             setError(null);
         }
     };
-    
+
     const handleReset = () => {
         setImage(null);
         setImagePreview(null);
@@ -71,7 +71,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
 
         try {
             const ingredients = await imageRecognitionService.analyzeMealImage(image, language);
-            
+
             if (ingredients && ingredients.length > 0) {
                 setAnalyzedIngredients(ingredients);
             } else {
@@ -84,7 +84,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             setIsLoading(false);
         }
     };
-    
+
     const handleAddToDiary = async () => {
         if (analyzedIngredients.length === 0) return;
         setIsLoading(true);
@@ -102,18 +102,18 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={onClose}>
             <div className="bg-healthpal-panel w-full max-w-lg p-8 rounded-2xl border border-healthpal-border shadow-2xl" onClick={e => e.stopPropagation()}>
-                <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                    <SparklesIcon className="w-6 h-6 text-healthpal-green"/>
+                <h2 className="text-2xl font-bold mb-2 flex items-center gap-2 text-white">
+                    <SparklesIcon className="w-6 h-6 text-healthpal-green" />
                     {t('quick_meal_modal.title')}
                 </h2>
-                
+
                 <div className="mb-6">
                     <label htmlFor="mealTypeSelect" className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('quick_meal_modal.log_as')}</label>
                     <select
                         id="mealTypeSelect"
                         value={mealType}
                         onChange={(e) => setMealType(e.target.value as keyof MealSummary)}
-                        className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 appearance-none focus:ring-healthpal-green focus:border-healthpal-green"
+                        className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 appearance-none focus:ring-healthpal-green focus:border-healthpal-green text-white"
                     >
                         <option value="breakfast">{t('meals.breakfast')}</option>
                         <option value="lunch">{t('meals.lunch')}</option>
@@ -124,31 +124,31 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
 
 
                 {imagePreview ? (
-                     <div className="mb-4">
+                    <div className="mb-4">
                         <img src={imagePreview} alt="Meal preview" className="w-full h-48 object-cover rounded-lg mb-4" />
                         <div className="flex gap-4">
                             <button onClick={handleReset} className="w-full bg-healthpal-card text-healthpal-text-primary font-bold py-3 rounded-lg hover:bg-healthpal-border transition-all">
                                 {t('quick_meal_modal.change_image_button')}
                             </button>
-                             <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                 {isLoading ? t('quick_meal_modal.analyzing_button') : t('navbar.quick_meal')}
                             </button>
                         </div>
                     </div>
                 ) : (
                     <div className="h-48 flex flex-col justify-center items-center border-2 border-dashed border-healthpal-border rounded-lg mb-4 text-center p-4">
-                         <p className="mb-2 text-healthpal-text-secondary">{t('quick_meal_modal.upload_prompt')}</p>
-                         <label className="bg-healthpal-card cursor-pointer text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
-                             {t('quick_meal_modal.upload_button')}
+                        <p className="mb-2 text-healthpal-text-secondary">{t('quick_meal_modal.upload_prompt')}</p>
+                        <label className="bg-healthpal-card cursor-pointer text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
+                            {t('quick_meal_modal.upload_button')}
                             <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                         </label>
+                        </label>
                     </div>
                 )}
-                
+
                 {error && <p className="text-red-400 text-sm text-center my-2">{error}</p>}
 
                 {analyzedIngredients.length > 0 && (
-                     <div className="mt-6">
+                    <div className="mt-6">
                         <h3 className="font-bold text-lg mb-2">{t('quick_meal_modal.gemini_results')}</h3>
                         <p className="text-sm text-healthpal-text-secondary mb-4">{t('quick_meal_modal.review_prompt')}</p>
                         <div className="max-h-40 overflow-y-auto bg-healthpal-card p-3 rounded-lg space-y-2">
