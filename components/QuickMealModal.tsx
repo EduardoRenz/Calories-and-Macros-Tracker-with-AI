@@ -31,10 +31,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [analyzedIngredients, setAnalyzedIngredients] = useState<Omit<Ingredient, 'id'>[]>([]);
-    const [isCameraActive, setIsCameraActive] = useState(false);
-    const [stream, setStream] = useState<MediaStream | null>(null);
     const [isMobileDevice, setIsMobileDevice] = useState(false);
-    const videoRef = React.useRef<HTMLVideoElement>(null);
 
     const dashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
     const imageRecognitionService: ImageRecognitionService = useMemo(() => new GeminiImageRecognitionService(), []);
@@ -48,15 +45,6 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             setIsMobileDevice(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
         }
     }, [isOpen]);
-
-    useEffect(() => {
-        // Cleanup camera stream when component unmounts or camera is deactivated
-        return () => {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-        };
-    }, [stream]);
 
     if (!isOpen) return null;
 
@@ -76,52 +64,15 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setAnalyzedIngredients([]);
         setError(null);
         setIsLoading(false);
-        stopCamera();
     };
 
-    const startCamera = async () => {
-        try {
-            const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' } // Use back camera on mobile
-            });
-            setStream(mediaStream);
-            setIsCameraActive(true);
-            if (videoRef.current) {
-                videoRef.current.srcObject = mediaStream;
-            }
-        } catch (err) {
-            console.error("Camera access error:", err);
-            setError(t('quick_meal_modal.camera_error'));
-        }
-    };
-
-    const stopCamera = () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            setStream(null);
-        }
-        setIsCameraActive(false);
-    };
-
-    const capturePhoto = () => {
-        if (videoRef.current) {
-            const canvas = document.createElement('canvas');
-            canvas.width = videoRef.current.videoWidth;
-            canvas.height = videoRef.current.videoHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(videoRef.current, 0, 0);
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
-                        setImage(file);
-                        setImagePreview(URL.createObjectURL(file));
-                        setAnalyzedIngredients([]);
-                        setError(null);
-                        stopCamera();
-                    }
-                }, 'image/jpeg');
-            }
+    const handleCameraInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setImage(file);
+            setImagePreview(URL.createObjectURL(file));
+            setAnalyzedIngredients([]);
+            setError(null);
         }
     };
 
@@ -185,25 +136,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 </div>
 
 
-                {isCameraActive ? (
-                    <div className="mb-4">
-                        <video
-                            ref={videoRef}
-                            autoPlay
-                            playsInline
-                            muted
-                            className="w-full h-48 object-cover rounded-lg mb-4 bg-black"
-                        />
-                        <div className="flex gap-4">
-                            <button onClick={stopCamera} className="w-full bg-healthpal-card text-healthpal-text-primary font-bold py-3 rounded-lg hover:bg-healthpal-border transition-all">
-                                {t('quick_meal_modal.cancel_camera')}
-                            </button>
-                            <button onClick={capturePhoto} className="w-full bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all">
-                                {t('quick_meal_modal.capture_photo')}
-                            </button>
-                        </div>
-                    </div>
-                ) : imagePreview ? (
+                {imagePreview ? (
                     <div className="mb-4">
                         <img src={imagePreview} alt="Meal preview" className="w-full h-48 object-cover rounded-lg mb-4" />
                         <div className="flex gap-4">
@@ -220,9 +153,16 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                         <p className="mb-2 text-healthpal-text-secondary">{t('quick_meal_modal.upload_prompt')}</p>
                         <div className="flex gap-2 flex-wrap justify-center">
                             {isMobileDevice && (
-                                <button onClick={startCamera} className="bg-healthpal-card cursor-pointer text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
+                                <label className="bg-healthpal-card cursor-pointer text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
                                     {t('quick_meal_modal.take_photo_button')}
-                                </button>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        capture="environment"
+                                        className="hidden"
+                                        onChange={handleCameraInput}
+                                    />
+                                </label>
                             )}
                             <label className="bg-healthpal-card cursor-pointer text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
                                 {t('quick_meal_modal.upload_button')}
