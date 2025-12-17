@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
-import { SparklesIcon } from './icons';
+import { SparklesIcon, EditIcon, TrashIcon, CheckIcon, XMarkIcon } from './icons';
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
 import { GeminiImageRecognitionService } from '../data/services/GeminiImageRecognitionService';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -32,6 +32,8 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [error, setError] = useState<string | null>(null);
     const [analyzedIngredients, setAnalyzedIngredients] = useState<Omit<Ingredient, 'id'>[]>([]);
     const [isMobileDevice, setIsMobileDevice] = useState(false);
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [editForm, setEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
 
     const dashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
     const imageRecognitionService: ImageRecognitionService = useMemo(() => new GeminiImageRecognitionService(), []);
@@ -64,6 +66,8 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setAnalyzedIngredients([]);
         setError(null);
         setIsLoading(false);
+        setEditingIndex(null);
+        setEditForm(null);
     };
 
     const handleCameraInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +113,39 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             console.error("Failed to add ingredients:", err);
             setError(t('quick_meal_modal.add_error'));
             setIsLoading(false);
+        }
+    };
+
+    const handleDeleteIngredient = (index: number) => {
+        setAnalyzedIngredients(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleEditIngredient = (index: number) => {
+        setEditingIndex(index);
+        setEditForm({ ...analyzedIngredients[index] });
+    };
+
+    const handleCancelEdit = () => {
+        setEditingIndex(null);
+        setEditForm(null);
+    };
+
+    const handleSaveEdit = () => {
+        if (editingIndex !== null && editForm) {
+            setAnalyzedIngredients(prev => {
+                const newIngredients = [...prev];
+                newIngredients[editingIndex] = editForm;
+                return newIngredients;
+            });
+            setEditingIndex(null);
+            setEditForm(null);
+        }
+    };
+
+    const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (editForm) {
+            const { name, value } = e.target;
+            setEditForm(prev => prev ? { ...prev, [name]: value } : null);
         }
     };
 
@@ -180,9 +217,64 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                         <p className="text-sm text-healthpal-text-secondary mb-4">{t('quick_meal_modal.review_prompt')}</p>
                         <div className="max-h-40 overflow-y-auto bg-healthpal-card p-3 rounded-lg space-y-2">
                             {analyzedIngredients.map((ing, index) => (
-                                <div key={index} className="grid grid-cols-3 gap-2 text-sm p-2 bg-healthpal-panel rounded">
-                                    <span className="col-span-2 font-medium">{ing.name} ({ing.quantity})</span>
-                                    <span className="col-span-1 text-right text-healthpal-text-secondary">{Math.round(ing.calories)} kcal</span>
+                                <div key={index} className="p-2 bg-healthpal-panel rounded">
+                                    {editingIndex === index && editForm ? (
+                                        <div className="flex flex-col gap-2">
+                                            <div className="grid grid-cols-12 gap-2 text-sm">
+                                                <div className="col-span-5">
+                                                    <input
+                                                        type="text"
+                                                        name="name"
+                                                        value={editForm.name}
+                                                        onChange={handleEditFormChange}
+                                                        className="w-full bg-healthpal-card border border-healthpal-border rounded px-2 py-1 text-white text-xs"
+                                                        placeholder="Name"
+                                                    />
+                                                </div>
+                                                <div className="col-span-3">
+                                                    <input
+                                                        type="text"
+                                                        name="quantity"
+                                                        value={editForm.quantity}
+                                                        onChange={handleEditFormChange}
+                                                        className="w-full bg-healthpal-card border border-healthpal-border rounded px-2 py-1 text-white text-xs"
+                                                        placeholder="Qty"
+                                                    />
+                                                </div>
+                                                <div className="col-span-2">
+                                                    <input
+                                                        type="number"
+                                                        name="calories"
+                                                        value={editForm.calories}
+                                                        onChange={handleEditFormChange}
+                                                        className="w-full bg-healthpal-card border border-healthpal-border rounded px-2 py-1 text-white text-xs"
+                                                        placeholder="Kcal"
+                                                    />
+                                                </div>
+                                                <div className="col-span-2 flex justify-end gap-1">
+                                                    <button onClick={handleSaveEdit} className="text-green-400 hover:text-green-300">
+                                                        <CheckIcon className="w-5 h-5" />
+                                                    </button>
+                                                    <button onClick={handleCancelEdit} className="text-red-400 hover:text-red-300">
+                                                        <XMarkIcon className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-12 gap-2 text-sm items-center">
+                                            <span className="col-span-7 font-medium truncate" title={ing.name}>{ing.name} <span className="text-healthpal-text-secondary font-normal">({ing.quantity})</span></span>
+                                            <span className="col-span-3 text-right text-healthpal-text-secondary">{Math.round(ing.calories)} kcal</span>
+                                            <div className="col-span-2 flex justify-end gap-1">
+                                                <button onClick={() => handleEditIngredient(index)} className="text-healthpal-text-secondary hover:text-white transition-colors">
+                                                    <EditIcon className="w-4 h-4" />
+                                                </button>
+                                                <button onClick={() => handleDeleteIngredient(index)} className="text-healthpal-text-secondary hover:text-red-400 transition-colors">
+                                                    <TrashIcon className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
