@@ -10,28 +10,28 @@ import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
 import { MockAuthRepository } from './repositories/MockAuthRepository';
 
 // Switch these flags to false to use local data/auth to avoid configuration errors
-const USE_FIRESTORE = true;
-const USE_MOCK_AUTH = false;
+const USE_MOCKS = process.env.USE_MOCKS !== 'false';
+
 
 export class RepositoryFactory {
     public static getDashboardRepository(): DashboardRepository {
-        if (USE_FIRESTORE) {
+        if (!USE_MOCKS) {
             return new FirestoreDashboardRepository();
         }
         return new LocalDashboardRepository();
     }
 
     public static getProfileRepository(): ProfileRepository {
-        if (USE_FIRESTORE) {
+        if (!USE_MOCKS) {
             return new FirestoreProfileRepository();
         }
         return new LocalProfileRepository();
     }
 
     public static getAuthRepository(): AuthRepository {
-        if (USE_MOCK_AUTH) {
-            return new MockAuthRepository();
+        if (!USE_MOCKS) {
+            return new FirebaseAuthRepository();
         }
-        return new FirebaseAuthRepository();
+        return new MockAuthRepository();
     }
 }
