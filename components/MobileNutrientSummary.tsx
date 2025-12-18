@@ -49,7 +49,7 @@ const MobileNutrientSummary: React.FC<MobileNutrientSummaryProps> = ({ data }) =
     );
 
     return (
-        <div className="bg-healthpal-card p-6 rounded-2xl shadow-lg border border-healthpal-border/30">
+        <div className="bg-healthpal-card p-6 rounded-2xl shadow-lg border-healthpal-border/30">
             <div className="flex flex-col divide-y divide-healthpal-border/10">
                 <NutrientItem
                     label={t('dashboard.calories')}
