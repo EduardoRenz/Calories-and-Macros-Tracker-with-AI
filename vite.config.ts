@@ -42,10 +42,11 @@ export default defineConfig(({ mode }) => {
         })
       ],
       define: {
-        'process.env': Object.entries(env).reduce((acc, [key, value]) => {
-          acc[key] = value;
+        ...Object.entries(env).reduce((acc, [key, value]) => {
+          acc[`process.env.${key}`] = JSON.stringify(value);
           return acc;
-        }, { USE_MOCKS: process.env.USE_MOCKS })
+        }, {}),
+        'process.env.USE_MOCKS': JSON.stringify(process.env.USE_MOCKS || env.USE_MOCKS || 'false')
       },
       resolve: {
         alias: {
