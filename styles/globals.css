@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
     --healthpal-dark: #101614;
     --healthpal-panel: #1A201C;
