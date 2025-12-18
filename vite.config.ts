@@ -42,8 +42,10 @@ export default defineConfig(({ mode }) => {
         })
       ],
       define: {
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.USE_MOCKS': JSON.stringify(process.env.USE_MOCKS)
+        'process.env': Object.entries(env).reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, { USE_MOCKS: process.env.USE_MOCKS })
       },
       resolve: {
         alias: {
