@@ -125,7 +125,8 @@ const DashboardPage = forwardRef((props, ref) => {
       {/* Main Grid */}
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="block md:hidden">
+          {/* Hidden on mobile as requested - the chart will be at the top instead */}
+          <div className="hidden">
             <MobileNutrientSummary data={data.macros} />
           </div>
           <div className="hidden md:block">
@@ -173,8 +174,14 @@ const DashboardPage = forwardRef((props, ref) => {
           </div>
         </div>
 
-        <div className="lg:col-span-1 grid grid-cols-1 gap-6">
-          <div className="bg-healthpal-card p-6 rounded-2xl flex flex-col justify-center items-center text-center h-full">
+        <div className="lg:col-span-1 grid grid-cols-1 gap-6 order-first lg:order-last">
+          <div className="bg-healthpal-card p-6 rounded-2xl h-full flex flex-col order-first lg:order-last">
+            <h3 className="text-xl font-bold mb-4">{t('dashboard.macro_split')}</h3>
+            <div className="flex-grow">
+              <MacroSplitChart data={data} />
+            </div>
+          </div>
+          <div className="bg-healthpal-card p-6 rounded-2xl flex flex-col justify-center items-center text-center h-full order-last lg:order-first">
             <h3 className="text-healthpal-text-secondary font-medium">
               {isOverLimit ? t('dashboard.calories_over') : t('dashboard.calories_remaining')}
             </h3>
@@ -184,12 +191,6 @@ const DashboardPage = forwardRef((props, ref) => {
             <p className="text-healthpal-text-secondary text-sm">
               {isOverLimit ? t('dashboard.limit_exceeded') : t('dashboard.doing_great')}
             </p>
-          </div>
-          <div className="bg-healthpal-card p-6 rounded-2xl h-full flex flex-col">
-            <h3 className="text-xl font-bold mb-4">{t('dashboard.macro_split')}</h3>
-            <div className="flex-grow">
-              <MacroSplitChart data={data} />
-            </div>
           </div>
         </div>
       </main>
