@@ -3,7 +3,13 @@ import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/da
 import { LocalProfileRepository } from './LocalProfileRepository';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 
-const getTodayString = () => new Date().toISOString().split('T')[0];
+const getTodayString = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 const createEmptyDashboard = (date: string, goals: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
   date,

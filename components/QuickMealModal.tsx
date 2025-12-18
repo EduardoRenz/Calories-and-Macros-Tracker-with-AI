@@ -106,7 +106,11 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         if (analyzedIngredients.length === 0) return;
         setIsLoading(true);
         try {
-            const date = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const date = `${year}-${month}-${day}`;
             await dashboardRepository.addIngredients(date, mealType, analyzedIngredients);
             onSuccess();
         } catch (err) {

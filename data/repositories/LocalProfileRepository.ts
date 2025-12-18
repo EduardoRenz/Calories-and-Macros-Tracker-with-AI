@@ -39,7 +39,11 @@ export class LocalProfileRepository implements ProfileRepository {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         const newWeight = profile.personalInfo.weight;
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`;
 
         // Use a mutable copy of the stored history
         const updatedHistory = [...userProfileData.weightHistory];

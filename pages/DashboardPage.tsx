@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
 import MacroProgressCard from '@/components/MacroProgressCard';
+import MobileNutrientSummary from '@/components/MobileNutrientSummary';
 import MealSummaryCard from '@/components/MealSummaryCard';
 import MacroSplitChart from '@/components/MacroSplitChart';
 import { useTranslation } from '../hooks/useTranslation';
@@ -10,7 +11,12 @@ import { DashboardRepository } from '../domain/repositories/DashboardRepository'
 import AddIngredientModal from '@/components/AddIngredientModal';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 
-const getFormattedDate = (date: Date) => date.toISOString().split('T')[0];
+const getFormattedDate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const DashboardPage = forwardRef((props, ref) => {
   const { t } = useTranslation();
@@ -119,34 +125,45 @@ const DashboardPage = forwardRef((props, ref) => {
       {/* Main Grid */}
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <MacroProgressCard
-            title={t('dashboard.calories')}
-            unit="kcal"
-            current={data.macros.calories.current}
-            goal={data.macros.calories.goal}
-            color="bg-healthpal-green"
-          />
-          <MacroProgressCard
-            title={t('dashboard.protein')}
-            unit="g"
-            current={data.macros.protein.current}
-            goal={data.macros.protein.goal}
-            color="bg-healthpal-protein"
-          />
-          <MacroProgressCard
-            title={t('dashboard.carbs')}
-            unit="g"
-            current={data.macros.carbs.current}
-            goal={data.macros.carbs.goal}
-            color="bg-healthpal-carbs"
-          />
-          <MacroProgressCard
-            title={t('dashboard.fats')}
-            unit="g"
-            current={data.macros.fats.current}
-            goal={data.macros.fats.goal}
-            color="bg-healthpal-fats"
-          />
+          <div className="block md:hidden">
+            <MobileNutrientSummary data={data.macros} />
+          </div>
+          <div className="hidden md:block">
+            <MacroProgressCard
+              title={t('dashboard.calories')}
+              unit="kcal"
+              current={data.macros.calories.current}
+              goal={data.macros.calories.goal}
+              color="bg-healthpal-green"
+            />
+          </div>
+          <div className="hidden md:block">
+            <MacroProgressCard
+              title={t('dashboard.protein')}
+              unit="g"
+              current={data.macros.protein.current}
+              goal={data.macros.protein.goal}
+              color="bg-healthpal-protein"
+            />
+          </div>
+          <div className="hidden md:block">
+            <MacroProgressCard
+              title={t('dashboard.carbs')}
+              unit="g"
+              current={data.macros.carbs.current}
+              goal={data.macros.carbs.goal}
+              color="bg-healthpal-carbs"
+            />
+          </div>
+          <div className="hidden md:block">
+            <MacroProgressCard
+              title={t('dashboard.fats')}
+              unit="g"
+              current={data.macros.fats.current}
+              goal={data.macros.fats.goal}
+              color="bg-healthpal-fats"
+            />
+          </div>
           <div className="md:col-span-2">
             <MealSummaryCard
               meals={data.meals}
