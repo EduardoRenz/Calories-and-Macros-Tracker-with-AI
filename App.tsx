@@ -8,6 +8,7 @@ import { useAuth } from './contexts/AuthContext';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
+import InstallPWA from './components/InstallPWA';
 
 type DashboardHandle = {
   refreshData: () => void;
@@ -78,6 +79,7 @@ const App: React.FC = () => {
         onClose={() => setIsQuickMealOpen(false)}
         onSuccess={handleQuickMealSuccess}
       />
+      <InstallPWA />
     </LanguageProvider>
   );
 };

@@ -25,7 +25,8 @@
     "@vitejs/plugin-react": "^5.0.0",
     "cypress": "^15.8.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vite-plugin-pwa": "^1.2.0"
   },
   "resolutions": {
     "string-width": "4.2.3",
