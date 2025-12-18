@@ -1,4 +1,5 @@
 # CalorieCounter
+<img width="650" height="573" alt="image" src="https://github.com/user-attachments/assets/4b1cb8c9-8001-4f29-b247-c7854799970e" />
 
 
 ## Run and deploy your AI Studio app
