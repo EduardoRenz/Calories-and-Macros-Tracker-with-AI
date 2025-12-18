@@ -1,14 +1,16 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, Suspense } from 'react';
 import Navbar from './components/Navbar';
 import BottomNavbar from './components/BottomNavbar';
-import SettingsPage from './components/SettingsPage';
 import QuickMealModal from './components/QuickMealModal';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { useAuth } from './contexts/AuthContext';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import ProfilePage from './pages/ProfilePage';
 import InstallPWA from './components/InstallPWA';
+
+// Lazy load pages
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+const SettingsPage = React.lazy(() => import('./components/SettingsPage'));
 
 type DashboardHandle = {
   refreshData: () => void;
@@ -45,7 +47,15 @@ const App: React.FC = () => {
   }
 
   if (!user) {
-    return <LoginPage />;
+    return (
+      <Suspense fallback={
+        <div className="bg-healthpal-dark min-h-screen flex items-center justify-center">
+          <p className="text-healthpal-text-secondary">Loading Login...</p>
+        </div>
+      }>
+        <LoginPage />
+      </Suspense>
+    );
   }
 
   return (
@@ -58,14 +68,20 @@ const App: React.FC = () => {
             onQuickMealClick={() => setIsQuickMealOpen(true)}
           />
           <main className="p-6 lg:p-8 pb-24 md:pb-6 lg:pb-8">
-            {currentPage === 'dashboard' && <DashboardPage ref={dashboardRef} />}
-            {currentPage === 'profile' && <ProfilePage />}
-            {currentPage === 'settings' && <SettingsPage />}
-            {(currentPage === 'food diary' || currentPage === 'reports') && (
+            <Suspense fallback={
               <div className="flex items-center justify-center h-96">
-                <h2 className="text-2xl text-healthpal-text-secondary">Page coming soon...</h2>
+                <p className="text-healthpal-text-secondary">Loading...</p>
               </div>
-            )}
+            }>
+              {currentPage === 'dashboard' && <DashboardPage ref={dashboardRef} />}
+              {currentPage === 'profile' && <ProfilePage />}
+              {currentPage === 'settings' && <SettingsPage />}
+              {(currentPage === 'food diary' || currentPage === 'reports') && (
+                <div className="flex items-center justify-center h-96">
+                  <h2 className="text-2xl text-healthpal-text-secondary">Page coming soon...</h2>
+                </div>
+              )}
+            </Suspense>
           </main>
           <BottomNavbar
             currentPage={currentPage}
