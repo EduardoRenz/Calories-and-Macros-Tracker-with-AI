@@ -5,18 +5,20 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyD2718X4P8fgQiG9RQzy79jKZSPtEIsiC0",
-  authDomain: "calorie-tracker-a3056.firebaseapp.com",
-  projectId: "calorie-tracker-a3056",
-  storageBucket: "calorie-tracker-a3056.firebasestorage.app",
-  messagingSenderId: "271068094717",
-  appId: "1:271068094717:web:49ff33b7c2a5be539a1e94",
-  measurementId: "G-R4STDHDWL8"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Initialize Analytics safely
+export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
 // Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);

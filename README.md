@@ -28,6 +28,5 @@ To run tests, run the project with `yarn dev:mock` and then run `yarn cy:run`
 
 ## Roadmap
 
-[ ] Possibility to add custom api keys
-[ ] 
+- [ ] Possibility to add custom api keys
 
