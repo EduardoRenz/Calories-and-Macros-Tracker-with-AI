@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "USE_MOCKS=true vite",
     "build": "vite build",
     "preview": "vite preview",
     "cy:open": "USE_MOCKS=true cypress open",

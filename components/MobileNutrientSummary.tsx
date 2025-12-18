@@ -22,17 +22,26 @@ const MobileNutrientSummary: React.FC<MobileNutrientSummaryProps> = ({ data }) =
         return goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
     };
 
+    const formatNumber = (num: number) => {
+        return new Intl.NumberFormat().format(num);
+    };
+
     const NutrientItem = ({ label, current, goal, unit, color, percentage }: { label: string, current: number, goal: number, unit: string, color: string, percentage: number }) => (
-        <div className="flex flex-col gap-1">
-            <div className="flex justify-between items-baseline text-xs">
-                <span className="text-healthpal-text-secondary">{label}</span>
-                <span className="text-healthpal-text-primary font-medium">
-                    {current}/{goal}<span className="text-[10px] text-healthpal-text-secondary ml-0.5">{unit}</span>
-                </span>
+        <div className="flex flex-col gap-2 py-3">
+            <div className="flex justify-between items-end">
+                <span className="text-healthpal-text-secondary font-medium text-lg">{label}</span>
+                <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-healthpal-text-primary leading-none">
+                        {formatNumber(current)}
+                    </span>
+                    <span className="text-healthpal-text-secondary text-sm">
+                        / {formatNumber(goal)} {unit}
+                    </span>
+                </div>
             </div>
-            <div className="w-full bg-healthpal-panel h-1.5 rounded-full">
+            <div className="w-full bg-healthpal-panel h-2 rounded-full overflow-hidden">
                 <div
-                    className={`${color} h-1.5 rounded-full`}
+                    className={`${color} h-full rounded-full transition-all duration-500 ease-out`}
                     style={{ width: `${percentage}%` }}
                 ></div>
             </div>
@@ -40,8 +49,8 @@ const MobileNutrientSummary: React.FC<MobileNutrientSummaryProps> = ({ data }) =
     );
 
     return (
-        <div className="bg-healthpal-card p-4 rounded-xl shadow-sm border border-healthpal-border/50">
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+        <div className="bg-healthpal-card p-6 rounded-2xl shadow-lg border border-healthpal-border/30">
+            <div className="flex flex-col divide-y divide-healthpal-border/10">
                 <NutrientItem
                     label={t('dashboard.calories')}
                     current={data.calories.current}
@@ -80,3 +89,4 @@ const MobileNutrientSummary: React.FC<MobileNutrientSummaryProps> = ({ data }) =
 };
 
 export default MobileNutrientSummary;
+
