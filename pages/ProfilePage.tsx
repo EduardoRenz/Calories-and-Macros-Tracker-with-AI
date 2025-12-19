@@ -188,12 +188,6 @@ const ProfilePage: React.FC = () => {
                 >
                     {t('profile.tabs.settings')}
                 </button>
-                <button
-                    onClick={() => setActiveTab('progress')}
-                    className={`pb-2 px-1 text-md font-medium ${activeTab === 'progress' ? 'text-healthpal-green border-b-2 border-healthpal-green' : 'text-healthpal-text-secondary'}`}
-                >
-                    {t('profile.tabs.progress')}
-                </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
