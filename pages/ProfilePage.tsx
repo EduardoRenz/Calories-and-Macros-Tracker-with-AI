@@ -207,9 +207,6 @@ const ProfilePage: React.FC = () => {
                             <h3 className="text-2xl font-bold">{user?.displayName}</h3>
                             <p className="text-healthpal-text-secondary">{user?.email}</p>
                         </div>
-                        <button className="ml-auto border border-healthpal-border text-healthpal-text-secondary px-4 py-2 rounded-lg text-sm hover:bg-healthpal-border hover:text-healthpal-text-primary">
-                            {t('profile.upload_picture')}
-                        </button>
                     </div>
 
                     {/* Personal Info */}
