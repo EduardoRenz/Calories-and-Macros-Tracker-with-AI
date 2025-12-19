@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { HealthPalLogo, GoogleIcon } from '@/components/icons';
 
 const LoginPage: React.FC = () => {
-    const { signInWithGoogle, loading } = useAuth();
+    const { user, signInWithGoogle, loading } = useAuth();
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user && !loading) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [user, loading, navigate]);
 
     const handleGoogleSignIn = async () => {
         if (!loading) {
             setError(null);
             try {
                 await signInWithGoogle();
+                // Navigation will be handled by the useEffect above when user state changes
             } catch (error: any) {
                 console.error("Failed to sign in", error);
                 if (error?.code === 'auth/unauthorized-domain') {
@@ -45,6 +54,7 @@ const LoginPage: React.FC = () => {
                     <button
                         onClick={handleGoogleSignIn}
                         disabled={loading}
+                        data-testid="google-signin-button"
                         className="w-full bg-white text-gray-800 font-semibold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                     >
                         {loading ? (

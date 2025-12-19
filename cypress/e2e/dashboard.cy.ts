@@ -8,11 +8,12 @@ describe('Dashboard Meal Management', () => {
   };
 
   beforeEach(() => {
-    // Mock successful login state
-    // We can rely on the app defaulting to mock behavior with USE_MOCKS=true
-    // but explicit interception makes it more robust if we expand tests.
+    // Login and navigate to dashboard
     cy.visit('/');
     cy.contains('Sign in with Google').click();
+    
+    // Verify we're on the dashboard
+    cy.url().should('include', '/dashboard');
   });
 
   it('should add a meal to lunch section', () => {
