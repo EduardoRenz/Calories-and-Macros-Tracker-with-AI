@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import BottomNavbar from './components/BottomNavbar';
 import QuickMealModal from './components/QuickMealModal';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Footer } from './components/Footer';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { useAuth } from './contexts/AuthContext';
 import InstallPWA from './components/InstallPWA';
@@ -80,7 +81,10 @@ const AppContent: React.FC = () => {
             </Suspense>
           </main>
           {showNavbar && (
-            <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+            <>
+              <Footer />
+              <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+            </>
           )}
         </div>
       </div>
