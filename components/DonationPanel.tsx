@@ -47,34 +47,34 @@ export const DonationPanel: React.FC<DonationPanelProps> = ({ variant = 'compact
 
         if (variant === 'wide') {
             return (
-                <div className="bg-healthpal-card p-6 rounded-2xl border border-healthpal-border flex flex-col gap-4">
+                <div className="bg-healthpal-card p-3 rounded-lg border border-healthpal-border flex flex-col gap-2">
                     <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-3">
-                            {Icon && <Icon className={`w-8 h-8 ${textColor || 'text-healthpal-green'}`} />}
+                        <div className="flex items-center gap-2">
+                            {Icon && <Icon className={`w-5 h-5 ${textColor || 'text-healthpal-green'}`} />}
                             {!Icon && symbol && (
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${bgColor || 'bg-healthpal-green'} text-black`}>
+                                <div className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${bgColor || 'bg-healthpal-green'} text-black`}>
                                     {symbol}
                                 </div>
                             )}
                             <div>
-                                <h3 className="font-bold text-healthpal-text-primary text-lg">{label}</h3>
-                                {network && <span className="text-xs text-healthpal-text-secondary uppercase">{network}</span>}
+                                <h3 className="font-semibold text-healthpal-text-primary text-sm">{label}</h3>
+                                {network && <span className="text-[10px] text-healthpal-text-secondary uppercase">{network}</span>}
                             </div>
                         </div>
                         {isPix && (
-                            <div className="bg-white p-1 rounded-lg">
-                                <QrCodeIcon className="w-8 h-8 text-black" />
+                            <div className="bg-white p-0.5 rounded">
+                                <QrCodeIcon className="w-5 h-5 text-black" />
                             </div>
                         )}
                     </div>
 
-                    <div className="bg-healthpal-dark/50 p-3 rounded-xl border border-healthpal-border flex items-center justify-between gap-3 group">
-                        <span className="text-healthpal-text-secondary text-sm truncate font-mono">{value}</span>
+                    <div className="bg-healthpal-dark/50 p-2 rounded-lg border border-healthpal-border flex items-center justify-between gap-2">
+                        <span className="text-healthpal-text-secondary text-xs truncate font-mono">{value}</span>
                         <button
                             onClick={() => handleCopy(value, id)}
-                            className="text-healthpal-text-secondary hover:text-healthpal-green transition-colors"
+                            className="text-healthpal-text-secondary hover:text-healthpal-green transition-colors flex-shrink-0"
                         >
-                            {isCopied ? <CheckIcon className="w-5 h-5 text-healthpal-green" /> : <CopyIcon className="w-5 h-5" />}
+                            {isCopied ? <CheckIcon className="w-4 h-4 text-healthpal-green" /> : <CopyIcon className="w-4 h-4" />}
                         </button>
                     </div>
                 </div>
@@ -117,21 +117,21 @@ export const DonationPanel: React.FC<DonationPanelProps> = ({ variant = 'compact
     };
 
     return (
-        <div className={`w-full max-w-sm mx-auto flex flex-col gap-4 ${variant === 'wide' ? 'max-w-4xl' : ''}`}>
-            <div className="flex items-center gap-3 mb-2">
-                <div className="bg-healthpal-card p-2 rounded-xl border border-healthpal-border text-healthpal-green">
-                    <CoffeeIcon className="w-6 h-6" />
+        <div className={`w-full flex flex-col ${variant === 'compact' ? 'max-w-sm mx-auto gap-4' : 'gap-3'}`}>
+            <div className={`flex items-center gap-2 ${variant === 'compact' ? 'mb-2' : 'mb-1'}`}>
+                <div className={`bg-healthpal-card rounded-lg border border-healthpal-border text-healthpal-green ${variant === 'compact' ? 'p-2' : 'p-1.5'}`}>
+                    <CoffeeIcon className={variant === 'compact' ? 'w-6 h-6' : 'w-5 h-5'} />
                 </div>
                 <div>
-                    <h2 className="text-sm font-bold text-healthpal-text-primary uppercase tracking-widest">Donate me a coffee</h2>
-                    <p className="text-xs text-healthpal-text-secondary">Support the development</p>
+                    <h2 className={`font-bold text-healthpal-text-primary uppercase tracking-wide ${variant === 'compact' ? 'text-sm' : 'text-xs'}`}>Donate me a coffee</h2>
+                    <p className={`text-healthpal-text-secondary ${variant === 'compact' ? 'text-xs' : 'text-[10px]'}`}>Support the development</p>
                 </div>
             </div>
 
-            <div className={`flex flex-col gap-3 ${variant === 'wide' ? 'grid md:grid-cols-3' : ''}`}>
+            <div className={`flex flex-col gap-3 ${variant === 'wide' ? 'md:grid md:grid-cols-3 md:gap-3' : ''}`}>
                 {pixKey && (
                     <DonationRow
-                        label="Pix Key (Email)"
+                        label="Pix Key (CPF)"
                         value={pixKey}
                         id="pix"
                         isPix={true}
