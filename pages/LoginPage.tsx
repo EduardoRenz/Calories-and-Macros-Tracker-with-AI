@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { HealthPalLogo, GoogleIcon } from '@/components/icons';
+import { DonationPanel } from '../components/DonationPanel';
 
 const LoginPage: React.FC = () => {
     const { user, signInWithGoogle, loading } = useAuth();
@@ -66,6 +67,10 @@ const LoginPage: React.FC = () => {
                             </>
                         )}
                     </button>
+                </div>
+
+                <div className="mt-8">
+                    <DonationPanel variant="compact" />
                 </div>
             </div>
         </div>
