@@ -20,7 +20,7 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
             };
             const languageName = languageMap[language] || 'English';
 
-            const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats) for the following food item: "${quantity} of ${ingredientName}". Respond ONLY with a JSON object matching the provided schema. If you cannot determine the nutritional information, return an object with zero for all values.`;
+            const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats) for the following food item: "${quantity} of ${ingredientName}". Respond ONLY with a JSON object matching the provided schema. If you cannot determine the nutritional information, return an object with zero for all values. Important: estimate based on a plate size, if you don't know how to estimate the size and amount of an ingredient, estimate based on an average per serving.`;
 
             const response = await this.ai.models.generateContent({
                 model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
