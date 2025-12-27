@@ -188,6 +188,12 @@ const ProfilePage: React.FC = () => {
                 >
                     {t('profile.tabs.settings')}
                 </button>
+                <a
+                    href="/food-analysis"
+                    className="pb-2 px-1 mr-6 text-md font-medium text-healthpal-text-secondary hover:text-healthpal-green transition-colors"
+                >
+                    {t('profile.tabs.food_analysis')}
+                </a>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

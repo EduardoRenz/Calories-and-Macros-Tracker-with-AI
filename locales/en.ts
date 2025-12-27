@@ -77,7 +77,8 @@ export default {
     "title": "My Profile",
     "tabs": {
       "settings": "Profile Settings",
-      "progress": "Progress"
+      "progress": "Progress",
+      "food_analysis": "Food Analysis"
     },
     "upload_picture": "Upload new picture",
     "personal_info": {
@@ -117,6 +118,49 @@ export default {
     "weight_progress": "Weight Progress",
     "goal_progress": "Goal Progress",
     "complete": "Complete"
+  },
+  "food_analysis": {
+    "title": "Food Analysis",
+    "subtitle": "Comprehensive reports and insights into your diet and health.",
+    "back_to_profile": "Back to Profile",
+    "last_7_days": "Last 7 Days",
+    "this_month": "This Month",
+    "last_3_months": "Last 3 Months",
+    "generate_prompt": "Click below to generate a comprehensive analysis of your eating habits.",
+    "generate_button": "Generate Report",
+    "generating": "Generating your personalized report...",
+    "error_generating": "An error occurred while generating the report. Retrying...",
+    "retry": "Try again",
+    "regenerate": "Clear cache and regenerate report",
+    "common_foods": {
+      "title": "Most Common Foods",
+      "subtitle": "A summary of what you eat most frequently during different times of the day.",
+      "consistency": "Consistency"
+    },
+    "vitamins": {
+      "title": "Vitamin Overview",
+      "subtitle": "Key micronutrients analysis based on your logged intake.",
+      "sufficient_moderate": "Sufficient & Moderate",
+      "deficient_action": "Deficient - Needs Action",
+      "recommendations": "Recommendations",
+      "status": {
+        "good": "Good",
+        "low": "Avg",
+        "deficient": "Low"
+      }
+    },
+    "attention": {
+      "title": "Attention Points",
+      "subtitle": "Areas where you might want to adjust your intake for better results.",
+      "no_issues": "No attention points detected. Keep up the good work!"
+    },
+    "suggestions": {
+      "title": "Suggestions",
+      "subtitle": "Actionable steps to hit your macro goals.",
+      "goal": "Goal",
+      "recommended": "Recommended Additions",
+      "adjustments_required": "Adjustments Required"
+    }
   },
   "settings": {
     "title": "App Settings and API Management",

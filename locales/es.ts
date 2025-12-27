@@ -77,7 +77,8 @@ export default {
     "title": "Mi Perfil",
     "tabs": {
       "settings": "Ajustes de Perfil",
-      "progress": "Progreso"
+      "progress": "Progreso",
+      "food_analysis": "Análisis de Alimentación"
     },
     "upload_picture": "Subir nueva foto",
     "personal_info": {
@@ -117,6 +118,49 @@ export default {
     "weight_progress": "Progreso de Peso",
     "goal_progress": "Progreso de Meta",
     "complete": "Completado"
+  },
+  "food_analysis": {
+    "title": "Análisis de Alimentación",
+    "subtitle": "Informes e información completos sobre tu dieta y salud.",
+    "back_to_profile": "Volver al Perfil",
+    "last_7_days": "Últimos 7 Días",
+    "this_month": "Este Mes",
+    "last_3_months": "Últimos 3 Meses",
+    "generate_prompt": "Haz clic abajo para generar un análisis completo de tus hábitos alimenticios.",
+    "generate_button": "Generar Informe",
+    "generating": "Generando tu informe personalizado...",
+    "error_generating": "Ocurrió un error al generar el informe. Reintentando...",
+    "retry": "Intentar de nuevo",
+    "regenerate": "Limpiar caché y regenerar informe",
+    "common_foods": {
+      "title": "Alimentos Más Comunes",
+      "subtitle": "Un resumen de lo que comes con más frecuencia en diferentes momentos del día.",
+      "consistency": "Consistencia"
+    },
+    "vitamins": {
+      "title": "Resumen de Vitaminas",
+      "subtitle": "Análisis de micronutrientes clave basado en tus registros.",
+      "sufficient_moderate": "Suficiente & Moderado",
+      "deficient_action": "Deficiente - Necesita Acción",
+      "recommendations": "Recomendaciones",
+      "status": {
+        "good": "Bien",
+        "low": "Medio",
+        "deficient": "Bajo"
+      }
+    },
+    "attention": {
+      "title": "Puntos de Atención",
+      "subtitle": "Áreas donde podrías ajustar tu ingesta para mejores resultados.",
+      "no_issues": "No se detectaron puntos de atención. ¡Sigue así!"
+    },
+    "suggestions": {
+      "title": "Sugerencias",
+      "subtitle": "Pasos prácticos para alcanzar tus metas de macros.",
+      "goal": "Meta",
+      "recommended": "Adiciones Recomendadas",
+      "adjustments_required": "Ajustes Requeridos"
+    }
   },
   "settings": {
     "title": "Ajustes de App y Gestión de API",

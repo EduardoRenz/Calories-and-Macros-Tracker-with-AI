@@ -1,11 +1,14 @@
 import { DashboardRepository } from '../domain/repositories/DashboardRepository';
 import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { AuthRepository } from '../domain/repositories/AuthRepository';
+import { FoodAnalysisRepository } from '../domain/repositories/FoodAnalysisRepository';
 
 import { LocalDashboardRepository } from './repositories/LocalDashboardRepository';
 import { LocalProfileRepository } from './repositories/LocalProfileRepository';
+import { LocalFoodAnalysisRepository } from './repositories/LocalFoodAnalysisRepository';
 import { FirestoreDashboardRepository } from './repositories/FirestoreDashboardRepository';
 import { FirestoreProfileRepository } from './repositories/FirestoreProfileRepository';
+import { FirestoreFoodAnalysisRepository } from './repositories/FirestoreFoodAnalysisRepository';
 import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
 import { MockAuthRepository } from './repositories/MockAuthRepository';
 
@@ -33,5 +36,12 @@ export class RepositoryFactory {
             return new FirebaseAuthRepository();
         }
         return new MockAuthRepository();
+    }
+
+    public static getFoodAnalysisRepository(): FoodAnalysisRepository {
+        if (!USE_MOCKS) {
+            return new FirestoreFoodAnalysisRepository();
+        }
+        return new LocalFoodAnalysisRepository();
     }
 }
