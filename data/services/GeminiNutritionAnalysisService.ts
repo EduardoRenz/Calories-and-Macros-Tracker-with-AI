@@ -23,7 +23,7 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
             const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats) for the following food item: "${quantity} of ${ingredientName}". Respond ONLY with a JSON object matching the provided schema. If you cannot determine the nutritional information, return an object with zero for all values.`;
 
             const response = await this.ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",
@@ -39,14 +39,14 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
                     }
                 }
             });
-            
+
             const jsonString = response.text;
             const result = JSON.parse(jsonString);
-            
+
             if (result && typeof result.calories === 'number') {
                 return result as NutritionalInfo;
             }
-            
+
             return null;
         } catch (err) {
             console.error("Gemini API Error in GeminiNutritionAnalysisService:", err);

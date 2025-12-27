@@ -48,7 +48,7 @@ Please respond in ${languageName} with:
 Respond ONLY with a JSON object matching the provided schema.`;
 
         const response = await this.ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
             contents: { parts: [{ text: prompt }] },
             config: {
                 responseMimeType: "application/json",

@@ -38,7 +38,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             const prompt = `Analyze the food items in this image. Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), and nutritional information (calories, protein, carbs, fats) per serving. Name the ingredients in ${languageName}. Respond in JSON format according to the provided schema. If an item is unrecognizable, omit it from the list.`;
 
             const response = await this.ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
                 contents: {
                     parts: [
                         { text: prompt },
@@ -71,14 +71,14 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
                     }
                 }
             });
-            
+
             const jsonString = response.text;
             const result = JSON.parse(jsonString);
 
             if (result.ingredients && Array.isArray(result.ingredients)) {
                 return result.ingredients;
             }
-            
+
             return [];
         } catch (err) {
             console.error("Gemini API Error in GeminiImageRecognitionService:", err);
