@@ -77,7 +77,8 @@ export default {
     "title": "Meu Perfil",
     "tabs": {
       "settings": "Configurações do Perfil",
-      "progress": "Progresso"
+      "progress": "Progresso",
+      "food_analysis": "Análise da Alimentação"
     },
     "upload_picture": "Carregar nova foto",
     "personal_info": {
@@ -117,6 +118,45 @@ export default {
     "weight_progress": "Progresso de Peso",
     "goal_progress": "Progresso da Meta",
     "complete": "Completo"
+  },
+  "food_analysis": {
+    "title": "Análise da Alimentação",
+    "subtitle": "Relatórios e insights abrangentes sobre sua dieta e saúde.",
+    "back_to_profile": "Voltar ao Perfil",
+    "last_7_days": "Últimos 7 Dias",
+    "this_month": "Este Mês",
+    "last_3_months": "Últimos 3 Meses",
+    "generate_prompt": "Clique abaixo para gerar uma análise completa dos seus hábitos alimentares.",
+    "generate_button": "Gerar Relatório",
+    "generating": "Gerando seu relatório personalizado...",
+    "error_generating": "Ocorreu um erro ao gerar o relatório. Tentando novamente...",
+    "retry": "Tentar novamente",
+    "regenerate": "Limpar cache e regenerar relatório",
+    "common_foods": {
+      "title": "Alimentos Mais Comuns",
+      "subtitle": "Um resumo do que você come com mais frequência em diferentes momentos do dia.",
+      "consistency": "Consistência"
+    },
+    "vitamins": {
+      "title": "Visão Geral de Vitaminas",
+      "subtitle": "Análise de micronutrientes chave com base nos seus registros.",
+      "status": {
+        "good": "Bom",
+        "low": "Baixo",
+        "deficient": "Médio"
+      }
+    },
+    "attention": {
+      "title": "Pontos de Atenção",
+      "subtitle": "Áreas onde você pode ajustar sua ingestão para melhores resultados.",
+      "no_issues": "Nenhum ponto de atenção detectado. Continue assim!"
+    },
+    "suggestions": {
+      "title": "Sugestões",
+      "subtitle": "Passos práticos para atingir suas metas de macros.",
+      "goal": "Meta",
+      "recommended": "Adições Recomendadas"
+    }
   },
   "settings": {
     "title": "Configurações do App e Gerenciamento de API",

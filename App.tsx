@@ -13,6 +13,7 @@ import InstallPWA from './components/InstallPWA';
 const LoginPage = React.lazy(() => import('./pages/LoginPage'));
 const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+const FoodAnalysisPage = React.lazy(() => import('./pages/FoodAnalysisPage'));
 const SettingsPage = React.lazy(() => import('./components/SettingsPage'));
 
 type DashboardHandle = {
@@ -72,6 +73,14 @@ const AppContent: React.FC = () => {
                   element={
                     <ProtectedRoute>
                       <SettingsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/food-analysis"
+                  element={
+                    <ProtectedRoute>
+                      <FoodAnalysisPage />
                     </ProtectedRoute>
                   }
                 />
