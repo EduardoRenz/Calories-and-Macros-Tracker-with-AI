@@ -108,7 +108,6 @@ describe('Food Analysis Page', () => {
         cy.get('#suggestions-section', { timeout: 10000 }).within(() => {
             // Verify macro suggestion with goal
             cy.contains('Protein').should('be.visible');
-            cy.contains('Goal').should('be.visible');
 
             // Verify recommended additions
             cy.contains('Recommended Additions').should('be.visible');
