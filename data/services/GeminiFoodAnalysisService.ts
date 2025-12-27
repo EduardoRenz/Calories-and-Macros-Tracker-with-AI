@@ -25,6 +25,8 @@ export class GeminiFoodAnalysisService implements FoodAnalysisService {
         // Consolidate meal data for the AI prompt
         const mealSummary = this.consolidateMealData(dashboardData);
         const dateRange = this.getDateRange(dashboardData);
+        const macroAverages = this.calculateMacroAverages(dashboardData);
+        const macroGoals = this.getMacroGoals(dashboardData);
 
         const prompt = `You are a nutrition expert AI assistant. Analyze the following meal data and provide a comprehensive nutrition report.
 
@@ -36,7 +38,19 @@ User Profile:
 - Goal: ${profile.fitnessGoals.primaryGoal}
 - Activity Level: ${profile.fitnessGoals.activityLevel}
 
-Meal Data for the period (${dateRange.start} to ${dateRange.end}):
+User's Daily Macro Goals:
+- Calories: ${macroGoals.calories} kcal
+- Protein: ${macroGoals.protein}g
+- Carbs: ${macroGoals.carbs}g
+- Fats: ${macroGoals.fats}g
+
+User's Daily Macro Averages (period ${dateRange.start} to ${dateRange.end}):
+- Calories: ${macroAverages.calories.toFixed(0)} kcal (average per day)
+- Protein: ${macroAverages.protein.toFixed(1)}g (average per day)
+- Carbs: ${macroAverages.carbs.toFixed(1)}g (average per day)
+- Fats: ${macroAverages.fats.toFixed(1)}g (average per day)
+
+Meal Data for the period:
 ${mealSummary}
 
 Please respond in ${languageName} with:
@@ -44,6 +58,12 @@ Please respond in ${languageName} with:
 2. Vitamin status analysis (A, C, D, Iron, Calcium, B12) - rate as 'good', 'low', or 'deficient'
 3. Attention points - areas needing improvement
 4. Macro suggestions with specific food recommendations
+   IMPORTANT: For macro suggestions, use the CURRENT AVERAGES and USER'S GOALS provided above.
+   - For macros BELOW goal: suggest foods to ADD (current < goal)
+   - For macros ABOVE goal: suggest foods to REDUCE or SUBSTITUTE (current > goal)
+   - The 'current' field MUST be the daily average (${macroAverages.calories.toFixed(0)}, ${macroAverages.protein.toFixed(1)}, ${macroAverages.carbs.toFixed(1)}, ${macroAverages.fats.toFixed(1)})
+   - The 'goal' field MUST be the user's daily goal (${macroGoals.calories}, ${macroGoals.protein}, ${macroGoals.carbs}, ${macroGoals.fats})
+   - Use these EXACT numbers in your response
 
 Respond ONLY with a JSON object matching the provided schema.`;
 
@@ -180,6 +200,47 @@ Respond ONLY with a JSON object matching the provided schema.`;
         return Object.entries(allMeals)
             .map(([meal, foods]) => `${meal}: ${foods.length > 0 ? foods.join(', ') : 'No data'}`)
             .join('\n');
+    }
+
+    private getMacroGoals(dashboardData: import("../../domain/entities/dashboard").DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
+        // Get goals from most recent day's data (they should be consistent across days)
+        if (dashboardData.length === 0) {
+            return { calories: 2000, protein: 140, carbs: 250, fats: 65 }; // fallback defaults
+        }
+
+        const recentDay = dashboardData[dashboardData.length - 1];
+        return {
+            calories: recentDay.macros.calories.goal,
+            protein: recentDay.macros.protein.goal,
+            carbs: recentDay.macros.carbs.goal,
+            fats: recentDay.macros.fats.goal
+        };
+    }
+
+    private calculateMacroAverages(dashboardData: import("../../domain/entities/dashboard").DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
+        // Filter out days with zero calories (likely empty/unlogged days)
+        const activeDays = dashboardData.filter(day => day.macros.calories.current > 0);
+
+        if (activeDays.length === 0) {
+            return { calories: 0, protein: 0, carbs: 0, fats: 0 };
+        }
+
+        const totals = activeDays.reduce((acc, day) => {
+            return {
+                calories: acc.calories + day.macros.calories.current,
+                protein: acc.protein + day.macros.protein.current,
+                carbs: acc.carbs + day.macros.carbs.current,
+                fats: acc.fats + day.macros.fats.current
+            };
+        }, { calories: 0, protein: 0, carbs: 0, fats: 0 });
+
+        const numDays = activeDays.length;
+        return {
+            calories: totals.calories / numDays,
+            protein: totals.protein / numDays,
+            carbs: totals.carbs / numDays,
+            fats: totals.fats / numDays
+        };
     }
 
     private getDateRange(dashboardData: import("../../domain/entities/dashboard").DashboardData[]): { start: string; end: string } {
