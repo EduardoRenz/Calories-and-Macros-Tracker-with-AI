@@ -4,6 +4,8 @@ export type VitaminStatus = 'good' | 'low' | 'deficient';
 export interface VitaminAnalysis {
     name: string;
     status: VitaminStatus;
+    emoji?: string;
+    recommendations?: string[]; // For low/deficient vitamins, list of recommendations
 }
 
 export interface MealFoods {

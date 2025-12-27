@@ -76,13 +76,17 @@ describe('Food Analysis Page', () => {
         cy.get('#generate-report-btn').click();
 
         cy.get('#vitamins-section', { timeout: 10000 }).within(() => {
-            // Verify vitamin cards exist
+            // Verify sufficient & moderate group vitamins exist
             cy.contains('Vit A').should('be.visible');
             cy.contains('Vit C').should('be.visible');
-            cy.contains('Vit D').should('be.visible');
+            cy.contains('Vitamin D').should('be.visible');
 
-            // Verify status indicators (emoji-based)
-            cy.contains('🟢').should('exist');
+            // Verify group headers exist (new grouped layout)
+            cy.contains('Sufficient').should('be.visible');
+            cy.contains('Deficient').should('be.visible');
+
+            // Verify recommendations appear for deficient vitamin
+            cy.contains('Recommendations').should('be.visible');
         });
     });
 

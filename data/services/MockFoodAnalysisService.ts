@@ -55,12 +55,21 @@ export class MockFoodAnalysisService implements FoodAnalysisService {
                 }
             },
             vitamins: [
-                { name: 'Vit A', status: 'good' },
-                { name: 'Vit C', status: 'good' },
-                { name: 'Vit D', status: 'low' },
-                { name: 'Iron', status: 'low' },
-                { name: 'Calc', status: 'good' },
-                { name: 'B12', status: 'good' }
+                { name: 'Vit A', status: 'good', emoji: '🥕' },
+                { name: 'Vit C', status: 'good', emoji: '🍊' },
+                {
+                    name: isPortuguese ? 'Vitamina D' : isSpanish ? 'Vitamina D' : 'Vitamin D',
+                    status: 'deficient',
+                    emoji: '☀️',
+                    recommendations: isPortuguese
+                        ? ['Exponha-se ao sol (15min)', 'Consuma mais peixes gordurosos']
+                        : isSpanish
+                            ? ['Exponerse al sol (15min)', 'Consumir más pescado graso']
+                            : ['Spend time in sun (15m)', 'Eat more fatty fish']
+                },
+                { name: 'Iron', status: 'low', emoji: '🍎' },
+                { name: 'Calc', status: 'good', emoji: '🥛' },
+                { name: 'B12', status: 'good', emoji: '🫐' }
             ],
             attentionPoints: [
                 {

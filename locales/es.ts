@@ -140,10 +140,13 @@ export default {
     "vitamins": {
       "title": "Resumen de Vitaminas",
       "subtitle": "Análisis de micronutrientes clave basado en tus registros.",
+      "sufficient_moderate": "Suficiente & Moderado",
+      "deficient_action": "Deficiente - Necesita Acción",
+      "recommendations": "Recomendaciones",
       "status": {
         "good": "Bien",
-        "low": "Bajo",
-        "deficient": "Medio"
+        "low": "Medio",
+        "deficient": "Bajo"
       }
     },
     "attention": {

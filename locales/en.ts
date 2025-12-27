@@ -140,10 +140,13 @@ export default {
     "vitamins": {
       "title": "Vitamin Overview",
       "subtitle": "Key micronutrients analysis based on your logged intake.",
+      "sufficient_moderate": "Sufficient & Moderate",
+      "deficient_action": "Deficient - Needs Action",
+      "recommendations": "Recommendations",
       "status": {
         "good": "Good",
-        "low": "Low",
-        "deficient": "Avg"
+        "low": "Avg",
+        "deficient": "Low"
       }
     },
     "attention": {

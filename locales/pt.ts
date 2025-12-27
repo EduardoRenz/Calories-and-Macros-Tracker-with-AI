@@ -140,10 +140,13 @@ export default {
     "vitamins": {
       "title": "Visão Geral de Vitaminas",
       "subtitle": "Análise de micronutrientes chave com base nos seus registros.",
+      "sufficient_moderate": "Suficiente & Moderado",
+      "deficient_action": "Deficiente - Precisa de Ação",
+      "recommendations": "Recomendações",
       "status": {
         "good": "Bom",
-        "low": "Baixo",
-        "deficient": "Médio"
+        "low": "Médio",
+        "deficient": "Baixo"
       }
     },
     "attention": {

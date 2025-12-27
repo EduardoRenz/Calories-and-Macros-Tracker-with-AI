@@ -205,8 +205,8 @@ const FoodAnalysisPage: React.FC = () => {
                         key={option.value}
                         onClick={() => setDateRangeOption(option.value)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${dateRangeOption === option.value
-                                ? 'bg-healthpal-green text-black'
-                                : 'bg-healthpal-card text-healthpal-text-secondary hover:bg-healthpal-border'
+                            ? 'bg-healthpal-green text-black'
+                            : 'bg-healthpal-card text-healthpal-text-secondary hover:bg-healthpal-border'
                             }`}
                     >
                         {option.label}
@@ -305,20 +305,89 @@ const FoodAnalysisPage: React.FC = () => {
                         <p className="text-healthpal-text-secondary mb-4">
                             {t('food_analysis.vitamins.subtitle')}
                         </p>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                            {report.vitamins.map((vitamin, idx) => (
-                                <div
-                                    key={idx}
-                                    className="bg-healthpal-card p-4 rounded-2xl text-center"
-                                >
-                                    <VitaminStatusBadge status={vitamin.status} />
-                                    <p className="font-bold mt-2">{vitamin.name}</p>
-                                    <p className="text-xs text-healthpal-text-secondary uppercase">
-                                        {t(`food_analysis.vitamins.status.${vitamin.status}`)}
-                                    </p>
+
+                        {/* Group vitamins by status */}
+                        {(() => {
+                            const sufficientVitamins = report.vitamins.filter(v => v.status === 'good' || v.status === 'low');
+                            const deficientVitamins = report.vitamins.filter(v => v.status === 'deficient');
+
+                            return (
+                                <div className="space-y-6">
+                                    {/* Sufficient & Moderate Group */}
+                                    {sufficientVitamins.length > 0 && (
+                                        <div>
+                                            <h3 className="text-sm font-bold text-healthpal-text-secondary uppercase mb-3">
+                                                {t('food_analysis.vitamins.sufficient_moderate')}
+                                            </h3>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                                {sufficientVitamins.map((vitamin, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className="bg-healthpal-card p-4 rounded-2xl text-center"
+                                                    >
+                                                        <span className="text-3xl">{vitamin.emoji || '💊'}</span>
+                                                        <p className="font-bold mt-2">{vitamin.name}</p>
+                                                        <div className="flex items-center justify-center gap-1 mt-1">
+                                                            <span className={`w-2 h-2 rounded-full ${vitamin.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'
+                                                                }`}></span>
+                                                            <span className={`text-xs uppercase ${vitamin.status === 'good' ? 'text-green-400' : 'text-yellow-400'
+                                                                }`}>
+                                                                {t(`food_analysis.vitamins.status.${vitamin.status}`)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Deficient - Needs Action Group */}
+                                    {deficientVitamins.length > 0 && (
+                                        <div>
+                                            <h3 className="text-sm font-bold text-red-400 uppercase mb-3">
+                                                {t('food_analysis.vitamins.deficient_action')}
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {deficientVitamins.map((vitamin, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className="bg-healthpal-card p-5 rounded-2xl border border-red-500/30"
+                                                    >
+                                                        <div className="flex items-center gap-3 mb-3">
+                                                            <span className="text-3xl">{vitamin.emoji || '💊'}</span>
+                                                            <div>
+                                                                <p className="font-bold">{vitamin.name}</p>
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                                                    <span className="text-xs text-red-400 uppercase">
+                                                                        {t('food_analysis.vitamins.status.deficient')}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {vitamin.recommendations && vitamin.recommendations.length > 0 && (
+                                                            <div className="mt-3 pt-3 border-t border-healthpal-border">
+                                                                <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
+                                                                    {t('food_analysis.vitamins.recommendations')}:
+                                                                </p>
+                                                                <ul className="space-y-1">
+                                                                    {vitamin.recommendations.map((rec, recIdx) => (
+                                                                        <li key={recIdx} className="flex items-start gap-2 text-sm text-healthpal-text-secondary">
+                                                                            <span className="text-green-400">✓</span>
+                                                                            <span>{rec}</span>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
-                        </div>
+                            );
+                        })()}
                     </section>
 
                     {/* Two-column layout for Attention Points and Suggestions */}
@@ -334,8 +403,8 @@ const FoodAnalysisPage: React.FC = () => {
                                     <div
                                         key={idx}
                                         className={`p-4 rounded-xl border-l-4 ${point.severity === 'alert'
-                                                ? 'bg-red-500/10 border-red-500'
-                                                : 'bg-yellow-500/10 border-yellow-500'
+                                            ? 'bg-red-500/10 border-red-500'
+                                            : 'bg-yellow-500/10 border-yellow-500'
                                             }`}
                                     >
                                         <div className="flex items-center gap-2 mb-1">
