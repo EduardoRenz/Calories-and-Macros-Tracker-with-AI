@@ -158,7 +158,8 @@ export default {
       "title": "Suggestions",
       "subtitle": "Actionable steps to hit your macro goals.",
       "goal": "Goal",
-      "recommended": "Recommended Additions"
+      "recommended": "Recommended Additions",
+      "adjustments_required": "Adjustments Required"
     }
   },
   "settings": {

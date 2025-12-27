@@ -121,6 +121,25 @@ export class MockFoodAnalysisService implements FoodAnalysisService {
                             benefit: '+24g Protein'
                         }
                     ]
+                },
+                {
+                    macro: isPortuguese ? 'Gorduras' : isSpanish ? 'Grasas' : 'Fat Intake',
+                    current: 78,
+                    goal: 65,
+                    recommendations: [
+                        {
+                            meal: isPortuguese ? 'Almoço' : isSpanish ? 'Almuerzo' : 'Lunch',
+                            food: isPortuguese ? 'Reduzir Carnes Processadas' : isSpanish ? 'Reducir Carnes Procesadas' : 'Reduce Processed Meats',
+                            benefit: isPortuguese ? 'Salame/Bacon' : isSpanish ? 'Salami/Tocino' : 'Salami/Bacon',
+                            type: 'reduce' as const
+                        },
+                        {
+                            meal: isPortuguese ? 'Jantar' : isSpanish ? 'Cena' : 'Dinner',
+                            food: isPortuguese ? 'Substituir com Proteína Magra' : isSpanish ? 'Sustituir con Proteína Magra' : 'Substitute with Lean Protein',
+                            benefit: isPortuguese ? 'Frango/Peixe' : isSpanish ? 'Pollo/Pescado' : 'Chicken Breast',
+                            type: 'substitute' as const
+                        }
+                    ]
                 }
             ]
         };

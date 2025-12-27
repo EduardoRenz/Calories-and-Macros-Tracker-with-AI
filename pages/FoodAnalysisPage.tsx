@@ -431,55 +431,78 @@ const FoodAnalysisPage: React.FC = () => {
                                 {t('food_analysis.suggestions.subtitle')}
                             </p>
                             <div className="space-y-6">
-                                {report.macroSuggestions.map((suggestion, idx) => (
-                                    <div key={idx} className="bg-healthpal-card p-4 rounded-xl">
-                                        {/* Macro Progress Header */}
-                                        <div className="flex justify-between items-center mb-3">
-                                            <span className="font-bold">{suggestion.macro} {t('food_analysis.suggestions.goal')}</span>
-                                            <span className="text-healthpal-green font-bold">
-                                                {suggestion.current}g / {suggestion.goal}g
-                                            </span>
-                                        </div>
-                                        {/* Progress bar */}
-                                        <div className="w-full bg-healthpal-panel rounded-full h-2 mb-4">
-                                            <div
-                                                className="bg-healthpal-green h-2 rounded-full"
-                                                style={{
-                                                    width: `${Math.min(100, (suggestion.current / suggestion.goal) * 100)}%`
-                                                }}
-                                            />
-                                        </div>
-                                        {/* Recommendations */}
-                                        <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
-                                            {t('food_analysis.suggestions.recommended')}
-                                        </p>
-                                        <div className="space-y-2">
-                                            {suggestion.recommendations.map((rec, recIdx) => (
-                                                <div
-                                                    key={recIdx}
-                                                    className="flex items-center justify-between bg-healthpal-panel p-3 rounded-lg"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-lg">
-                                                            {rec.meal.toLowerCase().includes('breakfast') ? '☕' :
-                                                                rec.meal.toLowerCase().includes('lunch') ? '🍴' :
-                                                                    rec.meal.toLowerCase().includes('dinner') ? '🍽️' : '🥜'}
-                                                        </span>
-                                                        <div>
-                                                            <p className="font-medium">{rec.food}</p>
-                                                            <p className="text-xs text-healthpal-text-secondary">
-                                                                {rec.meal}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <span className="text-healthpal-green text-sm font-medium">
-                                                        {rec.benefit}
-                                                    </span>
+                                {report.macroSuggestions.map((suggestion, idx) => {
+                                    const isExceeded = suggestion.current > suggestion.goal;
+                                    const percentage = (suggestion.current / suggestion.goal) * 100;
+
+                                    return (
+                                        <div
+                                            key={idx}
+                                            className={`bg-healthpal-card p-4 rounded-xl ${isExceeded ? 'border border-red-500/30' : ''}`}
+                                        >
+                                            {/* Macro Progress Header */}
+                                            <div className="flex justify-between items-center mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold">{suggestion.macro}</span>
+                                                    {isExceeded && (
+                                                        <span className="text-red-400 text-xl">🔴</span>
+                                                    )}
                                                 </div>
-                                            ))}
+                                                <span className={`font-bold ${isExceeded ? 'text-red-400' : 'text-healthpal-green'}`}>
+                                                    {suggestion.current}g / {suggestion.goal}g
+                                                </span>
+                                            </div>
+
+                                            {/* Progress bar */}
+                                            <div className="w-full bg-healthpal-panel rounded-full h-2 mb-4">
+                                                <div
+                                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : 'bg-healthpal-green'}`}
+                                                    style={{
+                                                        width: `${Math.min(100, percentage)}%`
+                                                    }}
+                                                />
+                                            </div>
+
+                                            {/* Recommendations header */}
+                                            <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
+                                                {isExceeded
+                                                    ? t('food_analysis.suggestions.adjustments_required')
+                                                    : t('food_analysis.suggestions.recommended')}
+                                            </p>
+
+                                            {/* Recommendations */}
+                                            <div className="space-y-2">
+                                                {suggestion.recommendations.map((rec, recIdx) => (
+                                                    <div
+                                                        key={recIdx}
+                                                        className="flex items-center justify-between bg-healthpal-panel p-3 rounded-lg"
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <span className={`text-lg ${rec.type === 'reduce' ? 'text-red-400' : rec.type === 'substitute' ? 'text-green-400' : ''}`}>
+                                                                {rec.type === 'reduce' ? '🚫' :
+                                                                    rec.type === 'substitute' ? '🔄' : (
+                                                                        rec.meal.toLowerCase().includes('breakfast') ? '☕' :
+                                                                            rec.meal.toLowerCase().includes('lunch') || rec.meal.toLowerCase().includes('almoço') || rec.meal.toLowerCase().includes('almuerzo') ? '🍴' :
+                                                                                rec.meal.toLowerCase().includes('dinner') || rec.meal.toLowerCase().includes('jantar') || rec.meal.toLowerCase().includes('cena') ? '🍽️' :
+                                                                                    '🥜'
+                                                                    )}
+                                                            </span>
+                                                            <div>
+                                                                <p className="font-medium">{rec.food}</p>
+                                                                <p className="text-xs text-healthpal-text-secondary">
+                                                                    {rec.meal}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <span className={`text-sm font-medium ${isExceeded ? 'text-healthpal-text-secondary' : 'text-healthpal-green'}`}>
+                                                            {rec.benefit}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </section>
                     </div>

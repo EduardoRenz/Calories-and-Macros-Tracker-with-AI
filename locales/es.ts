@@ -158,7 +158,8 @@ export default {
       "title": "Sugerencias",
       "subtitle": "Pasos prácticos para alcanzar tus metas de macros.",
       "goal": "Meta",
-      "recommended": "Adiciones Recomendadas"
+      "recommended": "Adiciones Recomendadas",
+      "adjustments_required": "Ajustes Requeridos"
     }
   },
   "settings": {

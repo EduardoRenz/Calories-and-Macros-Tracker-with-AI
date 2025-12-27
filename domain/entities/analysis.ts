@@ -30,6 +30,7 @@ export interface FoodSuggestion {
     meal: string;
     food: string;
     benefit: string;
+    type?: 'reduce' | 'substitute'; // For exceeded macros: reduce (🚫) or substitute (🔄)
 }
 
 export interface MacroSuggestion {
