@@ -125,8 +125,8 @@ const DashboardPage = forwardRef((props, ref) => {
       {/* Main Grid */}
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Hidden on mobile as requested - the chart will be at the top instead */}
-          <div className="hidden">
+          {/* Shown only on mobile - progress bars instead of chart */}
+          <div className="block md:hidden">
             <MobileNutrientSummary data={data.macros} />
           </div>
           <div className="hidden md:block">
@@ -175,7 +175,7 @@ const DashboardPage = forwardRef((props, ref) => {
         </div>
 
         <div className="lg:col-span-1 grid grid-cols-1 gap-6 order-first lg:order-last">
-          <div className="bg-healthpal-card p-6 rounded-2xl h-full flex flex-col order-first lg:order-last">
+          <div className="hidden lg:flex bg-healthpal-card p-6 rounded-2xl h-full flex-col order-first lg:order-last">
             <h3 className="text-xl font-bold mb-4">{t('dashboard.macro_split')}</h3>
             <div className="flex-grow">
               <MacroSplitChart data={data} />
