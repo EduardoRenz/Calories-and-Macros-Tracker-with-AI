@@ -118,7 +118,7 @@ const ApiTokenManager: React.FC = () => {
                     keys.map((key, index) => {
                         const provider = PROVIDERS.find(p => p.id === key.provider);
                         return (
-                            <div key={key.provider} className="bg-healthpal-panel p-5 rounded-2xl flex items-center justify-between border border-healthpal-border shadow-sm transition-all hover:border-healthpal-text-secondary/30">
+                            <div key={key.provider} data-testid={`api-key-item-${key.provider}`} className="bg-healthpal-panel p-5 rounded-2xl flex items-center justify-between border border-healthpal-border shadow-sm transition-all hover:border-healthpal-text-secondary/30">
                                 <div className="flex items-center gap-4">
                                     <div className="flex flex-col gap-1 mr-2">
                                         <button
@@ -126,6 +126,7 @@ const ApiTokenManager: React.FC = () => {
                                             disabled={index === 0}
                                             className="p-1 text-healthpal-text-secondary hover:text-healthpal-green disabled:opacity-30 disabled:hover:text-healthpal-text-secondary transition-colors"
                                             title="Move Up"
+                                            data-testid={`move-up-${key.provider}`}
                                         >
                                             <ChevronUpIcon className="w-5 h-5" />
                                         </button>
@@ -134,6 +135,7 @@ const ApiTokenManager: React.FC = () => {
                                             disabled={index === keys.length - 1}
                                             className="p-1 text-healthpal-text-secondary hover:text-healthpal-green disabled:opacity-30 disabled:hover:text-healthpal-text-secondary transition-colors"
                                             title="Move Down"
+                                            data-testid={`move-down-${key.provider}`}
                                         >
                                             <ChevronDownIcon className="w-5 h-5" />
                                         </button>
@@ -145,7 +147,7 @@ const ApiTokenManager: React.FC = () => {
                                         <div className="flex items-center gap-2">
                                             <p className="font-bold text-lg text-healthpal-text-primary">{provider?.name}</p>
                                             {index === 0 && (
-                                                <span className="text-[10px] font-bold uppercase tracking-wider bg-healthpal-green/20 text-healthpal-green px-2 py-0.5 rounded-full border border-healthpal-green/30">
+                                                <span data-testid="primary-badge" className="text-[10px] font-bold uppercase tracking-wider bg-healthpal-green/20 text-healthpal-green px-2 py-0.5 rounded-full border border-healthpal-green/30">
                                                     Primary
                                                 </span>
                                             )}
@@ -159,6 +161,7 @@ const ApiTokenManager: React.FC = () => {
                                     onClick={() => handleDelete(key.provider)}
                                     className="p-2 text-healthpal-text-secondary hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
                                     title={t('settings.tokens.remove')}
+                                    data-testid={`delete-${key.provider}`}
                                 >
                                     <TrashIcon className="w-5 h-5" />
                                 </button>
