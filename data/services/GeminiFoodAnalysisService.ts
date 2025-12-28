@@ -127,7 +127,7 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
                 }
             });
 
-            const jsonString = response.text();
+            const jsonString = response.text;
             if (!jsonString) throw new Error("Empty response from Gemini");
 
             const result = JSON.parse(jsonString);
