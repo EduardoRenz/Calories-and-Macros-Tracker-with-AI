@@ -19,7 +19,11 @@ import { OpenAIImageRecognitionService } from './services/OpenAIImageRecognition
 import { DeepSeekImageRecognitionService } from './services/DeepSeekImageRecognitionService';
 import { FallbackImageRecognitionService } from './services/FallbackImageRecognitionService';
 
-const USE_MOCKS = process.env.USE_MOCKS === 'true';
+import { NextApiFoodAnalysisService } from './services/NextApiFoodAnalysisService';
+import { NextApiNutritionAnalysisService } from './services/NextApiNutritionAnalysisService';
+import { NextApiImageRecognitionService } from './services/NextApiImageRecognitionService';
+
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
 interface ApiKey {
     provider: 'gemini' | 'openai' | 'deepseek';
@@ -95,10 +99,8 @@ export class ServiceFactory {
 
         console.log(`[ServiceFactory] Loaded ${services.length} services from user settings:`, savedKeys.map(k => k.provider));
 
-        if (process.env.GEMINI_API_KEY) {
-            try {
-                services.push(new GeminiFoodAnalysisService(process.env.GEMINI_API_KEY));
-            } catch (e) { }
+        if (typeof window !== 'undefined') {
+            services.push(new NextApiFoodAnalysisService());
         }
 
         if (services.length === 0) console.warn("No AI services available.");
@@ -127,10 +129,8 @@ export class ServiceFactory {
             }
         }
 
-        if (process.env.GEMINI_API_KEY) {
-            try {
-                services.push(new GeminiNutritionAnalysisService(process.env.GEMINI_API_KEY));
-            } catch (e) { }
+        if (typeof window !== 'undefined') {
+            services.push(new NextApiNutritionAnalysisService());
         }
 
         if (services.length === 0) console.warn("No Nutrition Analysis services available.");
@@ -159,10 +159,8 @@ export class ServiceFactory {
             }
         }
 
-        if (process.env.GEMINI_API_KEY) {
-            try {
-                services.push(new GeminiImageRecognitionService(process.env.GEMINI_API_KEY));
-            } catch (e) { }
+        if (typeof window !== 'undefined') {
+            services.push(new NextApiImageRecognitionService());
         }
 
         if (services.length === 0) console.warn("No Image Recognition services available.");

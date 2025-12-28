@@ -1,26 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { HealthPalLogo, GoogleIcon } from '@/components/icons';
-import { DonationPanel } from '../components/DonationPanel';
+'use client';
 
-const LoginPage: React.FC = () => {
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { HealthPalLogo, GoogleIcon } from '@/components/icons';
+import { DonationPanel } from '@/components/DonationPanel';
+
+export default function LoginPage() {
     const { user, signInWithGoogle, loading } = useAuth();
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         if (user && !loading) {
-            navigate('/dashboard', { replace: true });
+            router.push('/dashboard');
         }
-    }, [user, loading, navigate]);
+    }, [user, loading, router]);
 
     const handleGoogleSignIn = async () => {
         if (!loading) {
             setError(null);
             try {
                 await signInWithGoogle();
-                // Navigation will be handled by the useEffect above when user state changes
             } catch (error: any) {
                 console.error("Failed to sign in", error);
                 if (error?.code === 'auth/unauthorized-domain') {
@@ -75,6 +76,4 @@ const LoginPage: React.FC = () => {
             </div>
         </div>
     );
-};
-
-export default LoginPage;
+}

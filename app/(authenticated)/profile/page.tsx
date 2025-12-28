@@ -1,21 +1,21 @@
+'use client';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-import { useTranslation } from '../hooks/useTranslation';
-import { UserProfile, WeightEntry } from '../domain/entities/profile';
-import { ProfileRepository } from '../domain/repositories/ProfileRepository';
-import { CalorieCalculationService } from '../domain/services/CalorieCalculationService';
-import { RepositoryFactory } from '../data/RepositoryFactory';
-import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '@/hooks/useTranslation';
+import { UserProfile, WeightEntry } from '@/domain/entities/profile';
+import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
+import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
+import { RepositoryFactory } from '@/data/RepositoryFactory';
+import { useAuth } from '@/contexts/AuthContext';
 import { EditIcon } from '@/components/icons';
-
 
 // --- Reusable Chart Components ---
 const WeightProgressChart: React.FC<{ data: WeightEntry[] }> = ({ data }) => {
     const { t } = useTranslation();
 
     const formatDateTick = (tickItem: string) => {
-        // '2024-10-26' -> 'Oct 26'
         const [year, month, day] = tickItem.split('-').map(Number);
         const date = new Date(year, month - 1, day);
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -83,8 +83,7 @@ const GoalProgressChart: React.FC<{ percentage: number }> = ({ percentage }) => 
     );
 };
 
-// --- Main Profile Page Component ---
-const ProfilePage: React.FC = () => {
+export default function ProfilePage() {
     const { t } = useTranslation();
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('settings');
@@ -308,6 +307,4 @@ const ProfilePage: React.FC = () => {
             </div>
         </div>
     );
-};
-
-export default ProfilePage;
+}

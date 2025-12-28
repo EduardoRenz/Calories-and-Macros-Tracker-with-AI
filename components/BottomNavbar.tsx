@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { HomeIcon, UserIcon, SparklesIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 
@@ -9,6 +12,7 @@ interface BottomNavbarProps {
 
 const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
+    const pathname = usePathname();
 
     const navItems = [
         { path: '/dashboard', icon: <HomeIcon className="w-6 h-6" />, label: t('navbar.dashboard') },
@@ -21,18 +25,16 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                 {navItems.map((item, index) => (
                     <div key={item.path} className="w-1/3">
                         {index === 1 && <div className="w-1/3" />}
-                        <NavLink
-                            to={item.path}
-                            className={({ isActive }) =>
-                                `flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${isActive
-                                    ? 'text-healthpal-green'
-                                    : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
-                                }`
-                            }
+                        <Link
+                            href={item.path}
+                            className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${pathname === item.path
+                                ? 'text-healthpal-green'
+                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                }`}
                         >
                             {item.icon}
                             <span className="text-xs mt-1">{item.label}</span>
-                        </NavLink>
+                        </Link>
                     </div>
                 ))}
             </nav>

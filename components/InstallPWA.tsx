@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
 
 interface BeforeInstallPromptEvent extends Event {
     readonly platforms: string[];
@@ -13,7 +12,6 @@ interface BeforeInstallPromptEvent extends Event {
 const InstallPWA: React.FC = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [showInstallBanner, setShowInstallBanner] = useState(false);
-    const { t } = useLanguage();
 
     useEffect(() => {
         const handler = (e: Event) => {

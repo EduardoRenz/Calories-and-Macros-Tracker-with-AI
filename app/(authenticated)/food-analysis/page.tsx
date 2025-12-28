@@ -1,13 +1,15 @@
+'use client';
+
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../hooks/useTranslation';
-import { FoodAnalysisReport, CachedFoodAnalysisReport, VitaminStatus } from '../domain/entities/analysis';
-import { FoodAnalysisRepository } from '../domain/repositories/FoodAnalysisRepository';
-import { ProfileRepository } from '../domain/repositories/ProfileRepository';
-import { FoodAnalysisService } from '../domain/services/FoodAnalysisService';
-import { RepositoryFactory } from '../data/RepositoryFactory';
-import { ServiceFactory } from '../data/ServiceFactory';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/hooks/useTranslation';
+import { FoodAnalysisReport, CachedFoodAnalysisReport, VitaminStatus } from '@/domain/entities/analysis';
+import { FoodAnalysisRepository } from '@/domain/repositories/FoodAnalysisRepository';
+import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
+import { FoodAnalysisService } from '@/domain/services/FoodAnalysisService';
+import { RepositoryFactory } from '@/data/RepositoryFactory';
+import { ServiceFactory } from '@/data/ServiceFactory';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Cache TTL: 24 hours in milliseconds
 const CACHE_TTL = 24 * 60 * 60 * 1000;
@@ -66,10 +68,10 @@ const MealIcon: React.FC<{ meal: string }> = ({ meal }) => {
     return <span className="text-3xl">{icons[meal.toLowerCase()] || '🍽️'}</span>;
 };
 
-const FoodAnalysisPage: React.FC = () => {
+export default function FoodAnalysisPage() {
     const { t } = useTranslation();
     const { language } = useLanguage();
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const [dateRangeOption, setDateRangeOption] = useState<DateRangeOption>('last7days');
     const [report, setReport] = useState<FoodAnalysisReport | null>(null);
@@ -185,7 +187,7 @@ const FoodAnalysisPage: React.FC = () => {
             {/* Header */}
             <div className="mb-8">
                 <button
-                    onClick={() => navigate('/profile')}
+                    onClick={() => router.push('/profile')}
                     className="text-healthpal-text-secondary hover:text-healthpal-green mb-4 flex items-center gap-2"
                 >
                     ← {t('food_analysis.back_to_profile')}
@@ -523,6 +525,4 @@ const FoodAnalysisPage: React.FC = () => {
             )}
         </div>
     );
-};
-
-export default FoodAnalysisPage;
+}

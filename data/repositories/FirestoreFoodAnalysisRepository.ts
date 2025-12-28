@@ -1,7 +1,7 @@
 import { FoodAnalysisRepository } from '../../domain/repositories/FoodAnalysisRepository';
 import { DashboardData, MealSummary } from '../../domain/entities/dashboard';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 
 export class FirestoreFoodAnalysisRepository implements FoodAnalysisRepository {
@@ -13,7 +13,7 @@ export class FirestoreFoodAnalysisRepository implements FoodAnalysisRepository {
             throw new Error("No authenticated user found for food analysis operations.");
         }
 
-        const dashboardCollection = collection(db, 'users', user.uid, 'dashboard_data');
+        const dashboardCollection = collection(getDb(), 'users', user.uid, 'dashboard_data');
         const q = query(
             dashboardCollection,
             where('date', '>=', startDate),

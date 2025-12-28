@@ -1,11 +1,12 @@
 import { FoodAnalysisReport, VitaminStatus } from '../../domain/entities/analysis';
 import { FoodAnalysisInput, FoodAnalysisService } from '../../domain/services/FoodAnalysisService';
+import { DashboardData, Ingredient } from '../../domain/entities/dashboard';
 
 export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
 
     abstract generateAnalysis(input: FoodAnalysisInput): Promise<FoodAnalysisReport>;
 
-    protected consolidateMealData(dashboardData: import("../../domain/entities/dashboard").DashboardData[]): string {
+    protected consolidateMealData(dashboardData: DashboardData[]): string {
         const allMeals = {
             breakfast: [] as string[],
             lunch: [] as string[],
@@ -15,7 +16,7 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
 
         for (const day of dashboardData) {
             for (const [mealType, meal] of Object.entries(day.meals)) {
-                const ingredients = meal.ingredients.map(ing => `${ing.name} (${ing.quantity})`);
+                const ingredients = meal.ingredients.map((ing: Ingredient) => `${ing.name} (${ing.quantity})`);
                 allMeals[mealType as keyof typeof allMeals].push(...ingredients);
             }
         }
@@ -25,7 +26,7 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
             .join('\n');
     }
 
-    protected getMacroGoals(dashboardData: import("../../domain/entities/dashboard").DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
+    protected getMacroGoals(dashboardData: DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
         if (dashboardData.length === 0) {
             return { calories: 2000, protein: 140, carbs: 250, fats: 65 };
         }
@@ -39,14 +40,14 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
         };
     }
 
-    protected calculateMacroAverages(dashboardData: import("../../domain/entities/dashboard").DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
+    protected calculateMacroAverages(dashboardData: DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
         const activeDays = dashboardData.filter(day => day.macros.calories.current > 0);
 
         if (activeDays.length === 0) {
             return { calories: 0, protein: 0, carbs: 0, fats: 0 };
         }
 
-        const totals = activeDays.reduce((acc, day) => {
+        const totals = activeDays.reduce((acc, day: DashboardData) => {
             return {
                 calories: acc.calories + day.macros.calories.current,
                 protein: acc.protein + day.macros.protein.current,
@@ -64,13 +65,13 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
         };
     }
 
-    protected getDateRange(dashboardData: import("../../domain/entities/dashboard").DashboardData[]): { start: string; end: string } {
+    protected getDateRange(dashboardData: DashboardData[]): { start: string; end: string } {
         if (dashboardData.length === 0) {
             const today = new Date().toISOString().split('T')[0];
             return { start: today, end: today };
         }
 
-        const dates = dashboardData.map(d => d.date).sort();
+        const dates = dashboardData.map((d: DashboardData) => d.date).sort();
         return {
             start: dates[0],
             end: dates[dates.length - 1]

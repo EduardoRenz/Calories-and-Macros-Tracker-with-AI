@@ -6,7 +6,10 @@ import { setMockUser } from '../auth';
 // Simple in-memory store backed by localStorage
 const STORAGE_KEY = 'mock_auth_user';
 
+const isBrowser = typeof window !== 'undefined';
+
 const getStoredUser = (): User | null => {
+    if (!isBrowser) return null;
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
@@ -18,15 +21,23 @@ const getStoredUser = (): User | null => {
     return null;
 };
 
-let currentUser: User | null = getStoredUser();
+let currentUser: User | null = null;
 const listeners: ((user: User | null) => void)[] = [];
 
 export class MockAuthRepository implements AuthRepository {
     onAuthStateChanged(callback: (user: User | null) => void): Unsubscribe {
         listeners.push(callback);
-        // Immediately call back with the current state synchronously for better test reliability
-        const user = getStoredUser();
-        callback(user);
+
+        // Load initial state on first listener if in browser
+        if (isBrowser && currentUser === null) {
+            currentUser = getStoredUser();
+            if (currentUser) {
+                setMockUser(currentUser);
+            }
+        }
+
+        // Immediately call back with the current state synchronously
+        callback(currentUser);
 
         // Return an unsubscribe function
         return () => {
@@ -38,10 +49,12 @@ export class MockAuthRepository implements AuthRepository {
     }
 
     private notifyListeners() {
-        if (currentUser) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
-        } else {
-            localStorage.removeItem(STORAGE_KEY);
+        if (isBrowser) {
+            if (currentUser) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
+            } else {
+                localStorage.removeItem(STORAGE_KEY);
+            }
         }
         listeners.forEach(callback => callback(currentUser));
     }

@@ -1,15 +1,27 @@
-import { 
-    GoogleAuthProvider, 
-    signInWithPopup, 
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
     onAuthStateChanged as onFirebaseAuthStateChanged,
     Unsubscribe,
-    User as FirebaseUser
+    User as FirebaseUser,
+    Auth
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { getAuth } from '../auth';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
 import { User } from '../../domain/entities/user';
 
 export class FirebaseAuthRepository implements AuthRepository {
+    private auth: Auth | null;
+
+    constructor() {
+        try {
+            this.auth = getAuth();
+        } catch (e) {
+            console.warn("FirebaseAuthRepository: Authentication not initialized.", e);
+            this.auth = null;
+        }
+    }
+
     private mapFirebaseUserToDomain(firebaseUser: FirebaseUser | null): User | null {
         if (!firebaseUser) {
             return null;
@@ -23,22 +35,28 @@ export class FirebaseAuthRepository implements AuthRepository {
     }
 
     onAuthStateChanged(callback: (user: User | null) => void): Unsubscribe {
-        return onFirebaseAuthStateChanged(auth, (firebaseUser) => {
+        if (!this.auth) {
+            callback(null);
+            return () => { };
+        }
+        return onFirebaseAuthStateChanged(this.auth, (firebaseUser) => {
             const domainUser = this.mapFirebaseUserToDomain(firebaseUser);
             callback(domainUser);
         });
     }
 
     async signIn(email: string, password?: string): Promise<User | null> {
-        // As a fallback for when mock auth is disabled, we call Google Sign-In.
-        // A real email/password flow would be implemented here if needed.
         return this.signInWithGoogle();
     }
 
     async signInWithGoogle(): Promise<User | null> {
+        if (!this.auth) {
+            console.error("FirebaseAuthRepository: Cannot sign in, auth not initialized.");
+            return null;
+        }
         const provider = new GoogleAuthProvider();
         try {
-            const result = await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(this.auth, provider);
             return this.mapFirebaseUserToDomain(result.user);
         } catch (error) {
             console.error("Error during Google sign-in:", error);
@@ -47,8 +65,9 @@ export class FirebaseAuthRepository implements AuthRepository {
     }
 
     async signOut(): Promise<void> {
+        if (!this.auth) return;
         try {
-            await auth.signOut();
+            await this.auth.signOut();
         } catch (error) {
             console.error("Error during sign-out:", error);
         }
