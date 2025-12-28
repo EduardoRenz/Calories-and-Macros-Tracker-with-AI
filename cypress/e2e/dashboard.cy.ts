@@ -11,7 +11,7 @@ describe('Dashboard Meal Management', () => {
     // Login and navigate to dashboard
     cy.visit('/');
     cy.contains('Sign in with Google').click();
-    
+
     // Verify we're on the dashboard
     cy.url().should('include', '/dashboard');
   });
@@ -38,14 +38,21 @@ describe('Dashboard Meal Management', () => {
 
     // 3. Fill in Ingredient Modal
     cy.contains('h2', 'Add Ingredient to Lunch').should('be.visible');
-    
+
+    // Calorie calculation: (31 * 4) + (0 * 4) + (3.6 * 9) = 124 + 32.4 = 156.4 -> 156
+    const expectedCalories = 156;
+
     // Explicitly target inputs by name attribute as seen in AddIngredientModal code
     cy.get('input[name="name"]').type(ingredientName);
     cy.get('input[name="quantity"]').type(quantity);
-    cy.get('input[name="calories"]').type(calories.toString());
+    // Calories is read-only now, so we don't type it.
+    // cy.get('input[name="calories"]').type(calories.toString());
     cy.get('input[name="protein"]').type(protein.toString());
     cy.get('input[name="carbs"]').type(carbs.toString());
     cy.get('input[name="fats"]').type(fats.toString());
+
+    // Verify calories are auto-calculated
+    cy.get('input[name="calories"]').should('have.value', expectedCalories.toString());
 
     // 4. Save
     cy.contains('button', 'Add Ingredient').click();
@@ -57,7 +64,7 @@ describe('Dashboard Meal Management', () => {
     cy.get('#meal-details-lunch').within(() => {
       cy.contains(ingredientName).should('be.visible');
       cy.contains(quantity).should('be.visible');
-      cy.contains(calories.toString()).should('be.visible');
+      cy.contains(expectedCalories.toString()).should('be.visible');
     });
   });
 });
