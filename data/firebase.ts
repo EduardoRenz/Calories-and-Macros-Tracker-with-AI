@@ -14,14 +14,16 @@ const firebaseConfig = {
   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
+const shouldInit = process.env.USE_MOCKS !== 'true' && !!firebaseConfig.apiKey;
+
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = shouldInit ? initializeApp(firebaseConfig) : null;
 
 // Initialize Analytics safely
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+export const analytics = shouldInit && typeof window !== 'undefined' && app ? getAnalytics(app) : null;
 
 // Initialize Cloud Firestore and get a reference to the service
-export const db = getFirestore(app);
+export const db = shouldInit && app ? getFirestore(app) : null;
 
 // Initialize Firebase Authentication and get a reference to the service
-export const auth = getAuth(app);
+export const auth = shouldInit && app ? getAuth(app) : null;

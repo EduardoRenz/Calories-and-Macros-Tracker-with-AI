@@ -4,6 +4,9 @@ import { MockFoodAnalysisService } from './services/MockFoodAnalysisService';
 import { OpenAIFoodAnalysisService } from './services/OpenAIFoodAnalysisService';
 import { DeepSeekFoodAnalysisService } from './services/DeepSeekFoodAnalysisService';
 import { FallbackFoodAnalysisService } from './services/FallbackFoodAnalysisService';
+import { MockNutritionAnalysisService } from './services/MockNutritionAnalysisService';
+import { MockImageRecognitionService } from './services/MockImageRecognitionService';
+
 
 import { GeminiNutritionAnalysisService } from './services/GeminiNutritionAnalysisService';
 import { OpenAINutritionAnalysisService } from './services/OpenAINutritionAnalysisService';
@@ -41,6 +44,9 @@ export class ServiceFactory {
     }
 
     public static getNutritionAnalysisService(): import("../domain/services/NutritionAnalysisService").NutritionAnalysisService {
+        if (USE_MOCKS) {
+            return new MockNutritionAnalysisService();
+        }
         if (this.nutritionInstance) {
             return this.nutritionInstance;
         }
@@ -49,6 +55,9 @@ export class ServiceFactory {
     }
 
     public static getImageRecognitionService(): ImageRecognitionService {
+        if (USE_MOCKS) {
+            return new MockImageRecognitionService();
+        }
         if (this.imageInstance) {
             return this.imageInstance;
         }
