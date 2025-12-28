@@ -29,3 +29,7 @@ dist-ssr
 # tests
 cypress/videos
 cypress/screenshots
+
+# next
+cache
+.next

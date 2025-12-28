@@ -6,6 +6,6 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000',
   },
   env: {
-    USE_MOCKS: true,
+    NEXT_PUBLIC_USE_MOCKS: true,
   },
 });

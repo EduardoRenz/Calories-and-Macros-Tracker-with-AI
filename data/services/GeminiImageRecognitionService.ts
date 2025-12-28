@@ -2,19 +2,26 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import type { Ingredient } from '../../domain/entities/dashboard';
 
-const blobToBase64 = (blob: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-                resolve(reader.result.split(',')[1]);
-            } else {
-                reject(new Error('Failed to convert blob to base64'));
-            }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
+const blobToBase64 = async (blob: Blob): Promise<string> => {
+    // Check if we are in a browser environment
+    if (typeof window !== 'undefined' && typeof FileReader !== 'undefined') {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                    resolve(reader.result.split(',')[1]);
+                } else {
+                    reject(new Error('Failed to convert blob to base64'));
+                }
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } else {
+        // Node.js / Server environment
+        const buffer = Buffer.from(await blob.arrayBuffer());
+        return buffer.toString('base64');
+    }
 };
 
 export class GeminiImageRecognitionService implements ImageRecognitionService {
@@ -42,7 +49,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             const prompt = `Analyze the food items in this image. Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), and nutritional information (calories, protein, carbs, fats) per serving. Name the ingredients in ${languageName}. Respond in JSON format according to the provided schema. If an item is unrecognizable, omit it from the list.`;
 
             const response = await this.ai.models.generateContent({
-                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
+                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-1.5-flash',
                 contents: {
                     parts: [
                         { text: prompt },
@@ -77,6 +84,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             });
 
             const jsonString = response.text;
+            if (!jsonString) throw new Error("Empty response from Gemini");
             const result = JSON.parse(jsonString);
 
             if (result.ingredients && Array.isArray(result.ingredients)) {

@@ -2,7 +2,7 @@ import { auth as firebaseAuth } from './firebase';
 import type { Auth, User as FirebaseUser } from 'firebase/auth';
 
 // This flag is mirrored from RepositoryFactory to avoid circular dependencies.
-const USE_MOCK_AUTH = process.env.USE_MOCKS === 'true';
+const USE_MOCK_AUTH = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
 let mockCurrentUser: FirebaseUser | null = null;
 
@@ -22,5 +22,5 @@ export const getAuth = (): Auth => {
             currentUser: mockCurrentUser,
         } as Auth;
     }
-    return firebaseAuth;
+    return firebaseAuth as Auth;
 };

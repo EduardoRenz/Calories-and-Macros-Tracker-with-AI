@@ -43,6 +43,7 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
             });
 
             const jsonString = response.text;
+            if (!jsonString) throw new Error("Empty response from Gemini");
             const result = JSON.parse(jsonString);
 
             if (result && typeof result.calories === 'number') {

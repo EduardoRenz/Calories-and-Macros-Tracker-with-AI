@@ -13,7 +13,7 @@ import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
 import { MockAuthRepository } from './repositories/MockAuthRepository';
 
 // Switch these flags to false to use local data/auth to avoid configuration errors
-const USE_MOCKS = process.env.USE_MOCKS === 'true';
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
 
 export class RepositoryFactory {

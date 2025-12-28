@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, Firestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 
@@ -14,7 +14,7 @@ const firebaseConfig = {
   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
-const shouldInit = process.env.USE_MOCKS !== 'true' && !!firebaseConfig.apiKey;
+const shouldInit = process.env.NEXT_PUBLIC_USE_MOCKS !== 'true' && !!firebaseConfig.apiKey;
 
 // Initialize Firebase
 const app = shouldInit ? initializeApp(firebaseConfig) : null;
@@ -23,7 +23,16 @@ const app = shouldInit ? initializeApp(firebaseConfig) : null;
 export const analytics = shouldInit && typeof window !== 'undefined' && app ? getAnalytics(app) : null;
 
 // Initialize Cloud Firestore and get a reference to the service
-export const db = shouldInit && app ? getFirestore(app) : null;
+const dbInstance = shouldInit && app ? getFirestore(app) : null;
+export { dbInstance as db };
 
 // Initialize Firebase Authentication and get a reference to the service
-export const auth = shouldInit && app ? getAuth(app) : null;
+const authInstance = shouldInit && app ? getAuth(app) : null;
+export { authInstance as auth };
+
+export const getDb = (): Firestore => {
+  if (!dbInstance) {
+    throw new Error("Firestore not initialized");
+  }
+  return dbInstance;
+};

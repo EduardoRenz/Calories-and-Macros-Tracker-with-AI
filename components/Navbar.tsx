@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { HealthPalLogo, SparklesIcon, SettingsIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
@@ -32,18 +35,16 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                 </div>
                 <nav className="hidden md:flex items-center gap-6" data-testid="desktop-nav">
                     {navItems.map(item => (
-                        <NavLink
+                        <Link
                             key={item.path}
-                            to={item.path}
-                            className={({ isActive }) =>
-                                `py-1 text-md font-medium transition-colors ${isActive
-                                    ? 'text-healthpal-green border-b-2 border-healthpal-green'
-                                    : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
-                                }`
-                            }
+                            href={item.path}
+                            className={`py-1 text-md font-medium transition-colors ${usePathname() === item.path
+                                ? 'text-healthpal-green border-b-2 border-healthpal-green'
+                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                }`}
                         >
                             {t(`navbar.${item.label}`)}
-                        </NavLink>
+                        </Link>
                     ))}
                 </nav>
             </div>
@@ -55,13 +56,13 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                     <SparklesIcon className="w-5 h-5" />
                     <span>{t('navbar.quick_meal')}</span>
                 </button>
-                <NavLink
-                    to="/settings"
+                <Link
+                    href="/settings"
                     className="p-2 rounded-full md:hidden text-healthpal-text-secondary hover:bg-healthpal-card"
                     aria-label={t('navbar.settings')}
                 >
                     <SettingsIcon className="w-6 h-6" />
-                </NavLink>
+                </Link>
                 <div className="w-10 h-10 bg-healthpal-card rounded-full flex items-center justify-center border-2 border-healthpal-border overflow-hidden">
                     {user?.photoURL ? (
                         <img src={user.photoURL} alt="User" className="w-full h-full object-cover" />

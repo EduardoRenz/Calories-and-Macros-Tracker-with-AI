@@ -1,6 +1,6 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { UserProfile } from '../../domain/entities/profile';
-import { db } from '../firebase';
+import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -22,13 +22,13 @@ const initialProfileData = {
 
 export class FirestoreProfileRepository implements ProfileRepository {
     private auth = getAuth();
-    
+
     private getProfileDocRef() {
         const user = this.auth.currentUser;
         if (!user) {
             throw new Error("No authenticated user found for profile operations.");
         }
-        return doc(db, 'profiles', user.uid);
+        return doc(getDb(), 'profiles', user.uid);
     }
 
     async getProfile(): Promise<UserProfile> {
@@ -36,7 +36,7 @@ export class FirestoreProfileRepository implements ProfileRepository {
         if (!user) {
             throw new Error("User not authenticated. Cannot fetch profile.");
         }
-        
+
         const docRef = this.getProfileDocRef();
         const docSnap = await getDoc(docRef);
 
@@ -55,7 +55,7 @@ export class FirestoreProfileRepository implements ProfileRepository {
 
     async updateProfile(profile: UserProfile): Promise<void> {
         const currentProfile = await this.getProfile();
-        
+
         const newWeight = profile.personalInfo.weight;
         const now = new Date();
         const year = now.getFullYear();
@@ -71,9 +71,9 @@ export class FirestoreProfileRepository implements ProfileRepository {
         } else {
             updatedHistory.push({ date: today, weight: newWeight });
         }
-        
+
         updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        
+
         const profileToSave: UserProfile = { ...profile, weightHistory: updatedHistory };
 
         await setDoc(this.getProfileDocRef(), profileToSave);
