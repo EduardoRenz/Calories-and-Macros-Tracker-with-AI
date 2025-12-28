@@ -3,12 +3,18 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import SWRegistration from "@/components/SWRegistration";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: "Calorie Counter & Macro Tracker",
     description: "Track your calories and macros with ease.",
+    manifest: "/manifest.webmanifest",
+    icons: {
+        apple: "/pwa-192x192.png",
+    },
+    themeColor: "#101614",
 };
 
 export default function RootLayout({
@@ -19,6 +25,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
+                <SWRegistration />
                 <LanguageProvider>
                     <AuthProvider>
                         {children}
