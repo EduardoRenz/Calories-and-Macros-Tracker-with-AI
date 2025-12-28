@@ -4,7 +4,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { SparklesIcon, EditIcon, TrashIcon, CheckIcon, XMarkIcon } from './icons';
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
-import { GeminiImageRecognitionService } from '../data/services/GeminiImageRecognitionService';
+import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 
@@ -37,7 +37,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [originalEditForm, setOriginalEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
 
     const dashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
-    const imageRecognitionService: ImageRecognitionService = useMemo(() => new GeminiImageRecognitionService(), []);
+    const imageRecognitionService: ImageRecognitionService = useMemo(() => ServiceFactory.getImageRecognitionService(), []);
 
     useEffect(() => {
         if (isOpen) {

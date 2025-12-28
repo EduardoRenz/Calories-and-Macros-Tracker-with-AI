@@ -20,8 +20,12 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
 export class GeminiImageRecognitionService implements ImageRecognitionService {
     private ai: GoogleGenAI;
 
-    constructor() {
-        this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
+    constructor(apiKey?: string) {
+        const key = apiKey || process.env.GEMINI_API_KEY;
+        if (!key) {
+            throw new Error("GEMINI_API_KEY not set (neither in constructor nor environment).");
+        }
+        this.ai = new GoogleGenAI({ apiKey: key });
     }
 
     async analyzeMealImage(image: Blob, language: string): Promise<Omit<Ingredient, 'id'>[]> {

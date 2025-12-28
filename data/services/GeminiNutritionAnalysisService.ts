@@ -4,11 +4,12 @@ import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services
 export class GeminiNutritionAnalysisService implements NutritionAnalysisService {
     private ai: GoogleGenAI;
 
-    constructor() {
-        if (!process.env.GEMINI_API_KEY) {
-            throw new Error("GEMINI_API_KEY environment variable not set");
+    constructor(apiKey?: string) {
+        const key = apiKey || process.env.GEMINI_API_KEY;
+        if (!key) {
+            throw new Error("GEMINI_API_KEY not set (neither in constructor nor environment).");
         }
-        this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        this.ai = new GoogleGenAI({ apiKey: key });
     }
 
     async getNutritionalInfo(ingredientName: string, quantity: string, language: string): Promise<NutritionalInfo | null> {
