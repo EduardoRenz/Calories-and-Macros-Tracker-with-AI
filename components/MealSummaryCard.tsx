@@ -38,11 +38,26 @@ const MealItem: React.FC<{
                     {/* Header */}
                     <div className="grid grid-cols-12 gap-4 px-2 text-xs font-semibold text-healthpal-text-secondary">
                         <div className="col-span-5">{t('meals.ingredient')}</div>
-                        <div className="col-span-2 text-center">{t('meals.quantity')}</div>
-                        <div className="col-span-1 text-center text-healthpal-carbs">{t('meals.carbs_short')}</div>
-                        <div className="col-span-1 text-center text-healthpal-protein">{t('meals.protein_short')}</div>
-                        <div className="col-span-1 text-center text-healthpal-fats">{t('meals.fats_short')}</div>
-                        <div className="col-span-1 text-center text-healthpal-green">{t('meals.calories_short')}</div>
+                        <div className="col-span-2 text-center">
+                            <span className="hidden md:inline">{t('meals.quantity')}</span>
+                            <span className="md:hidden">Qtd</span>
+                        </div>
+                        <div className="col-span-1 text-center text-healthpal-carbs">
+                            <span className="hidden md:inline">{t('meals.carbs_short')}</span>
+                            <span className="md:hidden">C</span>
+                        </div>
+                        <div className="col-span-1 text-center text-healthpal-protein">
+                            <span className="hidden md:inline">{t('meals.protein_short')}</span>
+                            <span className="md:hidden">P</span>
+                        </div>
+                        <div className="col-span-1 text-center text-healthpal-fats">
+                            <span className="hidden md:inline">{t('meals.fats_short')}</span>
+                            <span className="md:hidden">G</span>
+                        </div>
+                        <div className="col-span-1 text-center text-healthpal-green">
+                            <span className="hidden md:inline">{t('meals.calories_short')}</span>
+                            <span className="md:hidden">Cal</span>
+                        </div>
                         <div className="col-span-1"></div>
                     </div>
 
@@ -51,7 +66,7 @@ const MealItem: React.FC<{
                         <ul className="text-sm space-y-1">
                             {meal.ingredients.map((ingredient) => (
                                 <li key={ingredient.id} className="grid grid-cols-12 gap-4 items-center group bg-healthpal-panel/50 p-2 rounded-md">
-                                    <div className="col-span-5 text-healthpal-text-primary font-medium">{ingredient.name}</div>
+                                    <div className="col-span-5 text-healthpal-text-primary font-medium truncate" title={ingredient.name}>{ingredient.name}</div>
                                     <div className="col-span-2 text-center text-healthpal-text-secondary">{ingredient.quantity}</div>
                                     <div className="col-span-1 text-center text-healthpal-text-primary">{ingredient.carbs}g</div>
                                     <div className="col-span-1 text-center text-healthpal-text-primary">{ingredient.protein}g</div>
