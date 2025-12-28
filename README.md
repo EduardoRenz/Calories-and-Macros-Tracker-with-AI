@@ -31,7 +31,7 @@ To run tests, run the project with `yarn dev:mock` and then run `yarn cy:run`
 - [ ] Possibility to add custom api keys
 - [x] Add food consumption analysis
 - [ ] Add fiber consumption in meals
-- [ ] Kcal calc based on macro calc when adding/editing ingredients, and no more manually
+- [x] Kcal calc based on macro calc when adding/editing ingredients, and no more manually
 
 
 
