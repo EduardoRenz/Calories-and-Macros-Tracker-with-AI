@@ -28,6 +28,7 @@ To run tests, run the project with `yarn dev:mock` and then run `yarn cy:run`
 
 ## Roadmap
 
+- [ ] Server side api calls to hide api keys
 - [ ] Possibility to add custom api keys
 - [x] Add food consumption analysis
 - [ ] Add fiber consumption in meals
