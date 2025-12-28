@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 import { SettingsIcon, RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, XMarkIcon, ChevronUpIcon, ChevronDownIcon } from './icons';
+import { ServiceFactory } from '../data/ServiceFactory';
 
 // Types
 type ProviderId = 'gemini' | 'openai' | 'deepseek';
@@ -66,6 +67,7 @@ const ApiTokenManager: React.FC = () => {
     const saveKeys = (newKeys: ApiKey[]) => {
         setKeys(newKeys);
         localStorage.setItem('ai_api_keys', JSON.stringify(newKeys));
+        ServiceFactory.reset();
     };
 
     const handleDelete = (provider: ProviderId) => {

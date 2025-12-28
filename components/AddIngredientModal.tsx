@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
-import { GeminiNutritionAnalysisService } from '../data/services/GeminiNutritionAnalysisService';
+import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SparklesIcon, SpinnerIcon } from './icons';
 
@@ -28,7 +28,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number } | null>(null);
 
-  const nutritionService = useMemo(() => new GeminiNutritionAnalysisService(), []);
+  const nutritionService = useMemo(() => ServiceFactory.getNutritionAnalysisService(), []);
 
   useEffect(() => {
     if (isOpen) {
