@@ -34,6 +34,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [isMobileDevice, setIsMobileDevice] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [editForm, setEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
+    const [originalEditForm, setOriginalEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
 
     const dashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
     const imageRecognitionService: ImageRecognitionService = useMemo(() => new GeminiImageRecognitionService(), []);
@@ -68,6 +69,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setIsLoading(false);
         setEditingIndex(null);
         setEditForm(null);
+        setOriginalEditForm(null);
     };
 
     const handleCameraInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,11 +129,13 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const handleEditIngredient = (index: number) => {
         setEditingIndex(index);
         setEditForm({ ...analyzedIngredients[index] });
+        setOriginalEditForm({ ...analyzedIngredients[index] });
     };
 
     const handleCancelEdit = () => {
         setEditingIndex(null);
         setEditForm(null);
+        setOriginalEditForm(null);
     };
 
     const handleSaveEdit = () => {
@@ -143,13 +147,36 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             });
             setEditingIndex(null);
             setEditForm(null);
+            setOriginalEditForm(null);
         }
     };
 
+    const parseGrams = (str: string): number => {
+        const match = str.match(/(\d+(\.\d+)?)/);
+        return match ? parseFloat(match[0]) : 0;
+    };
+
     const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (editForm) {
+        if (editForm && originalEditForm) {
             const { name, value } = e.target;
-            setEditForm(prev => prev ? { ...prev, [name]: value } : null);
+
+            if (name === 'quantity') {
+                const newGrams = parseGrams(value);
+                const oldGrams = parseGrams(originalEditForm.quantity);
+
+                let updatedForm = { ...editForm, [name]: value };
+
+                if (oldGrams > 0) {
+                    const ratio = newGrams / oldGrams;
+                    updatedForm.calories = Math.round(originalEditForm.calories * ratio);
+                    updatedForm.protein = Number((originalEditForm.protein * ratio).toFixed(1));
+                    updatedForm.carbs = Number((originalEditForm.carbs * ratio).toFixed(1));
+                    updatedForm.fats = Number((originalEditForm.fats * ratio).toFixed(1));
+                }
+                setEditForm(updatedForm);
+            } else {
+                setEditForm(prev => prev ? { ...prev, [name]: value } : null);
+            }
         }
     };
 
@@ -250,8 +277,8 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                                         type="number"
                                                         name="calories"
                                                         value={editForm.calories}
-                                                        onChange={handleEditFormChange}
-                                                        className="w-full bg-healthpal-card border border-healthpal-border rounded px-2 py-1 text-white text-xs"
+                                                        readOnly
+                                                        className="w-full bg-healthpal-card border border-healthpal-border rounded px-2 py-1 text-gray-400 text-xs cursor-not-allowed"
                                                         placeholder="Kcal"
                                                     />
                                                 </div>
