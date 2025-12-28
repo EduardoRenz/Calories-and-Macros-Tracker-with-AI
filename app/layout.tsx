@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     icons: {
         apple: "/pwa-192x192.png",
     },
+};
+
+export const viewport: Viewport = {
     themeColor: "#101614",
 };
 
