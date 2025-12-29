@@ -3,9 +3,11 @@ import { FoodAnalysisInput } from '@/domain/services/FoodAnalysisService';
 import { GeminiFoodAnalysisService } from '@/data/services/GeminiFoodAnalysisService';
 import { OpenAIFoodAnalysisService } from '@/data/services/OpenAIFoodAnalysisService';
 import { DeepSeekFoodAnalysisService } from '@/data/services/DeepSeekFoodAnalysisService';
+import { verifyAuth } from '../auth-middleware';
 
 export async function POST(req: NextRequest) {
     try {
+        await verifyAuth(req.headers.get('Authorization'));
         const input: FoodAnalysisInput = await req.json();
 
         // On the server, we use environment variables.

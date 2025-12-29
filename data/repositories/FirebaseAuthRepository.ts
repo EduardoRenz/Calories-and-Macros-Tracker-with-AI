@@ -72,4 +72,9 @@ export class FirebaseAuthRepository implements AuthRepository {
             console.error("Error during sign-out:", error);
         }
     }
+
+    async getIdToken(): Promise<string | null> {
+        if (!this.auth || !this.auth.currentUser) return null;
+        return await this.auth.currentUser.getIdToken();
+    }
 }

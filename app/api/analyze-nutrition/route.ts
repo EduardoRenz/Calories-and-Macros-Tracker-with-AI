@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GeminiNutritionAnalysisService } from '@/data/services/GeminiNutritionAnalysisService';
 import { OpenAINutritionAnalysisService } from '@/data/services/OpenAINutritionAnalysisService';
 import { DeepSeekNutritionAnalysisService } from '@/data/services/DeepSeekNutritionAnalysisService';
+import { verifyAuth } from '../auth-middleware';
 
 export async function POST(req: NextRequest) {
     try {
+        await verifyAuth(req.headers.get('Authorization'));
         const { ingredientName, quantity, language } = await req.json();
 
         let service;
