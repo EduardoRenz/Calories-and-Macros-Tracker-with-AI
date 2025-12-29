@@ -3,17 +3,29 @@
 @tailwind utilities;
 
 :root {
-    --healthpal-dark: #101614;
-    --healthpal-panel: #1A201C;
-    --healthpal-card: #25352D;
-    --healthpal-border: #34453D;
-    --healthpal-green: #AFFF34;
-    --healthpal-protein: #A076F9;
-    --healthpal-carbs: #F4A261;
-    --healthpal-fats: #E9C46A;
-    --healthpal-yellow: #FFC107;
-    --healthpal-text-primary: #F0F0F0;
-    --healthpal-text-secondary: #A0A0A0;
+    /* Base */
+    --healthpal-dark: #121212;
+    --healthpal-panel: #1C1C1C;
+    --healthpal-card: #262626;
+    --healthpal-border: #333333;
+
+    /* Cores principais (energético) */
+    --healthpal-green: #2ECC71;
+    /* saúde / sucesso */
+    --healthpal-orange: #FF8C42;
+    /* ação / motivação */
+
+    /* Macros */
+    --healthpal-protein: #4CAF50;
+    --healthpal-carbs: #FF8C42;
+    --healthpal-fats: #FFC107;
+
+    /* Destaques */
+    --healthpal-yellow: #FFD54F;
+
+    /* Texto */
+    --healthpal-text-primary: #F5F5F5;
+    --healthpal-text-secondary: #B0B0B0;
 }
 
 @layer base {
@@ -22,7 +34,7 @@
     }
 }
 
-/* Custom scrollbar for a more premium feel */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -32,10 +44,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--healthpal-card);
+    background: var(--healthpal-orange);
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--healthpal-border);
+    background: #FF7A24;
 }
