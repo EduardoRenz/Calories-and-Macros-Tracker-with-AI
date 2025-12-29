@@ -23,6 +23,8 @@ import { NextApiFoodAnalysisService } from './services/NextApiFoodAnalysisServic
 import { NextApiNutritionAnalysisService } from './services/NextApiNutritionAnalysisService';
 import { NextApiImageRecognitionService } from './services/NextApiImageRecognitionService';
 
+import { RepositoryFactory } from './RepositoryFactory';
+
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
 interface ApiKey {
@@ -100,7 +102,8 @@ export class ServiceFactory {
         console.log(`[ServiceFactory] Loaded ${services.length} services from user settings:`, savedKeys.map(k => k.provider));
 
         if (typeof window !== 'undefined') {
-            services.push(new NextApiFoodAnalysisService());
+            const authRepo = RepositoryFactory.getAuthRepository();
+            services.push(new NextApiFoodAnalysisService(authRepo));
         }
 
         if (services.length === 0) console.warn("No AI services available.");
@@ -130,7 +133,8 @@ export class ServiceFactory {
         }
 
         if (typeof window !== 'undefined') {
-            services.push(new NextApiNutritionAnalysisService());
+            const authRepo = RepositoryFactory.getAuthRepository();
+            services.push(new NextApiNutritionAnalysisService(authRepo));
         }
 
         if (services.length === 0) console.warn("No Nutrition Analysis services available.");
@@ -160,7 +164,8 @@ export class ServiceFactory {
         }
 
         if (typeof window !== 'undefined') {
-            services.push(new NextApiImageRecognitionService());
+            const authRepo = RepositoryFactory.getAuthRepository();
+            services.push(new NextApiImageRecognitionService(authRepo));
         }
 
         if (services.length === 0) console.warn("No Image Recognition services available.");

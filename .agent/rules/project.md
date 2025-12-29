@@ -2,6 +2,7 @@
 trigger: always_on
 ---
 
+- This project uses yarn
 - When testing the application, in the browser or cypress, use the `yarn dev:mock` command to start the app in mock mode
 - Do not use VITE_ prefix in new envs or similar
 - When a new page with new domains, repositories and services is created, also create mocked versions of it and configure in the factory.

@@ -90,4 +90,9 @@ export class MockAuthRepository implements AuthRepository {
         setMockUser(null);
         this.notifyListeners();
     }
+
+    async getIdToken(): Promise<string | null> {
+        if (!currentUser) return null;
+        return `mock-token-${currentUser.uid}`;
+    }
 }

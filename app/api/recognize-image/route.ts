@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GeminiImageRecognitionService } from '@/data/services/GeminiImageRecognitionService';
 import { OpenAIImageRecognitionService } from '@/data/services/OpenAIImageRecognitionService';
 import { DeepSeekImageRecognitionService } from '@/data/services/DeepSeekImageRecognitionService';
+import { verifyAuth } from '../auth-middleware';
 
 export async function POST(req: NextRequest) {
     try {
+        await verifyAuth(req.headers.get('Authorization'));
         const formData = await req.formData();
         const image = formData.get('image') as File;
         const language = formData.get('language') as string;

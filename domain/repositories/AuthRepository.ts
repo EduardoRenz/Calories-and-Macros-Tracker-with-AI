@@ -6,4 +6,5 @@ export interface AuthRepository {
     signIn(email: string, password?: string): Promise<User | null>;
     signInWithGoogle(): Promise<User | null>;
     signOut(): Promise<void>;
+    getIdToken(): Promise<string | null>;
 }
