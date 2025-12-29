@@ -14,7 +14,29 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return Promise.all(
+        ASSETS_TO_CACHE.map(async (url) => {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            // If the response is redirected, we MUST clean it.
+            // Chrome fails top-level navigation if the SW returns a redirected response.
+            if (response.redirected) {
+              const cleanResponse = new Response(response.body, {
+                status: response.status,
+                statusText: response.statusText,
+                headers: response.headers,
+              });
+              return cache.put(url, cleanResponse);
+            }
+            
+            return cache.put(url, response);
+          } catch (error) {
+            console.error('Failed to cache:', url, error);
+          }
+        })
+      );
     })
   );
 });
