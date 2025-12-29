@@ -1,5 +1,3 @@
-import React from 'react';
-
 const PrivacyPolicyPage = () => {
     return (
         <div className="container mx-auto px-4 py-8">
@@ -30,24 +28,10 @@ const PrivacyPolicyPage = () => {
                     Você pode fazer isso através das configurações da sua conta ou entrando em contato conosco.
                 </p>
             </section>
-
-            <section className="mb-6 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
-                <h2 className="text-2xl font-semibold mb-2">Aviso Importante</h2>
-                <p className="font-bold">
-                    Todo o conteúdo e análises fornecidos por este aplicativo são gerados por Inteligência Artificial (IA).
-                </p>
-                <p>
-                    As informações podem conter erros ou imprecisões. Este aplicativo não substitui o aconselhamento
-                    de um profissional. Sempre consulte um médico, nutricionista ou outro profissional de saúde qualificado
-                    antes de iniciar qualquer dieta ou programa de exercícios.
-                </p>
-            </section>
-
-             <section className="mb-6">
+            <section className="mb-6">
                 <h2 className="text-2xl font-semibold mb-2">4. Alterações nesta Política</h2>
                 <p>
-                    Podemos atualizar nossa Política de Privacidade de tempos em tempos. Notificaremos você sobre
-                    quaisquer alterações, publicando a nova Política de Privacidade nesta página.
+                    Podemos atualizar nossa Política de Privacidade de tempos em tempos.
                 </p>
             </section>
 
