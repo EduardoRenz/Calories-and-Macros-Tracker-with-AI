@@ -7,6 +7,7 @@ export default {
     "reports": "Reports",
     "profile": "Profile",
     "settings": "Settings",
+    "logout": "Logout",
     "quick_meal": "Quick Meal"
   },
   "dashboard": {

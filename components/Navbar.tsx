@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon } from './icons';
+import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -13,8 +13,22 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+    const avatarMenuRef = useRef<HTMLDivElement>(null);
+
+    // Close avatar menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (avatarMenuRef.current && !avatarMenuRef.current.contains(event.target as Node)) {
+                setIsAvatarMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const navItems = [
         { path: '/dashboard', label: 'dashboard' },
@@ -75,11 +89,37 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                 >
                     <SettingsIcon className="w-6 h-6" />
                 </Link>
-                <div className="w-10 h-10 bg-healthpal-card rounded-full flex items-center justify-center border-2 border-healthpal-border overflow-hidden">
-                    {user?.photoURL ? (
-                        <img src={user.photoURL} alt="User" className="w-full h-full object-cover" />
-                    ) : (
-                        <span className="font-bold text-healthpal-text-secondary">{getInitials(user?.displayName)}</span>
+                <div className="relative" ref={avatarMenuRef}>
+                    <button
+                        onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
+                        className="w-10 h-10 bg-healthpal-card rounded-full flex items-center justify-center border-2 border-healthpal-border overflow-hidden hover:border-healthpal-green transition-colors"
+                        aria-label="User menu"
+                    >
+                        {user?.photoURL ? (
+                            <img src={user.photoURL} alt="User" className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="font-bold text-healthpal-text-secondary">{getInitials(user?.displayName)}</span>
+                        )}
+                    </button>
+
+                    {/* Avatar dropdown menu */}
+                    {isAvatarMenuOpen && (
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-healthpal-panel border border-healthpal-border rounded-lg shadow-lg z-50">
+                            <div className="p-3 border-b border-healthpal-border">
+                                <p className="font-medium text-healthpal-text-primary truncate">{user?.displayName || 'User'}</p>
+                                <p className="text-sm text-healthpal-text-secondary truncate">{user?.email}</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    signOut();
+                                    setIsAvatarMenuOpen(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-healthpal-text-secondary hover:text-healthpal-text-primary hover:bg-healthpal-card transition-colors rounded-b-lg"
+                            >
+                                <LogoutIcon className="w-5 h-5" />
+                                <span>{t('navbar.logout')}</span>
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>
