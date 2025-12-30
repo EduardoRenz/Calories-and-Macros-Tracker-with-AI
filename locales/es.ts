@@ -3,9 +3,11 @@ export default {
   "navbar": {
     "dashboard": "Panel",
     "food_diary": "Diario de Comida",
+    "food_analysis": "Análisis de Alimentación",
     "reports": "Informes",
     "profile": "Perfil",
     "settings": "Ajustes",
+    "logout": "Cerrar Sesión",
     "quick_meal": "Comida Rápida"
   },
   "dashboard": {
