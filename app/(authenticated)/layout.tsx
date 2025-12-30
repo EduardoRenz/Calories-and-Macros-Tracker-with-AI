@@ -46,14 +46,14 @@ export default function AuthenticatedLayout({
                     {showNavbar && (
                         <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
                     )}
-                    <main className="p-6 lg:p-8 pb-24 md:pb-6 lg:pb-8">
-                        {children}
-                    </main>
+                    <div className="pb-24 md:pb-0">
+                        <main className="p-6 lg:p-8">
+                            {children}
+                        </main>
+                        {showNavbar && <Footer />}
+                    </div>
                     {showNavbar && (
-                        <>
-                            <Footer />
-                            <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
-                        </>
+                        <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
                     )}
                 </div>
             </div>
