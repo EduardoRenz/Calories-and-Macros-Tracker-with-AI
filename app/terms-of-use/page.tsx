@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 import { HealthPalLogo } from '@/components/icons';
 
@@ -12,7 +11,7 @@ const TermsOfUsePage = () => {
                 </div>
 
                 <div className="prose prose-invert max-w-none text-healthpal-text-secondary space-y-4">
-                    <p>Última atualização: 16 de Julho de 2024</p>
+                    <p>Última atualização: 29 de Dezembro de 2025</p>
 
                     <h2 className="text-xl font-semibold text-healthpal-text-primary pt-4">1. Aceitação dos Termos</h2>
                     <p>Ao acessar e usar o CalorieApp, você concorda em cumprir e estar vinculado a estes Termos de Uso. Se você não concorda com estes termos, não use nossos serviços.</p>
