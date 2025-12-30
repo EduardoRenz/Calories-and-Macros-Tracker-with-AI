@@ -10,9 +10,14 @@ export const Footer: React.FC = () => {
 
                 <div className="mt-8 pt-6 border-t border-healthpal-border/50 text-center flex flex-col items-center gap-2">
                     <div className="flex gap-4">
-                        <Link href="/privacy-policy">
+                        <Link href="/privacy-policy" target="_blank">
                             <p className="text-healthpal-text-secondary text-xs cursor-pointer hover:underline">
                                 Política de Privacidade
+                            </p>
+                        </Link>
+                        <Link href="/terms-of-use" target="_blank">
+                            <p className="text-healthpal-text-secondary text-xs cursor-pointer hover:underline">
+                                Termos de Uso
                             </p>
                         </Link>
                     </div>

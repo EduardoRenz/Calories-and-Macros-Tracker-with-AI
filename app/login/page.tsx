@@ -68,6 +68,18 @@ export default function LoginPage() {
                             </>
                         )}
                     </button>
+
+                    <p className="text-xs text-healthpal-text-secondary mt-4 text-center">
+                        Ao usar esta ferramenta, você concorda com nossas{' '}
+                        <a
+                            href="/terms-of-use"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:text-healthpal-green"
+                        >
+                            Termos de Uso
+                        </a>
+                    </p>
                 </div>
 
                 <div className="mt-8">
