@@ -1,4 +1,3 @@
-import React from 'react';
 import { DonationPanel } from './DonationPanel';
 import Link from 'next/link';
 
