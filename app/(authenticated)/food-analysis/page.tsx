@@ -1,381 +1,246 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/hooks/useTranslation';
-import { FoodAnalysisReport, CachedFoodAnalysisReport, VitaminStatus } from '@/domain/entities/analysis';
-import { FoodAnalysisRepository } from '@/domain/repositories/FoodAnalysisRepository';
-import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
-import { FoodAnalysisService } from '@/domain/services/FoodAnalysisService';
-import { RepositoryFactory } from '@/data/RepositoryFactory';
-import { ServiceFactory } from '@/data/ServiceFactory';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
+import { subDays, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { generateDietAnalysisReport, Report } from '@/domain/usecases/generate-diet-analysis-report';
+import { foodData } from '@/data/food-data';
+import { Food } from '@/domain/models/food';
+import { User } from '@/domain/models/user';
 
-// Cache TTL: 24 hours in milliseconds
-const CACHE_TTL = 24 * 60 * 60 * 1000;
-
-// Date range options
-type DateRangeOption = 'last7days' | 'thisMonth' | 'last3months' | 'custom';
-
-const getDateRange = (option: DateRangeOption): { start: string; end: string } => {
-    const today = new Date();
-    const end = today.toISOString().split('T')[0];
-    let start: Date;
-
-    switch (option) {
-        case 'last7days':
-            start = new Date(today);
-            start.setDate(start.getDate() - 7);
-            break;
-        case 'thisMonth':
-            start = new Date(today.getFullYear(), today.getMonth(), 1);
-            break;
-        case 'last3months':
-            start = new Date(today);
-            start.setMonth(start.getMonth() - 3);
-            break;
-        default:
-            start = new Date(today);
-            start.setDate(start.getDate() - 7);
-    }
-
-    return { start: start.toISOString().split('T')[0], end };
-};
-
-const getCacheKey = (startDate: string, endDate: string) => `food_analysis_${startDate}_${endDate}`;
-
-// Vitamin status emoji component
-const VitaminStatusBadge: React.FC<{ status: VitaminStatus }> = ({ status }) => {
-    const colors = {
-        good: { bg: 'bg-green-500/20', text: 'text-green-400', emoji: '🟢' },
-        low: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', emoji: '🟡' },
-        deficient: { bg: 'bg-red-500/20', text: 'text-red-400', emoji: '🔴' }
-    };
-    const style = colors[status];
-    return (
-        <span className="text-2xl">{style.emoji}</span>
-    );
-};
-
-// Meal icon component
-const MealIcon: React.FC<{ meal: string }> = ({ meal }) => {
-    const icons: { [key: string]: string } = {
-        breakfast: '☕',
-        lunch: '🍴',
-        dinner: '🍽️',
-        snacks: '🥜'
-    };
-    return <span className="text-3xl">{icons[meal.toLowerCase()] || '🍽️'}</span>;
-};
+// Helper to generate a cache key
+const getCacheKey = (start: Date, end: Date) =>
+    `dietAnalysisReport_${format(start, 'yyyy-MM-dd')}_${format(end, 'yyyy-MM-dd')}`;
 
 export default function FoodAnalysisPage() {
     const { t } = useTranslation();
-    const { language } = useLanguage();
-    const router = useRouter();
-
-    const [dateRangeOption, setDateRangeOption] = useState<DateRangeOption>('last7days');
-    const [report, setReport] = useState<FoodAnalysisReport | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [progress, setProgress] = useState(0);
+    const [report, setReport] = useState<Report | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [retryCount, setRetryCount] = useState(0);
 
-    const foodAnalysisRepository: FoodAnalysisRepository = useMemo(
-        () => RepositoryFactory.getFoodAnalysisRepository(), []
-    );
-    const profileRepository: ProfileRepository = useMemo(
-        () => RepositoryFactory.getProfileRepository(), []
-    );
-    const foodAnalysisService: FoodAnalysisService = useMemo(
-        () => ServiceFactory.getFoodAnalysisService(), []
-    );
+    const today = useMemo(() => new Date(), []);
+    const [dateRange, setDateRange] = useState<DateValueType>({
+        startDate: subDays(today, 6),
+        endDate: today
+    });
 
-    const dateRange = useMemo(() => getDateRange(dateRangeOption), [dateRangeOption]);
+    // Mocked User Data
+    const mockUser: User = {
+        name: 'Carlos',
+        preferences: {
+            diet: 'balanced',
+            allergies: []
+        },
+        healthGoals: {
+            weight: 'maintain',
+            objectives: ['increase muscle mass']
+        }
+    };
 
-    // Check cache on mount and date range change
     useEffect(() => {
-        const cacheKey = getCacheKey(dateRange.start, dateRange.end);
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            try {
-                const parsed: CachedFoodAnalysisReport = JSON.parse(cached);
-                if (Date.now() - parsed.cachedAt < CACHE_TTL) {
-                    setReport(parsed.report);
-                    setError(null);
-                } else {
-                    localStorage.removeItem(cacheKey);
-                }
-            } catch {
-                localStorage.removeItem(cacheKey);
-            }
-        } else {
-            setReport(null);
-        }
-    }, [dateRange]);
-
-    const generateReport = useCallback(async () => {
-        setIsLoading(true);
-        setProgress(0);
-        setError(null);
-
-        try {
-            // Step 1: Fetch dashboard data
-            setProgress(20);
-            const dashboardData = await foodAnalysisRepository.getDashboardDataForRange(
-                dateRange.start,
-                dateRange.end
-            );
-
-            // Step 2: Fetch user profile
-            setProgress(40);
-            const profile = await profileRepository.getProfile();
-
-            // Step 3: Generate analysis with AI
-            setProgress(60);
-            const analysisReport = await foodAnalysisService.generateAnalysis({
-                dashboardData,
-                profile,
-                language
-            });
-
-            // Step 4: Cache the result
-            setProgress(90);
-            const cacheKey = getCacheKey(dateRange.start, dateRange.end);
-            const cachedData: CachedFoodAnalysisReport = {
-                report: analysisReport,
-                cachedAt: Date.now(),
-                dateRange
-            };
-            localStorage.setItem(cacheKey, JSON.stringify(cachedData));
-
-            setProgress(100);
-            setReport(analysisReport);
-            setRetryCount(0);
-        } catch (err) {
-            console.error('Error generating food analysis:', err);
-            setError(t('food_analysis.error_generating'));
-
-            // Retry logic with exponential backoff
-            if (retryCount < 3) {
-                const delay = Math.pow(2, retryCount) * 1000;
-                setTimeout(() => {
-                    setRetryCount(prev => prev + 1);
-                    generateReport();
-                }, delay);
-            }
-        } finally {
+        if (!dateRange || !dateRange.startDate || !dateRange.endDate) {
             setIsLoading(false);
+            return;
         }
-    }, [
-        dateRange,
-        foodAnalysisRepository,
-        profileRepository,
-        foodAnalysisService,
-        language,
-        retryCount,
-        t
-    ]);
 
-    const dateRangeOptions: { value: DateRangeOption; label: string }[] = [
-        { value: 'last7days', label: t('food_analysis.last_7_days') },
-        { value: 'thisMonth', label: t('food_analysis.this_month') },
-        { value: 'last3months', label: t('food_analysis.last_3_months') }
-    ];
+        const startDate = new Date(dateRange.startDate);
+        const endDate = new Date(dateRange.endDate);
+        const cacheKey = getCacheKey(startDate, endDate);
+
+        const cachedReport = localStorage.getItem(cacheKey);
+
+        if (cachedReport) {
+            setReport(JSON.parse(cachedReport));
+            setIsLoading(false);
+        } else {
+            setIsLoading(true);
+            try {
+                // Assert that foodData is of type Food[]
+                const typedFoodData: Food[] = foodData;
+                const generatedReport = generateDietAnalysisReport(mockUser, typedFoodData, startDate, endDate);
+                setReport(generatedReport);
+                localStorage.setItem(cacheKey, JSON.stringify(generatedReport));
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('An unknown error occurred.');
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    }, [dateRange, mockUser]);
+
+    const handleDateChange = (newValue: DateValueType) => {
+        setDateRange(newValue);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-healthpal-green"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-lg">
+                    <p>
+                        <strong>{t('error.title')}:</strong> {error}
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!report) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-center">
+                    <p className="text-2xl font-bold">{t('food_analysis.no_report.title')}</p>
+                    <p className="text-healthpal-text-secondary">{t('food_analysis.no_report.subtitle')}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="text-healthpal-text-primary pb-8">
-            {/* Header */}
-            <div className="mb-8">
-                <button
-                    onClick={() => router.push('/profile')}
-                    className="text-healthpal-text-secondary hover:text-healthpal-green mb-4 flex items-center gap-2"
-                >
-                    ← {t('food_analysis.back_to_profile')}
-                </button>
-                <h1 className="text-3xl font-bold text-healthpal-green mb-2">
-                    {t('food_analysis.title')}
-                </h1>
-                <p className="text-healthpal-text-secondary">
-                    {t('food_analysis.subtitle')}
-                </p>
-            </div>
-
-            {/* Date Range Selector */}
-            <div className="flex flex-wrap gap-2 mb-8">
-                {dateRangeOptions.map(option => (
-                    <button
-                        key={option.value}
-                        onClick={() => setDateRangeOption(option.value)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${dateRangeOption === option.value
-                            ? 'bg-healthpal-green text-black'
-                            : 'bg-healthpal-card text-healthpal-text-secondary hover:bg-healthpal-border'
-                            }`}
-                    >
-                        {option.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Generate Report Button or Loading State */}
-            {!report && !isLoading && (
-                <div className="bg-healthpal-card p-8 rounded-2xl text-center mb-8">
-                    <p className="text-healthpal-text-secondary mb-4">
-                        {t('food_analysis.generate_prompt')}
+        <div className="p-4 md:p-8 space-y-8">
+            {/* Header section */}
+            <header className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold">{t('food_analysis.title')}</h1>
+                    <p className="text-healthpal-text-secondary">
+                        {t('food_analysis.subtitle', { name: mockUser.name })}
                     </p>
-                    <button
-                        onClick={generateReport}
-                        className="bg-healthpal-green text-black font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all"
-                        id="generate-report-btn"
-                    >
-                        {t('food_analysis.generate_button')}
-                    </button>
-                </div>
-            )}
-
-            {/* Progress Bar */}
-            {isLoading && (
-                <div className="bg-healthpal-card p-8 rounded-2xl mb-8" id="progress-container">
-                    <p className="text-healthpal-text-secondary mb-4 text-center">
-                        {t('food_analysis.generating')}
-                    </p>
-                    <div className="w-full bg-healthpal-panel rounded-full h-3">
-                        <div
-                            className="bg-healthpal-green h-3 rounded-full transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                            id="progress-bar"
-                        />
-                    </div>
-                    <p className="text-center text-sm text-healthpal-text-secondary mt-2">
-                        {progress}%
+                    <p className="mt-2 text-sm text-healthpal-text-secondary italic">
+                        {t('food_analysis.disclaimer')}
                     </p>
                 </div>
-            )}
-
-            {/* Error State */}
-            {error && !isLoading && (
-                <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl mb-8 text-red-400">
-                    <p>{error}</p>
-                    {retryCount < 3 && (
-                        <button
-                            onClick={generateReport}
-                            className="mt-2 text-sm underline hover:no-underline"
-                        >
-                            {t('food_analysis.retry')}
-                        </button>
-                    )}
+                <div className="w-full md:w-72">
+                    <Datepicker
+                        value={dateRange}
+                        onChange={handleDateChange}
+                        locale="pt-br"
+                        inputClassName="w-full p-2 rounded-lg bg-healthpal-card border-healthpal-text-secondary focus:ring-healthpal-green"
+                        toggleClassName="text-healthpal-text-secondary"
+                        primaryColor="emerald"
+                        i18n="pt-br"
+                        configs={{
+                            footer: {
+                                apply: t('datepicker.apply'),
+                                cancel: t('datepicker.cancel')
+                            },
+                            shortcuts: {
+                                today: t('datepicker.today'),
+                                yesterday: t('datepicker.yesterday'),
+                                past: (period) => `${t('datepicker.past')} ${period} ${t('datepicker.days')}`,
+                                currentMonth: t('datepicker.current_month'),
+                                pastMonth: t('datepicker.past_month')
+                            }
+                        }}
+                    />
                 </div>
-            )}
+            </header>
 
-            {/* Report Content */}
-            {report && !isLoading && (
+            {/* Main content */}
+            {report && (
                 <div className="space-y-8">
-                    {/* Common Foods Section */}
-                    <section id="common-foods-section">
-                        <h2 className="text-2xl font-bold mb-2">{t('food_analysis.common_foods.title')}</h2>
+                    {/* General Feedback Section */}
+                    <section
+                        id="general-feedback-section"
+                        className="bg-healthpal-card p-6 rounded-xl"
+                    >
+                        <h2 className="text-2xl font-bold mb-2">{t('food_analysis.feedback.title')}</h2>
                         <p className="text-healthpal-text-secondary mb-4">
-                            {t('food_analysis.common_foods.subtitle')}
+                            {t('food_analysis.feedback.subtitle')}
                         </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {(['breakfast', 'lunch', 'dinner', 'snacks'] as const).map(meal => {
-                                const mealData = report.commonFoods[meal];
-                                return (
-                                    <div
-                                        key={meal}
-                                        className="bg-healthpal-card p-6 rounded-2xl"
-                                    >
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <MealIcon meal={meal} />
-                                            <h3 className="font-bold text-lg capitalize">
-                                                {t(`meals.${meal}`)}
-                                            </h3>
-                                        </div>
-                                        <p className="text-healthpal-text-secondary text-sm mb-2">
-                                            {mealData.foods.join(', ')}
-                                        </p>
-                                        <p className="text-xs text-healthpal-text-secondary">
-                                            {mealData.consistency}% {t('food_analysis.common_foods.consistency')}
-                                        </p>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        <div
+                            className="prose prose-invert max-w-none"
+                            dangerouslySetInnerHTML={{ __html: report.generalFeedback }}
+                        />
                     </section>
 
-                    {/* Vitamins Overview Section */}
-                    <section id="vitamins-section">
-                        <h2 className="text-2xl font-bold mb-2">{t('food_analysis.vitamins.title')}</h2>
-                        <p className="text-healthpal-text-secondary mb-4">
-                            {t('food_analysis.vitamins.subtitle')}
-                        </p>
-
-                        {/* Group vitamins by status */}
+                    {/* Diet Analysis Section */}
+                    <section id="diet-analysis-section">
                         {(() => {
-                            const sufficientVitamins = report.vitamins.filter(v => v.status === 'good' || v.status === 'low');
-                            const deficientVitamins = report.vitamins.filter(v => v.status === 'deficient');
+                            const allFoods = report.dietAnalysis.flatMap((meal) => meal.foods);
 
                             return (
-                                <div className="space-y-6">
-                                    {/* Sufficient & Moderate Group */}
-                                    {sufficientVitamins.length > 0 && (
-                                        <div>
-                                            <h3 className="text-sm font-bold text-healthpal-text-secondary uppercase mb-3">
-                                                {t('food_analysis.vitamins.sufficient_moderate')}
-                                            </h3>
-                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                                {sufficientVitamins.map((vitamin, idx) => (
+                                <div>
+                                    {allFoods.length > 0 && (
+                                        <div className="bg-healthpal-card p-6 rounded-xl">
+                                            <h2 className="text-2xl font-bold mb-2">
+                                                {t('food_analysis.registered_foods.title')}
+                                            </h2>
+                                            <p className="text-healthpal-text-secondary mb-4">
+                                                {t('food_analysis.registered_foods.subtitle')}
+                                            </p>
+                                            <div className="space-y-3">
+                                                {report.dietAnalysis.flatMap((meal) => meal.foods.map((food) => (
                                                     <div
-                                                        key={idx}
-                                                        className="bg-healthpal-card p-4 rounded-2xl text-center"
+                                                        key={food.id}
+                                                        className="flex flex-col md:flex-row items-start md:items-center justify-between bg-healthpal-panel p-3 rounded-lg"
                                                     >
-                                                        <span className="text-3xl">{vitamin.emoji || '💊'}</span>
-                                                        <p className="font-bold mt-2">{vitamin.name}</p>
-                                                        <div className="flex items-center justify-center gap-1 mt-1">
-                                                            <span className={`w-2 h-2 rounded-full ${vitamin.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'
-                                                                }`}></span>
-                                                            <span className={`text-xs uppercase ${vitamin.status === 'good' ? 'text-green-400' : 'text-yellow-400'
-                                                                }`}>
-                                                                {t(`food_analysis.vitamins.status.${vitamin.status}`)}
-                                                            </span>
+                                                        <div className="flex items-center gap-3 w-full mb-2 md:mb-0">
+                                                            <span className="text-2xl">{food.emoji}</span>
+                                                            <div>
+                                                                <p className="font-medium">{food.name}</p>
+                                                                <p className="text-xs text-healthpal-text-secondary">
+                                                                    {food.meal}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="w-full text-left md:text-right">
+                                                            <p className="font-medium">
+                                                                {food.macros.calories} kcal
+                                                            </p>
+                                                            <p className="text-xs text-healthpal-text-secondary">
+                                                                C:{food.macros.carbs}g P:
+                                                                {food.macros.protein}g F:
+                                                                {food.macros.fat}g
+                                                            </p>
                                                         </div>
                                                     </div>
-                                                ))}
+                                                )))}
                                             </div>
                                         </div>
                                     )}
 
-                                    {/* Deficient - Needs Action Group */}
-                                    {deficientVitamins.length > 0 && (
-                                        <div>
-                                            <h3 className="text-sm font-bold text-red-400 uppercase mb-3">
-                                                {t('food_analysis.vitamins.deficient_action')}
-                                            </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                {deficientVitamins.map((vitamin, idx) => (
+                                    {report.missingMeals.length > 0 && (
+                                        <div className="bg-healthpal-card p-6 rounded-xl mt-8">
+                                            <h2 className="text-2xl font-bold mb-2">
+                                                {t('food_analysis.missing_meals.title')}
+                                            </h2>
+                                            <p className="text-healthpal-text-secondary mb-4">
+                                                {t('food_analysis.missing_meals.subtitle')}
+                                            </p>
+
+                                            <div className="space-y-4">
+                                                {report.missingMeals.map((meal, idx) => (
                                                     <div
                                                         key={idx}
-                                                        className="bg-healthpal-card p-5 rounded-2xl border border-red-500/30"
+                                                        className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 rounded-lg"
                                                     >
-                                                        <div className="flex items-center gap-3 mb-3">
-                                                            <span className="text-3xl">{vitamin.emoji || '💊'}</span>
+                                                        <p className="font-bold">{meal.mealType}</p>
+                                                        <p className="text-sm text-yellow-300/80 mb-2">
+                                                            {format(new Date(meal.date), 'PPP', {
+                                                                locale: ptBR
+                                                            })}
+                                                        </p>
+                                                        {meal.recommendations.length > 0 && (
                                                             <div>
-                                                                <p className="font-bold">{vitamin.name}</p>
-                                                                <div className="flex items-center gap-1">
-                                                                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                                                    <span className="text-xs text-red-400 uppercase">
-                                                                        {t('food_analysis.vitamins.status.deficient')}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        {vitamin.recommendations && vitamin.recommendations.length > 0 && (
-                                                            <div className="mt-3 pt-3 border-t border-healthpal-border">
-                                                                <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
-                                                                    {t('food_analysis.vitamins.recommendations')}:
-                                                                </p>
-                                                                <ul className="space-y-1">
-                                                                    {vitamin.recommendations.map((rec, recIdx) => (
-                                                                        <li key={recIdx} className="flex items-start gap-2 text-sm text-healthpal-text-secondary">
-                                                                            <span className="text-green-400">✓</span>
+                                                                <h4 className="font-semibold text-sm">
+                                                                    {t('food_analysis.missing_meals.suggestions')}
+                                                                </h4>
+                                                                <ul className="list-disc list-inside text-sm text-yellow-300/80">
+                                                                    {meal.recommendations.map((rec, recIdx) => (
+                                                                        <li key={recIdx}>
                                                                             <span>{rec}</span>
                                                                         </li>
                                                                     ))}
