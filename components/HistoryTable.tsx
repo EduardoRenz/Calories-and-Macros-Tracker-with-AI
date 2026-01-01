@@ -3,6 +3,7 @@ import { DailyHistoryEntry } from '@/domain/entities/history';
 import { HistoryTableMobile, HistoryTableDesktop } from './history';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 
+
 export function HistoryTable({ entries, onDateClick }: { entries: DailyHistoryEntry[]; onDateClick: (date: string) => void; }) {
     const rows = useMemo(() => entries.filter(e => e.hasEntry), [entries]);
     const isMobile = useBreakpoint('md');
