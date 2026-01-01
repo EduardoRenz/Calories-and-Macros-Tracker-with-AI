@@ -202,21 +202,21 @@ export default function HistoricoPage() {
                             ) : (
                                 <>
                                     <HistoryTable entries={tableEntries} onDateClick={handleDateClick} />
-                                    <div className="flex justify-between items-center px-6 py-4 border-t border-healthpal-border">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-4 sm:px-6 py-4 border-t border-healthpal-border">
                                         <button
                                             type="button"
                                             onClick={handlePrevPage}
                                             disabled={pageIndex === 0}
-                                            className="px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
+                                            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
                                         >
                                             {t('history.prev_page')}
                                         </button>
-                                        <span className="text-sm text-healthpal-text-secondary">{pageIndex + 1}</span>
+                                        <span className="text-sm text-healthpal-text-secondary text-center">{pageIndex + 1}</span>
                                         <button
                                             type="button"
                                             onClick={handleNextPage}
                                             disabled={!nextCursor}
-                                            className="px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
+                                            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
                                         >
                                             {t('history.next_page')}
                                         </button>
