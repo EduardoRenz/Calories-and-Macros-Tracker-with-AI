@@ -173,7 +173,7 @@ export default function HistoricoPage() {
                                             type="date"
                                             value={draftStartDate}
                                             onChange={e => setDraftStartDate(e.target.value)}
-                                            className="bg-healthpal-panel/40 border border-healthpal-border rounded-lg px-3 py-2 text-sm"
+                                            className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
                                         />
                                     </div>
                                     <div className="flex flex-col">
@@ -182,7 +182,7 @@ export default function HistoricoPage() {
                                             type="date"
                                             value={draftEndDate}
                                             onChange={e => setDraftEndDate(e.target.value)}
-                                            className="bg-healthpal-panel/40 border border-healthpal-border rounded-lg px-3 py-2 text-sm"
+                                            className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
                                         />
                                     </div>
                                     <button

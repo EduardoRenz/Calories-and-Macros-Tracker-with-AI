@@ -79,7 +79,7 @@ export function HistoryCalendar({
                     className="p-2 rounded-md hover:bg-healthpal-border transition-colors"
                     aria-label={t('history.calendar_prev')}
                 >
-                    <ChevronLeftIcon className="h-5 w-5" />
+                    <ChevronLeftIcon className="h-5 w-5 text-white" />
                 </button>
                 <h3 className="font-bold">{monthLabel}</h3>
                 <button
@@ -87,13 +87,13 @@ export function HistoryCalendar({
                     className="p-2 rounded-md hover:bg-healthpal-border transition-colors"
                     aria-label={t('history.calendar_next')}
                 >
-                    <ChevronRightIcon className="h-5 w-5" />
+                    <ChevronRightIcon className="h-5 w-5 text-white" />
                 </button>
             </div>
 
             <div className="grid grid-cols-7 gap-2 text-xs text-healthpal-text-secondary mb-2">
-                {weekDays.map(d => (
-                    <div key={d} className="text-center">
+                {weekDays.map((d, i) => (
+                    <div key={i} className="text-center font-medium">
                         {d}
                     </div>
                 ))}
@@ -111,15 +111,17 @@ export function HistoryCalendar({
                     const hasEntry = entry?.hasEntry ?? false;
                     const isOver = hasEntry && (entry?.calories ?? 0) > (entry?.calorieGoal ?? 0);
 
-                    const bg = hasEntry ? (isOver ? 'bg-red-500/20' : 'bg-healthpal-green/20') : 'bg-healthpal-panel/30';
-                    const text = hasEntry ? (isOver ? 'text-red-500' : 'text-healthpal-green') : 'text-healthpal-text-secondary';
+                    const bg = hasEntry ? (isOver ? 'bg-red-500/20' : 'bg-healthpal-green/20') : 'bg-healthpal-card';
+                    const border = hasEntry ? '' : 'border border-healthpal-border';
+                    const text = hasEntry ? (isOver ? 'text-red-400' : 'text-healthpal-green') : 'text-healthpal-text-primary';
+                    const hover = hasEntry ? (isOver ? 'hover:bg-red-500/30' : 'hover:bg-healthpal-green/30') : 'hover:bg-healthpal-border transition-colors';
 
                     return (
                         <button
                             key={cell.key}
                             type="button"
                             onClick={() => onDateClick(dateStr)}
-                            className={`h-9 rounded-lg flex items-center justify-center ${bg} ${text} font-semibold hover:brightness-110 transition-all`}
+                            className={`h-9 rounded-lg flex items-center justify-center ${bg} ${border} ${text} font-semibold ${hover}`}
                         >
                             {cell.day}
                         </button>
