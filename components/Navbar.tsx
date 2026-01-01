@@ -32,6 +32,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
 
     const navItems = [
         { path: '/dashboard', label: 'dashboard' },
+        { path: '/historico', label: 'history' },
         { path: '/food-analysis', label: 'food_analysis' },
         { path: '/profile', label: 'profile' },
         { path: '/settings', label: 'settings' }

@@ -13,6 +13,12 @@ describe('Route Protection', () => {
     cy.get('[data-testid="google-signin-button"]').should('be.visible');
   });
 
+  it('should redirect unauthenticated users to login from /historico', () => {
+    cy.visit('/historico');
+    cy.url().should('include', '/login');
+    cy.get('[data-testid="google-signin-button"]').should('be.visible');
+  });
+
   it('should redirect unauthenticated users to login from /profile', () => {
     cy.visit('/profile');
     cy.url().should('include', '/login');
@@ -54,6 +60,11 @@ describe('Authenticated User Access', () => {
 describe('URL Navigation', () => {
   it('should update URL when clicking navbar links', () => {
     login();
+
+    // Click History in navbar
+    cy.get('[data-testid="desktop-nav"]').contains('History').click();
+    cy.url().should('include', '/historico');
+    cy.get('h2').contains('History').should('be.visible');
 
     // Click Profile in navbar
     cy.get('[data-testid="desktop-nav"]').contains('Profile').click();

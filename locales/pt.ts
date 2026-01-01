@@ -2,6 +2,7 @@
 export default {
   "navbar": {
     "dashboard": "Painel",
+    "history": "Historico",
     "food_diary": "Diário Alimentar",
     "food_analysis": "Análise da Alimentação",
     "reports": "Relatórios",
@@ -9,6 +10,23 @@ export default {
     "settings": "Configurações",
     "logout": "Sair",
     "quick_meal": "Refeição Rápida"
+  },
+  "history": {
+    "title": "Historico",
+    "subtitle": "Seu resumo dia a dia.",
+    "loading": "Carregando historico...",
+    "table_title": "Últimos 30 dias",
+    "columns": {
+      "date": "Data",
+      "protein": "Proteinas",
+      "carbs": "Carbos",
+      "fats": "Gorduras",
+      "calories": "Calorias"
+    },
+    "calendar_prev": "Mês anterior",
+    "calendar_next": "Próximo mês",
+    "averages_title": "Médias",
+    "averages_subtitle": "Dias com registros:"
   },
   "dashboard": {
     "title": "Painel",
