@@ -1,6 +1,8 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
 import MacroProgressCard from '@/components/MacroProgressCard';
 import MobileNutrientSummary from '@/components/MobileNutrientSummary';
@@ -21,6 +23,7 @@ const getFormattedDate = (date: Date) => {
 
 export default function DashboardPage() {
     const { t } = useTranslation();
+    const searchParams = useSearchParams();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -37,6 +40,20 @@ export default function DashboardPage() {
         setData(dashboardData);
         setIsLoading(false);
     }, [dashboardRepository]);
+
+    useEffect(() => {
+        const dateParam = searchParams.get('date');
+        if (!dateParam) return;
+
+        const match = /^\d{4}-\d{2}-\d{2}$/.test(dateParam);
+        if (!match) return;
+
+        const [y, m, d] = dateParam.split('-').map(Number);
+        const parsed = new Date(y, (m ?? 1) - 1, d ?? 1);
+        if (isNaN(parsed.getTime())) return;
+
+        setCurrentDate(parsed);
+    }, [searchParams]);
 
     useEffect(() => {
         fetchDashboardData(currentDate);

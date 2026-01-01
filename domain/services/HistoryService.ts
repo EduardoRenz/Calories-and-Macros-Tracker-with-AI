@@ -1,5 +1,5 @@
 import { DailyHistoryEntry } from '../entities/history';
-import { HistoryRepository } from '../repositories/HistoryRepository';
+import { HistoryRepository, HistoryPage } from '../repositories/HistoryRepository';
 
 const parseDate = (yyyyMmDd: string) => {
   const [y, m, d] = yyyyMmDd.split('-').map(Number);
@@ -33,52 +33,81 @@ export type HistoryAverages = {
   fats: number;
 };
 
-export type HistoryResult = {
-  entries: DailyHistoryEntry[];
-  averages: HistoryAverages;
-  daysWithEntries: number;
-};
-
 export class HistoryService {
   constructor(private repository: HistoryRepository) {}
 
-  async getDailyHistoryWithGaps(params: { startDate: string; endDate: string }): Promise<HistoryResult> {
-    const fetched = await this.repository.getDailyHistory(params);
+  async getDailyHistoryPage(params: { startDate: string; endDate: string; pageSize: number; cursor?: string | null; }): Promise<HistoryPage> {
+    return this.repository.getDailyHistoryPage(params);
+  }
 
-    const byDate = new Map<string, DailyHistoryEntry>();
-    for (const e of fetched) {
-      byDate.set(e.date, e);
+  async getDailyHistoryRange(params: { startDate: string; endDate: string }): Promise<DailyHistoryEntry[]> {
+    return this.repository.getDailyHistoryRange(params);
+  }
+
+  async getAveragesForRange(params: { startDate: string; endDate: string; maxItems?: number; }): Promise<{ averages: HistoryAverages; daysWithEntries: number; }>{
+    const maxItems = params.maxItems ?? 500;
+    const pageSize = 100;
+
+    let cursor: string | null | undefined = null;
+    let processed = 0;
+
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFats = 0;
+    let daysWithEntries = 0;
+
+    while (processed < maxItems) {
+      const page = await this.repository.getDailyHistoryPage({
+        startDate: params.startDate,
+        endDate: params.endDate,
+        pageSize,
+        cursor,
+      });
+
+      for (const item of page.items) {
+        processed += 1;
+        if (!item.hasEntry) continue;
+        daysWithEntries += 1;
+        totalCalories += item.calories;
+        totalProtein += item.protein;
+        totalCarbs += item.carbs;
+        totalFats += item.fats;
+      }
+
+      if (!page.nextCursor) break;
+      cursor = page.nextCursor;
+
+      if (page.items.length < pageSize) break;
     }
 
-    const defaultGoal = fetched[0]?.calorieGoal ?? 0;
-
-    const entriesAsc = listDates(params.startDate, params.endDate).map(date => {
-      const existing = byDate.get(date);
-      if (existing) return existing;
-
-      return {
-        date,
-        protein: 0,
-        carbs: 0,
-        fats: 0,
-        calories: 0,
-        calorieGoal: defaultGoal,
-        hasEntry: false,
-      };
-    });
-
-    const entriesDesc = [...entriesAsc].sort((a, b) => (a.date < b.date ? 1 : -1));
-
-    const withEntries = entriesAsc.filter(e => e.hasEntry);
-    const daysWithEntries = withEntries.length;
-
     const averages: HistoryAverages = {
-      calories: daysWithEntries > 0 ? Math.round(withEntries.reduce((s, e) => s + e.calories, 0) / daysWithEntries) : 0,
-      protein: daysWithEntries > 0 ? Math.round(withEntries.reduce((s, e) => s + e.protein, 0) / daysWithEntries) : 0,
-      carbs: daysWithEntries > 0 ? Math.round(withEntries.reduce((s, e) => s + e.carbs, 0) / daysWithEntries) : 0,
-      fats: daysWithEntries > 0 ? Math.round(withEntries.reduce((s, e) => s + e.fats, 0) / daysWithEntries) : 0,
+      calories: daysWithEntries > 0 ? Math.round(totalCalories / daysWithEntries) : 0,
+      protein: daysWithEntries > 0 ? Math.round(totalProtein / daysWithEntries) : 0,
+      carbs: daysWithEntries > 0 ? Math.round(totalCarbs / daysWithEntries) : 0,
+      fats: daysWithEntries > 0 ? Math.round(totalFats / daysWithEntries) : 0,
     };
 
-    return { entries: entriesDesc, averages, daysWithEntries };
+    return { averages, daysWithEntries };
+  }
+
+  getDefaultLast30DaysRange(): { startDate: string; endDate: string } {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 29);
+
+    return {
+      startDate: formatDate(start),
+      endDate: formatDate(end),
+    };
+  }
+
+  getMonthRange(dateInMonth: Date): { startDate: string; endDate: string } {
+    const start = new Date(dateInMonth.getFullYear(), dateInMonth.getMonth(), 1);
+    const end = new Date(dateInMonth.getFullYear(), dateInMonth.getMonth() + 1, 0);
+    return {
+      startDate: formatDate(start),
+      endDate: formatDate(end),
+    };
   }
 }

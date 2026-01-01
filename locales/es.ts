@@ -16,6 +16,11 @@ export default {
     "subtitle": "Tu resumen día a día.",
     "loading": "Cargando historial...",
     "table_title": "Últimos 30 días",
+    "filter_start": "Fecha inicial",
+    "filter_end": "Fecha final",
+    "apply": "Aplicar",
+    "prev_page": "Anterior",
+    "next_page": "Siguiente",
     "columns": {
       "date": "Fecha",
       "protein": "Proteínas",

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
 import { DailyHistoryEntry } from '@/domain/entities/history';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -10,9 +10,26 @@ const formatDate = (date: Date) => {
     return `${year}-${month}-${day}`;
 };
 
-export function HistoryCalendar({ entries }: { entries: DailyHistoryEntry[] }) {
+export function HistoryCalendar({
+    entries,
+    onDateClick,
+    monthDate: controlledMonthDate,
+    onMonthChange,
+}: {
+    entries: DailyHistoryEntry[];
+    onDateClick: (date: string) => void;
+    monthDate?: Date;
+    onMonthChange?: (newMonthDate: Date) => void;
+}) {
     const { t } = useTranslation();
-    const [monthDate, setMonthDate] = useState(() => new Date());
+    const [internalMonthDate, setInternalMonthDate] = useState(() => controlledMonthDate ?? new Date());
+
+    useEffect(() => {
+        if (!controlledMonthDate) return;
+        setInternalMonthDate(controlledMonthDate);
+    }, [controlledMonthDate]);
+
+    const monthDate = controlledMonthDate ?? internalMonthDate;
 
     const byDate = useMemo(() => {
         const map = new Map<string, DailyHistoryEntry>();
@@ -42,7 +59,16 @@ export function HistoryCalendar({ entries }: { entries: DailyHistoryEntry[] }) {
     const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
     const goMonth = (delta: number) => {
-        setMonthDate(prev => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
+        const base = controlledMonthDate ?? internalMonthDate;
+        const next = new Date(base.getFullYear(), base.getMonth() + delta, 1);
+
+        if (onMonthChange) {
+            onMonthChange(next);
+        }
+
+        if (!controlledMonthDate) {
+            setInternalMonthDate(next);
+        }
     };
 
     return (
@@ -79,17 +105,24 @@ export function HistoryCalendar({ entries }: { entries: DailyHistoryEntry[] }) {
                         return <div key={cell.key} className="h-9" />;
                     }
 
+                    const dateStr = cell.dateStr;
+
                     const entry = byDate.get(cell.dateStr);
                     const hasEntry = entry?.hasEntry ?? false;
                     const isOver = hasEntry && (entry?.calories ?? 0) > (entry?.calorieGoal ?? 0);
 
-                    const bg = !hasEntry ? 'bg-healthpal-panel/30' : isOver ? 'bg-red-500/20' : 'bg-healthpal-green/20';
-                    const text = !hasEntry ? 'text-healthpal-text-secondary' : isOver ? 'text-red-500' : 'text-healthpal-green';
+                    const bg = hasEntry ? (isOver ? 'bg-red-500/20' : 'bg-healthpal-green/20') : 'bg-healthpal-panel/30';
+                    const text = hasEntry ? (isOver ? 'text-red-500' : 'text-healthpal-green') : 'text-healthpal-text-secondary';
 
                     return (
-                        <div key={cell.key} className={`h-9 rounded-lg flex items-center justify-center ${bg} ${text} font-semibold`}>
+                        <button
+                            key={cell.key}
+                            type="button"
+                            onClick={() => onDateClick(dateStr)}
+                            className={`h-9 rounded-lg flex items-center justify-center ${bg} ${text} font-semibold hover:brightness-110 transition-all`}
+                        >
                             {cell.day}
-                        </div>
+                        </button>
                     );
                 })}
             </div>
