@@ -32,9 +32,12 @@ const visitWithFixedDate = (url: string) => {
 };
 
 const loginWithGoogle = () => {
-  visitWithFixedDate('/');
-  cy.url().should('include', '/login');
-  cy.contains('Sign in with Google').click();
+  cy.session('google-login', () => {
+    visitWithFixedDate('/');
+    cy.url().should('include', '/login');
+    cy.contains('Sign in with Google').click();
+    cy.url().should('include', '/dashboard');
+  });
 };
 
 const formatDate = (date: Date) => {
@@ -50,10 +53,13 @@ const daysAgo = (n: number) => {
   return formatDate(d);
 };
 
-describe('Historico Page', () => {
+describe('History Page', () => {
+  beforeEach(() => {
+    loginWithGoogle();
+  });
+
   it('should render and allow navigation to dashboard by clicking a history entry (mobile cards)', () => {
     cy.viewport(375, 667);
-    loginWithGoogle();
 
     const yesterday = daysAgo(1);
 
@@ -67,7 +73,6 @@ describe('Historico Page', () => {
 
   it('should show calorie colors (over=red, under=green) in mobile cards', () => {
     cy.viewport(375, 667);
-    loginWithGoogle();
 
     const overDay = daysAgo(1);
     const underDay = daysAgo(2);
@@ -88,7 +93,6 @@ describe('Historico Page', () => {
 
   it('should filter by date range only after clicking Apply', () => {
     cy.viewport(375, 667);
-    loginWithGoogle();
 
     const d2 = daysAgo(2);
     const d6 = daysAgo(6);
@@ -116,7 +120,6 @@ describe('Historico Page', () => {
 
   it('calendar should be colored for days with entries and allow navigation', () => {
     cy.viewport(375, 667);
-    loginWithGoogle();
 
     const overDay = daysAgo(1);
     const noEntryDay = daysAgo(3);
