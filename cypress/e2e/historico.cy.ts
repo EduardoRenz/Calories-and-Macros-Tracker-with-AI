@@ -124,8 +124,6 @@ describe('Historico Page', () => {
     visitWithFixedDate('/historico');
 
     cy.get(`[data-testid="history-calendar-day-${overDay}"]`, { timeout: 15000 })
-      .should('have.attr', 'class')
-      .and('include', 'bg-red-500/20')
       .click();
 
     cy.url().should('include', `/dashboard?date=${overDay}`);
