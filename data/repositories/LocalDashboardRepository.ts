@@ -3,13 +3,6 @@ import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/da
 import { LocalProfileRepository } from './LocalProfileRepository';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 
-const getTodayString = () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
 
 const createEmptyDashboard = (date: string, goals: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
     date,
@@ -56,20 +49,134 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
     return newData;
 };
 
-// Simulate a local data store
-const dailyDataStore = new Map<string, DashboardData>();
+
+const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+const createIngredient = (id: string, name: string, calories: number, protein: number, carbs: number, fats: number): Ingredient => ({
+    id,
+    name,
+    quantity: '1',
+    calories,
+    protein,
+    carbs,
+    fats,
+});
+
+
 
 export class LocalDashboardRepository implements DashboardRepository {
     private profileRepository = new LocalProfileRepository();
+    // Simulate a local data store
+    private dailyDataStore = new Map<string, DashboardData>();
+    private isSeeded = false;
+
+    constructor()  {
+        this.seedMockDashboards(this.profileRepository);
+    }
+
+    private seedMockDashboards = async (profileRepository: LocalProfileRepository) => {
+        if (this.isSeeded) return;
+        
+        const profile = await profileRepository.getProfile();
+        const goals = CalorieCalculationService.calculateGoals(profile);
+
+        const today = new Date();
+        const date = (daysAgo: number) => {
+            const d = new Date(today);
+            d.setDate(d.getDate() - daysAgo);
+            return formatDate(d);
+        };
+
+        // Yesterday .. 7 days ago
+        const d1 = date(1);
+        const d2 = date(2);
+        const d3 = date(3);
+        const d4 = date(4);
+        const d5 = date(5);
+        const d6 = date(6);
+        const d7 = date(7);
+
+        // Day 1: Over calories, all meals
+        {
+            const data = createEmptyDashboard(d1, goals);
+            data.meals.breakfast.ingredients = [createIngredient('seed-d1-b1', 'Oats', 450, 18, 70, 10)];
+            data.meals.lunch.ingredients = [createIngredient('seed-d1-l1', 'Chicken Bowl', 900, 60, 80, 25)];
+            data.meals.dinner.ingredients = [createIngredient('seed-d1-d1', 'Pizza', 1100, 45, 120, 45)];
+            data.meals.snacks.ingredients = [createIngredient('seed-d1-s1', 'Protein Bar', 250, 20, 25, 8)];
+            this.dailyDataStore.set(d1, recalculateTotals(data));
+        }
+
+        // Day 2: Under calories, multiple meals
+        {
+            const data = createEmptyDashboard(d2, goals);
+            data.meals.breakfast.ingredients = [createIngredient('seed-d2-b1', 'Eggs', 220, 18, 2, 15)];
+            data.meals.lunch.ingredients = [createIngredient('seed-d2-l1', 'Salad', 380, 25, 20, 18)];
+            data.meals.snacks.ingredients = [createIngredient('seed-d2-s1', 'Yogurt', 140, 12, 18, 2)];
+            this.dailyDataStore.set(d2, recalculateTotals(data));
+        }
+
+        // Day 3: No entry (empty day) -> simulate no records
+        {
+            const data = createEmptyDashboard(d3, goals);
+            this.dailyDataStore.set(d3, recalculateTotals(data));
+        }
+
+        // Day 4: Partial meals (only breakfast)
+        {
+            const data = createEmptyDashboard(d4, goals);
+            data.meals.breakfast.ingredients = [
+                createIngredient('seed-d4-b1', 'Toast', 200, 6, 35, 3),
+                createIngredient('seed-d4-b2', 'Peanut Butter', 190, 7, 7, 16),
+            ];
+            this.dailyDataStore.set(d4, recalculateTotals(data));
+        }
+
+        // Day 5: Full day, under calories
+        {
+            const data = createEmptyDashboard(d5, goals);
+            data.meals.breakfast.ingredients = [createIngredient('seed-d5-b1', 'Smoothie', 320, 25, 35, 8)];
+            data.meals.lunch.ingredients = [createIngredient('seed-d5-l1', 'Turkey Sandwich', 520, 35, 55, 14)];
+            data.meals.dinner.ingredients = [createIngredient('seed-d5-d1', 'Fish & Rice', 650, 45, 70, 15)];
+            data.meals.snacks.ingredients = [createIngredient('seed-d5-s1', 'Fruit', 120, 1, 30, 0)];
+            this.dailyDataStore.set(d5, recalculateTotals(data));
+        }
+
+        // Day 6: Over calories, only dinner heavy
+        {
+            const data = createEmptyDashboard(d6, goals);
+            data.meals.dinner.ingredients = [
+                createIngredient('seed-d6-d1', 'Burger  ', 850, 40, 60, 45),
+                createIngredient('seed-d6-d2', 'Fries', 600, 8, 75, 30),
+            ];
+            this.dailyDataStore.set(d6, recalculateTotals(data));
+        }
+
+        // Day 7: Under calories, lunch + dinner
+        {
+            const data = createEmptyDashboard(d7, goals);
+            data.meals.lunch.ingredients = [createIngredient('seed-d7-l1', 'Rice & Beans', 550, 22, 95, 8)];
+            data.meals.dinner.ingredients = [createIngredient('seed-d7-d1', 'Omelette', 380, 28, 5, 26)];
+            this.dailyDataStore.set(d7, recalculateTotals(data));
+        }
+        
+        this.isSeeded = true;
+    };
 
     async getDashboardForDate(date: string): Promise<DashboardData> {
         await new Promise(resolve => setTimeout(resolve, 300));
-        if (!dailyDataStore.has(date)) {
+        await this.seedMockDashboards(this.profileRepository);
+
+        if (!this.dailyDataStore.has(date)) {
             const profile = await this.profileRepository.getProfile();
             const goals = CalorieCalculationService.calculateGoals(profile);
-            dailyDataStore.set(date, createEmptyDashboard(date, goals));
+            this.dailyDataStore.set(date, createEmptyDashboard(date, goals));
         }
-        return JSON.parse(JSON.stringify(dailyDataStore.get(date)!));
+        return JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!));
     }
 
     async addIngredient(date: string, mealType: keyof MealSummary, ingredient: Omit<Ingredient, 'id'>): Promise<DashboardData> {
@@ -78,8 +185,11 @@ export class LocalDashboardRepository implements DashboardRepository {
 
     async addIngredients(date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]): Promise<DashboardData> {
         await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Ensure seed data is loaded before modifying any data
+        await this.seedMockDashboards(this.profileRepository);
 
-        let dataForDay = dailyDataStore.get(date);
+        let dataForDay = this.dailyDataStore.get(date);
 
         if (!dataForDay) {
             // This case handles adding food to a day that hasn't been viewed yet.
@@ -96,15 +206,18 @@ export class LocalDashboardRepository implements DashboardRepository {
         dataForDay.meals[mealType].ingredients.push(...newIngredients);
         const updatedData = recalculateTotals(dataForDay);
 
-        dailyDataStore.set(date, updatedData);
+        this.dailyDataStore.set(date, updatedData);
         return JSON.parse(JSON.stringify(updatedData));
     }
 
 
     async removeIngredient(date: string, mealType: keyof MealSummary, ingredientId: string): Promise<DashboardData> {
         await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Ensure seed data is loaded before modifying any data
+        await this.seedMockDashboards(this.profileRepository);
 
-        const dataForDay = dailyDataStore.get(date);
+        const dataForDay = this.dailyDataStore.get(date);
         if (!dataForDay) {
             // Should not happen if getDashboardForDate was called, but as a safeguard:
             return this.getDashboardForDate(date);
@@ -114,7 +227,7 @@ export class LocalDashboardRepository implements DashboardRepository {
         meal.ingredients = meal.ingredients.filter(ing => ing.id !== ingredientId);
 
         const updatedData = recalculateTotals(dataForDay);
-        dailyDataStore.set(date, updatedData);
+        this.dailyDataStore.set(date, updatedData);
 
         return JSON.parse(JSON.stringify(updatedData));
     }

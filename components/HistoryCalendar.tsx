@@ -121,6 +121,7 @@ export function HistoryCalendar({
                             key={cell.key}
                             type="button"
                             onClick={() => onDateClick(dateStr)}
+                            data-testid={`history-calendar-day-${dateStr}`}
                             className={`h-9 rounded-lg flex items-center justify-center ${bg} ${border} ${text} font-semibold ${hover}`}
                         >
                             {cell.day}

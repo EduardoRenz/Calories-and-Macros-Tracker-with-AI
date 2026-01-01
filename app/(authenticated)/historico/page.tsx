@@ -173,6 +173,7 @@ export default function HistoricoPage() {
                                             type="date"
                                             value={draftStartDate}
                                             onChange={e => setDraftStartDate(e.target.value)}
+                                            data-testid="history-filter-start"
                                             className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
                                         />
                                     </div>
@@ -182,12 +183,14 @@ export default function HistoricoPage() {
                                             type="date"
                                             value={draftEndDate}
                                             onChange={e => setDraftEndDate(e.target.value)}
+                                            data-testid="history-filter-end"
                                             className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
                                         />
                                     </div>
                                     <button
                                         type="button"
                                         onClick={handleApply}
+                                        data-testid="history-filter-apply"
                                         className="bg-healthpal-green text-black font-bold px-4 py-2 rounded-lg hover:brightness-110 transition-all text-sm"
                                     >
                                         {t('history.apply')}

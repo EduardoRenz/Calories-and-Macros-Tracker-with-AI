@@ -19,38 +19,64 @@ import { MockAuthRepository } from './repositories/MockAuthRepository';
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
 export class RepositoryFactory {
+    private static dashboardRepository: DashboardRepository | null = null;
+    private static profileRepository: ProfileRepository | null = null;
+    private static authRepository: AuthRepository | null = null;
+    private static foodAnalysisRepository: FoodAnalysisRepository | null = null;
+    private static historyRepository: HistoryRepository | null = null;
+
     public static getDashboardRepository(): DashboardRepository {
-        if (!USE_MOCKS) {
-            return new FirestoreDashboardRepository();
+        if (!this.dashboardRepository) {
+            if (!USE_MOCKS) {
+                this.dashboardRepository = new FirestoreDashboardRepository();
+            } else {
+                this.dashboardRepository = new LocalDashboardRepository();
+            }
         }
-        return new LocalDashboardRepository();
+        return this.dashboardRepository;
     }
 
     public static getProfileRepository(): ProfileRepository {
-        if (!USE_MOCKS) {
-            return new FirestoreProfileRepository();
+        if (!this.profileRepository) {
+            if (!USE_MOCKS) {
+                this.profileRepository = new FirestoreProfileRepository();
+            } else {
+                this.profileRepository = new LocalProfileRepository();
+            }
         }
-        return new LocalProfileRepository();
+        return this.profileRepository;
     }
 
     public static getAuthRepository(): AuthRepository {
-        if (!USE_MOCKS) {
-            return new FirebaseAuthRepository();
+        if (!this.authRepository) {
+            if (!USE_MOCKS) {
+                this.authRepository = new FirebaseAuthRepository();
+            } else {
+                this.authRepository = new MockAuthRepository();
+            }
         }
-        return new MockAuthRepository();
+        return this.authRepository;
     }
 
     public static getFoodAnalysisRepository(): FoodAnalysisRepository {
-        if (!USE_MOCKS) {
-            return new FirestoreFoodAnalysisRepository();
+        if (!this.foodAnalysisRepository) {
+            if (!USE_MOCKS) {
+                this.foodAnalysisRepository = new FirestoreFoodAnalysisRepository();
+            } else {
+                this.foodAnalysisRepository = new LocalFoodAnalysisRepository();
+            }
         }
-        return new LocalFoodAnalysisRepository();
+        return this.foodAnalysisRepository;
     }
 
     public static getHistoryRepository(): HistoryRepository {
-        if (!USE_MOCKS) {
-            return new FirestoreHistoryRepository();
+        if (!this.historyRepository) {
+            if (!USE_MOCKS) {
+                this.historyRepository = new FirestoreHistoryRepository();
+            } else {
+                this.historyRepository = new LocalHistoryRepository();
+            }
         }
-        return new LocalHistoryRepository();
+        return this.historyRepository;
     }
 }
