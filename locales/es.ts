@@ -2,6 +2,7 @@
 export default {
   "navbar": {
     "dashboard": "Panel",
+    "history": "Historial",
     "food_diary": "Diario de Comida",
     "food_analysis": "Análisis de Alimentación",
     "reports": "Informes",
@@ -9,6 +10,28 @@ export default {
     "settings": "Ajustes",
     "logout": "Cerrar Sesión",
     "quick_meal": "Comida Rápida"
+  },
+  "history": {
+    "title": "Historial",
+    "subtitle": "Tu resumen día a día.",
+    "loading": "Cargando historial...",
+    "table_title": "Últimos 30 días",
+    "filter_start": "Fecha inicial",
+    "filter_end": "Fecha final",
+    "apply": "Aplicar",
+    "prev_page": "Anterior",
+    "next_page": "Siguiente",
+    "columns": {
+      "date": "Fecha",
+      "protein": "Proteínas",
+      "carbs": "Carbohidratos",
+      "fats": "Grasas",
+      "calories": "Calorías"
+    },
+    "calendar_prev": "Mes anterior",
+    "calendar_next": "Mes siguiente",
+    "averages_title": "Promedios",
+    "averages_subtitle": "Días con registros:"
   },
   "dashboard": {
     "title": "Panel",

@@ -2,6 +2,7 @@
 export default {
   "navbar": {
     "dashboard": "Dashboard",
+    "history": "History",
     "food_diary": "Food Diary",
     "food_analysis": "Food Analysis",
     "reports": "Reports",
@@ -9,6 +10,28 @@ export default {
     "settings": "Settings",
     "logout": "Logout",
     "quick_meal": "Quick Meal"
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "Your day-by-day summary.",
+    "loading": "Loading history...",
+    "table_title": "Last 30 Days",
+    "filter_start": "Start date",
+    "filter_end": "End date",
+    "apply": "Apply",
+    "prev_page": "Previous",
+    "next_page": "Next",
+    "columns": {
+      "date": "Date",
+      "protein": "Proteins",
+      "carbs": "Carbs",
+      "fats": "Fats",
+      "calories": "Calories"
+    },
+    "calendar_prev": "Previous month",
+    "calendar_next": "Next month",
+    "averages_title": "Averages",
+    "averages_subtitle": "Days with entries:"
   },
   "dashboard": {
     "title": "Dashboard",
