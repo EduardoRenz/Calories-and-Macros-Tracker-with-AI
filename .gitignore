@@ -33,3 +33,6 @@ cypress/screenshots
 # next
 cache
 .next
+
+# tsconfig
+tsconfig.tsbuildinfo
