@@ -27,7 +27,7 @@ const TermsOfUsePage = () => {
                     <p>Você concorda em usar o CalorieApp apenas para fins legais e de acordo com estes Termos. Você é responsável por todas as informações que insere no aplicativo.</p>
 
                     <h2 className="text-xl font-semibold text-healthpal-text-primary pt-4">5. Limitação de Responsabilidade</h2>
-                    <p>O CalorieApp é fornecido "como está", sem garantias de qualquer tipo. Em nenhuma circunstância seremos responsáveis por quaisquer danos diretos, indiretos, incidentais, especiais ou consequentes decorrentes do uso ou da incapacidade de usar nosso serviço.</p>
+                    <p>O CalorieApp é fornecido &ldquo;como está&rdquo;, sem garantias de qualquer tipo. Em nenhuma circunstância seremos responsáveis por quaisquer danos diretos, indiretos, incidentais, especiais ou consequentes decorrentes do uso ou da incapacidade de usar nosso serviço.</p>
 
                     <h2 className="text-xl font-semibold text-healthpal-text-primary pt-4">6. Alterações nos Termos</h2>
                     <p>Reservamo-nos o direito de modificar estes Termos de Uso a qualquer momento. Notificaremos sobre quaisquer alterações, publicando os novos termos nesta página. É sua responsabilidade revisar estes Termos periodicamente.</p>

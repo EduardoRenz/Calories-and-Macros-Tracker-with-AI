@@ -87,6 +87,9 @@ describe('Food Analysis Page', () => {
 
             // Verify recommendations appear for deficient vitamin
             cy.contains('Recommendations').should('be.visible');
+
+            // Verify positive reason appears for sufficient/moderate vitamin
+            cy.contains("Why you're doing well").should('be.visible');
         });
     });
 

@@ -80,7 +80,10 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
                                     type: Type.OBJECT,
                                     properties: {
                                         name: { type: Type.STRING },
-                                        status: { type: Type.STRING, enum: ["good", "low", "deficient"] }
+                                        status: { type: Type.STRING, enum: ["good", "low", "deficient"] },
+                                        emoji: { type: Type.STRING },
+                                        recommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
+                                        positiveReason: { type: Type.STRING }
                                     },
                                     required: ["name", "status"]
                                 }
@@ -136,9 +139,18 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
                 generatedAt: new Date().toISOString(),
                 dateRange: this.getDateRange(input.dashboardData),
                 commonFoods: result.commonFoods,
-                vitamins: result.vitamins.map((v: { name: string; status: string }) => ({
+                vitamins: result.vitamins.map((v: {
+                    name: string;
+                    status: string;
+                    emoji?: string;
+                    recommendations?: string[];
+                    positiveReason?: string;
+                }) => ({
                     name: v.name,
-                    status: v.status as VitaminStatus
+                    status: v.status as VitaminStatus,
+                    emoji: v.emoji,
+                    recommendations: v.recommendations,
+                    positiveReason: v.positiveReason
                 })),
                 attentionPoints: result.attentionPoints,
                 macroSuggestions: result.macroSuggestions

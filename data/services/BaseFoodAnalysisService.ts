@@ -121,6 +121,10 @@ ${mealSummary}
 Please respond in ${languageName} with:
 1. Most common foods for each meal (breakfast, lunch, dinner, snacks) with consistency percentage
 2. Vitamin status analysis (A, C, D, Iron, Calcium, B12) - rate as 'good', 'low', or 'deficient'
+   - For each vitamin include:
+     - emoji: a single relevant emoji
+     - recommendations: ONLY when status is 'low' or 'deficient' (2-4 short actionable bullets)
+     - positiveReason: ONLY when status is 'good' or 'low' (1 short sentence explaining why the user is doing well/acceptable)
 3. Attention points - areas needing improvement
 4. Macro suggestions with specific food recommendations
    IMPORTANT: For macro suggestions, use the CURRENT AVERAGES and USER'S GOALS provided above.
@@ -139,7 +143,13 @@ Respond ONLY with a valid JSON object (no markdown formatting, no code blocks) m
         "snacks": { "foods": ["string"], "consistency": number }
     },
     "vitamins": [
-        { "name": "string", "status": "good" | "low" | "deficient" }
+        {
+            "name": "string",
+            "status": "good" | "low" | "deficient",
+            "emoji": "string",
+            "recommendations": ["string"],
+            "positiveReason": "string"
+        }
     ],
     "attentionPoints": [
         { "severity": "warning" | "alert", "title": "string", "description": "string" }

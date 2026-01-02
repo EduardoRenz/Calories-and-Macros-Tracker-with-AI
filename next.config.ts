@@ -7,6 +7,14 @@ const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./packag
 const nextConfig: NextConfig = {
     reactStrictMode: true,
     distDir: 'dist',
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
+            },
+        ],
+    },
     // Ensure we don't leak server-side env vars to the client accidentally
     // Next.js does this by default (only NEXT_PUBLIC_ is exposed),
     // but we should be aware of this.

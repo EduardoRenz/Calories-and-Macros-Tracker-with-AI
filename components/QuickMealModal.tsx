@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { SparklesIcon, EditIcon, TrashIcon, CheckIcon, XMarkIcon } from './icons';
@@ -164,7 +165,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 const newGrams = parseGrams(value);
                 const oldGrams = parseGrams(originalEditForm.quantity);
 
-                let updatedForm = { ...editForm, [name]: value };
+                const updatedForm = { ...editForm, [name]: value };
 
                 if (oldGrams > 0) {
                     const ratio = newGrams / oldGrams;
@@ -207,7 +208,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
 
                 {imagePreview ? (
                     <div className="mb-4">
-                        <img src={imagePreview} alt="Meal preview" className="w-full h-48 object-cover rounded-lg mb-4" />
+                        <Image src={imagePreview} alt="Meal preview" width={400} height={192} className="w-full h-48 object-cover rounded-lg mb-4" />
                         <div className="flex gap-4">
                             <button onClick={handleReset} className="w-full bg-healthpal-card text-healthpal-text-primary font-bold py-3 rounded-lg hover:bg-healthpal-border transition-all">
                                 {t('quick_meal_modal.change_image_button')}

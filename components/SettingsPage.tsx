@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import { useLanguage, Language } from '../contexts/LanguageContext';
-import { SettingsIcon, RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, XMarkIcon, ChevronUpIcon, ChevronDownIcon } from './icons';
+import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, XMarkIcon, ChevronUpIcon, ChevronDownIcon } from './icons';
 import { ServiceFactory } from '../data/ServiceFactory';
 
 // Types
@@ -193,7 +193,6 @@ const ApiTokenManager: React.FC = () => {
 const AddApiKeyModal: React.FC<{ onClose: () => void, onSave: (key: ApiKey) => void }> = ({ onClose, onSave }) => {
     const [provider, setProvider] = useState<ProviderId>('gemini');
     const [key, setKey] = useState('');
-    const { t } = useTranslation();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

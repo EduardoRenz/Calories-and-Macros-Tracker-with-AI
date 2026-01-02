@@ -22,12 +22,17 @@ export default function LoginPage() {
             setError(null);
             try {
                 await signInWithGoogle();
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error("Failed to sign in", error);
-                if (error?.code === 'auth/unauthorized-domain') {
-                    setError("This domain is not authorized for Google Sign-In. Please check your Firebase Console settings.");
-                } else if (error?.message) {
-                    setError(error.message);
+                if (error && typeof error === 'object' && 'code' in error) {
+                    const firebaseError = error as { code?: string; message?: string };
+                    if (firebaseError.code === 'auth/unauthorized-domain') {
+                        setError("This domain is not authorized for Google Sign-In. Please check your Firebase Console settings.");
+                    } else if (firebaseError.message) {
+                        setError(firebaseError.message);
+                    } else {
+                        setError("Failed to sign in. Please try again.");
+                    }
                 } else {
                     setError("Failed to sign in. Please try again.");
                 }
