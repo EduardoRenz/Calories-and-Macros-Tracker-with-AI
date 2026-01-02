@@ -121,7 +121,7 @@ describe('History Page', () => {
   it('calendar should be colored for days with entries and allow navigation', () => {
     cy.viewport(375, 667);
 
-    const overDay = daysAgo(1);
+    const overDay = daysAgo(2);
     const noEntryDay = daysAgo(3);
 
     visitWithFixedDate('/historico');
