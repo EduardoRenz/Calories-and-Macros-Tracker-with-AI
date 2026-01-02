@@ -23,9 +23,10 @@ export default {
     "next_page": "Próximo",
     "columns": {
       "date": "Data",
-      "protein": "Proteinas",
-      "carbs": "Carbos",
+      "protein": "Proteínas",
+      "carbs": "Carboidratos",
       "fats": "Gorduras",
+      "fiber": "Fibras",
       "calories": "Calorias"
     },
     "calendar_prev": "Mês anterior",

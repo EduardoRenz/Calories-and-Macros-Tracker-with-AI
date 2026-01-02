@@ -10,9 +10,20 @@ import { CalorieCalculationService } from '../../domain/services/CalorieCalculat
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { FirestoreProfileRepository } from './FirestoreProfileRepository';
 
+// Helper function to check if any meal has ingredients
 const hasAnyIngredients = (meals?: MealSummary): boolean => {
   if (!meals) return false;
   return Object.values(meals).some(meal => (meal?.ingredients?.length ?? 0) > 0);
+};
+
+// Helper function to calculate total fiber from meals
+const calculateTotalFiber = (meals?: MealSummary): number => {
+  if (!meals) return 0;
+  return Object.values(meals).reduce((total: number, meal) => {
+    return total + meal.ingredients.reduce((mealTotal: number, ingredient: any) => {
+      return mealTotal + (ingredient.fiber || 0);
+    }, 0);
+  }, 0);
 };
 
 export class FirestoreHistoryRepository implements HistoryRepository {
@@ -48,6 +59,7 @@ export class FirestoreHistoryRepository implements HistoryRepository {
         const protein = data?.macros?.protein?.current ?? 0;
         const carbs = data?.macros?.carbs?.current ?? 0;
         const fats = data?.macros?.fats?.current ?? 0;
+        const fiber = calculateTotalFiber(data?.meals);
 
         const hasEntry = hasAnyIngredients(data?.meals);
 
@@ -56,6 +68,7 @@ export class FirestoreHistoryRepository implements HistoryRepository {
           protein,
           carbs,
           fats,
+          fiber,
           calories,
           calorieGoal,
           hasEntry,
@@ -101,6 +114,7 @@ export class FirestoreHistoryRepository implements HistoryRepository {
       const protein = data?.macros?.protein?.current ?? 0;
       const carbs = data?.macros?.carbs?.current ?? 0;
       const fats = data?.macros?.fats?.current ?? 0;
+      const fiber = calculateTotalFiber(data?.meals);
 
       const hasEntry = hasAnyIngredients(data?.meals);
 
@@ -109,6 +123,7 @@ export class FirestoreHistoryRepository implements HistoryRepository {
         protein,
         carbs,
         fats,
+        fiber,
         calories,
         calorieGoal,
         hasEntry,

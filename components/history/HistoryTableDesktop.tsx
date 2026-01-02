@@ -31,6 +31,7 @@ export function HistoryTableDesktop({ entries, onDateClick }: HistoryTableDeskto
                         <th className="px-6 py-3">{t('history.columns.protein')}</th>
                         <th className="px-6 py-3">{t('history.columns.carbs')}</th>
                         <th className="px-6 py-3">{t('history.columns.fats')}</th>
+                        <th className="px-6 py-3 text-healthpal-fiber">{t('history.columns.fiber')}</th>
                         <th className="px-6 py-3">{t('history.columns.calories')}</th>
                     </tr>
                 </thead>
@@ -53,6 +54,7 @@ export function HistoryTableDesktop({ entries, onDateClick }: HistoryTableDeskto
                                 <td className="px-6 py-4">{`${formatNumber(e.protein)}g`}</td>
                                 <td className="px-6 py-4">{`${formatNumber(e.carbs)}g`}</td>
                                 <td className="px-6 py-4">{`${formatNumber(e.fats)}g`}</td>
+                                <td className="px-6 py-4 text-healthpal-fiber">{`${formatNumber(e.fiber)}g`}</td>
                                 <td className={`px-6 py-4 font-bold ${calorieColor}`}>{formatNumber(e.calories)}</td>
                             </tr>
                         );

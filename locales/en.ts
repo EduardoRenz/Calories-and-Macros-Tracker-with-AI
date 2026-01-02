@@ -26,6 +26,7 @@ export default {
       "protein": "Proteins",
       "carbs": "Carbs",
       "fats": "Fats",
+      "fiber": "Fiber",
       "calories": "Calories"
     },
     "calendar_prev": "Previous month",
