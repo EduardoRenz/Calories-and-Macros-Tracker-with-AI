@@ -13,7 +13,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
 
     return (
         <li className="group bg-healthpal-panel/50 p-2 rounded-md flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="flex items-start justify-between gap-2 md:col-span-5">
+            <div className="flex items-start justify-between gap-2 md:col-span-4">
                 <div className="text-healthpal-text-primary font-medium leading-snug break-words" title={ingredient.name}>
                     {ingredient.name}
                 </div>
@@ -45,6 +45,10 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                 <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
                     <span className="md:hidden text-healthpal-fats">G: </span>
                     {ingredient.fats}g
+                </div>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-fiber">
+                    <span className="md:hidden">F: </span>
+                    {ingredient.fiber}g
                 </div>
                 <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
                     <span className="md:hidden text-healthpal-green">Kcal: </span>

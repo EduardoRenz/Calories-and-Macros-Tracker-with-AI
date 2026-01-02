@@ -26,6 +26,7 @@ export default {
       "protein": "Proteins",
       "carbs": "Carbs",
       "fats": "Fats",
+      "fiber": "Fiber",
       "calories": "Calories"
     },
     "calendar_prev": "Previous month",
@@ -60,6 +61,7 @@ export default {
     "carbs_short": "Carbs",
     "fats": "Fats",
     "fats_short": "Fats",
+    "fiber_short": "Fiber",
     "calories_short": "kcal",
     "no_items_logged": "No items logged",
     "ingredient": "Ingredient",
@@ -73,6 +75,7 @@ export default {
     "quantity": "Quantity",
     "quantity_placeholder": "e.g., 1 cup, 100g",
     "calories": "Calories (kcal)",
+    "fiber": "Fiber (g)",
     "protein": "Protein (g)",
     "carbs": "Carbs (g)",
     "fats": "Fats (g)",

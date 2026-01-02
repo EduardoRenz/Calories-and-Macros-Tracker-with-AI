@@ -23,9 +23,10 @@ export default {
     "next_page": "Próximo",
     "columns": {
       "date": "Data",
-      "protein": "Proteinas",
-      "carbs": "Carbos",
+      "protein": "Proteínas",
+      "carbs": "Carboidratos",
       "fats": "Gorduras",
+      "fiber": "Fibras",
       "calories": "Calorias"
     },
     "calendar_prev": "Mês anterior",
@@ -60,6 +61,7 @@ export default {
     "carbs_short": "Carbs",
     "fats": "Gorduras",
     "fats_short": "Gord.",
+    "fiber_short": "Fibras",
     "calories_short": "kcal",
     "no_items_logged": "Nenhum item registrado",
     "ingredient": "Ingrediente",
@@ -73,6 +75,7 @@ export default {
     "quantity": "Quantidade",
     "quantity_placeholder": "ex: 1 xícara, 100g",
     "calories": "Calorias (kcal)",
+    "fiber": "Fibras (g)",
     "protein": "Proteína (g)",
     "carbs": "Carboidratos (g)",
     "fats": "Gorduras (g)",

@@ -3,6 +3,7 @@ export interface DailyHistoryEntry {
   protein: number;
   carbs: number;
   fats: number;
+  fiber: number;
   calories: number;
   calorieGoal: number;
   hasEntry: boolean;

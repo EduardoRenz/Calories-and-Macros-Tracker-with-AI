@@ -49,7 +49,7 @@ export function HistoryTableMobile({ entries, onDateClick }: HistoryTableMobileP
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2 mt-3">
+                        <div className="grid grid-cols-4 gap-2 mt-3">
                             <div className="bg-healthpal-card border border-healthpal-border rounded-lg p-2">
                                 <p className="text-[10px] uppercase tracking-wider text-healthpal-text-secondary">{t('history.columns.protein')}</p>
                                 <p className="text-sm font-semibold text-healthpal-text-primary">{formatNumber(e.protein)}g</p>
@@ -61,6 +61,10 @@ export function HistoryTableMobile({ entries, onDateClick }: HistoryTableMobileP
                             <div className="bg-healthpal-card border border-healthpal-border rounded-lg p-2">
                                 <p className="text-[10px] uppercase tracking-wider text-healthpal-text-secondary">{t('history.columns.fats')}</p>
                                 <p className="text-sm font-semibold text-healthpal-text-primary">{formatNumber(e.fats)}g</p>
+                            </div>
+                            <div className="bg-healthpal-card border border-healthpal-border rounded-lg p-2">
+                                <p className="text-[10px] uppercase tracking-wider text-healthpal-fiber">{t('history.columns.fiber')}</p>
+                                <p className="text-sm font-semibold text-healthpal-fiber">{formatNumber(e.fiber)}g</p>
                             </div>
                         </div>
                     </button>

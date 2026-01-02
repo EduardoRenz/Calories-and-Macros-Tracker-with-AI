@@ -17,10 +17,10 @@ const createEmptyDashboard = (date: string, goals: { calories: number; protein: 
         fats: { current: 0, goal: goals.fats },
     },
     meals: {
-        breakfast: { name: "Breakfast", calories: 0, protein: 0, carbs: 0, fats: 0, ingredients: [] },
-        lunch: { name: "Lunch", calories: 0, protein: 0, carbs: 0, fats: 0, ingredients: [] },
-        dinner: { name: "Dinner", calories: 0, protein: 0, carbs: 0, fats: 0, ingredients: [] },
-        snacks: { name: "Snacks", calories: 0, protein: 0, carbs: 0, fats: 0, ingredients: [] },
+        breakfast: { name: "Breakfast", calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, ingredients: [] },
+        lunch: { name: "Lunch", calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, ingredients: [] },
+        dinner: { name: "Dinner", calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, ingredients: [] },
+        snacks: { name: "Snacks", calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, ingredients: [] },
     },
 });
 
@@ -39,6 +39,7 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
         meal.protein = Math.round(meal.ingredients.reduce((sum: number, ing: Ingredient) => sum + ing.protein, 0));
         meal.carbs = Math.round(meal.ingredients.reduce((sum: number, ing: Ingredient) => sum + ing.carbs, 0));
         meal.fats = Math.round(meal.ingredients.reduce((sum: number, ing: Ingredient) => sum + ing.fats, 0));
+        meal.fiber = Math.round(meal.ingredients.reduce((sum: number, ing: Ingredient) => sum + ing.fiber, 0));
 
         totalCalories += meal.calories;
         totalProtein += meal.protein;
@@ -99,6 +100,23 @@ export class FirestoreDashboardRepository implements DashboardRepository {
             needsUpdate = true;
         }
 
+        // Ensure every ingredient has `fiber` (backward compatibility).
+        for (const mealType in data.meals) {
+            const meal = data.meals[mealType as keyof MealSummary];
+            if (!meal.ingredients) continue;
+            for (const ing of meal.ingredients) {
+                if (typeof (ing as any).fiber !== 'number') {
+                    (ing as any).fiber = 0;
+                    needsUpdate = true;
+                }
+            }
+            // Ensure meal has fiber field (backward compatibility)
+            if (typeof (meal as any).fiber !== 'number') {
+                (meal as any).fiber = meal.ingredients.reduce((total: number, ing: any) => total + (ing.fiber || 0), 0);
+                needsUpdate = true;
+            }
+        }
+
         if (needsUpdate) {
             // Asynchronously update the document in Firestore to correct it for next time.
             setDoc(docRef, data, { merge: true });
@@ -116,6 +134,7 @@ export class FirestoreDashboardRepository implements DashboardRepository {
 
         const newIngredients: Ingredient[] = ingredients.map(ing => ({
             ...ing,
+            fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
             id: `${new Date().getTime()}-${Math.random()}`,
         }));
 

@@ -26,6 +26,7 @@ export default {
       "protein": "Proteínas",
       "carbs": "Carbohidratos",
       "fats": "Grasas",
+      "fiber": "Fibra",
       "calories": "Calorías"
     },
     "calendar_prev": "Mes anterior",
@@ -60,6 +61,7 @@ export default {
     "carbs_short": "Carbs",
     "fats": "Grasas",
     "fats_short": "Grasas",
+    "fiber_short": "Fibra",
     "calories_short": "kcal",
     "no_items_logged": "No hay alimentos registrados",
     "ingredient": "Ingrediente",
@@ -73,6 +75,7 @@ export default {
     "quantity": "Cantidad",
     "quantity_placeholder": "ej: 1 taza, 100g",
     "calories": "Calorías (kcal)",
+    "fiber": "Fibra (g)",
     "protein": "Proteína (g)",
     "carbs": "Carbohidratos (g)",
     "fats": "Grasas (g)",

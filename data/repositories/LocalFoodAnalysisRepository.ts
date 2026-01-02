@@ -26,35 +26,35 @@ export class LocalFoodAnalysisRepository implements FoodAnalysisRepository {
     private generateMockDayData(date: string): DashboardData {
         // Sample foods arrays for variation
         const breakfastFoods = [
-            { name: 'Oatmeal', quantity: '1 cup', calories: 150, protein: 5, carbs: 27, fats: 3 },
-            { name: 'Eggs', quantity: '2 units', calories: 180, protein: 12, carbs: 1, fats: 12 },
-            { name: 'Coffee', quantity: '1 cup', calories: 5, protein: 0, carbs: 0, fats: 0 },
-            { name: 'Orange Juice', quantity: '200ml', calories: 90, protein: 1, carbs: 21, fats: 0 },
-            { name: 'Toast', quantity: '2 slices', calories: 140, protein: 4, carbs: 26, fats: 2 }
+            { name: 'Oatmeal', quantity: '1 cup', calories: 150, protein: 5, carbs: 27, fats: 3, fiber: 4 },
+            { name: 'Eggs', quantity: '2 units', calories: 180, protein: 12, carbs: 1, fats: 12, fiber: 0 },
+            { name: 'Coffee', quantity: '1 cup', calories: 5, protein: 0, carbs: 0, fats: 0, fiber: 0 },
+            { name: 'Orange Juice', quantity: '200ml', calories: 90, protein: 1, carbs: 21, fats: 0, fiber: 0 },
+            { name: 'Toast', quantity: '2 slices', calories: 140, protein: 4, carbs: 26, fats: 2, fiber: 2 }
         ];
 
         const lunchFoods = [
-            { name: 'Grilled Chicken', quantity: '150g', calories: 250, protein: 47, carbs: 0, fats: 5 },
-            { name: 'Rice', quantity: '1 cup', calories: 200, protein: 4, carbs: 45, fats: 0 },
-            { name: 'Mixed Salad', quantity: '1 bowl', calories: 50, protein: 2, carbs: 10, fats: 1 },
-            { name: 'Beans', quantity: '100g', calories: 120, protein: 8, carbs: 20, fats: 0 },
-            { name: 'Olive Oil', quantity: '1 tbsp', calories: 120, protein: 0, carbs: 0, fats: 14 }
+            { name: 'Grilled Chicken', quantity: '150g', calories: 250, protein: 47, carbs: 0, fats: 5, fiber: 0 },
+            { name: 'Rice', quantity: '1 cup', calories: 200, protein: 4, carbs: 45, fats: 0, fiber: 0 },
+            { name: 'Mixed Salad', quantity: '1 bowl', calories: 50, protein: 2, carbs: 10, fats: 1, fiber: 5 },
+            { name: 'Beans', quantity: '100g', calories: 120, protein: 8, carbs: 20, fats: 0, fiber: 9 },
+            { name: 'Olive Oil', quantity: '1 tbsp', calories: 120, protein: 0, carbs: 0, fats: 14, fiber: 0 }
         ];
 
         const dinnerFoods = [
-            { name: 'Salmon', quantity: '200g', calories: 400, protein: 40, carbs: 0, fats: 24 },
-            { name: 'Broccoli', quantity: '150g', calories: 50, protein: 4, carbs: 10, fats: 0 },
-            { name: 'Sweet Potato', quantity: '1 medium', calories: 100, protein: 2, carbs: 23, fats: 0 },
-            { name: 'Quinoa', quantity: '100g', calories: 120, protein: 4, carbs: 21, fats: 2 },
-            { name: 'Avocado', quantity: '1/2 unit', calories: 160, protein: 2, carbs: 9, fats: 15 }
+            { name: 'Salmon', quantity: '200g', calories: 400, protein: 40, carbs: 0, fats: 24, fiber: 0 },
+            { name: 'Broccoli', quantity: '150g', calories: 50, protein: 4, carbs: 10, fats: 0, fiber: 3 },
+            { name: 'Sweet Potato', quantity: '1 medium', calories: 100, protein: 2, carbs: 23, fats: 0, fiber: 2 },
+            { name: 'Quinoa', quantity: '100g', calories: 120, protein: 4, carbs: 21, fats: 2, fiber: 3 },
+            { name: 'Avocado', quantity: '1/2 unit', calories: 160, protein: 2, carbs: 9, fats: 15, fiber: 7 }
         ];
 
         const snackFoods = [
-            { name: 'Almonds', quantity: '30g', calories: 180, protein: 6, carbs: 6, fats: 16 },
-            { name: 'Apple', quantity: '1 unit', calories: 95, protein: 0, carbs: 25, fats: 0 },
-            { name: 'Greek Yogurt', quantity: '150g', calories: 100, protein: 17, carbs: 6, fats: 0 },
-            { name: 'Protein Bar', quantity: '1 unit', calories: 200, protein: 20, carbs: 20, fats: 8 },
-            { name: 'Banana', quantity: '1 unit', calories: 105, protein: 1, carbs: 27, fats: 0 }
+            { name: 'Almonds', quantity: '30g', calories: 180, protein: 6, carbs: 6, fats: 16, fiber: 3 },
+            { name: 'Apple', quantity: '1 unit', calories: 95, protein: 0, carbs: 25, fats: 0, fiber: 4 },
+            { name: 'Greek Yogurt', quantity: '150g', calories: 100, protein: 17, carbs: 6, fats: 0, fiber: 0 },
+            { name: 'Protein Bar', quantity: '1 unit', calories: 200, protein: 20, carbs: 20, fats: 8, fiber: 2 },
+            { name: 'Banana', quantity: '1 unit', calories: 105, protein: 1, carbs: 27, fats: 0, fiber: 3 }
         ];
 
         // Randomly select some foods for each meal to simulate real usage
@@ -73,7 +73,8 @@ export class LocalFoodAnalysisRepository implements FoodAnalysisRepository {
             calories: ingredients.reduce((sum, i) => sum + i.calories, 0),
             protein: ingredients.reduce((sum, i) => sum + i.protein, 0),
             carbs: ingredients.reduce((sum, i) => sum + i.carbs, 0),
-            fats: ingredients.reduce((sum, i) => sum + i.fats, 0)
+            fats: ingredients.reduce((sum, i) => sum + i.fats, 0),
+            fiber: ingredients.reduce((sum, i) => sum + i.fiber, 0)
         });
 
         const breakfastMacros = sumMacros(breakfast);

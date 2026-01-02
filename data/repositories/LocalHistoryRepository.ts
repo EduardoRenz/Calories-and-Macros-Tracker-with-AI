@@ -41,11 +41,15 @@ export class LocalHistoryRepository implements HistoryRepository {
     return dashboards
       .map(data => {
         const hasEntry = Object.values(data.meals).some(meal => meal.ingredients.length > 0);
+        const fiber = Object.values(data.meals).reduce((total: number, meal: any) => 
+          total + meal.ingredients.reduce((mealTotal: number, ingredient: any) => mealTotal + (ingredient.fiber || 0), 0), 0
+        );
         return {
           date: data.date,
           protein: data.macros.protein.current,
           carbs: data.macros.carbs.current,
           fats: data.macros.fats.current,
+          fiber,
           calories: data.macros.calories.current,
           calorieGoal: data.macros.calories.goal,
           hasEntry,
@@ -65,11 +69,15 @@ export class LocalHistoryRepository implements HistoryRepository {
 
     const items: DailyHistoryEntry[] = dashboards.map(data => {
       const hasEntry = Object.values(data.meals).some(meal => meal.ingredients.length > 0);
+      const fiber = Object.values(data.meals).reduce((total: number, meal: any) => 
+        total + meal.ingredients.reduce((mealTotal: number, ingredient: any) => mealTotal + (ingredient.fiber || 0), 0), 0
+      );
       return {
         date: data.date,
         protein: data.macros.protein.current,
         carbs: data.macros.carbs.current,
         fats: data.macros.fats.current,
+        fiber,
         calories: data.macros.calories.current,
         calorieGoal: data.macros.calories.goal,
         hasEntry,

@@ -19,6 +19,7 @@ const initialFormState = {
   protein: 0,
   carbs: 0,
   fats: 0,
+  fiber: 0,
 };
 
 const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose, onSave, mealType }) => {
@@ -26,7 +27,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const { language } = useLanguage();
   const [formState, setFormState] = useState(initialFormState);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number } | null>(null);
+  const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number; fiber: number } | null>(null);
 
   const nutritionService = useMemo(() => ServiceFactory.getNutritionAnalysisService(), []);
 
@@ -56,7 +57,8 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
           ...prev,
           protein: Math.round(quantityNum * macroRatios.protein),
           carbs: Math.round(quantityNum * macroRatios.carbs),
-          fats: Math.round(quantityNum * macroRatios.fats)
+          fats: Math.round(quantityNum * macroRatios.fats),
+          fiber: Math.round(quantityNum * macroRatios.fiber),
         }));
       }
     } else if (name === 'name') {
@@ -73,11 +75,13 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
           protein: name === 'protein' ? numValue : formState.protein,
           carbs: name === 'carbs' ? numValue : formState.carbs,
           fats: name === 'fats' ? numValue : formState.fats,
+          fiber: formState.fiber,
         };
         setMacroRatios({
           protein: newMacros.protein / currentQuantity,
           carbs: newMacros.carbs / currentQuantity,
-          fats: newMacros.fats / currentQuantity
+          fats: newMacros.fats / currentQuantity,
+          fiber: newMacros.fiber / currentQuantity,
         });
       }
     }
@@ -92,6 +96,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
     const result = await nutritionService.getNutritionalInfo(formState.name, formState.quantity, language);
     if (result) {
       const quantityInGrams = result.quantityInGrams || 100; // Default to 100 if not provided (shouldn't happen with new prompt)
+      const fiber = typeof result.fiber === 'number' ? result.fiber : 0;
       setFormState(prev => ({
         ...prev,
         quantity: `${quantityInGrams}g`,
@@ -99,13 +104,15 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         protein: Math.round(result.protein),
         carbs: Math.round(result.carbs),
         fats: Math.round(result.fats),
+        fiber: Math.round(fiber),
       }));
 
       // precise calculation of ratios
       setMacroRatios({
         protein: result.protein / quantityInGrams,
         carbs: result.carbs / quantityInGrams,
-        fats: result.fats / quantityInGrams
+        fats: result.fats / quantityInGrams,
+        fiber: fiber / quantityInGrams,
       });
     } else {
       // Handle error state, e.g., show a toast notification
@@ -153,6 +160,10 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
             <div>
               <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.calories')}</label>
               <input type="number" step="any" min="0" name="calories" value={formState.calories} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fiber')}</label>
+              <input type="number" step="any" min="0" name="fiber" value={formState.fiber} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" />
             </div>
             <div>
               <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.protein')}</label>

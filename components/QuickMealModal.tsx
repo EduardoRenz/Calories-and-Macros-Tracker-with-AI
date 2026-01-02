@@ -172,6 +172,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                     updatedForm.protein = Number((originalEditForm.protein * ratio).toFixed(1));
                     updatedForm.carbs = Number((originalEditForm.carbs * ratio).toFixed(1));
                     updatedForm.fats = Number((originalEditForm.fats * ratio).toFixed(1));
+                    updatedForm.fiber = Number(((originalEditForm.fiber || 0) * ratio).toFixed(1));
                 }
                 setEditForm(updatedForm);
             } else {

@@ -16,6 +16,7 @@ export default {
                 'healthpal-border': 'var(--healthpal-border)',
                 'healthpal-green': 'var(--healthpal-green)',
                 'healthpal-protein': 'var(--healthpal-protein)',
+                'healthpal-fiber': 'var(--healthpal-fiber)',
                 'healthpal-carbs': 'var(--healthpal-carbs)',
                 'healthpal-fats': 'var(--healthpal-fats)',
                 'healthpal-yellow': 'var(--healthpal-yellow)',

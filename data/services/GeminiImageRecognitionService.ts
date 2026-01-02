@@ -46,7 +46,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             };
             const languageName = languageMap[language] || 'English';
 
-            const prompt = `Analyze the food items in this image. Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), and nutritional information (calories, protein, carbs, fats) per serving. Name the ingredients in ${languageName}. Respond in JSON format according to the provided schema. If an item is unrecognizable, omit it from the list.`;
+            const prompt = `Analyze the food items in this image. Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), and nutritional information (calories, protein, carbs, fats, fiber) per serving. Name the ingredients in ${languageName}. Respond in JSON format according to the provided schema. If an item is unrecognizable, omit it from the list.`;
 
             const response = await this.ai.models.generateContent({
                 model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash',
@@ -73,8 +73,9 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
                                         protein: { type: Type.NUMBER, description: "Estimated protein (g)." },
                                         carbs: { type: Type.NUMBER, description: "Estimated carbohydrates (g)." },
                                         fats: { type: Type.NUMBER, description: "Estimated fats (g)." },
+                                        fiber: { type: Type.NUMBER, description: "Estimated fiber (g)." },
                                     },
-                                    required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
+                                    required: ["name", "quantity", "calories", "protein", "carbs", "fats", "fiber"]
                                 }
                             }
                         },

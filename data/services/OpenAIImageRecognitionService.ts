@@ -54,7 +54,7 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
                                     type: "text",
                                     text: `Analyze the food items in this image. 
                                     Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), 
-                                    and nutritional information (calories, protein, carbs, fats) per serving. 
+                                    and nutritional information (calories, protein, carbs, fats, fiber) per serving. 
                                     Name the ingredients in ${languageName}. 
                                     
                                     Respond ONLY with a valid JSON object matching this schema:
@@ -66,7 +66,8 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
                                                 "calories": number,
                                                 "protein": number,
                                                 "carbs": number,
-                                                "fats": number
+                                                "fats": number,
+                                                "fiber": number
                                             }
                                         ]
                                     }

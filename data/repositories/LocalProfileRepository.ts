@@ -30,13 +30,13 @@ let userProfileData: UserProfile = JSON.parse(JSON.stringify(initialProfile));
 export class LocalProfileRepository implements ProfileRepository {
     async getProfile(): Promise<UserProfile> {
         // Simulate an async API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 250));
         return JSON.parse(JSON.stringify(userProfileData));
     }
 
     async updateProfile(profile: UserProfile): Promise<void> {
         // Simulate an async API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 250));
         
         const newWeight = profile.personalInfo.weight;
         const now = new Date();
