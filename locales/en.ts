@@ -171,6 +171,7 @@ export default {
       "sufficient_moderate": "Sufficient & Moderate",
       "deficient_action": "Deficient - Needs Action",
       "recommendations": "Recommendations",
+      "positive_reason": "Why you're doing well",
       "status": {
         "good": "Good",
         "low": "Avg",

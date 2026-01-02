@@ -55,8 +55,26 @@ export class MockFoodAnalysisService implements FoodAnalysisService {
                 }
             },
             vitamins: [
-                { name: 'Vit A', status: 'good', emoji: '🥕' },
-                { name: 'Vit C', status: 'good', emoji: '🍊' },
+                {
+                    name: 'Vit A',
+                    status: 'good',
+                    emoji: '🥕',
+                    positiveReason: isPortuguese
+                        ? 'Você consome com frequência alimentos ricos em carotenoides (ex.: cenoura e folhas verdes).'
+                        : isSpanish
+                            ? 'Consumes con frecuencia alimentos ricos en carotenoides (p. ej., zanahoria y hojas verdes).'
+                            : 'You frequently eat carotenoid-rich foods (e.g., carrots and leafy greens).'
+                },
+                {
+                    name: 'Vit C',
+                    status: 'good',
+                    emoji: '🍊',
+                    positiveReason: isPortuguese
+                        ? 'Suas escolhas incluem frutas e vegetais com boa presença de vitamina C, o que ajuda a manter níveis adequados.'
+                        : isSpanish
+                            ? 'Tus elecciones incluyen frutas y verduras con buena presencia de vitamina C, ayudando a mantener niveles adecuados.'
+                            : 'Your choices include vitamin C-rich fruits and vegetables, helping keep adequate levels.'
+                },
                 {
                     name: isPortuguese ? 'Vitamina D' : isSpanish ? 'Vitamina D' : 'Vitamin D',
                     status: 'deficient',
@@ -67,9 +85,41 @@ export class MockFoodAnalysisService implements FoodAnalysisService {
                             ? ['Exponerse al sol (15min)', 'Consumir más pescado graso']
                             : ['Spend time in sun (15m)', 'Eat more fatty fish']
                 },
-                { name: 'Iron', status: 'low', emoji: '🍎' },
-                { name: 'Calc', status: 'good', emoji: '🥛' },
-                { name: 'B12', status: 'good', emoji: '🫐' }
+                {
+                    name: 'Iron',
+                    status: 'low',
+                    emoji: '🍎',
+                    recommendations: isPortuguese
+                        ? ['Inclua feijões e lentilhas', 'Combine com fonte de vitamina C para melhor absorção']
+                        : isSpanish
+                            ? ['Incluye frijoles y lentejas', 'Combínalo con vitamina C para mejor absorción']
+                            : ['Add beans and lentils', 'Pair with vitamin C to improve absorption'],
+                    positiveReason: isPortuguese
+                        ? 'Seu nível está aceitável, mas há espaço para otimizar com fontes melhores e mais consistentes.'
+                        : isSpanish
+                            ? 'Tu nivel es aceptable, pero puedes optimizarlo con fuentes mejores y más constantes.'
+                            : 'Your level is acceptable, but you can optimize it with better and more consistent sources.'
+                },
+                {
+                    name: 'Calc',
+                    status: 'good',
+                    emoji: '🥛',
+                    positiveReason: isPortuguese
+                        ? 'Você costuma incluir fontes de cálcio (laticínios ou alternativas fortificadas), o que sustenta bons níveis.'
+                        : isSpanish
+                            ? 'Sueles incluir fuentes de calcio (lácteos o alternativas fortificadas), lo que sostiene buenos niveles.'
+                            : 'You often include calcium sources (dairy or fortified alternatives), supporting good levels.'
+                },
+                {
+                    name: 'B12',
+                    status: 'good',
+                    emoji: '🫐',
+                    positiveReason: isPortuguese
+                        ? 'Sua ingestão tem boa presença de fontes de B12 (origem animal ou alimentos fortificados).'
+                        : isSpanish
+                            ? 'Tu ingesta incluye buenas fuentes de B12 (origen animal o alimentos fortificados).'
+                            : 'Your intake includes good B12 sources (animal products or fortified foods).'
+                }
             ],
             attentionPoints: [
                 {

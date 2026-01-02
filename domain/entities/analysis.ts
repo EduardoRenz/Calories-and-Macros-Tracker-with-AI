@@ -6,6 +6,7 @@ export interface VitaminAnalysis {
     status: VitaminStatus;
     emoji?: string;
     recommendations?: string[]; // For low/deficient vitamins, list of recommendations
+    positiveReason?: string; // For good/low vitamins, explain why user is doing well/acceptable
 }
 
 export interface MealFoods {

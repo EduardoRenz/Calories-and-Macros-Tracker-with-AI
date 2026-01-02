@@ -50,9 +50,18 @@ export class OpenAIFoodAnalysisService extends BaseFoodAnalysisService {
                 generatedAt: new Date().toISOString(),
                 dateRange: this.getDateRange(input.dashboardData),
                 commonFoods: result.commonFoods,
-                vitamins: result.vitamins.map((v: { name: string; status: string }) => ({
+                vitamins: result.vitamins.map((v: {
+                    name: string;
+                    status: string;
+                    emoji?: string;
+                    recommendations?: string[];
+                    positiveReason?: string;
+                }) => ({
                     name: v.name,
-                    status: v.status as VitaminStatus
+                    status: v.status as VitaminStatus,
+                    emoji: v.emoji,
+                    recommendations: v.recommendations,
+                    positiveReason: v.positiveReason
                 })),
                 attentionPoints: result.attentionPoints,
                 macroSuggestions: result.macroSuggestions

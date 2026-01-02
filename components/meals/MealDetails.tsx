@@ -15,7 +15,6 @@ interface MealDetailsProps {
 
 export const MealDetails: React.FC<MealDetailsProps> = ({
     meal,
-    mealType,
     onAddIngredient,
     onRemoveIngredient
 }) => {

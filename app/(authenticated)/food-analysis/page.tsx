@@ -321,22 +321,40 @@ export default function FoodAnalysisPage() {
                                             <h3 className="text-sm font-bold text-healthpal-text-secondary uppercase mb-3">
                                                 {t('food_analysis.vitamins.sufficient_moderate')}
                                             </h3>
-                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 {sufficientVitamins.map((vitamin, idx) => (
                                                     <div
                                                         key={idx}
-                                                        className="bg-healthpal-card p-4 rounded-2xl text-center"
+                                                        className="bg-healthpal-card p-5 rounded-2xl"
                                                     >
-                                                        <span className="text-3xl">{vitamin.emoji || '💊'}</span>
-                                                        <p className="font-bold mt-2">{vitamin.name}</p>
-                                                        <div className="flex items-center justify-center gap-1 mt-1">
-                                                            <span className={`w-2 h-2 rounded-full ${vitamin.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'
-                                                                }`}></span>
-                                                            <span className={`text-xs uppercase ${vitamin.status === 'good' ? 'text-green-400' : 'text-yellow-400'
-                                                                }`}>
-                                                                {t(`food_analysis.vitamins.status.${vitamin.status}`)}
-                                                            </span>
+                                                        <div className="flex items-start gap-3">
+                                                            <span className="text-3xl">{vitamin.emoji || '💊'}</span>
+                                                            <div className="min-w-0">
+                                                                <div className="flex items-start justify-between gap-2">
+                                                                    <p className="font-bold">{vitamin.name}</p>
+                                                                    <VitaminStatusBadge status={vitamin.status} />
+                                                                </div>
+                                                                <div className="flex items-center gap-1 mt-1">
+                                                                    <span className={`w-2 h-2 rounded-full ${vitamin.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'
+                                                                        }`}></span>
+                                                                    <span className={`text-xs uppercase ${vitamin.status === 'good' ? 'text-green-400' : 'text-yellow-400'
+                                                                        }`}>
+                                                                        {t(`food_analysis.vitamins.status.${vitamin.status}`)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         </div>
+
+                                                        {vitamin.positiveReason && (
+                                                            <div className="mt-3 pt-3 border-t border-healthpal-border">
+                                                                <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
+                                                                    {t('food_analysis.vitamins.positive_reason')}:
+                                                                </p>
+                                                                <p className="text-sm text-healthpal-text-secondary">
+                                                                    {vitamin.positiveReason}
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
@@ -358,7 +376,10 @@ export default function FoodAnalysisPage() {
                                                         <div className="flex items-center gap-3 mb-3">
                                                             <span className="text-3xl">{vitamin.emoji || '💊'}</span>
                                                             <div>
-                                                                <p className="font-bold">{vitamin.name}</p>
+                                                                <div className="flex items-start justify-between gap-2">
+                                                                    <p className="font-bold">{vitamin.name}</p>
+                                                                    <VitaminStatusBadge status={vitamin.status} />
+                                                                </div>
                                                                 <div className="flex items-center gap-1">
                                                                     <span className="w-2 h-2 rounded-full bg-red-500"></span>
                                                                     <span className="text-xs text-red-400 uppercase">
