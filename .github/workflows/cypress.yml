@@ -16,7 +16,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: yarn build
-          start: yarn dev:mock
+          build: yarn build:mock
+          start: yarn start:mock
           wait-on: 'http://localhost:3000'
           command: yarn cy:run
