@@ -32,7 +32,7 @@ const visitWithFixedDate = (url: string) => {
 };
 
 const loginWithGoogle = () => {
-  cy.session('google-login', () => {
+  cy.session('history-login', () => {
     visitWithFixedDate('/');
     cy.url().should('include', '/login');
     cy.contains('Sign in with Google').click();
@@ -61,14 +61,14 @@ describe('History Page', () => {
   it('should render and allow navigation to dashboard by clicking a history entry (mobile cards)', () => {
     cy.viewport(375, 667);
 
-    const yesterday = daysAgo(1);
+    const date = daysAgo(2);
 
     visitWithFixedDate('/historico');
     cy.url().should('include', '/historico');
     cy.get('h2').should('contain', 'History');
 
-    cy.get(`[data-testid="history-entry-${yesterday}"]`, { timeout: 15000 }).should('be.visible').click();
-    cy.url().should('include', `/dashboard?date=${yesterday}`);
+    cy.get(`[data-testid="history-entry-${date}"]`, { timeout: 15000 }).should('be.visible').click();
+    cy.url().should('include', `/dashboard?date=${date}`);
   });
 
   it('should show calorie colors (over=red, under=green) in mobile cards', () => {
