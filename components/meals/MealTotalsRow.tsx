@@ -10,26 +10,38 @@ export const MealTotalsRow: React.FC<MealTotalsRowProps> = ({ meal }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="grid grid-cols-12 gap-4 items-center px-2 text-sm">
-            <div className="col-span-5 font-bold">{t('meals.total_macros')}</div>
-            <div className="col-span-7 flex justify-around text-sm md:contents">
-                <div className="font-bold ">
-                    <span className="md:hidden">T: </span>{meal.ingredients.length} <span className="md:hidden">T</span>
+        <div className="bg-healthpal-panel/50 p-2 rounded-md flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center">
+            <div className="md:col-span-4">
+                <div className="text-healthpal-text-primary font-bold leading-snug">
+                    {t('meals.total_macros')}
                 </div>
-                <div className="font-bold text-healthpal-carbs">
-                    <span className="md:hidden">C: </span>{meal.carbs}g <span className="md:hidden">C</span>
+            </div>
+
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs md:contents">
+                <div className="whitespace-nowrap md:col-span-2 md:text-center">
+                    <span className="md:hidden">T: </span>
+                    <span className="md:text-healthpal-text-secondary font-bold">{meal.ingredients.length}</span>
                 </div>
-                <div className="font-bold text-healthpal-protein">
-                    <span className="md:hidden">P: </span>{meal.protein}g <span className="md:hidden">P</span>
+
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
+                    <span className="md:hidden text-healthpal-carbs">C: </span>
+                    <span className="font-bold text-healthpal-carbs">{meal.carbs}g</span>
                 </div>
-                <div className="font-bold text-healthpal-fats">
-                    <span className="md:hidden">G: </span>{meal.fats}g <span className="md:hidden">G</span>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
+                    <span className="md:hidden text-healthpal-protein">P: </span>
+                    <span className="font-bold text-healthpal-protein">{meal.protein}g</span>
                 </div>
-                <div className="font-bold text-healthpal-fiber">
-                    <span className="md:hidden">F: </span>{meal.fiber}g <span className="md:hidden">F</span>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
+                    <span className="md:hidden text-healthpal-fats">G: </span>
+                    <span className="font-bold text-healthpal-fats">{meal.fats}g</span>
                 </div>
-                <div className="font-bold text-healthpal-green">
-                    <span className="md:hidden">Kcal: </span>{meal.calories} <span className="md:hidden">Kcal</span>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-fiber">
+                    <span className="md:hidden">F: </span>
+                    <span className="font-bold text-healthpal-fiber">{meal.fiber}g</span>
+                </div>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
+                    <span className="md:hidden text-healthpal-green">Kcal: </span>
+                    <span className="font-bold text-healthpal-green">{meal.calories}</span>
                 </div>
             </div>
         </div>
