@@ -164,7 +164,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 const newGrams = parseGrams(value);
                 const oldGrams = parseGrams(originalEditForm.quantity);
 
-                let updatedForm = { ...editForm, [name]: value };
+                const updatedForm = { ...editForm, [name]: value };
 
                 if (oldGrams > 0) {
                     const ratio = newGrams / oldGrams;
