@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meal, MealSummary } from '../domain/entities/dashboard';
+import type { MealSummary } from '../domain/entities/dashboard';
 import { MealItem } from './meals/MealItem';
 import { useTranslation } from '../hooks/useTranslation';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import BottomNavbar from '@/components/BottomNavbar';
@@ -10,9 +10,6 @@ import { Footer } from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import InstallPWA from '@/components/InstallPWA';
 
-type DashboardHandle = {
-    refreshData: () => void;
-};
 
 export default function AuthenticatedLayout({
     children,
@@ -22,7 +19,6 @@ export default function AuthenticatedLayout({
     const pathname = usePathname();
     const { user, loading } = useAuth();
     const [isQuickMealOpen, setIsQuickMealOpen] = useState(false);
-    const dashboardRef = useRef<DashboardHandle>(null);
 
     const handleQuickMealSuccess = () => {
         setIsQuickMealOpen(false);

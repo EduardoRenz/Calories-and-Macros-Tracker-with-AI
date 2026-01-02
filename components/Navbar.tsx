@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
@@ -17,6 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
+    const pathname = usePathname();
 
     // Close avatar menu when clicking outside
     useEffect(() => {
@@ -55,7 +57,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         <Link
                             key={item.path}
                             href={item.path}
-                            className={`py-1 text-md font-medium transition-colors ${usePathname() === item.path
+                            className={`py-1 text-md font-medium transition-colors ${pathname === item.path
                                 ? 'text-healthpal-green border-b-2 border-healthpal-green'
                                 : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
                                 }`}
@@ -97,7 +99,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         aria-label="User menu"
                     >
                         {user?.photoURL ? (
-                            <img src={user.photoURL} alt="User" className="w-full h-full object-cover" />
+                            <Image src={user.photoURL} alt="User" width={40} height={40} className="w-full h-full object-cover" />
                         ) : (
                             <span className="font-bold text-healthpal-text-secondary">{getInitials(user?.displayName)}</span>
                         )}
@@ -134,7 +136,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                                 key={item.path}
                                 href={item.path}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className={`py-3 px-4 text-md font-medium transition-colors rounded-lg ${usePathname() === item.path
+                                className={`py-3 px-4 text-md font-medium transition-colors rounded-lg ${pathname === item.path
                                     ? 'text-healthpal-green bg-healthpal-card'
                                     : 'text-healthpal-text-secondary hover:text-healthpal-text-primary hover:bg-healthpal-card'
                                     }`}

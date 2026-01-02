@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
         // Convert File to Blob for the service
         const ingredients = await service.analyzeMealImage(image, language || 'en');
         return NextResponse.json(ingredients);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('API Error:', error);
-        return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }

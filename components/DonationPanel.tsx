@@ -35,7 +35,7 @@ export const DonationPanel: React.FC<DonationPanelProps> = ({ variant = 'compact
     }: {
         label: string,
         value: string,
-        icon?: React.FC<any>,
+        icon?: React.FC<React.SVGProps<SVGSVGElement>>,
         symbol?: string,
         network?: string,
         id: string,
