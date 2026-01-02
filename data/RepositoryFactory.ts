@@ -14,9 +14,16 @@ import { FirestoreFoodAnalysisRepository } from './repositories/FirestoreFoodAna
 import { FirestoreHistoryRepository } from './repositories/FirestoreHistoryRepository';
 import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
 import { MockAuthRepository } from './repositories/MockAuthRepository';
+import { SupabaseDashboardRepository } from './repositories/SupabaseDashboardRepository';
+import { SupabaseProfileRepository } from './repositories/SupabaseProfileRepository';
+import { SupabaseFoodAnalysisRepository } from './repositories/SupabaseFoodAnalysisRepository';
+import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryRepository';
+import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
 
 // Switch these flags to false to use local data/auth to avoid configuration errors
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+const BACKEND_PROVIDER = (process.env.BACKEND_PROVIDER ?? 'firebase').toLowerCase();
+const USE_SUPABASE = BACKEND_PROVIDER === 'supabase';
 
 export class RepositoryFactory {
     private static dashboardRepository: DashboardRepository | null = null;
@@ -28,7 +35,7 @@ export class RepositoryFactory {
     public static getDashboardRepository(): DashboardRepository {
         if (!this.dashboardRepository) {
             if (!USE_MOCKS) {
-                this.dashboardRepository = new FirestoreDashboardRepository();
+                this.dashboardRepository = USE_SUPABASE ? new SupabaseDashboardRepository() : new FirestoreDashboardRepository();
             } else {
                 this.dashboardRepository = new LocalDashboardRepository();
             }
@@ -39,7 +46,7 @@ export class RepositoryFactory {
     public static getProfileRepository(): ProfileRepository {
         if (!this.profileRepository) {
             if (!USE_MOCKS) {
-                this.profileRepository = new FirestoreProfileRepository();
+                this.profileRepository = USE_SUPABASE ? new SupabaseProfileRepository() : new FirestoreProfileRepository();
             } else {
                 this.profileRepository = new LocalProfileRepository();
             }
@@ -50,7 +57,7 @@ export class RepositoryFactory {
     public static getAuthRepository(): AuthRepository {
         if (!this.authRepository) {
             if (!USE_MOCKS) {
-                this.authRepository = new FirebaseAuthRepository();
+                this.authRepository = USE_SUPABASE ? new SupabaseAuthRepository() : new FirebaseAuthRepository();
             } else {
                 this.authRepository = new MockAuthRepository();
             }
@@ -61,7 +68,7 @@ export class RepositoryFactory {
     public static getFoodAnalysisRepository(): FoodAnalysisRepository {
         if (!this.foodAnalysisRepository) {
             if (!USE_MOCKS) {
-                this.foodAnalysisRepository = new FirestoreFoodAnalysisRepository();
+                this.foodAnalysisRepository = USE_SUPABASE ? new SupabaseFoodAnalysisRepository() : new FirestoreFoodAnalysisRepository();
             } else {
                 this.foodAnalysisRepository = new LocalFoodAnalysisRepository();
             }
@@ -72,7 +79,7 @@ export class RepositoryFactory {
     public static getHistoryRepository(): HistoryRepository {
         if (!this.historyRepository) {
             if (!USE_MOCKS) {
-                this.historyRepository = new FirestoreHistoryRepository();
+                this.historyRepository = USE_SUPABASE ? new SupabaseHistoryRepository() : new FirestoreHistoryRepository();
             } else {
                 this.historyRepository = new LocalHistoryRepository();
             }

@@ -34,6 +34,7 @@ To run tests, run the project with `yarn dev:mock` and then run `yarn cy:run`
 - [x] Add fiber consumption in meals
 - [x] Kcal calc based on macro calc when adding/editing ingredients, and no more manually
 - [ ] Remote config set models
+- [ ] Add payment methods
 
 
 

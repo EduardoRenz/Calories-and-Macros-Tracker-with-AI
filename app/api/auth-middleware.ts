@@ -1,6 +1,8 @@
 import * as admin from 'firebase-admin';
+import { getSupabaseAdminClient } from '@/data/supabaseServer';
 
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+const BACKEND_PROVIDER = (process.env.BACKEND_PROVIDER ?? 'firebase').toLowerCase();
 
 if (!USE_MOCKS && !admin.apps.length) {
     admin.initializeApp({
@@ -30,6 +32,24 @@ export async function verifyAuth(authHeader: string | null): Promise<Authenticat
     }
 
     const token = authHeader.split('Bearer ')[1];
+
+    if (BACKEND_PROVIDER === 'supabase') {
+        try {
+            const supabase = getSupabaseAdminClient();
+            const { data, error } = await supabase.auth.getUser(token);
+            if (error || !data.user) {
+                console.error('[Auth] Supabase token verification failed:', error);
+                throw new Error('Unauthorized: Invalid token');
+            }
+            return {
+                uid: data.user.id,
+                email: data.user.email ?? undefined,
+            };
+        } catch (error) {
+            console.error('[Auth] Supabase token verification failed:', error);
+            throw new Error('Unauthorized: Invalid token');
+        }
+    }
 
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);

@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
     env: {
         NEXT_PUBLIC_APP_VERSION: packageJson.version,
         NEXT_PUBLIC_USE_MOCKS: process.env.NEXT_PUBLIC_USE_MOCKS,
+        BACKEND_PROVIDER: process.env.BACKEND_PROVIDER,
         FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
         FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
         FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
@@ -28,6 +29,7 @@ const nextConfig: NextConfig = {
         FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
         FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
         FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL
     },
 };
 
