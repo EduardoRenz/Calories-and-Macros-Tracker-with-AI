@@ -110,6 +110,11 @@ export class FirestoreDashboardRepository implements DashboardRepository {
                     needsUpdate = true;
                 }
             }
+            // Ensure meal has fiber field (backward compatibility)
+            if (typeof (meal as any).fiber !== 'number') {
+                (meal as any).fiber = meal.ingredients.reduce((total: number, ing: any) => total + (ing.fiber || 0), 0);
+                needsUpdate = true;
+            }
         }
 
         if (needsUpdate) {
