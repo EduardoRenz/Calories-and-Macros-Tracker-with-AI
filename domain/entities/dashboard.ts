@@ -6,6 +6,7 @@ export interface Ingredient {
     protein: number;
     carbs: number;
     fats: number;
+    fiber: number;
 }
 
 export interface Meal {
@@ -14,6 +15,7 @@ export interface Meal {
     protein: number;
     carbs: number;
     fats: number;
+    fiber: number;
     ingredients: Ingredient[];
 }
 

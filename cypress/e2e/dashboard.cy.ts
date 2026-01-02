@@ -45,6 +45,8 @@ describe('Dashboard Meal Management', () => {
     // Explicitly target inputs by name attribute as seen in AddIngredientModal code
     cy.get('input[name="name"]').type(ingredientName);
     cy.get('input[name="quantity"]').type(quantity);
+    cy.get('input[name="fiber"]').should('have.attr', 'readonly');
+    cy.get('input[name="fiber"]').should('have.value', '0');
     // Calories is read-only now, so we don't type it.
     // cy.get('input[name="calories"]').type(calories.toString());
     cy.get('input[name="protein"]').type(protein.toString());
@@ -65,6 +67,7 @@ describe('Dashboard Meal Management', () => {
       cy.contains(ingredientName).should('be.visible');
       cy.contains(quantity).should('be.visible');
       cy.contains(expectedCalories.toString()).should('be.visible');
+      cy.contains('0g').should('be.visible');
     });
   });
 });

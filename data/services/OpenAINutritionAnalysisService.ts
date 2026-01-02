@@ -19,7 +19,7 @@ export class OpenAINutritionAnalysisService implements NutritionAnalysisService 
         };
         const languageName = languageMap[language] || 'English';
 
-        const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats) for the following food item: "${quantity} of ${ingredientName}". 
+        const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats, fiber) for the following food item: "${quantity} of ${ingredientName}". 
         IMPORTANT: Estimate based on a typical plate size or serving if specific units are ambiguous.
         Also provide the estimated quantity in grams for the given amount.
         
@@ -29,6 +29,7 @@ export class OpenAINutritionAnalysisService implements NutritionAnalysisService 
             "protein": number, // grams
             "carbs": number, // grams
             "fats": number, // grams
+            "fiber": number, // grams
             "quantityInGrams": number // grams
         }
         
