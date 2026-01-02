@@ -13,6 +13,9 @@ export const MealTotalsRow: React.FC<MealTotalsRowProps> = ({ meal }) => {
         <div className="grid grid-cols-12 gap-4 items-center px-2 text-sm">
             <div className="col-span-5 font-bold">{t('meals.total_macros')}</div>
             <div className="col-span-7 flex justify-around text-sm md:contents">
+                <div className="font-bold ">
+                    <span className="md:hidden">T: </span>{meal.ingredients.length} <span className="md:hidden">T</span>
+                </div>
                 <div className="font-bold text-healthpal-carbs">
                     <span className="md:hidden">C: </span>{meal.carbs}g <span className="md:hidden">C</span>
                 </div>
