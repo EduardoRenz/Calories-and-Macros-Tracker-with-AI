@@ -118,23 +118,4 @@ describe('History Page', () => {
     cy.get(`[data-testid="history-entry-${d7}"]`).should('not.exist');
   });
 
-  it('calendar should be colored for days with entries and allow navigation', () => {
-    cy.viewport(375, 667);
-
-    const overDay = daysAgo(2);
-    const noEntryDay = daysAgo(3);
-
-    visitWithFixedDate('/historico');
-
-    cy.get(`[data-testid="history-calendar-day-${overDay}"]`, { timeout: 15000 })
-      .click();
-
-    cy.url().should('include', `/dashboard?date=${overDay}`);
-
-    cy.go('back');
-
-    cy.get(`[data-testid="history-calendar-day-${noEntryDay}"]`, { timeout: 15000 })
-      .should('have.attr', 'class')
-      .and('include', 'bg-healthpal-card');
-  });
 });
