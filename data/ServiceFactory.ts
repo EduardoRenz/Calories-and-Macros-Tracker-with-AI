@@ -25,7 +25,8 @@ import { NextApiImageRecognitionService } from './services/NextApiImageRecogniti
 
 import { RepositoryFactory } from './RepositoryFactory';
 
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+const BACKEND_PROVIDER = process.env.BACKEND_PROVIDER ?? 'firebase';
+const USE_MOCKS = BACKEND_PROVIDER === 'mock';
 
 interface ApiKey {
     provider: 'gemini' | 'openai' | 'deepseek';

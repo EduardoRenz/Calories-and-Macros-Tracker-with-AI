@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { getSupabaseAdminClient } from '@/data/supabaseServer';
 
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+const USE_MOCKS = process.env.BACKEND_PROVIDER === 'mock';
 const BACKEND_PROVIDER = (process.env.BACKEND_PROVIDER ?? 'firebase').toLowerCase();
 
 if (!USE_MOCKS && !admin.apps.length) {

@@ -20,7 +20,6 @@ const nextConfig: NextConfig = {
     // but we should be aware of this.
     env: {
         NEXT_PUBLIC_APP_VERSION: packageJson.version,
-        NEXT_PUBLIC_USE_MOCKS: process.env.NEXT_PUBLIC_USE_MOCKS,
         BACKEND_PROVIDER: process.env.BACKEND_PROVIDER,
         FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
         FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
