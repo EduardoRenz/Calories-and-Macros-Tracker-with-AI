@@ -60,11 +60,12 @@ export class MockAuthRepository implements AuthRepository {
     }
 
     async signIn(email: string, password?: string): Promise<User | null> {
+        const displayName = email.split('@')[0].replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         const user: User = {
             uid: `mock-uid-${email.replace(/[@.]/g, '-')}`, // Create a stable UID from email
             email: email,
-            displayName: email.split('@')[0].replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            photoURL: `https://ui-avatars.com/api/?name=${email}&background=random`,
+            displayName: displayName,
+            photoURL: null, // Will use local Avatar component
         };
         currentUser = user;
         setMockUser(user);
@@ -77,7 +78,7 @@ export class MockAuthRepository implements AuthRepository {
             uid: 'mock-google-user-123',
             email: 'user@example.com',
             displayName: 'Demo User',
-            photoURL: 'https://ui-avatars.com/api/?name=Demo+User&background=AFFF34&color=101614',
+            photoURL: null, // Will use local Avatar component
         };
         currentUser = user;
         setMockUser(user);

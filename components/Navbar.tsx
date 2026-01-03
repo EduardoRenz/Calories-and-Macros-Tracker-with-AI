@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
+import { Avatar } from './ui/Avatar';
 
 interface NavbarProps {
     onQuickMealClick: () => void;
@@ -39,11 +40,6 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
         { path: '/profile', label: 'profile' },
         { path: '/settings', label: 'settings' }
     ];
-
-    const getInitials = (name: string | null | undefined) => {
-        if (!name) return '';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase();
-    }
 
     return (
         <header className="relative flex justify-between items-center px-6 lg:px-8 pt-6 lg:pt-8 border-b border-healthpal-border pb-4">
@@ -101,7 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         {user?.photoURL ? (
                             <Image src={user.photoURL} alt="User" width={40} height={40} className="w-full h-full object-cover" />
                         ) : (
-                            <span className="font-bold text-healthpal-text-secondary">{getInitials(user?.displayName)}</span>
+                            <Avatar name={user?.displayName || 'User'} size={40} className="w-full h-full" />
                         )}
                     </button>
 

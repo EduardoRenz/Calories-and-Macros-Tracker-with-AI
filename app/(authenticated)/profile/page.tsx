@@ -8,6 +8,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { UserProfile, WeightEntry } from '@/domain/entities/profile';
 import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
+import { Avatar } from '@/components/ui/Avatar';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { useAuth } from '@/contexts/AuthContext';
 import { EditIcon } from '@/components/icons';
@@ -197,7 +198,11 @@ export default function ProfilePage() {
                     <div className="bg-healthpal-card p-6 rounded-2xl flex items-center gap-6">
                         <div className="relative">
                             <div className="w-24 h-24 bg-healthpal-card rounded-full border border-healthpal-border overflow-hidden">
-                                {user?.photoURL && <Image src={user.photoURL} alt="Profile" width={96} height={96} className="w-full h-full object-cover" />}
+                                {user?.photoURL ? (
+                                    <Image src={user.photoURL} alt="Profile" width={96} height={96} className="w-full h-full object-cover" />
+                                ) : (
+                                    <Avatar name={user?.displayName || 'User'} size={96} className="w-full h-full" />
+                                )}
                             </div>
                             <button className="absolute bottom-0 right-0 w-8 h-8 bg-healthpal-green rounded-full flex items-center justify-center text-black hover:brightness-110">
                                 <EditIcon className="w-5 h-5" />
