@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "dev:mock": "NEXT_PUBLIC_USE_MOCKS=true next dev",
+    "dev:mock": "BACKEND_PROVIDER=mock next dev",
     "build": "next build",
-    "build:mock": "NEXT_PUBLIC_USE_MOCKS=true next build",
+    "build:mock": "BACKEND_PROVIDER=mock next build",
     "start": "next start",
     "lint": "next lint",
-    "cy:open": "NEXT_PUBLIC_USE_MOCKS=true cypress open",
-    "cy:run": "NEXT_PUBLIC_USE_MOCKS=true cypress run"
+    "cy:open": "BACKEND_PROVIDER=mock cypress open",
+    "cy:run": "BACKEND_PROVIDER=mock cypress run"
   },
   "dependencies": {
     "@google/genai": "^1.26.0",

@@ -14,7 +14,13 @@ const firebaseConfig = {
   measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
-const shouldInit = process.env.NEXT_PUBLIC_USE_MOCKS !== 'true' && !!firebaseConfig.apiKey;
+const BACKEND_PROVIDER = (
+  process.env.BACKEND_PROVIDER ??
+  process.env.NEXT_PUBLIC_BACKEND_PROVIDER ??
+  'firebase'
+).toLowerCase();
+
+const shouldInit = BACKEND_PROVIDER !== 'mock' && !!firebaseConfig.apiKey;
 
 // Initialize Firebase
 const app = shouldInit ? initializeApp(firebaseConfig) : null;

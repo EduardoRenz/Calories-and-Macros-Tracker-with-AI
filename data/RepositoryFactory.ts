@@ -8,22 +8,61 @@ import { LocalDashboardRepository } from './repositories/LocalDashboardRepositor
 import { LocalProfileRepository } from './repositories/LocalProfileRepository';
 import { LocalFoodAnalysisRepository } from './repositories/LocalFoodAnalysisRepository';
 import { LocalHistoryRepository } from './repositories/LocalHistoryRepository';
+import { MockAuthRepository } from './repositories/MockAuthRepository';
+import { ApiProfileRepository } from './repositories/ApiProfileRepository';
+import { ApiDashboardRepository } from './repositories/ApiDashboardRepository';
+import { ApiHistoryRepository } from './repositories/ApiHistoryRepository';
+import { ApiFoodAnalysisRepository } from './repositories/ApiFoodAnalysisRepository';
+import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
+import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
 import { FirestoreDashboardRepository } from './repositories/FirestoreDashboardRepository';
 import { FirestoreProfileRepository } from './repositories/FirestoreProfileRepository';
 import { FirestoreFoodAnalysisRepository } from './repositories/FirestoreFoodAnalysisRepository';
 import { FirestoreHistoryRepository } from './repositories/FirestoreHistoryRepository';
-import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
-import { MockAuthRepository } from './repositories/MockAuthRepository';
 import { SupabaseDashboardRepository } from './repositories/SupabaseDashboardRepository';
 import { SupabaseProfileRepository } from './repositories/SupabaseProfileRepository';
 import { SupabaseFoodAnalysisRepository } from './repositories/SupabaseFoodAnalysisRepository';
 import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryRepository';
-import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
 
-// Switch these flags to false to use local data/auth to avoid configuration errors
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
-const BACKEND_PROVIDER = (process.env.BACKEND_PROVIDER ?? 'firebase').toLowerCase();
-const USE_SUPABASE = BACKEND_PROVIDER === 'supabase';
+const BACKEND_PROVIDER = (
+    process.env.BACKEND_PROVIDER ??
+    process.env.NEXT_PUBLIC_BACKEND_PROVIDER ??
+    'firebase'
+).toLowerCase();
+
+const IS_SERVER = typeof window === 'undefined';
+
+const serverStrategies = {
+    firebase: {
+        dashboard: () => new FirestoreDashboardRepository(),
+        profile: () => new FirestoreProfileRepository(),
+        foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
+        history: () => new FirestoreHistoryRepository(),
+        auth: () => new FirebaseAuthRepository(),
+    },
+    supabase: {
+        dashboard: () => new SupabaseDashboardRepository(),
+        profile: () => new SupabaseProfileRepository(),
+        foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
+        history: () => new SupabaseHistoryRepository(),
+        auth: () => new SupabaseAuthRepository(),
+    },
+    mock: {
+        dashboard: () => new LocalDashboardRepository(),
+        profile: () => new LocalProfileRepository(),
+        foodAnalysis: () => new LocalFoodAnalysisRepository(),
+        history: () => new LocalHistoryRepository(),
+        auth: () => new MockAuthRepository(),
+    }
+};
+
+const apiStrategies = {
+    dashboard: () => new ApiDashboardRepository(),
+    profile: () => new ApiProfileRepository(),
+    foodAnalysis: () => new ApiFoodAnalysisRepository(),
+    history: () => new ApiHistoryRepository(),
+    auth: () => (BACKEND_PROVIDER === 'supabase' ? new SupabaseAuthRepository() : new FirebaseAuthRepository()),
+};
 
 export class RepositoryFactory {
     private static dashboardRepository: DashboardRepository | null = null;
@@ -32,34 +71,38 @@ export class RepositoryFactory {
     private static foodAnalysisRepository: FoodAnalysisRepository | null = null;
     private static historyRepository: HistoryRepository | null = null;
 
+    private static getStrategy() {
+        if (IS_SERVER || BACKEND_PROVIDER === 'mock') {
+            return serverStrategies[BACKEND_PROVIDER as keyof typeof serverStrategies] || serverStrategies.firebase;
+        }
+        return apiStrategies;
+    }
+
     public static getDashboardRepository(): DashboardRepository {
         if (!this.dashboardRepository) {
-            if (!USE_MOCKS) {
-                this.dashboardRepository = USE_SUPABASE ? new SupabaseDashboardRepository() : new FirestoreDashboardRepository();
-            } else {
-                this.dashboardRepository = new LocalDashboardRepository();
-            }
+            this.dashboardRepository = this.getStrategy().dashboard();
         }
         return this.dashboardRepository;
     }
 
     public static getProfileRepository(): ProfileRepository {
         if (!this.profileRepository) {
-            if (!USE_MOCKS) {
-                this.profileRepository = USE_SUPABASE ? new SupabaseProfileRepository() : new FirestoreProfileRepository();
-            } else {
-                this.profileRepository = new LocalProfileRepository();
-            }
+            this.profileRepository = this.getStrategy().profile();
         }
         return this.profileRepository;
     }
 
     public static getAuthRepository(): AuthRepository {
         if (!this.authRepository) {
-            if (!USE_MOCKS) {
-                this.authRepository = USE_SUPABASE ? new SupabaseAuthRepository() : new FirebaseAuthRepository();
-            } else {
+            const strategy = this.getStrategy();
+            // Auth is a bit special because we might need direct auth even on client for login flow,
+            // unless we're in mock mode.
+            if (BACKEND_PROVIDER === 'mock') {
                 this.authRepository = new MockAuthRepository();
+            } else {
+                this.authRepository = BACKEND_PROVIDER === 'supabase'
+                    ? new SupabaseAuthRepository()
+                    : new FirebaseAuthRepository();
             }
         }
         return this.authRepository;
@@ -67,22 +110,14 @@ export class RepositoryFactory {
 
     public static getFoodAnalysisRepository(): FoodAnalysisRepository {
         if (!this.foodAnalysisRepository) {
-            if (!USE_MOCKS) {
-                this.foodAnalysisRepository = USE_SUPABASE ? new SupabaseFoodAnalysisRepository() : new FirestoreFoodAnalysisRepository();
-            } else {
-                this.foodAnalysisRepository = new LocalFoodAnalysisRepository();
-            }
+            this.foodAnalysisRepository = this.getStrategy().foodAnalysis();
         }
         return this.foodAnalysisRepository;
     }
 
     public static getHistoryRepository(): HistoryRepository {
         if (!this.historyRepository) {
-            if (!USE_MOCKS) {
-                this.historyRepository = USE_SUPABASE ? new SupabaseHistoryRepository() : new FirestoreHistoryRepository();
-            } else {
-                this.historyRepository = new LocalHistoryRepository();
-            }
+            this.historyRepository = this.getStrategy().history();
         }
         return this.historyRepository;
     }

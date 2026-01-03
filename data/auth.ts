@@ -2,7 +2,12 @@ import { auth as firebaseAuth } from './firebase';
 import type { Auth, User as FirebaseUser } from 'firebase/auth';
 
 // This flag is mirrored from RepositoryFactory to avoid circular dependencies.
-const USE_MOCK_AUTH = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+const BACKEND_PROVIDER = (
+    process.env.BACKEND_PROVIDER ??
+    process.env.NEXT_PUBLIC_BACKEND_PROVIDER ??
+    'firebase'
+).toLowerCase();
+const IS_MOCK = BACKEND_PROVIDER === 'mock';
 
 let mockCurrentUser: FirebaseUser | null = null;
 
@@ -17,7 +22,7 @@ export const setMockUser = (user: { uid: string; email: string | null; displayNa
 };
 
 export const getAuth = (): Auth => {
-    if (USE_MOCK_AUTH) {
+    if (IS_MOCK) {
         return {
             currentUser: mockCurrentUser,
         } as Auth;

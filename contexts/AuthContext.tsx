@@ -21,9 +21,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = authRepository.onAuthStateChanged((firebaseUser) => {
+    const unsubscribe = authRepository.onAuthStateChanged(async (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+
+      // Store auth token for API calls
+      if (firebaseUser) {
+        try {
+          const token = await authRepository.getIdToken();
+          if (token) {
+            localStorage.setItem('authToken', token);
+          }
+        } catch (error) {
+          console.error('Failed to get ID token:', error);
+        }
+      } else {
+        localStorage.removeItem('authToken');
+      }
     });
 
     return () => unsubscribe();
@@ -32,7 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signIn = async (email: string, password?: string) => {
     setLoading(true);
     const signedInUser = await authRepository.signIn(email, password);
-    // The onAuthStateChanged listener will handle setting the user and loading state.
+    // The onAuthStateChanged listener will handle setting the user, loading state, and token.
     return signedInUser;
   };
 

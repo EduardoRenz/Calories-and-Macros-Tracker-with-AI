@@ -1,10 +1,14 @@
 import * as admin from 'firebase-admin';
 import { getSupabaseAdminClient } from '@/data/supabaseServer';
 
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
-const BACKEND_PROVIDER = (process.env.BACKEND_PROVIDER ?? 'firebase').toLowerCase();
+const BACKEND_PROVIDER = (
+    process.env.BACKEND_PROVIDER ??
+    process.env.NEXT_PUBLIC_BACKEND_PROVIDER ??
+    'firebase'
+).toLowerCase();
+const IS_MOCK = BACKEND_PROVIDER === 'mock';
 
-if (!USE_MOCKS && !admin.apps.length) {
+if (!IS_MOCK && !admin.apps.length) {
     admin.initializeApp({
         projectId: process.env.FIREBASE_PROJECT_ID,
     });
@@ -20,7 +24,7 @@ export interface AuthenticatedUser {
  * Returns the decoded user information or throws an error.
  */
 export async function verifyAuth(authHeader: string | null): Promise<AuthenticatedUser> {
-    if (USE_MOCKS) {
+    if (IS_MOCK) {
         // In mock mode, we accept anything and return a mock user
         console.log('[Auth] Mock mode: skipping token verification');
         return { uid: 'mock-user-id', email: 'mock@example.com' };

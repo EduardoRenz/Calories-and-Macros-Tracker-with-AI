@@ -25,7 +25,13 @@ import { NextApiImageRecognitionService } from './services/NextApiImageRecogniti
 
 import { RepositoryFactory } from './RepositoryFactory';
 
-const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+const BACKEND_PROVIDER = (
+    process.env.BACKEND_PROVIDER ??
+    process.env.NEXT_PUBLIC_BACKEND_PROVIDER ??
+    'firebase'
+).toLowerCase();
+
+const IS_MOCK = BACKEND_PROVIDER === 'mock';
 
 interface ApiKey {
     provider: 'gemini' | 'openai' | 'deepseek';
@@ -39,7 +45,7 @@ export class ServiceFactory {
     private static imageInstance: ImageRecognitionService | null = null;
 
     public static getFoodAnalysisService(): FoodAnalysisService {
-        if (USE_MOCKS) {
+        if (IS_MOCK) {
             return new MockFoodAnalysisService();
         }
 
@@ -50,7 +56,7 @@ export class ServiceFactory {
     }
 
     public static getNutritionAnalysisService(): import("../domain/services/NutritionAnalysisService").NutritionAnalysisService {
-        if (USE_MOCKS) {
+        if (IS_MOCK) {
             return new MockNutritionAnalysisService();
         }
         if (this.nutritionInstance) {
@@ -61,7 +67,7 @@ export class ServiceFactory {
     }
 
     public static getImageRecognitionService(): ImageRecognitionService {
-        if (USE_MOCKS) {
+        if (IS_MOCK) {
             return new MockImageRecognitionService();
         }
         if (this.imageInstance) {
