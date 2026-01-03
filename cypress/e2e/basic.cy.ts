@@ -21,7 +21,7 @@ describe('Basic Application Flow', () => {
     cy.contains('Calories');
     
     // Verify user avatar is present (Mock user has photoURL)
-    cy.get('img[alt="User"]').should('be.visible');
+    cy.get('[data-testid="avatar"]').should('be.visible');
   });
 
   it('should navigate to different pages and update URL', () => {
