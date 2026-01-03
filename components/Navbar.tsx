@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
@@ -91,14 +90,15 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                 <div className="relative" ref={avatarMenuRef}>
                     <button
                         onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
-                        className="w-10 h-10 bg-healthpal-card rounded-full flex items-center justify-center border-2 border-healthpal-border overflow-hidden hover:border-healthpal-green transition-colors"
+                        className="hover:border-healthpal-green transition-colors"
                         aria-label="User menu"
                     >
-                        {user?.photoURL ? (
-                            <Image src={user.photoURL} alt="User" width={40} height={40} className="w-full h-full object-cover" />
-                        ) : (
-                            <Avatar name={user?.displayName || 'User'} size={40} className="w-full h-full" />
-                        )}
+                        <Avatar
+                            name={user?.displayName || 'User'}
+                            size={40}
+                            className="border-2 border-healthpal-border"
+                            photoURL={user?.photoURL}
+                        />
                     </button>
 
                     {/* Avatar dropdown menu */}

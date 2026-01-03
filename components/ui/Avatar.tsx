@@ -1,16 +1,41 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface AvatarProps {
     name?: string;
     size?: number;
     className?: string;
+    photoURL?: string | null;
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
     name = 'User',
     size = 40,
-    className = ''
+    className = '',
+    photoURL
 }) => {
+    // If photoURL is provided, use the image
+    if (photoURL) {
+        return (
+            <div
+                className={`overflow-hidden ${className}`}
+                style={{
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    borderRadius: '50%',
+                }}
+            >
+                <Image
+                    src={photoURL}
+                    alt={name || 'User'}
+                    width={size}
+                    height={size}
+                    className="w-full h-full object-cover"
+                />
+            </div>
+        );
+    }
+
     // Generate consistent color based on name
     const stringToColor = (str: string) => {
         let hash = 0;
@@ -37,12 +62,14 @@ export const Avatar: React.FC<AvatarProps> = ({
 
     return (
         <div
-            className={`flex items-center justify-center rounded-full text-white font-semibold ${className}`}
+            data-testid="avatar"
+            className={`flex items-center justify-center text-white font-semibold ${className}`}
             style={{
                 width: `${size}px`,
                 height: `${size}px`,
                 backgroundColor,
                 fontSize: `${size * 0.4}px`,
+                borderRadius: '50%',
             }}
         >
             {initials}
