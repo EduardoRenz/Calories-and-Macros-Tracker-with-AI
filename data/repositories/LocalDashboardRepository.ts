@@ -2,6 +2,7 @@ import { DashboardRepository } from '../../domain/repositories/DashboardReposito
 import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/dashboard';
 import { LocalProfileRepository } from './LocalProfileRepository';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 
 const createEmptyDashboard = (date: string, goals: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
@@ -76,14 +77,15 @@ export class LocalDashboardRepository implements DashboardRepository {
     // Simulate a local data store
     private dailyDataStore = new Map<string, DashboardData>();
     private isSeeded = false;
+    private concurrencyManager = new ConcurrencyRequestManager();
 
-    constructor()  {
+    constructor() {
         this.seedMockDashboards(this.profileRepository);
     }
 
     private seedMockDashboards = async (profileRepository: LocalProfileRepository) => {
         if (this.isSeeded) return;
-        
+
         const profile = await profileRepository.getProfile();
         const goals = CalorieCalculationService.calculateGoals(profile);
 
@@ -165,20 +167,23 @@ export class LocalDashboardRepository implements DashboardRepository {
             data.meals.dinner.ingredients = [createIngredient('seed-d7-d1', 'Omelette', 380, 28, 5, 26, 26)];
             this.dailyDataStore.set(d7, recalculateTotals(data));
         }
-        
+
         this.isSeeded = true;
     };
 
     async getDashboardForDate(date: string): Promise<DashboardData> {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        await this.seedMockDashboards(this.profileRepository);
+        const key = `getDashboardForDate:${date}`;
+        return this.concurrencyManager.run(key, async () => {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            await this.seedMockDashboards(this.profileRepository);
 
-        if (!this.dailyDataStore.has(date)) {
-            const profile = await this.profileRepository.getProfile();
-            const goals = CalorieCalculationService.calculateGoals(profile);
-            this.dailyDataStore.set(date, createEmptyDashboard(date, goals));
-        }
-        return JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!));
+            if (!this.dailyDataStore.has(date)) {
+                const profile = await this.profileRepository.getProfile();
+                const goals = CalorieCalculationService.calculateGoals(profile);
+                this.dailyDataStore.set(date, createEmptyDashboard(date, goals));
+            }
+            return JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!));
+        });
     }
 
     async addIngredient(date: string, mealType: keyof MealSummary, ingredient: Omit<Ingredient, 'id'>): Promise<DashboardData> {
@@ -187,7 +192,7 @@ export class LocalDashboardRepository implements DashboardRepository {
 
     async addIngredients(date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]): Promise<DashboardData> {
         await new Promise(resolve => setTimeout(resolve, 300));
-        
+
         // Ensure seed data is loaded before modifying any data
         await this.seedMockDashboards(this.profileRepository);
 
@@ -216,7 +221,7 @@ export class LocalDashboardRepository implements DashboardRepository {
 
     async removeIngredient(date: string, mealType: keyof MealSummary, ingredientId: string): Promise<DashboardData> {
         await new Promise(resolve => setTimeout(resolve, 300));
-        
+
         // Ensure seed data is loaded before modifying any data
         await this.seedMockDashboards(this.profileRepository);
 

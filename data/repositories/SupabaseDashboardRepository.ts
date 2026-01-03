@@ -4,6 +4,7 @@ import { CalorieCalculationService } from '../../domain/services/CalorieCalculat
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { SupabaseProfileRepository } from './SupabaseProfileRepository';
 import { getSupabaseClient } from '../supabaseClient';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 type DashboardDayRow = {
   id: string;
@@ -79,6 +80,7 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 
 export class SupabaseDashboardRepository implements DashboardRepository {
   private profileRepository: ProfileRepository = new SupabaseProfileRepository();
+  private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
 
   private async getUserId(): Promise<string> {
     const supabase = getSupabaseClient();
@@ -201,17 +203,20 @@ export class SupabaseDashboardRepository implements DashboardRepository {
   }
 
   async getDashboardForDate(date: string): Promise<DashboardData> {
-    const day = await this.getOrCreateDashboardDay(date);
+    const key = `getDashboardForDate:${date}`;
+    return this.concurrencyManager.run(key, async () => {
+      const day = await this.getOrCreateDashboardDay(date);
 
-    const profile = await this.profileRepository.getProfile();
-    const goals = CalorieCalculationService.calculateGoals(profile);
+      const profile = await this.profileRepository.getProfile();
+      const goals = CalorieCalculationService.calculateGoals(profile);
 
-    const ingredients = await this.loadIngredients(day.id);
-    const data = this.toDashboardData(date, goals, ingredients);
+      const ingredients = await this.loadIngredients(day.id);
+      const data = this.toDashboardData(date, goals, ingredients);
 
-    await this.persistTotals(day.id, data);
+      await this.persistTotals(day.id, data);
 
-    return data;
+      return data;
+    });
   }
 
   async addIngredient(date: string, mealType: keyof MealSummary, ingredient: Omit<Ingredient, 'id'>): Promise<DashboardData> {

@@ -2,6 +2,7 @@ import { AuthRepository } from '../../domain/repositories/AuthRepository';
 import { User } from '../../domain/entities/user';
 import { Unsubscribe } from 'firebase/auth';
 import { setMockUser } from '../auth';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 // Simple in-memory store backed by localStorage
 const STORAGE_KEY = 'mock_auth_user';
@@ -25,6 +26,7 @@ let currentUser: User | null = null;
 const listeners: ((user: User | null) => void)[] = [];
 
 export class MockAuthRepository implements AuthRepository {
+    private concurrencyManager = new ConcurrencyRequestManager();
     onAuthStateChanged(callback: (user: User | null) => void): Unsubscribe {
         listeners.push(callback);
 
@@ -60,30 +62,36 @@ export class MockAuthRepository implements AuthRepository {
     }
 
     async signIn(email: string, password?: string): Promise<User | null> {
-        const displayName = email.split('@')[0].replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        const user: User = {
-            uid: `mock-uid-${email.replace(/[@.]/g, '-')}`, // Create a stable UID from email
-            email: email,
-            displayName: displayName,
-            photoURL: null, // Will use local Avatar component
-        };
-        currentUser = user;
-        setMockUser(user);
-        this.notifyListeners();
-        return user;
+        const key = `signIn:${email}:${password ? 'with-password' : 'otp'}`;
+        return this.concurrencyManager.run(key, async () => {
+            const displayName = email.split('@')[0].replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const user: User = {
+                uid: `mock-uid-${email.replace(/[@.]/g, '-')}`, // Create a stable UID from email
+                email: email,
+                displayName: displayName,
+                photoURL: null, // Will use local Avatar component
+            };
+            currentUser = user;
+            setMockUser(user);
+            this.notifyListeners();
+            return user;
+        });
     }
 
     async signInWithGoogle(): Promise<User | null> {
-        const user: User = {
-            uid: 'mock-google-user-123',
-            email: 'user@example.com',
-            displayName: 'Demo User',
-            photoURL: null, // Will use local Avatar component
-        };
-        currentUser = user;
-        setMockUser(user);
-        this.notifyListeners();
-        return user;
+        const key = 'signInWithGoogle';
+        return this.concurrencyManager.run(key, async () => {
+            const user: User = {
+                uid: 'mock-google-user-123',
+                email: 'user@example.com',
+                displayName: 'Demo User',
+                photoURL: null, // Will use local Avatar component
+            };
+            currentUser = user;
+            setMockUser(user);
+            this.notifyListeners();
+            return user;
+        });
     }
 
     async signOut(): Promise<void> {
@@ -93,7 +101,10 @@ export class MockAuthRepository implements AuthRepository {
     }
 
     async getIdToken(): Promise<string | null> {
-        if (!currentUser) return null;
-        return `mock-token-${currentUser.uid}`;
+        const key = 'getIdToken';
+        return this.concurrencyManager.run(key, async () => {
+            if (!currentUser) return null;
+            return `mock-token-${currentUser.uid}`;
+        });
     }
 }

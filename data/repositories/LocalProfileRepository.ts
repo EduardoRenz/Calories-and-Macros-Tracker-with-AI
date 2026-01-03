@@ -1,6 +1,7 @@
 
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { UserProfile, WeightEntry } from '../../domain/entities/profile';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 const initialProfile: UserProfile = {
     name: "Jane Doe",
@@ -28,16 +29,20 @@ const initialProfile: UserProfile = {
 let userProfileData: UserProfile = JSON.parse(JSON.stringify(initialProfile));
 
 export class LocalProfileRepository implements ProfileRepository {
+    private concurrencyManager = new ConcurrencyRequestManager();
     async getProfile(): Promise<UserProfile> {
-        // Simulate an async API call
-        await new Promise(resolve => setTimeout(resolve, 250));
-        return JSON.parse(JSON.stringify(userProfileData));
+        const key = 'getProfile';
+        return this.concurrencyManager.run(key, async () => {
+            // Simulate an async API call
+            await new Promise(resolve => setTimeout(resolve, 250));
+            return JSON.parse(JSON.stringify(userProfileData));
+        });
     }
 
     async updateProfile(profile: UserProfile): Promise<void> {
         // Simulate an async API call
         await new Promise(resolve => setTimeout(resolve, 250));
-        
+
         const newWeight = profile.personalInfo.weight;
         const now = new Date();
         const year = now.getFullYear();
@@ -56,7 +61,7 @@ export class LocalProfileRepository implements ProfileRepository {
             // Add new entry for today
             updatedHistory.push({ date: today, weight: newWeight });
         }
-        
+
         // Ensure history is sorted by date before saving
         updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 

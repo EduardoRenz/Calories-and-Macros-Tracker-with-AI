@@ -9,9 +9,11 @@ import {
 import { getAuth } from '../auth';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
 import { User } from '../../domain/entities/user';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 export class FirebaseAuthRepository implements AuthRepository {
     private auth: Auth | null;
+    private concurrencyManager = new ConcurrencyRequestManager();
 
     constructor() {
         try {
@@ -50,18 +52,21 @@ export class FirebaseAuthRepository implements AuthRepository {
     }
 
     async signInWithGoogle(): Promise<User | null> {
-        if (!this.auth) {
-            console.error("FirebaseAuthRepository: Cannot sign in, auth not initialized.");
-            return null;
-        }
-        const provider = new GoogleAuthProvider();
-        try {
-            const result = await signInWithPopup(this.auth, provider);
-            return this.mapFirebaseUserToDomain(result.user);
-        } catch (error) {
-            console.error("Error during Google sign-in:", error);
-            return null;
-        }
+        const key = 'signInWithGoogle';
+        return this.concurrencyManager.run(key, async () => {
+            if (!this.auth) {
+                console.error("FirebaseAuthRepository: Cannot sign in, auth not initialized.");
+                return null;
+            }
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(this.auth, provider);
+                return this.mapFirebaseUserToDomain(result.user);
+            } catch (error) {
+                console.error("Error during Google sign-in:", error);
+                return null;
+            }
+        });
     }
 
     async signOut(): Promise<void> {
@@ -74,7 +79,10 @@ export class FirebaseAuthRepository implements AuthRepository {
     }
 
     async getIdToken(): Promise<string | null> {
-        if (!this.auth || !this.auth.currentUser) return null;
-        return await this.auth.currentUser.getIdToken();
+        const key = 'getIdToken';
+        return this.concurrencyManager.run(key, async () => {
+            if (!this.auth || !this.auth.currentUser) return null;
+            return await this.auth.currentUser.getIdToken();
+        });
     }
 }

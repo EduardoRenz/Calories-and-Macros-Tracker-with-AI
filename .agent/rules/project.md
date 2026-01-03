@@ -8,3 +8,5 @@ trigger: always_on
 - When a new page with new domains, repositories and services is created, also create mocked versions of it and configure in the factory.
 - When a new page is created, also make a new test in cypress for this page.
 - To run test, use the command `yarn cy:run`
+- Whne implemenmting repositories and service, use the tool ConcurrencyRequestManager to avoid multiple api calls
+
