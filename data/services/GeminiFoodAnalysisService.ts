@@ -5,10 +5,12 @@ import { BaseFoodAnalysisService } from './BaseFoodAnalysisService';
 
 export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
     private ai: GoogleGenAI;
+    private model: string = process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
 
     constructor(apiKey?: string) {
         super();
         const key = apiKey || process.env.GEMINI_API_KEY;
+        console.log("Gemini model: ", this.model);
         if (!key) {
             throw new Error("Gemini API key not found");
         }
@@ -29,7 +31,7 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
 
         try {
             const response = await this.ai.models.generateContent({
-                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite',
+                model: this.model,
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",

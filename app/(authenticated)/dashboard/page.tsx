@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
 import MacroProgressCard from '@/components/MacroProgressCard';
@@ -33,16 +33,38 @@ export default function DashboardPage() {
 
     const dashboardRepository: DashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
 
+    const dateParam = useMemo(() => searchParams.get('date'), [searchParams]);
+    const initializedFromSearchParamsRef = useRef(false);
+    const lastRequestedDateRef = useRef<string | null>(null);
+    const inFlightRequestRef = useRef<Promise<void> | null>(null);
+
     const fetchDashboardData = useCallback(async (date: Date) => {
-        setIsLoading(true);
         const dateString = getFormattedDate(date);
-        const dashboardData = await dashboardRepository.getDashboardForDate(dateString);
-        setData(dashboardData);
-        setIsLoading(false);
+
+        if (lastRequestedDateRef.current === dateString && inFlightRequestRef.current) {
+            return inFlightRequestRef.current;
+        }
+
+        lastRequestedDateRef.current = dateString;
+
+        const request = (async () => {
+            setIsLoading(true);
+            console.log('Calling fetchDashboardData for date: ', dateString);
+            const dashboardData = await dashboardRepository.getDashboardForDate(dateString);
+            setData(dashboardData);
+            setIsLoading(false);
+        })().finally(() => {
+            if (inFlightRequestRef.current === request) {
+                inFlightRequestRef.current = null;
+            }
+        });
+
+        inFlightRequestRef.current = request;
+
+        return request;
     }, [dashboardRepository]);
 
     useEffect(() => {
-        const dateParam = searchParams.get('date');
         if (!dateParam) return;
 
         const match = /^\d{4}-\d{2}-\d{2}$/.test(dateParam);
@@ -53,11 +75,13 @@ export default function DashboardPage() {
         if (isNaN(parsed.getTime())) return;
 
         setCurrentDate(parsed);
-    }, [searchParams]);
+        initializedFromSearchParamsRef.current = true;
+    }, [dateParam]);
 
     useEffect(() => {
+        if (dateParam && !initializedFromSearchParamsRef.current) return;
         fetchDashboardData(currentDate);
-    }, [currentDate, fetchDashboardData]);
+    }, [currentDate, fetchDashboardData, dateParam]);
 
     // Handle refresh event from layout
     useEffect(() => {
