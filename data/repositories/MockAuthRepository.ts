@@ -1,6 +1,5 @@
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
 import { User } from '../../domain/entities/user';
-import { Unsubscribe } from 'firebase/auth';
 import { setMockUser } from '../auth';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
@@ -27,7 +26,7 @@ const listeners: ((user: User | null) => void)[] = [];
 
 export class MockAuthRepository implements AuthRepository {
     private concurrencyManager = new ConcurrencyRequestManager();
-    onAuthStateChanged(callback: (user: User | null) => void): Unsubscribe {
+    onAuthStateChanged(callback: (user: User | null) => void): void {
         listeners.push(callback);
 
         // Load initial state on first listener if in browser
@@ -40,14 +39,7 @@ export class MockAuthRepository implements AuthRepository {
 
         // Immediately call back with the current state synchronously
         callback(currentUser);
-
-        // Return an unsubscribe function
-        return () => {
-            const index = listeners.indexOf(callback);
-            if (index > -1) {
-                listeners.splice(index, 1);
-            }
-        };
+      
     }
 
     private notifyListeners() {
