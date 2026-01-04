@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-export function useBreakpoint(breakpoint: 'sm' | 'md' | 'lg' | 'xl'): boolean {
-    const [isBelow, setIsBelow] = useState(false);
+export function useBreakpoint(breakpoint: 'sm' | 'md' | 'lg' | 'xl'): boolean | undefined {
+    const [isBelow, setIsBelow] = useState<boolean | undefined>(undefined);
 
     useEffect(() => {
         const checkBreakpoint = () => {
@@ -12,13 +12,13 @@ export function useBreakpoint(breakpoint: 'sm' | 'md' | 'lg' | 'xl'): boolean {
                 lg: 1024,
                 xl: 1280,
             };
-            
+
             setIsBelow(width < breakpoints[breakpoint]);
         };
 
         checkBreakpoint();
         window.addEventListener('resize', checkBreakpoint);
-        
+
         return () => window.removeEventListener('resize', checkBreakpoint);
     }, [breakpoint]);
 

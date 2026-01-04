@@ -8,6 +8,10 @@ export function HistoryTable({ entries, onDateClick }: { entries: DailyHistoryEn
     const rows = useMemo(() => entries.filter(e => e.hasEntry), [entries]);
     const isMobile = useBreakpoint('md');
 
+    if (isMobile === undefined) {
+        return null;
+    }
+
     if (isMobile) {
         return <HistoryTableMobile entries={rows} onDateClick={onDateClick} />;
     }
