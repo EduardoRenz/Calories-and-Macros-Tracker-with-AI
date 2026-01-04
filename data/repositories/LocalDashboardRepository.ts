@@ -1,3 +1,4 @@
+import { RepositoryFactory } from '../RepositoryFactory';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/dashboard';
 import { LocalProfileRepository } from './LocalProfileRepository';
@@ -75,7 +76,13 @@ const createIngredient = (id: string, name: string, calories: number, protein: n
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class LocalDashboardRepository implements DashboardRepository {
-    private profileRepository = new LocalProfileRepository();
+    // We cast to LocalProfileRepository because we know in 'mock' mode it is one. 
+    // However, RepositoryFactory.getProfileRepository() returns ProfileRepository interface.
+    // For seeding, it expects LocalProfileRepository explicitly in the method signature?
+    // Let's check seedMockDashboards signature: (profileRepository: LocalProfileRepository)
+    // So we'll need to cast it or change the signature.
+    // Since this is LocalDashboardRepository, it's safe to assume we are in mock mode.
+    private profileRepository = RepositoryFactory.getProfileRepository() as LocalProfileRepository;
     // Simulate a local data store
     private dailyDataStore = new Map<string, DashboardData>();
     private isSeeded = false;
@@ -187,6 +194,58 @@ export class LocalDashboardRepository implements DashboardRepository {
                     this.dailyDataStore.set(date, createEmptyDashboard(date, goals));
                 }
                 return JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!));
+            });
+        });
+    }
+
+    async getDashboardRange(startDate: string, endDate: string): Promise<DashboardData[]> {
+        const key = `getDashboardRange:${startDate}:${endDate}`;
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                // Ensure seed data for range? No efficient way to seed range without iterating.
+                // But seeding logic is date-based. 'seedMockDashboards' fills relative to today.
+                // Assuming seedMockDashboards(this.profileRepository) covers relevant mock data.
+                await this.seedMockDashboards(this.profileRepository);
+
+                const listDates = (start: string, end: string): string[] => {
+                    const result: string[] = [];
+                    let current = new Date(start + 'T00:00:00');
+                    const last = new Date(end + 'T00:00:00');
+                    if (isNaN(current.getTime())) {
+                        const [y, m, d] = start.split('-').map(Number);
+                        current = new Date(y, m - 1, d);
+                    }
+                    let lastDate = last;
+                    if (isNaN(last.getTime())) {
+                        const [y, m, d] = end.split('-').map(Number);
+                        lastDate = new Date(y, m - 1, d);
+                    }
+
+                    while (current <= lastDate) {
+                        const y = current.getFullYear();
+                        const m = String(current.getMonth() + 1).padStart(2, '0');
+                        const d = String(current.getDate()).padStart(2, '0');
+                        result.push(`${y}-${m}-${d}`);
+                        current.setDate(current.getDate() + 1);
+                    }
+                    return result;
+                };
+
+                const allDates = listDates(startDate, endDate);
+                const result: DashboardData[] = [];
+                const profile = await this.profileRepository.getProfile();
+                const goals = CalorieCalculationService.calculateGoals(profile);
+
+                for (const date of allDates) {
+                    if (this.dailyDataStore.has(date)) {
+                        result.push(JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!)));
+                    } else {
+                        // In local mock, we return empty structure for missing days
+                        result.push(createEmptyDashboard(date, goals));
+                    }
+                }
+                return result;
             });
         });
     }

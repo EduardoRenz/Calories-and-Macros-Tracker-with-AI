@@ -35,6 +35,14 @@ export class FirestoreProfileRepository implements ProfileRepository {
         return doc(getDb(), 'profiles', user.uid);
     }
 
+    async getUserId(): Promise<string> {
+        const user = this.auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found.");
+        }
+        return user.uid;
+    }
+
     async getProfile(): Promise<UserProfile> {
         return this.concurrencyManager.run('getProfile', async () => {
             const user = this.auth.currentUser;

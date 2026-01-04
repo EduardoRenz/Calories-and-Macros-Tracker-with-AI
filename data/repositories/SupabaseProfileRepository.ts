@@ -25,13 +25,18 @@ type WeightHistoryRow = {
 export class SupabaseProfileRepository implements ProfileRepository {
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
   private dataCacheManager: DataCacheManager = new DataCacheManager();
+  private userId: string | undefined;
 
-  private async getUserId(): Promise<string> {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    if (!data.user) throw new Error('User not authenticated. Cannot fetch profile.');
-    return data.user.id;
+  async getUserId(): Promise<string> {
+    if (this.userId) return this.userId;
+    return this.concurrencyManager.run('GET_USER_ID_LOCK', async () => {
+      const supabase = getSupabaseClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (error) throw error;
+      if (!data.user) throw new Error('User not authenticated. Cannot fetch profile.');
+      this.userId = data.user.id;
+      return data.user.id;
+    });
   }
 
   private mapToDomain(profile: ProfilesRow, weightHistory: WeightHistoryRow[]): UserProfile {
@@ -59,7 +64,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
     // We need userId for the cache key to be safe across users (if implementation is shared)
     // However, fetching userId might also be an async op we want to cache? 
     // Usually auth getUser is fast/cached by client, but let's be safe.
-    // For now, we'll fetch userId first.
+    // For now, we'll fetch userId first (deduplicated).
     const userId = await this.getUserId();
     const key = `profile:${userId}`;
 

@@ -35,7 +35,9 @@ import { DataCacheManager } from '../infrastructure/DataCacheManager';
 export class LocalProfileRepository implements ProfileRepository {
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
-
+    async getUserId(): Promise<string> {
+        return "mock-user-id";
+    }
     async getProfile(): Promise<UserProfile> {
         const key = 'getProfile';
         return this.dataCacheManager.getCached(key, async () => {

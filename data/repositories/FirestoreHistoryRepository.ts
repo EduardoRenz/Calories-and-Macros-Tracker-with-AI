@@ -8,7 +8,7 @@ import { getAuth } from '../auth';
 import { DashboardData, MealSummary } from '../../domain/entities/dashboard';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { FirestoreProfileRepository } from './FirestoreProfileRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
@@ -30,7 +30,7 @@ const calculateTotalFiber = (meals?: MealSummary): number => {
 
 export class FirestoreHistoryRepository implements HistoryRepository {
   private auth = getAuth();
-  private profileRepository: ProfileRepository = new FirestoreProfileRepository();
+  private profileRepository: ProfileRepository = RepositoryFactory.getProfileRepository();
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
 

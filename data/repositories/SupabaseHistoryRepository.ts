@@ -1,9 +1,10 @@
+import { RepositoryFactory } from '../RepositoryFactory';
 import { HistoryRepository, HistoryPage } from '../../domain/repositories/HistoryRepository';
 import { DailyHistoryEntry } from '../../domain/entities/history';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
-import { SupabaseProfileRepository } from './SupabaseProfileRepository';
+
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 type DashboardDayRow = {
@@ -22,17 +23,11 @@ type IngredientRow = {
 };
 
 export class SupabaseHistoryRepository implements HistoryRepository {
-  private profileRepository = new SupabaseProfileRepository();
+  private profileRepository = RepositoryFactory.getProfileRepository();
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
 
-  private async getUserId(): Promise<string> {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    if (!data.user) throw new Error('No authenticated user found for history operations.');
-    return data.user.id;
-  }
+
 
   private async loadDays(userId: string, startDate: string, endDate: string): Promise<DashboardDayRow[]> {
     const supabase = getSupabaseClient();
@@ -80,7 +75,7 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryRange:${params.startDate}:${params.endDate}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const userId = await this.getUserId();
+        const userId = await this.profileRepository.getUserId();
 
         const days = await this.loadDays(userId, params.startDate, params.endDate);
 
@@ -112,7 +107,7 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryPage:${params.startDate}:${params.endDate}:${params.pageSize}:${params.cursor}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const userId = await this.getUserId();
+        const userId = await this.profileRepository.getUserId();
 
         const supabase = getSupabaseClient();
 

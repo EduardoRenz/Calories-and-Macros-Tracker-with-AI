@@ -2,7 +2,7 @@ import { DashboardRepository } from '../../domain/repositories/DashboardReposito
 import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/dashboard';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { SupabaseProfileRepository } from './SupabaseProfileRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
@@ -80,21 +80,13 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 };
 
 export class SupabaseDashboardRepository implements DashboardRepository {
-  private profileRepository: ProfileRepository = new SupabaseProfileRepository();
+  private profileRepository: ProfileRepository = RepositoryFactory.getProfileRepository();
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
   private dataCacheManager: DataCacheManager = new DataCacheManager();
 
-  private async getUserId(): Promise<string> {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    if (!data.user) throw new Error('No authenticated user found for dashboard operations.');
-    return data.user.id;
-  }
-
   private async getOrCreateDashboardDay(date: string): Promise<DashboardDayRow> {
     const supabase = getSupabaseClient();
-    const userId = await this.getUserId();
+    const userId = await this.profileRepository.getUserId();
 
     const profile = await this.profileRepository.getProfile();
     const goals = CalorieCalculationService.calculateGoals(profile);
@@ -223,13 +215,119 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     });
   }
 
+  async getDashboardRange(startDate: string, endDate: string): Promise<DashboardData[]> {
+    const key = `getDashboardRange:${startDate}:${endDate}`;
+    return this.dataCacheManager.getCached(key, async () => {
+      return this.concurrencyManager.run(key, async () => {
+        const userId = await this.profileRepository.getUserId();
+        const supabase = getSupabaseClient();
+
+        // 1. Fetch days
+        const { data: days, error: daysError } = await supabase
+          .from('dashboard_days')
+          .select('*')
+          .eq('user_id', userId)
+          .gte('date', startDate)
+          .lte('date', endDate);
+
+        if (daysError) throw daysError;
+
+        const dayRows = (days ?? []) as DashboardDayRow[];
+        const dayIds = dayRows.map(d => d.id);
+
+        // 2. Fetch ingredients for those days
+        let ingredientRows: DashboardIngredientRow[] = [];
+        if (dayIds.length > 0) {
+          const { data: ings, error: ingsError } = await supabase
+            .from('dashboard_ingredients')
+            .select('id,dashboard_day_id,meal_type,name,calories,protein,carbs,fats,fiber')
+            .in('dashboard_day_id', dayIds);
+
+          if (ingsError) throw ingsError;
+          ingredientRows = (ings ?? []) as DashboardIngredientRow[];
+        }
+
+        // 3. Prepare result map
+        const result: DashboardData[] = [];
+        const daysMap = new Map(dayRows.map(d => [d.date, d]));
+        const ingredientsMap = new Map<string, DashboardIngredientRow[]>();
+
+        for (const ing of ingredientRows) {
+          if (!ingredientsMap.has(ing.dashboard_day_id)) {
+            ingredientsMap.set(ing.dashboard_day_id, []);
+          }
+          ingredientsMap.get(ing.dashboard_day_id)!.push(ing);
+        }
+
+        // 4. Get profile for goals
+        const profile = await this.profileRepository.getProfile();
+        const goals = CalorieCalculationService.calculateGoals(profile);
+
+        // 5. Build seamless range
+        const listDates = (start: string, end: string): string[] => {
+          const result: string[] = [];
+          let current = new Date(start + 'T00:00:00'); // Ensure TZ correctness by using basic ISO
+          const last = new Date(end + 'T00:00:00');
+          // Check if parsing failed (simple workaround for yyyy-mm-dd)
+          if (isNaN(current.getTime())) {
+            const [y, m, d] = start.split('-').map(Number);
+            current = new Date(y, m - 1, d);
+          }
+          let lastDate = last;
+          if (isNaN(last.getTime())) {
+            const [y, m, d] = end.split('-').map(Number);
+            lastDate = new Date(y, m - 1, d);
+          }
+
+          // Simple loop
+          while (current <= lastDate) {
+            const y = current.getFullYear();
+            const m = String(current.getMonth() + 1).padStart(2, '0');
+            const d = String(current.getDate()).padStart(2, '0');
+            result.push(`${y}-${m}-${d}`);
+            current.setDate(current.getDate() + 1);
+          }
+          return result;
+        };
+
+        const allDates = listDates(startDate, endDate);
+
+        for (const date of allDates) {
+          const dayRow = daysMap.get(date);
+          if (dayRow) {
+            // Existing day
+            const dayIngredients = ingredientsMap.get(dayRow.id) ?? [];
+            // We use calculateGoals(profile) as fallback, but ideally we should use stored goals in dayRow
+            // However, the toDashboardData helper currently takes 'goals' as unified input.
+            // Let's rely on toDashboardData's internal logic or pass specific goals if we want to respect history.
+            // toDashboardData uses the PASSED goals effectively setting them as 'goal' in macros.
+            // But the dayRow has stored goals: dayRow.calories_goal, etc.
+            const historicGoals = {
+              calories: dayRow.calories_goal,
+              protein: dayRow.protein_goal ?? goals.protein,
+              carbs: dayRow.carbs_goal ?? goals.carbs,
+              fats: dayRow.fats_goal ?? goals.fats,
+            };
+
+            result.push(this.toDashboardData(date, historicGoals, dayIngredients));
+          } else {
+            // Missing day - Return ephemeral empty dashboard (mimicking creation but not saving)
+            result.push(createEmptyDashboard(date, goals));
+          }
+        }
+
+        return result;
+      });
+    });
+  }
+
   async addIngredient(date: string, mealType: keyof MealSummary, ingredient: Omit<Ingredient, 'id'>): Promise<DashboardData> {
     return this.addIngredients(date, mealType, [ingredient]);
   }
 
   async addIngredients(date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]): Promise<DashboardData> {
     const supabase = getSupabaseClient();
-    const userId = await this.getUserId();
+    const userId = await this.profileRepository.getUserId();
 
     const day = await this.getOrCreateDashboardDay(date);
 

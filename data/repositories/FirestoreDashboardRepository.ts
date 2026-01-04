@@ -1,10 +1,10 @@
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/dashboard';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, where, getDocs, documentId } from 'firebase/firestore';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
-import { FirestoreProfileRepository } from './FirestoreProfileRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
@@ -59,7 +59,7 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 
 export class FirestoreDashboardRepository implements DashboardRepository {
     private auth = getAuth();
-    private profileRepository: ProfileRepository = new FirestoreProfileRepository();
+    private profileRepository: ProfileRepository = RepositoryFactory.getProfileRepository();
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
 
@@ -130,6 +130,75 @@ export class FirestoreDashboardRepository implements DashboardRepository {
                 }
 
                 return data;
+            });
+        });
+    }
+
+    async getDashboardRange(startDate: string, endDate: string): Promise<DashboardData[]> {
+        const key = `getDashboardRange:${startDate}:${endDate}`;
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                const user = this.auth.currentUser;
+                if (!user) {
+                    throw new Error("No authenticated user found for dashboard operations.");
+                }
+
+                const colRef = collection(getDb(), 'users', user.uid, 'dashboard_data');
+                // Note: documentId() is the date string
+                const q = query(
+                    colRef,
+                    where(documentId(), '>=', startDate),
+                    where(documentId(), '<=', endDate)
+                );
+
+                const snap = await getDocs(q);
+
+                const profile = await this.profileRepository.getProfile();
+                const goals = CalorieCalculationService.calculateGoals(profile);
+
+                const fetchedDataMap = new Map<string, DashboardData>();
+
+                snap.docs.forEach(d => {
+                    fetchedDataMap.set(d.id, d.data() as DashboardData);
+                });
+
+                // Build seamless range
+                const listDates = (start: string, end: string): string[] => {
+                    const result: string[] = [];
+                    let current = new Date(start + 'T00:00:00');
+                    const last = new Date(end + 'T00:00:00');
+                    if (isNaN(current.getTime())) {
+                        const [y, m, d] = start.split('-').map(Number);
+                        current = new Date(y, m - 1, d);
+                    }
+                    let lastDate = last;
+                    if (isNaN(last.getTime())) {
+                        const [y, m, d] = end.split('-').map(Number);
+                        lastDate = new Date(y, m - 1, d);
+                    }
+
+                    while (current <= lastDate) {
+                        const y = current.getFullYear();
+                        const m = String(current.getMonth() + 1).padStart(2, '0');
+                        const d = String(current.getDate()).padStart(2, '0');
+                        result.push(`${y}-${m}-${d}`);
+                        current.setDate(current.getDate() + 1);
+                    }
+                    return result;
+                };
+
+                const allDates = listDates(startDate, endDate);
+                const result: DashboardData[] = [];
+
+                for (const date of allDates) {
+                    if (fetchedDataMap.has(date)) {
+                        result.push(fetchedDataMap.get(date)!);
+                    } else {
+                        result.push(createEmptyDashboard(date, goals));
+                    }
+                }
+
+                return result;
             });
         });
     }

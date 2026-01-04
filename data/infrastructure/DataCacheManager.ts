@@ -30,7 +30,7 @@ export class DataCacheManager {
         if (entry) {
             const isExpired = (now - entry.timestamp) > entry.ttl;
             if (!isExpired) {
-                // console.log(`[DataCacheManager] Cache hit for key: ${key}`);
+                console.log(`[DataCacheManager] Cache hit for key: ${key}`);
                 return entry.data as T;
             }
             // console.log(`[DataCacheManager] Cache expired for key: ${key}`);
