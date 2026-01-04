@@ -7,10 +7,8 @@ import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { HistoryService } from '@/domain/services/HistoryService';
 import { HistoryRepository } from '@/domain/repositories/HistoryRepository';
 import { useTranslation } from '@/hooks/useTranslation';
-import { HistoryTable } from '@/components/HistoryTable';
-import { HistoryCalendar } from '@/components/HistoryCalendar';
-import { HistoryAveragesCard } from '@/components/HistoryAveragesCard';
 import { DailyHistoryEntry } from '@/domain/entities/history';
+import { HistoryHeader, HistorySidebar, HistoryTableCard } from './_components';
 
 export default function HistoricoPage() {
     const { t } = useTranslation();
@@ -150,104 +148,57 @@ export default function HistoricoPage() {
 
     return (
         <>
-            <section className="flex flex-col md:flex-row justify-between items-start md:items-center my-8 gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold">{t('history.title')}</h2>
-                    <p className="text-healthpal-text-secondary mt-1">{t('history.subtitle')}</p>
-                </div>
-            </section>
+            <HistoryHeader title={t('history.title')} subtitle={t('history.subtitle')} />
 
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                    <div className="bg-healthpal-card rounded-2xl overflow-hidden">
-                        <div className="px-6 py-4 border-b border-healthpal-border">
-                            <div className="flex flex-col md:flex-row md:items-end gap-4 justify-between">
-                                <div>
-                                    <h3 className="text-xl font-bold">{t('history.table_title')}</h3>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
-                                    <div className="flex flex-col">
-                                        <label className="text-xs text-healthpal-text-secondary">{t('history.filter_start')}</label>
-                                        <input
-                                            type="date"
-                                            value={draftStartDate}
-                                            onChange={e => setDraftStartDate(e.target.value)}
-                                            data-testid="history-filter-start"
-                                            className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-xs text-healthpal-text-secondary">{t('history.filter_end')}</label>
-                                        <input
-                                            type="date"
-                                            value={draftEndDate}
-                                            onChange={e => setDraftEndDate(e.target.value)}
-                                            data-testid="history-filter-end"
-                                            className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
-                                        />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={handleApply}
-                                        data-testid="history-filter-apply"
-                                        className="bg-healthpal-green text-black font-bold px-4 py-2 rounded-lg hover:brightness-110 transition-all text-sm"
-                                    >
-                                        {t('history.apply')}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-0">
-                            {tableLoading ? (
-                                <div className="flex justify-center items-center h-64 text-healthpal-text-secondary">{t('history.loading')}</div>
-                            ) : (
-                                <>
-                                    <HistoryTable entries={tableEntries} onDateClick={handleDateClick} />
-                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-4 sm:px-6 py-4 border-t border-healthpal-border">
-                                        <button
-                                            type="button"
-                                            onClick={handlePrevPage}
-                                            disabled={pageIndex === 0}
-                                            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
-                                        >
-                                            {t('history.prev_page')}
-                                        </button>
-                                        <span className="text-sm text-healthpal-text-secondary text-center">{pageIndex + 1}</span>
-                                        <button
-                                            type="button"
-                                            onClick={handleNextPage}
-                                            disabled={!nextCursor}
-                                            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
-                                        >
-                                            {t('history.next_page')}
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
+                    <HistoryTableCard
+                        title={t('history.table_title')}
+                        loading={tableLoading}
+                        loadingLabel={t('history.loading')}
+                        entries={tableEntries}
+                        onDateClick={handleDateClick}
+                        filters={{
+                            startDate: draftStartDate,
+                            endDate: draftEndDate,
+                            onStartDateChange: setDraftStartDate,
+                            onEndDateChange: setDraftEndDate,
+                            onApply: handleApply,
+                            labels: {
+                                start: t('history.filter_start'),
+                                end: t('history.filter_end'),
+                                apply: t('history.apply'),
+                            },
+                        }}
+                        pagination={{
+                            pageIndex,
+                            hasNextPage: Boolean(nextCursor),
+                            onPrevPage: handlePrevPage,
+                            onNextPage: handleNextPage,
+                            labels: {
+                                prev: t('history.prev_page'),
+                                next: t('history.next_page'),
+                            },
+                        }}
+                    />
                 </div>
 
-                <div className="lg:col-span-1 grid grid-cols-1 gap-6">
-                    {calendarLoading ? (
-                        <div className="bg-healthpal-card p-6 rounded-2xl flex justify-center items-center h-64 text-healthpal-text-secondary">{t('history.loading')}</div>
-                    ) : (
-                        <HistoryCalendar
-                            entries={calendarEntries}
-                            onDateClick={handleDateClick}
-                            monthDate={calendarMonthDate}
-                            onMonthChange={handleMonthChange}
-                        />
-                    )}
-
-                    {avgLoading ? (
-                        <div className="bg-healthpal-card p-6 rounded-2xl flex justify-center items-center h-40 text-healthpal-text-secondary">{t('history.loading')}</div>
-                    ) : (
-                        <HistoryAveragesCard averages={averages} daysWithEntries={daysWithEntries} />
-                    )}
-                </div>
+                <HistorySidebar
+                    calendar={{
+                        loading: calendarLoading,
+                        loadingLabel: t('history.loading'),
+                        entries: calendarEntries,
+                        monthDate: calendarMonthDate,
+                        onMonthChange: handleMonthChange,
+                        onDateClick: handleDateClick,
+                    }}
+                    averages={{
+                        loading: avgLoading,
+                        loadingLabel: t('history.loading'),
+                        data: averages,
+                        daysWithEntries,
+                    }}
+                />
             </main>
         </>
     );
