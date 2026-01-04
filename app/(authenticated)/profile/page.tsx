@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { useTranslation } from '@/hooks/useTranslation';
@@ -94,16 +94,22 @@ export default function ProfilePage() {
     const [showSaveMessage, setShowSaveMessage] = useState(false);
 
     const profileRepository: ProfileRepository = useMemo(() => RepositoryFactory.getProfileRepository(), []);
+    const hasFetchedRef = useRef(false);
+
+    const fetchProfile = useCallback(async () => {
+        if (hasFetchedRef.current) return;
+
+        console.log('Fetching profile...');
+        hasFetchedRef.current = true;
+        setIsLoading(true);
+        const userProfile = await profileRepository.getProfile();
+        setProfile(userProfile);
+        setIsLoading(false);
+    }, [profileRepository]);
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            setIsLoading(true);
-            const userProfile = await profileRepository.getProfile();
-            setProfile(userProfile);
-            setIsLoading(false);
-        };
         fetchProfile();
-    }, [profileRepository]);
+    }, [fetchProfile]);
 
     const calorieGoal = useMemo(() => {
         if (!profile) return 0;
