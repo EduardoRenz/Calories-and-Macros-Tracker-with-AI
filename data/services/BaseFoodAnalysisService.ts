@@ -120,7 +120,7 @@ ${mealSummary}
 
 Please respond in ${languageName} with:
 1. Most common foods for each meal (breakfast, lunch, dinner, snacks) with consistency percentage
-2. Vitamin status analysis (A, C, D, Iron, Calcium, B12) - rate as 'good', 'low', or 'deficient'
+2. Vitamin status analysis (A, C, D, Iron, Calcium, B12 and all other important vitamins) - rate as 'good', 'low', or 'deficient'
    - For each vitamin include:
      - emoji: a single relevant emoji
      - recommendations: ONLY when status is 'low' or 'deficient' (2-4 short actionable bullets)

@@ -29,7 +29,7 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
 
         try {
             const response = await this.ai.models.generateContent({
-                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.0-flash',
+                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite',
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",
