@@ -11,9 +11,12 @@ import { AuthRepository } from '../../domain/repositories/AuthRepository';
 import { User } from '../../domain/entities/user';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
+
 export class FirebaseAuthRepository implements AuthRepository {
     private auth: Auth | null;
     private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
 
     constructor() {
         try {
@@ -61,6 +64,8 @@ export class FirebaseAuthRepository implements AuthRepository {
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(this.auth, provider);
+                // Invalidate idToken cache on new sign in
+                this.dataCacheManager.invalidate('getIdToken');
                 return this.mapFirebaseUserToDomain(result.user);
             } catch (error) {
                 console.error("Error during Google sign-in:", error);
@@ -73,6 +78,8 @@ export class FirebaseAuthRepository implements AuthRepository {
         if (!this.auth) return;
         try {
             await this.auth.signOut();
+            // Clear cache on sign out
+            this.dataCacheManager.clear();
         } catch (error) {
             console.error("Error during sign-out:", error);
         }
@@ -80,9 +87,12 @@ export class FirebaseAuthRepository implements AuthRepository {
 
     async getIdToken(): Promise<string | null> {
         const key = 'getIdToken';
-        return this.concurrencyManager.run(key, async () => {
-            if (!this.auth || !this.auth.currentUser) return null;
-            return await this.auth.currentUser.getIdToken();
-        });
+        const TOKEN_TTL = 5 * 60 * 1000; // 5 minutes
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                if (!this.auth || !this.auth.currentUser) return null;
+                return await this.auth.currentUser.getIdToken();
+            });
+        }, TOKEN_TTL);
     }
 }

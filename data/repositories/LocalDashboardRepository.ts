@@ -72,12 +72,15 @@ const createIngredient = (id: string, name: string, calories: number, protein: n
 
 
 
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
+
 export class LocalDashboardRepository implements DashboardRepository {
     private profileRepository = new LocalProfileRepository();
     // Simulate a local data store
     private dailyDataStore = new Map<string, DashboardData>();
     private isSeeded = false;
     private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
 
     constructor() {
         this.seedMockDashboards(this.profileRepository);
@@ -173,16 +176,18 @@ export class LocalDashboardRepository implements DashboardRepository {
 
     async getDashboardForDate(date: string): Promise<DashboardData> {
         const key = `getDashboardForDate:${date}`;
-        return this.concurrencyManager.run(key, async () => {
-            await new Promise(resolve => setTimeout(resolve, 300));
-            await this.seedMockDashboards(this.profileRepository);
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                await this.seedMockDashboards(this.profileRepository);
 
-            if (!this.dailyDataStore.has(date)) {
-                const profile = await this.profileRepository.getProfile();
-                const goals = CalorieCalculationService.calculateGoals(profile);
-                this.dailyDataStore.set(date, createEmptyDashboard(date, goals));
-            }
-            return JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!));
+                if (!this.dailyDataStore.has(date)) {
+                    const profile = await this.profileRepository.getProfile();
+                    const goals = CalorieCalculationService.calculateGoals(profile);
+                    this.dailyDataStore.set(date, createEmptyDashboard(date, goals));
+                }
+                return JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!));
+            });
         });
     }
 
@@ -215,6 +220,8 @@ export class LocalDashboardRepository implements DashboardRepository {
         const updatedData = recalculateTotals(dataForDay);
 
         this.dailyDataStore.set(date, updatedData);
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
         return JSON.parse(JSON.stringify(updatedData));
     }
 
@@ -236,6 +243,8 @@ export class LocalDashboardRepository implements DashboardRepository {
 
         const updatedData = recalculateTotals(dataForDay);
         this.dailyDataStore.set(date, updatedData);
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
 
         return JSON.parse(JSON.stringify(updatedData));
     }

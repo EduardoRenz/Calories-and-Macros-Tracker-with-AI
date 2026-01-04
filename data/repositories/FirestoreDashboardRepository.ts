@@ -7,6 +7,7 @@ import { CalorieCalculationService } from '../../domain/services/CalorieCalculat
 import { FirestoreProfileRepository } from './FirestoreProfileRepository';
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 // Helper function to create an empty dashboard structure for a new day
 const createEmptyDashboard = (date: string, goals: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
@@ -60,6 +61,7 @@ export class FirestoreDashboardRepository implements DashboardRepository {
     private auth = getAuth();
     private profileRepository: ProfileRepository = new FirestoreProfileRepository();
     private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
 
     private getDocRef(date: string) {
         const user = this.auth.currentUser;
@@ -71,62 +73,64 @@ export class FirestoreDashboardRepository implements DashboardRepository {
 
     async getDashboardForDate(date: string): Promise<DashboardData> {
         const key = `getDashboardForDate:${date}`;
-        return this.concurrencyManager.run(key, async () => {
-            const docRef = this.getDocRef(date);
-            const docSnap = await getDoc(docRef);
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                const docRef = this.getDocRef(date);
+                const docSnap = await getDoc(docRef);
 
-            const profile = await this.profileRepository.getProfile();
-            const goals = CalorieCalculationService.calculateGoals(profile);
+                const profile = await this.profileRepository.getProfile();
+                const goals = CalorieCalculationService.calculateGoals(profile);
 
-            if (!docSnap.exists()) {
-                const newDashboard = createEmptyDashboard(date, goals);
-                await setDoc(docRef, newDashboard);
-                return newDashboard;
-            }
+                if (!docSnap.exists()) {
+                    const newDashboard = createEmptyDashboard(date, goals);
+                    await setDoc(docRef, newDashboard);
+                    return newDashboard;
+                }
 
-            const data = docSnap.data() as DashboardData;
-            let needsUpdate = false;
+                const data = docSnap.data() as DashboardData;
+                let needsUpdate = false;
 
-            // Ensure `macros` object and its properties exist and goals are up-to-date.
-            if (!data.macros) {
-                data.macros = createEmptyDashboard(date, goals).macros;
-                needsUpdate = true;
-            } else {
-                if (data.macros.calories.goal !== goals.calories) { data.macros.calories.goal = goals.calories; needsUpdate = true; }
-                if (data.macros.protein.goal !== goals.protein) { data.macros.protein.goal = goals.protein; needsUpdate = true; }
-                if (data.macros.carbs.goal !== goals.carbs) { data.macros.carbs.goal = goals.carbs; needsUpdate = true; }
-                if (data.macros.fats.goal !== goals.fats) { data.macros.fats.goal = goals.fats; needsUpdate = true; }
-            }
+                // Ensure `macros` object and its properties exist and goals are up-to-date.
+                if (!data.macros) {
+                    data.macros = createEmptyDashboard(date, goals).macros;
+                    needsUpdate = true;
+                } else {
+                    if (data.macros.calories.goal !== goals.calories) { data.macros.calories.goal = goals.calories; needsUpdate = true; }
+                    if (data.macros.protein.goal !== goals.protein) { data.macros.protein.goal = goals.protein; needsUpdate = true; }
+                    if (data.macros.carbs.goal !== goals.carbs) { data.macros.carbs.goal = goals.carbs; needsUpdate = true; }
+                    if (data.macros.fats.goal !== goals.fats) { data.macros.fats.goal = goals.fats; needsUpdate = true; }
+                }
 
-            // Ensure `meals` object exists.
-            if (!data.meals) {
-                data.meals = createEmptyDashboard(date, goals).meals;
-                needsUpdate = true;
-            }
+                // Ensure `meals` object exists.
+                if (!data.meals) {
+                    data.meals = createEmptyDashboard(date, goals).meals;
+                    needsUpdate = true;
+                }
 
-            // Ensure every ingredient has `fiber` (backward compatibility).
-            for (const mealType in data.meals) {
-                const meal = data.meals[mealType as keyof MealSummary];
-                if (!meal.ingredients) continue;
-                for (const ing of meal.ingredients) {
-                    if (typeof (ing as any).fiber !== 'number') {
-                        (ing as any).fiber = 0;
+                // Ensure every ingredient has `fiber` (backward compatibility).
+                for (const mealType in data.meals) {
+                    const meal = data.meals[mealType as keyof MealSummary];
+                    if (!meal.ingredients) continue;
+                    for (const ing of meal.ingredients) {
+                        if (typeof (ing as any).fiber !== 'number') {
+                            (ing as any).fiber = 0;
+                            needsUpdate = true;
+                        }
+                    }
+                    // Ensure meal has fiber field (backward compatibility)
+                    if (typeof (meal as any).fiber !== 'number') {
+                        (meal as any).fiber = meal.ingredients.reduce((total: number, ing: any) => total + (ing.fiber || 0), 0);
                         needsUpdate = true;
                     }
                 }
-                // Ensure meal has fiber field (backward compatibility)
-                if (typeof (meal as any).fiber !== 'number') {
-                    (meal as any).fiber = meal.ingredients.reduce((total: number, ing: any) => total + (ing.fiber || 0), 0);
-                    needsUpdate = true;
+
+                if (needsUpdate) {
+                    // Asynchronously update the document in Firestore to correct it for next time.
+                    setDoc(docRef, data, { merge: true });
                 }
-            }
 
-            if (needsUpdate) {
-                // Asynchronously update the document in Firestore to correct it for next time.
-                setDoc(docRef, data, { merge: true });
-            }
-
-            return data;
+                return data;
+            });
         });
     }
 
@@ -147,6 +151,8 @@ export class FirestoreDashboardRepository implements DashboardRepository {
         const updatedData = recalculateTotals(dataForDay);
 
         await setDoc(this.getDocRef(date), updatedData);
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
         return updatedData;
     }
 
@@ -158,6 +164,8 @@ export class FirestoreDashboardRepository implements DashboardRepository {
 
         const updatedData = recalculateTotals(dataForDay);
         await setDoc(this.getDocRef(date), updatedData);
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
 
         return updatedData;
     }

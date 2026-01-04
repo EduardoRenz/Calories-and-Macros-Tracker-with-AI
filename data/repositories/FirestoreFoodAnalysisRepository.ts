@@ -4,38 +4,42 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class FirestoreFoodAnalysisRepository implements FoodAnalysisRepository {
     private auth = getAuth();
     private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
 
     async getDashboardDataForRange(startDate: string, endDate: string): Promise<DashboardData[]> {
         const key = `getDashboardDataForRange:${startDate}:${endDate}`;
-        return this.concurrencyManager.run(key, async () => {
-            const user = this.auth.currentUser;
-            if (!user) {
-                throw new Error("No authenticated user found for food analysis operations.");
-            }
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                const user = this.auth.currentUser;
+                if (!user) {
+                    throw new Error("No authenticated user found for food analysis operations.");
+                }
 
-            const dashboardCollection = collection(getDb(), 'users', user.uid, 'dashboard_data');
-            const q = query(
-                dashboardCollection,
-                where('date', '>=', startDate),
-                where('date', '<=', endDate)
-            );
+                const dashboardCollection = collection(getDb(), 'users', user.uid, 'dashboard_data');
+                const q = query(
+                    dashboardCollection,
+                    where('date', '>=', startDate),
+                    where('date', '<=', endDate)
+                );
 
-            const querySnapshot = await getDocs(q);
-            const dashboardData: DashboardData[] = [];
+                const querySnapshot = await getDocs(q);
+                const dashboardData: DashboardData[] = [];
 
-            querySnapshot.forEach((doc) => {
-                const data = doc.data() as DashboardData;
-                dashboardData.push(data);
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data() as DashboardData;
+                    dashboardData.push(data);
+                });
+
+                // Sort by date
+                dashboardData.sort((a, b) => a.date.localeCompare(b.date));
+
+                return dashboardData;
             });
-
-            // Sort by date
-            dashboardData.sort((a, b) => a.date.localeCompare(b.date));
-
-            return dashboardData;
         });
     }
 }

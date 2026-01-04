@@ -4,6 +4,7 @@ import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 import { SupabaseProfileRepository } from './SupabaseProfileRepository';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 type DashboardDayRow = {
   id: string;
@@ -23,6 +24,7 @@ type IngredientRow = {
 export class SupabaseHistoryRepository implements HistoryRepository {
   private profileRepository = new SupabaseProfileRepository();
   private concurrencyManager = new ConcurrencyRequestManager();
+  private dataCacheManager = new DataCacheManager();
 
   private async getUserId(): Promise<string> {
     const supabase = getSupabaseClient();
@@ -76,18 +78,68 @@ export class SupabaseHistoryRepository implements HistoryRepository {
 
   async getDailyHistoryRange(params: { startDate: string; endDate: string }): Promise<DailyHistoryEntry[]> {
     const key = `getDailyHistoryRange:${params.startDate}:${params.endDate}`;
-    return this.concurrencyManager.run(key, async () => {
-      const userId = await this.getUserId();
+    return this.dataCacheManager.getCached(key, async () => {
+      return this.concurrencyManager.run(key, async () => {
+        const userId = await this.getUserId();
 
-      const days = await this.loadDays(userId, params.startDate, params.endDate);
+        const days = await this.loadDays(userId, params.startDate, params.endDate);
 
-      const profile = await this.profileRepository.getProfile();
-      const goals = CalorieCalculationService.calculateGoals(profile);
+        const profile = await this.profileRepository.getProfile();
+        const goals = CalorieCalculationService.calculateGoals(profile);
 
-      const fibers = await this.loadFibersForDays(days.map(d => d.id));
+        const fibers = await this.loadFibersForDays(days.map(d => d.id));
 
-      return days
-        .map(d => {
+        return days
+          .map(d => {
+            const extra = fibers.get(d.id) ?? { fiber: 0, hasEntry: false };
+            return {
+              date: d.date,
+              protein: d.protein_current ?? 0,
+              carbs: d.carbs_current ?? 0,
+              fats: d.fats_current ?? 0,
+              fiber: Math.round(extra.fiber),
+              calories: d.calories_current ?? 0,
+              calorieGoal: d.calories_goal ?? goals.calories,
+              hasEntry: extra.hasEntry,
+            };
+          })
+          .sort((a, b) => (a.date < b.date ? 1 : -1));
+      });
+    });
+  }
+
+  async getDailyHistoryPage(params: { startDate: string; endDate: string; pageSize: number; cursor?: string | null }): Promise<HistoryPage> {
+    const key = `getDailyHistoryPage:${params.startDate}:${params.endDate}:${params.pageSize}:${params.cursor}`;
+    return this.dataCacheManager.getCached(key, async () => {
+      return this.concurrencyManager.run(key, async () => {
+        const userId = await this.getUserId();
+
+        const supabase = getSupabaseClient();
+
+        let q = supabase
+          .from('dashboard_days')
+          .select('id,date,calories_current,calories_goal,protein_current,carbs_current,fats_current')
+          .eq('user_id', userId)
+          .gte('date', params.startDate)
+          .lte('date', params.endDate)
+          .order('date', { ascending: false })
+          .limit(params.pageSize);
+
+        if (params.cursor) {
+          q = q.lt('date', params.cursor);
+        }
+
+        const { data, error } = await q;
+        if (error) throw error;
+
+        const days = (data ?? []) as DashboardDayRow[];
+
+        const profile = await this.profileRepository.getProfile();
+        const goals = CalorieCalculationService.calculateGoals(profile);
+
+        const fibers = await this.loadFibersForDays(days.map(d => d.id));
+
+        const items: DailyHistoryEntry[] = days.map(d => {
           const extra = fibers.get(d.id) ?? { fiber: 0, hasEntry: false };
           return {
             date: d.date,
@@ -99,58 +151,12 @@ export class SupabaseHistoryRepository implements HistoryRepository {
             calorieGoal: d.calories_goal ?? goals.calories,
             hasEntry: extra.hasEntry,
           };
-        })
-        .sort((a, b) => (a.date < b.date ? 1 : -1));
-    });
-  }
+        });
 
-  async getDailyHistoryPage(params: { startDate: string; endDate: string; pageSize: number; cursor?: string | null }): Promise<HistoryPage> {
-    const key = `getDailyHistoryPage:${params.startDate}:${params.endDate}:${params.pageSize}:${params.cursor}`;
-    return this.concurrencyManager.run(key, async () => {
-      const userId = await this.getUserId();
+        const nextCursor = days.length === params.pageSize ? days[days.length - 1]?.date ?? null : null;
 
-      const supabase = getSupabaseClient();
-
-      let q = supabase
-        .from('dashboard_days')
-        .select('id,date,calories_current,calories_goal,protein_current,carbs_current,fats_current')
-        .eq('user_id', userId)
-        .gte('date', params.startDate)
-        .lte('date', params.endDate)
-        .order('date', { ascending: false })
-        .limit(params.pageSize);
-
-      if (params.cursor) {
-        q = q.lt('date', params.cursor);
-      }
-
-      const { data, error } = await q;
-      if (error) throw error;
-
-      const days = (data ?? []) as DashboardDayRow[];
-
-      const profile = await this.profileRepository.getProfile();
-      const goals = CalorieCalculationService.calculateGoals(profile);
-
-      const fibers = await this.loadFibersForDays(days.map(d => d.id));
-
-      const items: DailyHistoryEntry[] = days.map(d => {
-        const extra = fibers.get(d.id) ?? { fiber: 0, hasEntry: false };
-        return {
-          date: d.date,
-          protein: d.protein_current ?? 0,
-          carbs: d.carbs_current ?? 0,
-          fats: d.fats_current ?? 0,
-          fiber: Math.round(extra.fiber),
-          calories: d.calories_current ?? 0,
-          calorieGoal: d.calories_goal ?? goals.calories,
-          hasEntry: extra.hasEntry,
-        };
+        return { items, nextCursor };
       });
-
-      const nextCursor = days.length === params.pageSize ? days[days.length - 1]?.date ?? null : null;
-
-      return { items, nextCursor };
     });
   }
 }
