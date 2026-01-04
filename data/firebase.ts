@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
@@ -19,9 +18,6 @@ const shouldInit = BACKEND_PROVIDER === 'firebase' && !!firebaseConfig.apiKey;
 
 // Initialize Firebase
 const app = shouldInit ? initializeApp(firebaseConfig) : null;
-
-// Initialize Analytics safely
-export const analytics = shouldInit && typeof window !== 'undefined' && app ? getAnalytics(app) : null;
 
 // Initialize Cloud Firestore and get a reference to the service
 const dbInstance = shouldInit && app ? getFirestore(app) : null;
