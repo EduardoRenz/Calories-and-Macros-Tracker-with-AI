@@ -29,6 +29,18 @@ export function HistoryTableMobile({ entries, onDateClick }: HistoryTableMobileP
                 const badgeBg = isOver ? 'bg-red-500/15' : 'bg-healthpal-green/15';
                 const badgeText = isOver ? 'text-red-400' : 'text-healthpal-green';
 
+                // Calculate macro goals
+                const proteinGoal = Math.round((e.calorieGoal * 0.30) / 4);
+                const carbsGoal = Math.round((e.calorieGoal * 0.40) / 4);
+                const fatsGoal = Math.round((e.calorieGoal * 0.30) / 9);
+                const fiberGoal = 25; // Standard daily fiber recommendation
+
+                // Check if goals are met
+                const proteinMet = e.protein >= proteinGoal;
+                const carbsMet = e.carbs >= carbsGoal;
+                const fatsMet = e.fats >= fatsGoal;
+                const fiberMet = e.fiber >= fiberGoal;
+
                 return (
                     <button
                         key={e.date}
@@ -51,20 +63,20 @@ export function HistoryTableMobile({ entries, onDateClick }: HistoryTableMobileP
 
                         <div className="grid grid-cols-4 gap-2 mt-3">
                             <div className="bg-healthpal-card border border-healthpal-border rounded-lg p-2">
-                                <p className="text-[10px] uppercase tracking-wider text-healthpal-text-secondary">{t('history.columns.protein')}</p>
-                                <p className="text-sm font-semibold text-healthpal-text-primary">{formatNumber(e.protein)}g</p>
+                                <p className={`text-[10px] uppercase tracking-wider ${proteinMet ? 'text-healthpal-protein' : 'text-healthpal-text-secondary'}`}>{t('history.columns.protein')}</p>
+                                <p className={`text-sm font-semibold ${proteinMet ? 'text-healthpal-protein' : 'text-healthpal-text-primary'}`}>{formatNumber(e.protein)}g</p>
                             </div>
                             <div className="bg-healthpal-card border border-healthpal-border rounded-lg p-2">
-                                <p className="text-[10px] uppercase tracking-wider text-healthpal-text-secondary">{t('history.columns.carbs')}</p>
-                                <p className="text-sm font-semibold text-healthpal-text-primary">{formatNumber(e.carbs)}g</p>
+                                <p className={`text-[10px] uppercase tracking-wider ${carbsMet ? 'text-healthpal-carbs' : 'text-healthpal-text-secondary'}`}>{t('history.columns.carbs')}</p>
+                                <p className={`text-sm font-semibold ${carbsMet ? 'text-healthpal-carbs' : 'text-healthpal-text-primary'}`}>{formatNumber(e.carbs)}g</p>
                             </div>
                             <div className="bg-healthpal-card border border-healthpal-border rounded-lg p-2">
-                                <p className="text-[10px] uppercase tracking-wider text-healthpal-text-secondary">{t('history.columns.fats')}</p>
-                                <p className="text-sm font-semibold text-healthpal-text-primary">{formatNumber(e.fats)}g</p>
+                                <p className={`text-[10px] uppercase tracking-wider ${fatsMet ? 'text-healthpal-fats' : 'text-healthpal-text-secondary'}`}>{t('history.columns.fats')}</p>
+                                <p className={`text-sm font-semibold ${fatsMet ? 'text-healthpal-fats' : 'text-healthpal-text-primary'}`}>{formatNumber(e.fats)}g</p>
                             </div>
                             <div className="bg-healthpal-card border border-healthpal-border rounded-lg p-2">
-                                <p className="text-[10px] uppercase tracking-wider text-healthpal-fiber">{t('history.columns.fiber')}</p>
-                                <p className="text-sm font-semibold text-healthpal-fiber">{formatNumber(e.fiber)}g</p>
+                                <p className={`text-[10px] uppercase tracking-wider ${fiberMet ? 'text-healthpal-fiber' : 'text-healthpal-text-secondary'}`}>{t('history.columns.fiber')}</p>
+                                <p className={`text-sm font-semibold ${fiberMet ? 'text-healthpal-fiber' : 'text-healthpal-text-primary'}`}>{formatNumber(e.fiber)}g</p>
                             </div>
                         </div>
                     </button>
