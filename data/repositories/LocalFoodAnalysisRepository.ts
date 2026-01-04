@@ -2,29 +2,34 @@ import { FoodAnalysisRepository } from '../../domain/repositories/FoodAnalysisRe
 import { DashboardData } from '../../domain/entities/dashboard';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
+
 /**
  * Local/mock implementation of FoodAnalysisRepository with pre-filled sample data.
  * Used for testing and development.
  */
 export class LocalFoodAnalysisRepository implements FoodAnalysisRepository {
     private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
     async getDashboardDataForRange(startDate: string, endDate: string): Promise<DashboardData[]> {
         const key = `getDashboardDataForRange:${startDate}:${endDate}`;
-        return this.concurrencyManager.run(key, async () => {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 300));
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 300));
 
-            // Generate mock data for the date range
-            const dashboardData: DashboardData[] = [];
-            const start = new Date(startDate);
-            const end = new Date(endDate);
+                // Generate mock data for the date range
+                const dashboardData: DashboardData[] = [];
+                const start = new Date(startDate);
+                const end = new Date(endDate);
 
-            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                const dateString = d.toISOString().split('T')[0];
-                dashboardData.push(this.generateMockDayData(dateString));
-            }
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const dateString = d.toISOString().split('T')[0];
+                    dashboardData.push(this.generateMockDayData(dateString));
+                }
 
-            return dashboardData;
+                return dashboardData;
+            });
         });
     }
 

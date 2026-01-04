@@ -5,6 +5,7 @@ import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { SupabaseProfileRepository } from './SupabaseProfileRepository';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 type DashboardDayRow = {
   id: string;
@@ -81,6 +82,7 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 export class SupabaseDashboardRepository implements DashboardRepository {
   private profileRepository: ProfileRepository = new SupabaseProfileRepository();
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
+  private dataCacheManager: DataCacheManager = new DataCacheManager();
 
   private async getUserId(): Promise<string> {
     const supabase = getSupabaseClient();
@@ -204,18 +206,20 @@ export class SupabaseDashboardRepository implements DashboardRepository {
 
   async getDashboardForDate(date: string): Promise<DashboardData> {
     const key = `getDashboardForDate:${date}`;
-    return this.concurrencyManager.run(key, async () => {
-      const day = await this.getOrCreateDashboardDay(date);
+    return this.dataCacheManager.getCached(key, async () => {
+      return this.concurrencyManager.run(key, async () => {
+        const day = await this.getOrCreateDashboardDay(date);
 
-      const profile = await this.profileRepository.getProfile();
-      const goals = CalorieCalculationService.calculateGoals(profile);
+        const profile = await this.profileRepository.getProfile();
+        const goals = CalorieCalculationService.calculateGoals(profile);
 
-      const ingredients = await this.loadIngredients(day.id);
-      const data = this.toDashboardData(date, goals, ingredients);
+        const ingredients = await this.loadIngredients(day.id);
+        const data = this.toDashboardData(date, goals, ingredients);
 
-      await this.persistTotals(day.id, data);
+        await this.persistTotals(day.id, data);
 
-      return data;
+        return data;
+      });
     });
   }
 
@@ -252,6 +256,9 @@ export class SupabaseDashboardRepository implements DashboardRepository {
 
     await this.persistTotals(day.id, updated);
 
+    // Invalidate cache for this date
+    this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+
     return updated;
   }
 
@@ -276,6 +283,9 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     const updated = this.toDashboardData(date, goals, refreshedIngredients);
 
     await this.persistTotals(day.id, updated);
+
+    // Invalidate cache for this date
+    this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
 
     return updated;
   }

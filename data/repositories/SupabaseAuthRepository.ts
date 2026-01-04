@@ -4,8 +4,12 @@ import { getSupabaseClient } from '../supabaseClient';
 import type { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
+
 export class SupabaseAuthRepository implements AuthRepository {
   private concurrencyManager = new ConcurrencyRequestManager();
+  private dataCacheManager = new DataCacheManager();
+
   private mapUser(u: SupabaseUser): User {
     return {
       uid: u.id,
@@ -39,6 +43,8 @@ export class SupabaseAuthRepository implements AuthRepository {
       if (password) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        // Invalidate idToken cache on new sign in
+        this.dataCacheManager.invalidate('getIdToken');
         return data.user ? this.mapUser(data.user) : null;
       }
 
@@ -76,14 +82,20 @@ export class SupabaseAuthRepository implements AuthRepository {
     const supabase = getSupabaseClient();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    // Clear cache on sign out
+    this.dataCacheManager.clear();
   }
 
   async getIdToken(): Promise<string | null> {
     const key = 'getIdToken';
-    return this.concurrencyManager.run(key, async () => {
-      const supabase = getSupabaseClient();
-      const { data } = await supabase.auth.getSession();
-      return data.session?.access_token ?? null;
-    });
+    // Small TTL for token to allow refreshes but prevent spamming
+    const TOKEN_TTL = 5 * 60 * 1000; // 5 minutes
+    return this.dataCacheManager.getCached(key, async () => {
+      return this.concurrencyManager.run(key, async () => {
+        const supabase = getSupabaseClient();
+        const { data } = await supabase.auth.getSession();
+        return data.session?.access_token ?? null;
+      });
+    }, TOKEN_TTL);
   }
 }

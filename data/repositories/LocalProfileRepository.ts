@@ -28,14 +28,22 @@ const initialProfile: UserProfile = {
 // Simulate a local data store
 let userProfileData: UserProfile = JSON.parse(JSON.stringify(initialProfile));
 
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
+
+// ... (existing imports)
+
 export class LocalProfileRepository implements ProfileRepository {
     private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
+
     async getProfile(): Promise<UserProfile> {
         const key = 'getProfile';
-        return this.concurrencyManager.run(key, async () => {
-            // Simulate an async API call
-            await new Promise(resolve => setTimeout(resolve, 250));
-            return JSON.parse(JSON.stringify(userProfileData));
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                // Simulate an async API call
+                await new Promise(resolve => setTimeout(resolve, 250));
+                return JSON.parse(JSON.stringify(userProfileData));
+            });
         });
     }
 
@@ -66,6 +74,8 @@ export class LocalProfileRepository implements ProfileRepository {
         updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         userProfileData = { ...profile, weightHistory: updatedHistory };
+        // Invalidate cache
+        this.dataCacheManager.invalidate('getProfile');
         return;
     }
 }
