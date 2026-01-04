@@ -27,7 +27,15 @@ export class SupabaseHistoryRepository implements HistoryRepository {
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
 
-
+  private async getGoals(userId: string): Promise<{ calories: number; protein: number; carbs: number; fats: number }>{
+    const key = `history:goals:${userId}`;
+    return this.dataCacheManager.getCached(key, async () => {
+      return this.concurrencyManager.run(key, async () => {
+        const profile = await this.profileRepository.getProfile();
+        return CalorieCalculationService.calculateGoals(profile);
+      });
+    });
+  }
 
   private async loadDays(userId: string, startDate: string, endDate: string): Promise<DashboardDayRow[]> {
     const supabase = getSupabaseClient();
@@ -79,8 +87,7 @@ export class SupabaseHistoryRepository implements HistoryRepository {
 
         const days = await this.loadDays(userId, params.startDate, params.endDate);
 
-        const profile = await this.profileRepository.getProfile();
-        const goals = CalorieCalculationService.calculateGoals(profile);
+        const goals = await this.getGoals(userId);
 
         const fibers = await this.loadFibersForDays(days.map(d => d.id));
 
@@ -129,8 +136,7 @@ export class SupabaseHistoryRepository implements HistoryRepository {
 
         const days = (data ?? []) as DashboardDayRow[];
 
-        const profile = await this.profileRepository.getProfile();
-        const goals = CalorieCalculationService.calculateGoals(profile);
+        const goals = await this.getGoals(userId);
 
         const fibers = await this.loadFibersForDays(days.map(d => d.id));
 

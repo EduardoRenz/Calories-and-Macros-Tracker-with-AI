@@ -34,6 +34,16 @@ export class FirestoreHistoryRepository implements HistoryRepository {
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
 
+  private async getGoals(userId: string): Promise<{ calories: number; protein: number; carbs: number; fats: number }> {
+    const key = `history:goals:${userId}`;
+    return this.dataCacheManager.getCached(key, async () => {
+      return this.concurrencyManager.run(key, async () => {
+        const profile = await this.profileRepository.getProfile();
+        return CalorieCalculationService.calculateGoals(profile);
+      });
+    });
+  }
+
   async getDailyHistoryRange(params: { startDate: string; endDate: string }): Promise<DailyHistoryEntry[]> {
     const key = `getDailyHistoryRange:${params.startDate}:${params.endDate}`;
     return this.dataCacheManager.getCached(key, async () => {
@@ -55,8 +65,7 @@ export class FirestoreHistoryRepository implements HistoryRepository {
 
         const snap = await getDocs(q);
 
-        const profile = await this.profileRepository.getProfile();
-        const goals = CalorieCalculationService.calculateGoals(profile);
+        const goals = await this.getGoals(user.uid);
 
         const entries: DailyHistoryEntry[] = snap.docs
           .map(d => {
@@ -116,8 +125,7 @@ export class FirestoreHistoryRepository implements HistoryRepository {
         const q = query(colRef, ...constraints);
         const snap = await getDocs(q);
 
-        const profile = await this.profileRepository.getProfile();
-        const goals = CalorieCalculationService.calculateGoals(profile);
+        const goals = await this.getGoals(user.uid);
 
         const items: DailyHistoryEntry[] = snap.docs.map(d => {
           const data = d.data() as DashboardData;
