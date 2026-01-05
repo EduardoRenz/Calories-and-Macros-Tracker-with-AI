@@ -33,7 +33,9 @@ const nextConfig: NextConfig = {
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         GEMINI_FAST_DEFAULT_MODEL: process.env.GEMINI_FAST_DEFAULT_MODEL,
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
-
+        PIX_KEY: process.env.PIX_KEY,
+        BTC_ADDRESS: process.env.BTC_ADDRESS,
+        USDC_ADDRESS: process.env.USDC_ADDRESS,
     },
 };
 
