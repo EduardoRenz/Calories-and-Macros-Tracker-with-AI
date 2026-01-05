@@ -55,7 +55,7 @@ export default function PlansPage() {
 
     return (
         <div className="min-h-screen bg-black text-white">
-            <PublicNavbar onQuickMealClick={handleQuickMeal} />
+            <PublicNavbar />
 
             <main className="container mx-auto px-4 py-20 min-h-[80vh] flex flex-col items-center justify-center">
                 <div className="text-center mb-12">
