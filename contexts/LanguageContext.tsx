@@ -19,7 +19,14 @@ const getStoredLanguage = (): Language => {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
+  const [language, setLanguage] = useState<Language>('en');
+
+  useEffect(() => {
+    const stored = getStoredLanguage();
+    if (stored !== 'en') {
+      setLanguage(stored);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

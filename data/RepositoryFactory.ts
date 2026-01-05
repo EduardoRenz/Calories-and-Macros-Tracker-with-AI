@@ -3,6 +3,7 @@ import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { AuthRepository } from '../domain/repositories/AuthRepository';
 import { FoodAnalysisRepository } from '../domain/repositories/FoodAnalysisRepository';
 import { HistoryRepository } from '../domain/repositories/HistoryRepository';
+import { PaymentRepository } from '../domain/repositories/PaymentRepository';
 
 import { LocalDashboardRepository } from './repositories/LocalDashboardRepository';
 import { LocalProfileRepository } from './repositories/LocalProfileRepository';
@@ -19,6 +20,7 @@ import { SupabaseProfileRepository } from './repositories/SupabaseProfileReposit
 import { SupabaseFoodAnalysisRepository } from './repositories/SupabaseFoodAnalysisRepository';
 import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryRepository';
 import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
+import { MockPaymentRepository } from './repositories/MockPaymentRepository';
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
@@ -30,6 +32,7 @@ interface RepositoryStrategy {
     auth: () => AuthRepository;
     foodAnalysis: () => FoodAnalysisRepository;
     history: () => HistoryRepository;
+    payment: () => PaymentRepository;
 }
 
 const strategies: Record<Provider, RepositoryStrategy> = {
@@ -39,6 +42,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new FirebaseAuthRepository(),
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
+        payment: () => new MockPaymentRepository(), // Mock for now
     },
     supabase: {
         dashboard: () => new SupabaseDashboardRepository(),
@@ -46,6 +50,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new SupabaseAuthRepository(),
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
+        payment: () => new MockPaymentRepository(), // Mock for now
     },
     mock: {
         dashboard: () => new LocalDashboardRepository(),
@@ -53,6 +58,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new MockAuthRepository(),
         foodAnalysis: () => new LocalFoodAnalysisRepository(),
         history: () => new LocalHistoryRepository(),
+        payment: () => new MockPaymentRepository(),
     },
 };
 
@@ -62,6 +68,7 @@ export class RepositoryFactory {
     private static authRepository: AuthRepository | null = null;
     private static foodAnalysisRepository: FoodAnalysisRepository | null = null;
     private static historyRepository: HistoryRepository | null = null;
+    private static paymentRepository: PaymentRepository | null = null;
 
     private static getStrategy(): RepositoryStrategy {
         return strategies[BACKEND_PROVIDER] || strategies.firebase;
@@ -100,5 +107,12 @@ export class RepositoryFactory {
             this.historyRepository = this.getStrategy().history();
         }
         return this.historyRepository;
+    }
+
+    public static getPaymentRepository(): PaymentRepository {
+        if (!this.paymentRepository) {
+            this.paymentRepository = this.getStrategy().payment();
+        }
+        return this.paymentRepository;
     }
 }

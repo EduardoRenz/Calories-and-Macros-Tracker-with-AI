@@ -9,7 +9,8 @@ export default {
     "profile": "Perfil",
     "settings": "Ajustes",
     "logout": "Cerrar Sesión",
-    "quick_meal": "Comida Rápida"
+    "quick_meal": "Comida Rápida",
+    "back_to_home": "Volver al Inicio"
   },
   "history": {
     "title": "Historial",
@@ -191,6 +192,13 @@ export default {
       "adjustments_required": "Ajustes Requeridos"
     }
   },
+  "plans": {
+    "title": "Elige tu plan",
+    "subtitle": "Selecciona el plan que se adapte a tu viaje de fitness. Actualiza en cualquier momento para desbloquear características avanzadas.",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "loading": "Cargando planes..."
+  },
   "settings": {
     "title": "Ajustes de App y Gestión de API",
     "subtitle": "Gestiona las preferencias de tu aplicación y las integraciones de servicios de IA.",
@@ -204,6 +212,11 @@ export default {
     "general": {
       "title": "Ajustes Generales",
       "language": "Idioma"
+    },
+    "subscription": {
+      "title": "Suscripción",
+      "description": "Gestiona tu plan y detalles de facturación",
+      "manage": "Gestionar Suscripción"
     },
     "tokens": {
       "title": "Tokens de API de IA",

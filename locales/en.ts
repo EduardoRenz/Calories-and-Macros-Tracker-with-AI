@@ -9,7 +9,8 @@ export default {
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
-    "quick_meal": "Quick Meal"
+    "quick_meal": "Quick Meal",
+    "back_to_home": "Back to Home"
   },
   "history": {
     "title": "History",
@@ -191,6 +192,13 @@ export default {
       "adjustments_required": "Adjustments Required"
     }
   },
+  "plans": {
+    "title": "Choose your plan",
+    "subtitle": "Select the plan that fits your fitness journey. Upgrade anytime to unlock advanced features.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "loading": "Loading plans..."
+  },
   "settings": {
     "title": "App Settings and API Management",
     "subtitle": "Manage your application preferences and AI service integrations.",
@@ -204,6 +212,11 @@ export default {
     "general": {
       "title": "General Settings",
       "language": "Language"
+    },
+    "subscription": {
+      "title": "Subscription",
+      "description": "Manage your plan and billing details",
+      "manage": "Manage Subscription"
     },
     "tokens": {
       "title": "AI API Tokens",

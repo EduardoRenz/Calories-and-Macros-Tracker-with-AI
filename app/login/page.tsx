@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { HealthPalLogo, GoogleIcon } from '@/components/icons';
-import { DonationPanel } from '@/components/DonationPanel';
+import LoginPlansCard from '@/components/LoginPlansCard';
+// import { DonationPanel } from '@/components/DonationPanel';
 
 export default function LoginPage() {
     const { user, signInWithGoogle, loading } = useAuth();
@@ -73,7 +74,7 @@ export default function LoginPage() {
                             </>
                         )}
                     </button>
-
+                    <LoginPlansCard />
                     <p className="text-xs text-healthpal-text-secondary mt-4 text-center">
                         Ao usar esta ferramenta, você concorda com nossas{' '}
                         <a

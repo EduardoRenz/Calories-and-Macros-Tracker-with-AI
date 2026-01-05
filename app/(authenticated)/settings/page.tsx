@@ -5,6 +5,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguage, Language } from '@/contexts/LanguageContext';
 import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, XMarkIcon, ChevronUpIcon, ChevronDownIcon } from '@/components/icons';
 import { ServiceFactory } from '@/data/ServiceFactory';
+import SubscriptionCard from '../../../components/SubscriptionCard';
 
 // Types
 type ProviderId = 'gemini' | 'openai' | 'deepseek';
@@ -294,6 +295,10 @@ export default function SettingsPage() {
 
             <section className="space-y-4">
                 <LanguageSelector />
+            </section>
+
+            <section className="space-y-4">
+                <SubscriptionCard />
             </section>
 
             <section className="space-y-4">
