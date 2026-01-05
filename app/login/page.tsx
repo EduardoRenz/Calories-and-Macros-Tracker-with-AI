@@ -86,10 +86,10 @@ export default function LoginPage() {
                         </a>
                     </p>
                 </div>
-
+                {/* 
                 <div className="mt-8">
                     <DonationPanel variant="compact" />
-                </div>
+                </div> */}
             </div>
         </div>
     );
