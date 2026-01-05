@@ -37,22 +37,24 @@ export default function AuthenticatedLayout({
 
     return (
         <ProtectedRoute>
-            <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex justify-center">
-                <div className="w-full max-w-screen-2xl bg-healthpal-dark">
-                    {showNavbar && (
-                        <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
-                    )}
-                    <div className="pb-24 md:pb-0">
-                        <main className="p-6 lg:p-8">
-                            {children}
-                        </main>
-                        {showNavbar && <Footer />}
+            <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex flex-col">
+                <div className="flex justify-center flex-1">
+                    <div className="w-full max-w-screen-2xl bg-healthpal-dark">
+                        {showNavbar && (
+                            <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+                        )}
+                        <div className="pb-24 md:pb-0">
+                            <main className="p-6 lg:p-8">
+                                {children}
+                            </main>
+                        </div>
                     </div>
-                    {showNavbar && (
-                        <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
-                    )}
                 </div>
+                {showNavbar && <Footer />}
             </div>
+            {showNavbar && (
+                <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+            )}
             <QuickMealModal
                 isOpen={isQuickMealOpen}
                 onClose={() => setIsQuickMealOpen(false)}
