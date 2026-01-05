@@ -14,7 +14,6 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
     // If it's annual, the total billed is different.
 
     let subtotal = plan.price;
-    let period = plan.interval;
     let totalDue = plan.price;
     let discountAmount = 0;
 

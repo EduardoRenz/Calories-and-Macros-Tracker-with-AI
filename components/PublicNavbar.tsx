@@ -4,11 +4,8 @@ import { HealthPalLogo } from './icons';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 import { useTranslation } from '../hooks/useTranslation';
 
-interface PublicNavbarProps {
-    onQuickMealClick?: () => void;
-}
 
-const PublicNavbar: React.FC<PublicNavbarProps> = ({ onQuickMealClick }) => {
+const PublicNavbar: React.FC = () => {
     const { language, setLanguage } = useLanguage();
     const { t } = useTranslation();
 

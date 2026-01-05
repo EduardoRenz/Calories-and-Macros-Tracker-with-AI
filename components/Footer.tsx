@@ -1,4 +1,3 @@
-import { DonationPanel } from './DonationPanel';
 import Link from 'next/link';
 
 export const Footer: React.FC = () => {

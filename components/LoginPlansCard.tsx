@@ -7,7 +7,7 @@ const LoginPlansCard: React.FC = () => {
             <p className="text-sm text-healthpal-text-secondary mb-3">
                 Want to see our available plans?
             </p>
-            <a
+            <Link
                 href="/plans"
                 className="inline-flex items-center gap-2 text-healthpal-green hover:text-healthpal-green/80 transition-colors text-sm font-medium"
             >
@@ -15,7 +15,7 @@ const LoginPlansCard: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 View Plans
-            </a>
+            </Link>
         </div>
     );
 };
