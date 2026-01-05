@@ -49,10 +49,6 @@ export default function PlansPage() {
         return plan.interval === billingCycle;
     });
 
-    const handleQuickMeal = () => {
-        router.push('/login');
-    };
-
     return (
         <div className="min-h-screen bg-black text-white">
             <PublicNavbar />
