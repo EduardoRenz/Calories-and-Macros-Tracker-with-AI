@@ -264,6 +264,7 @@ async function migrate() {
                                 dashboard_day_id: dayId,
                                 meal_type: mealType,
                                 name: ing.name,
+                                quantity: ing.quantity || '1',
                                 calories: ing.calories ?? 0,
                                 protein: ing.protein ?? 0,
                                 carbs: ing.carbs ?? 0,
