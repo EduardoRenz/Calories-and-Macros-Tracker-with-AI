@@ -39,18 +39,18 @@ export default function AuthenticatedLayout({
         <ProtectedRoute>
             <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex flex-col">
                 <div className="flex justify-center flex-1">
-                    <div className="w-full max-w-screen-2xl bg-healthpal-dark">
+                    <div className="w-full max-w-screen-2xl bg-healthpal-dark flex flex-col min-h-screen">
                         {showNavbar && (
                             <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
                         )}
-                        <div className="pb-24 md:pb-0">
+                        <div className="flex-1 pb-24 md:pb-0">
                             <main className="p-6 lg:p-8">
                                 {children}
                             </main>
                         </div>
+                        {showNavbar && <Footer />}
                     </div>
                 </div>
-                {showNavbar && <Footer />}
             </div>
             {showNavbar && (
                 <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
