@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
-import { SparklesIcon, EditIcon, TrashIcon, CheckIcon, XMarkIcon } from './icons';
+import { SparklesIcon, EditIcon, TrashIcon } from './icons';
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -133,32 +133,13 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setOriginalEditForm({ ...analyzedIngredients[index] });
     };
 
-    const handleCancelEdit = () => {
-        setEditingIndex(null);
-        setEditForm(null);
-        setOriginalEditForm(null);
-    };
-
-    const handleSaveEdit = () => {
-        if (editingIndex !== null && editForm) {
-            setAnalyzedIngredients(prev => {
-                const newIngredients = [...prev];
-                newIngredients[editingIndex] = editForm;
-                return newIngredients;
-            });
-            setEditingIndex(null);
-            setEditForm(null);
-            setOriginalEditForm(null);
-        }
-    };
-
     const parseGrams = (str: string): number => {
         const match = str.match(/(\d+(\.\d+)?)/);
         return match ? parseFloat(match[0]) : 0;
     };
 
     const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (editForm && originalEditForm) {
+        if (editForm && originalEditForm && editingIndex !== null) {
             const { name, value } = e.target;
 
             if (name === 'quantity') {
@@ -176,8 +157,21 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                     updatedForm.fiber = Number(((originalEditForm.fiber || 0) * ratio).toFixed(1));
                 }
                 setEditForm(updatedForm);
+                // Apply changes immediately
+                setAnalyzedIngredients(prev => {
+                    const newIngredients = [...prev];
+                    newIngredients[editingIndex] = updatedForm;
+                    return newIngredients;
+                });
             } else {
-                setEditForm(prev => prev ? { ...prev, [name]: value } : null);
+                const updatedForm = { ...editForm, [name]: value };
+                setEditForm(updatedForm);
+                // Apply changes immediately
+                setAnalyzedIngredients(prev => {
+                    const newIngredients = [...prev];
+                    newIngredients[editingIndex] = updatedForm;
+                    return newIngredients;
+                });
             }
         }
     };
@@ -255,7 +249,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                     {editingIndex === index && editForm ? (
                                         <div className="flex flex-col gap-2">
                                             <div className="grid grid-cols-12 gap-2 text-sm">
-                                                <div className="col-span-5">
+                                                <div className="col-span-6">
                                                     <input
                                                         type="text"
                                                         name="name"
@@ -275,7 +269,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                                         placeholder="Qty"
                                                     />
                                                 </div>
-                                                <div className="col-span-2">
+                                                <div className="col-span-3">
                                                     <input
                                                         type="number"
                                                         name="calories"
@@ -284,14 +278,6 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                                         className="w-full bg-healthpal-card border border-healthpal-border rounded px-2 py-1 text-gray-400 text-xs cursor-not-allowed"
                                                         placeholder="Kcal"
                                                     />
-                                                </div>
-                                                <div className="col-span-2 flex justify-end gap-1">
-                                                    <button onClick={handleSaveEdit} className="text-green-400 hover:text-green-300" data-testid="save-edit-button">
-                                                        <CheckIcon className="w-5 h-5" />
-                                                    </button>
-                                                    <button onClick={handleCancelEdit} className="text-red-400 hover:text-red-300">
-                                                        <XMarkIcon className="w-5 h-5" />
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
