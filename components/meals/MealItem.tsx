@@ -9,19 +9,21 @@ interface MealItemProps {
     mealType: keyof MealSummary;
     onAddIngredient: () => void;
     onRemoveIngredient: (id: string) => void;
+    'data-testid'?: string;
 }
 
 export const MealItem: React.FC<MealItemProps> = ({
     meal,
     mealType,
     onAddIngredient,
-    onRemoveIngredient
+    onRemoveIngredient,
+    'data-testid': testId
 }) => {
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     return (
-        <div className="py-4 border-b border-healthpal-border last:border-none">
+        <div className="py-4 border-b border-healthpal-border last:border-none" data-testid={testId}>
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="flex justify-between items-center w-full"

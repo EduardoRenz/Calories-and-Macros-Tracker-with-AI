@@ -15,6 +15,7 @@ interface MealDetailsProps {
 
 export const MealDetails: React.FC<MealDetailsProps> = ({
     meal,
+    mealType,
     onAddIngredient,
     onRemoveIngredient
 }) => {
@@ -25,7 +26,7 @@ export const MealDetails: React.FC<MealDetailsProps> = ({
             <IngredientsHeader />
 
             {meal.ingredients.length > 0 ? (
-                <ul className="text-sm space-y-1">
+                <ul className="text-sm space-y-1" data-testid={`${mealType}-ingredients`}>
                     {meal.ingredients.map((ingredient) => (
                         <IngredientItem
                             key={ingredient.id}
@@ -42,7 +43,7 @@ export const MealDetails: React.FC<MealDetailsProps> = ({
 
             <div className="border-t border-healthpal-border pt-4 mt-4 space-y-4">
                 <MealTotalsRow meal={meal} />
-                <AddIngredientButton onClick={onAddIngredient} />
+                <AddIngredientButton onClick={onAddIngredient} mealType={mealType} />
             </div>
         </div>
     );

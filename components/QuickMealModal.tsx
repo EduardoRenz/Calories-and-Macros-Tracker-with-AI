@@ -183,7 +183,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={onClose}>
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={onClose} data-testid="quick-meal-modal">
             <div className="bg-healthpal-panel w-full max-w-lg p-8 rounded-2xl border border-healthpal-border shadow-2xl" onClick={e => e.stopPropagation()}>
                 <h2 className="text-2xl font-bold mb-2 flex items-center gap-2 text-white">
                     <SparklesIcon className="w-6 h-6 text-healthpal-green" />
@@ -197,6 +197,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                         value={mealType}
                         onChange={(e) => setMealType(e.target.value as keyof MealSummary)}
                         className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 appearance-none focus:ring-healthpal-green focus:border-healthpal-green text-white"
+                        data-testid="meal-type-select"
                     >
                         <option value="breakfast">{t('meals.breakfast')}</option>
                         <option value="lunch">{t('meals.lunch')}</option>
@@ -213,7 +214,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                             <button onClick={handleReset} className="w-full bg-healthpal-card text-healthpal-text-primary font-bold py-3 rounded-lg hover:bg-healthpal-border transition-all">
                                 {t('quick_meal_modal.change_image_button')}
                             </button>
-                            <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" data-testid="analyze-meal-button">
                                 {isLoading ? t('quick_meal_modal.analyzing_button') : t('navbar.quick_meal')}
                             </button>
                         </div>
@@ -236,7 +237,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                             )}
                             <label className="bg-healthpal-card cursor-pointer text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
                                 {t('quick_meal_modal.upload_button')}
-                                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} data-testid="image-upload-input" />
                             </label>
                         </div>
                     </div>
@@ -285,7 +286,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                                     />
                                                 </div>
                                                 <div className="col-span-2 flex justify-end gap-1">
-                                                    <button onClick={handleSaveEdit} className="text-green-400 hover:text-green-300">
+                                                    <button onClick={handleSaveEdit} className="text-green-400 hover:text-green-300" data-testid="save-edit-button">
                                                         <CheckIcon className="w-5 h-5" />
                                                     </button>
                                                     <button onClick={handleCancelEdit} className="text-red-400 hover:text-red-300">
@@ -311,7 +312,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                 </div>
                             ))}
                         </div>
-                        <button onClick={handleAddToDiary} disabled={isLoading} className="w-full mt-4 bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all disabled:opacity-50">
+                        <button onClick={handleAddToDiary} disabled={isLoading} className="w-full mt-4 bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all disabled:opacity-50" data-testid="add-to-diary-button">
                             {t('quick_meal_modal.add_to_diary_button')}
                         </button>
                     </div>
