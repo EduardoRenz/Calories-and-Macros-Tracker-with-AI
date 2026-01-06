@@ -4,9 +4,9 @@ trigger: always_on
 
 - This project uses yarn
 - When testing the application, in the browser or cypress, use the `yarn dev:mock` command to start the app in mock mode
-- Do not use VITE_ prefix in new envs or similar
 - When a new page with new domains, repositories and services is created, also create mocked versions of it and configure in the factory.
 - When a new page is created, also make a new test in cypress for this page.
 - To run test, use the command `yarn cy:run`
-- Whne implemenmting repositories and service, use the tool ConcurrencyRequestManager to avoid multiple api calls
+- When implementing repositories and service, use the tool ConcurrencyRequestManager to avoid multiple api calls
+- Always make Small and Readable Components in pages to be easier to maintain and read
 
