@@ -96,11 +96,11 @@ export default function HistoricoPage() {
         };
 
         init();
-    }, [historyService]);
+    }, [historyService, fetchTablePage, fetchAverages]);
 
     useEffect(() => {
         fetchCalendarMonth(calendarMonthDate);
-    }, [calendarMonthDate]);
+    }, [calendarMonthDate, fetchCalendarMonth]);
 
     const handleApply = async () => {
         if (!draftStartDate || !draftEndDate) return;

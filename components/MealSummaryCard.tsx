@@ -26,6 +26,7 @@ const MealSummaryCard: React.FC<MealSummaryCardProps> = ({ meals, onAddIngredien
                         mealType={mealType}
                         onAddIngredient={() => onAddIngredient(mealType)}
                         onRemoveIngredient={(ingredientId) => onRemoveIngredient(mealType, ingredientId)}
+                        data-testid={`meal-${mealType}`}
                     />
                 ))}
             </div>

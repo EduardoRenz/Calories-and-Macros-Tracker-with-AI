@@ -9,6 +9,13 @@ interface MealTotalsRowProps {
 export const MealTotalsRow: React.FC<MealTotalsRowProps> = ({ meal }) => {
     const { t } = useTranslation();
 
+    // Calculate total grams from ingredient quantities
+    const totalGrams = meal.ingredients.reduce((sum, ingredient) => {
+        // Extract numeric value from quantity string (e.g., "100g" -> 100)
+        const numericValue = parseFloat(ingredient.quantity.replace(/[^\d.]/g, ''));
+        return sum + (isNaN(numericValue) ? 0 : numericValue);
+    }, 0);
+
     return (
         <div className="bg-healthpal-panel/50 p-2 rounded-md flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center">
             <div className="md:col-span-4">
@@ -20,7 +27,7 @@ export const MealTotalsRow: React.FC<MealTotalsRowProps> = ({ meal }) => {
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs md:contents">
                 <div className="whitespace-nowrap md:col-span-2 md:text-center">
                     <span className="md:hidden">T: </span>
-                    <span className="md:text-healthpal-text-secondary font-bold">{meal.ingredients.length}</span>
+                    <span className="md:text-healthpal-text-secondary font-bold">{totalGrams}g</span>
                 </div>
 
                 <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
