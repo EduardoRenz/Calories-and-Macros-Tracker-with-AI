@@ -48,10 +48,10 @@ export default function AuthenticatedLayout({
                                 {children}
                             </main>
                         </div>
-                        {showNavbar && <Footer />}
                     </div>
                 </div>
             </div>
+            {showNavbar && <Footer />}
             {showNavbar && (
                 <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
             )}
