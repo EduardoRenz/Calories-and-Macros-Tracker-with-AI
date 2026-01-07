@@ -99,7 +99,10 @@ export default {
     "analysis_error": "Lo siento, no pude analizar esa imagen. Por favor, intenta con otra.",
     "add_error": "Error al añadir los alimentos. Por favor, inténtalo de nuevo.",
     "gemini_results": "Análisis de Gemini",
-    "review_prompt": "Revisa los ingredientes a continuación antes de añadirlos a tu diario."
+    "review_prompt": "Revisa los ingredientes a continuación antes de añadirlos a tu diario.",
+    "prompt_label": "Contexto adicional",
+    "prompt_optional": "opcional",
+    "prompt_placeholder": "ej: 'Este es un almuerzo vegetariano con quinoa y verduras a la parrilla' o 'Enfócate en identificar el método de cocción y los tamaños de las porciones'"
   },
   "profile": {
     "title": "Mi Perfil",

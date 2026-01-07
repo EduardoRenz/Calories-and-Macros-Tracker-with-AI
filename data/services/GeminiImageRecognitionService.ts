@@ -35,7 +35,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
         this.ai = new GoogleGenAI({ apiKey: key });
     }
 
-    async analyzeMealImage(image: Blob, language: string): Promise<Omit<Ingredient, 'id'>[]> {
+    async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         try {
             const base64Data = await blobToBase64(image);
 
@@ -46,13 +46,17 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             };
             const languageName = languageMap[language] || 'English';
 
-            const prompt = `Analyze the food items in this image. Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), and nutritional information (calories, protein, carbs, fats, fiber) per serving. Name the ingredients in ${languageName}. Respond in JSON format according to the provided schema. If an item is unrecognizable, omit it from the list.`;
+            let promptText = `Analyze the food items in this image. Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), and nutritional information (calories, protein, carbs, fats, fiber) per serving. Name the ingredients in ${languageName}. Respond in JSON format according to the provided schema. If an item is unrecognizable, omit it from the list.`;
+
+            if (prompt && prompt.trim()) {
+                promptText = `${prompt}\n\n${promptText}`;
+            }
 
             const response = await this.ai.models.generateContent({
                 model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash',
                 contents: {
                     parts: [
-                        { text: prompt },
+                        { text: promptText },
                         { inlineData: { mimeType: image.type, data: base64Data } }
                     ]
                 },

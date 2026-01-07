@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
         const image = formData.get('image') as File;
         const language = formData.get('language') as string;
+        const prompt = formData.get('prompt') as string;
 
         if (!image) {
             return NextResponse.json({ error: 'No image provided' }, { status: 400 });
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Convert File to Blob for the service
-        const ingredients = await service.analyzeMealImage(image, language || 'en');
+        const ingredients = await service.analyzeMealImage(image, language || 'en', prompt);
         return NextResponse.json(ingredients);
     } catch (error: unknown) {
         console.error('API Error:', error);

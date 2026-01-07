@@ -5,12 +5,15 @@ import { AuthRepository } from '../../domain/repositories/AuthRepository';
 export class NextApiImageRecognitionService implements ImageRecognitionService {
     constructor(private authRepository: AuthRepository) { }
 
-    async analyzeMealImage(image: Blob, language: string): Promise<Omit<Ingredient, 'id'>[]> {
+    async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const token = await this.authRepository.getIdToken();
 
         const formData = new FormData();
         formData.append('image', image);
         formData.append('language', language);
+        if (prompt && prompt.trim()) {
+            formData.append('prompt', prompt);
+        }
 
         const response = await fetch('/api/recognize-image', {
             method: 'POST',

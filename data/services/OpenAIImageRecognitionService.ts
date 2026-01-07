@@ -27,7 +27,7 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
         this.model = model;
     }
 
-    async analyzeMealImage(image: Blob, language: string): Promise<Omit<Ingredient, 'id'>[]> {
+    async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const base64Image = await blobToBase64(image);
 
         const languageMap: { [key: string]: string } = {
@@ -36,6 +36,32 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
             'pt': 'Portuguese'
         };
         const languageName = languageMap[language] || 'English';
+
+        let promptText = `Analyze the food items in this image. 
+        Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), 
+        and nutritional information (calories, protein, carbs, fats, fiber) per serving. 
+        Name the ingredients in ${languageName}. 
+        
+        Respond ONLY with a valid JSON object matching this schema:
+        {
+            "ingredients": [
+                {
+                    "name": "string",
+                    "quantity": "string", // e.g. "150g"
+                    "calories": number,
+                    "protein": number,
+                    "carbs": number,
+                    "fats": number,
+                    "fiber": number
+                }
+            ]
+        }
+        
+        If an item is unrecognizable, omit it.`;
+
+        if (prompt && prompt.trim()) {
+            promptText = `${prompt}\n\n${promptText}`;
+        }
 
         try {
             const response = await fetch(`${this.baseUrl}/chat/completions`, {
@@ -52,27 +78,7 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
                             content: [
                                 {
                                     type: "text",
-                                    text: `Analyze the food items in this image. 
-                                    Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), 
-                                    and nutritional information (calories, protein, carbs, fats, fiber) per serving. 
-                                    Name the ingredients in ${languageName}. 
-                                    
-                                    Respond ONLY with a valid JSON object matching this schema:
-                                    {
-                                        "ingredients": [
-                                            {
-                                                "name": "string",
-                                                "quantity": "string", // e.g. "150g"
-                                                "calories": number,
-                                                "protein": number,
-                                                "carbs": number,
-                                                "fats": number,
-                                                "fiber": number
-                                            }
-                                        ]
-                                    }
-                                    
-                                    If an item is unrecognizable, omit it.`
+                                    text: promptText
                                 },
                                 {
                                     type: "image_url",

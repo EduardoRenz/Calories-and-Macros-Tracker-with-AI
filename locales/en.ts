@@ -99,7 +99,10 @@ export default {
     "analysis_error": "Sorry, I couldn't analyze that image. Please try another one.",
     "add_error": "Failed to add items. Please try again.",
     "gemini_results": "Gemini's Analysis",
-    "review_prompt": "Review the ingredients below before adding them to your diary."
+    "review_prompt": "Review the ingredients below before adding them to your diary.",
+    "prompt_label": "Additional context",
+    "prompt_optional": "optional",
+    "prompt_placeholder": "e.g., 'This is a vegetarian lunch with quinoa and grilled vegetables' or 'Focus on identifying the cooking method and portion sizes'"
   },
   "profile": {
     "title": "My Profile",
