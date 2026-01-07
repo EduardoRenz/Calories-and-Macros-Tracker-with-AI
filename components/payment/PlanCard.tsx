@@ -31,8 +31,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                 </h3>
                 <div className="mt-2 flex items-baseline gap-1">
                     <span className="text-4xl font-bold text-white">
-                        {plan.currency === 'BRL' ? 'R$' : '$'}
-                        {plan.price.toFixed(2)}
+                        {plan.currency.format(plan.price)}
                     </span>
                     <span className="text-sm text-gray-400">/{plan.interval}</span>
                 </div>
@@ -81,9 +80,9 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                     } disabled:opacity-50`}
             >
                 {shouldUseGreenStyle ? (
-                    plan.currency === 'BRL' ? 'Atualizar para Membro' : 'Upgrade to Member'
+                    plan.currency.code === 'BRL' ? 'Atualizar para Membro' : 'Upgrade to Member'
                 ) : (
-                    plan.currency === 'BRL' ? 'Começar' : 'Get Started'
+                    plan.currency.code === 'BRL' ? 'Começar' : 'Get Started'
                 )}
             </button>
         </div>

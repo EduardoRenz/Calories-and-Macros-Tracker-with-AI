@@ -7,8 +7,6 @@ interface OrderSummaryProps {
 }
 
 export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0 }) => {
-    const currencySymbol = plan.currency === 'BRL' ? 'R$' : '$';
-
     // Calculate totals
     // Assuming plan.price is the monthly breakdown price.
     // If it's annual, the total billed is different.
@@ -86,17 +84,17 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
             <div className="mb-6 space-y-3 border-t border-gray-800 pt-6">
                 <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Subtotal</span>
-                    <span className="text-white">{currencySymbol}{subtotal.toFixed(2)}</span>
+                    <span className="text-white">{plan.currency.format(subtotal)}</span>
                 </div>
                 {discountAmount > 0 && (
                     <div className="flex justify-between text-sm">
                         <span className="text-green-500">Annual Discount</span>
-                        <span className="text-green-500">-{currencySymbol}{discountAmount.toFixed(2)}</span>
+                        <span className="text-green-500">-{plan.currency.format(discountAmount)}</span>
                     </div>
                 )}
                 <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Tax ({taxRate}%)</span>
-                    <span className="text-white">{currencySymbol}0.00</span>
+                    <span className="text-white">{plan.currency.format(0)}</span>
                 </div>
             </div>
 
@@ -104,8 +102,8 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
                 <div className="flex items-baseline justify-between">
                     <span className="text-base font-medium text-gray-300">Total due</span>
                     <div className="text-right">
-                        <div className="text-2xl font-bold text-white">{currencySymbol}{totalDue.toFixed(2)}</div>
-                        <div className="text-xs text-gray-500 uppercase">{plan.currency} / {plan.interval}</div>
+                        <div className="text-2xl font-bold text-white">{plan.currency.format(totalDue)}</div>
+                        <div className="text-xs text-gray-500 uppercase">{plan.currency.code} / {plan.interval}</div>
                     </div>
                 </div>
 

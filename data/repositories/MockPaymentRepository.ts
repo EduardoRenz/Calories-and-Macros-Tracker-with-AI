@@ -1,4 +1,4 @@
-import { PaymentData, Plan, Transaction } from '../../domain/entities/payment';
+import { PaymentData, Plan, Transaction, Currency } from '../../domain/entities/payment';
 import { PaymentRepository } from '../../domain/repositories/PaymentRepository';
 
 export class MockPaymentRepository implements PaymentRepository {
@@ -7,7 +7,7 @@ export class MockPaymentRepository implements PaymentRepository {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         const isPt = language === 'pt';
-        const currency = isPt ? 'BRL' : 'USD';
+        const currency = isPt ? Currency.BRL() : Currency.USD();
 
         // Prices
         // Free: 0
@@ -57,7 +57,7 @@ export class MockPaymentRepository implements PaymentRepository {
                 name: isPt ? 'Plano Gratuito' : 'Free Plan',
                 description: isPt ? 'Acesso básico para desenvolvedores.' : 'Basic access for developers and hobbyists.',
                 price: freePrice,
-                currency,
+                currency, // Now a Currency Value Object
                 interval: 'month',
                 features: freeFeatures,
                 isPopular: false,
@@ -67,7 +67,7 @@ export class MockPaymentRepository implements PaymentRepository {
                 name: isPt ? 'Plano Membro (Mensal)' : 'Member Plan (Monthly)',
                 description: isPt ? 'Cobrado mensalmente.' : 'Billed monthly.',
                 price: monthlyPrice,
-                currency,
+                currency, // Now a Currency Value Object
                 interval: 'month',
                 features: commonFeatures,
                 isPopular: false,
@@ -75,10 +75,10 @@ export class MockPaymentRepository implements PaymentRepository {
             {
                 id: 'member_annual',
                 name: isPt ? 'Plano Membro (Anual)' : 'Member Plan (Annual)',
-                description: isPt ? `Cobrado ${currency} ${annualTotal} anualmente com 15% de desconto.` : `Billed ${currency} ${annualTotal} yearly with 15% off.`,
+                description: isPt ? `Cobrado ${currency.format(annualTotal)} anualmente com 15% de desconto.` : `Billed ${currency.format(annualTotal)} yearly with 15% off.`,
                 price: annualPricePerMonth, // We display the per-month price usually
                 originalPrice: annualTotal, // Useful payload for checkout
-                currency,
+                currency, // Now a Currency Value Object
                 interval: 'year',
                 features: commonFeatures,
                 isPopular: true,
@@ -101,7 +101,7 @@ export class MockPaymentRepository implements PaymentRepository {
             userId: data.userId,
             planId: data.planId,
             amount: 0, // In a real app we'd look up the plan price
-            currency: 'USD', // simplistic
+            currency: Currency.USD(), // Now a Currency Value Object
             status: 'completed',
             date: new Date(),
             paymentMethod: data.paymentMethod,
