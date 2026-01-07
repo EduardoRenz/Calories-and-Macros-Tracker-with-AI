@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { RepositoryFactory } from '../../../data/RepositoryFactory';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { Plan, PaymentMethodType } from '../../../domain/entities/payment';
 import { CheckoutSummary } from '../../../components/payment/CheckoutSummary';
 import { PaymentMethodSelector } from '../../../components/payment/PaymentMethodSelector';
@@ -16,6 +17,7 @@ export default function CheckoutPage() {
     const planId = searchParams.get('planId');
     const { user, loading: authLoading } = useAuth();
     const { language } = useLanguage();
+    const { t } = useTranslation();
 
     const [plan, setPlan] = useState<Plan | null>(null);
     const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('card');
@@ -71,7 +73,7 @@ export default function CheckoutPage() {
             router.push('/dashboard?payment_success=true');
         } catch (error) {
             console.error('Payment failed', error);
-            alert('Payment failed. Please try again.');
+            alert(t('checkout.payment_failed'));
         } finally {
             setIsProcessing(false);
         }
@@ -92,11 +94,11 @@ export default function CheckoutPage() {
                 <div className="h-8 w-8 rounded-full bg-gray-900 flex items-center justify-center border border-gray-800">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 </div>
-                <span>Back</span>
+                <span>{t('checkout.back')}</span>
             </button>
 
-            <h1 className="text-3xl font-bold mb-2 text-white">Checkout</h1>
-            <p className="text-gray-400 mb-8">Complete your secure payment to upgrade</p>
+            <h1 className="text-3xl font-bold mb-2 text-white">{t('checkout.title')}</h1>
+            <p className="text-gray-400 mb-8">{t('checkout.subtitle')}</p>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
@@ -106,10 +108,10 @@ export default function CheckoutPage() {
                             <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
                             </div>
-                            <h2 className="text-lg font-semibold text-white">Contact Information</h2>
+                            <h2 className="text-lg font-semibold text-white">{t('checkout.contact_information')}</h2>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">Email address</label>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">{t('checkout.email_address')}</label>
                             <input
                                 type="email"
                                 value={user?.email || ''}
@@ -125,7 +127,7 @@ export default function CheckoutPage() {
                             <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" /></svg>
                             </div>
-                            <h2 className="text-lg font-semibold text-white">Payment Method</h2>
+                            <h2 className="text-lg font-semibold text-white">{t('checkout.payment_method')}</h2>
                         </div>
 
                         <div className="mb-6">
@@ -134,9 +136,9 @@ export default function CheckoutPage() {
 
                         <form id="checkout-form" onSubmit={handleSubmit}>
                             {selectedMethod === 'card' && <CheckoutForm />}
-                            {selectedMethod === 'paypal' && <div className="text-center py-8 text-gray-400">PayPal integration mock</div>}
-                            {selectedMethod === 'pix' && <div className="text-center py-8 text-gray-400">Pix integration mock (QR Code generation)</div>}
-                            {selectedMethod === 'crypto' && <div className="text-center py-8 text-gray-400">Crypto integration mock</div>}
+                            {selectedMethod === 'paypal' && <div className="text-center py-8 text-gray-400">{t('checkout.integrations.paypal_mock')}</div>}
+                            {selectedMethod === 'pix' && <div className="text-center py-8 text-gray-400">{t('checkout.integrations.pix_mock')}</div>}
+                            {selectedMethod === 'crypto' && <div className="text-center py-8 text-gray-400">{t('checkout.integrations.crypto_mock')}</div>}
                         </form>
                     </div>
                 </div>
@@ -150,8 +152,8 @@ export default function CheckoutPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
                     <div className="text-center">
                         <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-green-500 border-t-transparent"></div>
-                        <h3 className="text-xl font-semibold text-white">Processing Payment...</h3>
-                        <p className="text-sm text-gray-400">Please do not close this window</p>
+                        <h3 className="text-xl font-semibold text-white">{t('checkout.processing_payment')}</h3>
+                        <p className="text-sm text-gray-400">{t('checkout.processing_message')}</p>
                     </div>
                 </div>
             )}

@@ -36,36 +36,24 @@ export class MockPaymentRepository implements PaymentRepository {
 
         const freePrice = 0;
         const monthlyPrice = isPt ? 39.90 : 9.99;
-        const annualPricePerMonth = isPt ? 29.90 : 5.99;
-        const annualTotal = isPt ? 358.80 : 71.88;
+        const annualTotal = isPt ? 39.90 * 12 : 9.99 * 12;
+        const annualTotalWithDiscount = annualTotal * 0.85;
 
-        const ultraPricePerMonth = isPt ? 49.90 : 9.99;
-        const ultraTotal = isPt ? 598.80 : 119.88;
-
-        const ultraFeatures = [
-            { text: isPt ? 'Tudo incluso nos planos anteriores' : 'All-in-one', included: true },
-            { text: isPt ? 'Análise nutricional suportada' : 'Nutrition analysis supported', included: true },
-            { text: isPt ? 'Histórico ilimitado' : 'Unlimited history', included: true },
-            { text: isPt ? 'Apenas rastreamento macro' : 'Macro tracking only', included: false }, // implied by "Macro tracking only" as subtitle
-        ]
-
-        const commonFeatures = [
+        const memberFeatures = [
             { text: isPt ? 'Sem chave de API necessária (Nós gerenciamos a IA)' : 'No API needed (We handle all AI processing)', included: true },
             { text: isPt ? 'Análise nutricional suportada' : 'Nutrition analysis supported', included: true },
-            { text: isPt ? 'Histórico ilimitado' : 'Unlimited history', included: true },
         ];
 
         const freeFeatures = [
             { text: isPt ? 'Use sua própria chave de API' : 'Use own API keys only', included: true },
             { text: isPt ? 'Sem análise nutricional' : 'No nutrition analysis', included: false },
-            { text: isPt ? 'Apenas rastreamento macro' : 'Macro tracking only', included: false }, // implied by "Macro tracking only" as subtitle
         ];
 
         return [
             Plan.create({
                 id: 'free',
                 name: isPt ? 'Plano Gratuito' : 'Free Plan',
-                description: isPt ? 'Acesso básico para desenvolvedores.' : 'Basic access for developers and hobbyists.',
+                description: isPt ? 'Acesso básico com suas pŕoprias chaves de API.' : 'Basic access with your own API keys.',
                 price: freePrice,
                 currency, // Now a Currency Value Object
                 interval: 'month',
@@ -79,18 +67,18 @@ export class MockPaymentRepository implements PaymentRepository {
                 price: monthlyPrice,
                 currency, // Now a Currency Value Object
                 interval: 'month',
-                features: commonFeatures,
+                features: memberFeatures,
                 isPopular: false,
             }),
             Plan.create({
                 id: 'member_annual',
                 name: isPt ? 'Plano Membro (Anual)' : 'Member Plan (Annual)',
                 description: isPt ? `Cobrado ${currency.format(annualTotal)} anualmente com 15% de desconto.` : `Billed ${currency.format(annualTotal)} yearly with 15% off.`,
-                price: annualPricePerMonth, // We display the per-month price usually
-                originalPrice: annualTotal, // Useful payload for checkout
+                price: annualTotalWithDiscount , // Total annual price
+                originalPrice: annualTotal, // What it would cost monthly for 12 months
                 currency, // Now a Currency Value Object
                 interval: 'year',
-                features: commonFeatures,
+                features: memberFeatures,
                 isPopular: true,
                 discountMessage: isPt ? 'MELHOR VALOR' : 'MOST POPULAR',
             }),

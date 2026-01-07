@@ -1,20 +1,23 @@
 import React from 'react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export const CheckoutForm: React.FC = () => {
+    const { t } = useTranslation();
+
     return (
         <div className="space-y-6">
             <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Cardholder Name</label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">{t('checkout.cardholder_name')}</label>
                 <input
                     type="text"
                     name="cardName"
-                    placeholder="Name as on card"
+                    placeholder={t('checkout.cardholder_name_placeholder')}
                     className="w-full rounded-lg border border-gray-800 bg-black/50 p-3 text-white placeholder-gray-600 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Card Number</label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">{t('checkout.card_number')}</label>
                 <div className="relative">
                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-500">
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
@@ -22,7 +25,7 @@ export const CheckoutForm: React.FC = () => {
                     <input
                         type="text"
                         name="cardNumber"
-                        placeholder="0000 0000 0000 0000"
+                        placeholder={t('checkout.card_number_placeholder')}
                         className="w-full rounded-lg border border-gray-800 bg-black/50 p-3 pl-10 text-white placeholder-gray-600 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                     />
                 </div>
@@ -30,21 +33,21 @@ export const CheckoutForm: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Expiry Date</label>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">{t('checkout.expiry_date')}</label>
                     <input
                         type="text"
                         name="expiryDate"
-                        placeholder="MM / YY"
+                        placeholder={t('checkout.expiry_date_placeholder')}
                         className="w-full rounded-lg border border-gray-800 bg-black/50 p-3 text-white placeholder-gray-600 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">CVC</label>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">{t('checkout.cvc')}</label>
                     <div className="relative">
                         <input
                             type="text"
                             name="cvc"
-                            placeholder="123"
+                            placeholder={t('checkout.cvc_placeholder')}
                             className="w-full rounded-lg border border-gray-800 bg-black/50 p-3 text-white placeholder-gray-600 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                         />
                         <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500">
