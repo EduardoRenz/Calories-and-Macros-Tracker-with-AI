@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RepositoryFactory } from '../../data/RepositoryFactory';
 import { Plan } from '../../domain/entities/payment';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -12,6 +12,7 @@ import { Footer } from '../../components/Footer';
 
 export default function PlansPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { t } = useTranslation();
     const { language } = useLanguage();
     const [plans, setPlans] = useState<Plan[]>([]);
@@ -34,6 +35,20 @@ export default function PlansPage() {
 
         fetchPlans();
     }, [language]);
+
+    useEffect(() => {
+        const cycleFromUrl = searchParams.get('billing') as 'month' | 'year';
+        if (cycleFromUrl && (cycleFromUrl === 'month' || cycleFromUrl === 'year')) {
+            setBillingCycle(cycleFromUrl);
+        }
+    }, [searchParams]);
+
+    const updateBillingCycle = (cycle: 'month' | 'year') => {
+        setBillingCycle(cycle);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('billing', cycle);
+        router.push(`/plans?${params.toString()}`, { scroll: false });
+    };
 
     const handleSelectPlan = (plan: Plan) => {
         if (plan.price === 0) {
@@ -68,13 +83,13 @@ export default function PlansPage() {
                 {/* Toggle */}
                 <div className="flex items-center justify-center gap-4 mb-12">
                     <button
-                        onClick={() => setBillingCycle('month')}
+                        onClick={() => updateBillingCycle('month')}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${billingCycle === 'month' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white'}`}
                     >
                         {t('plans.monthly') || 'Monthly'}
                     </button>
                     <button
-                        onClick={() => setBillingCycle('year')}
+                        onClick={() => updateBillingCycle('year')}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${billingCycle === 'year' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
                     >
                         {t('plans.annual') || 'Annual'}
