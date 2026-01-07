@@ -202,6 +202,43 @@ export default {
     "annual": "Annual",
     "loading": "Loading plans..."
   },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete your secure payment to upgrade",
+    "back": "Back",
+    "contact_information": "Contact Information",
+    "email_address": "Email address",
+    "payment_method": "Payment Method",
+    "order_summary": "Order Summary",
+    "cardholder_name": "Cardholder Name",
+    "cardholder_name_placeholder": "Name as on card",
+    "card_number": "Card Number",
+    "card_number_placeholder": "0000 0000 0000 0000",
+    "expiry_date": "Expiry Date",
+    "expiry_date_placeholder": "MM / YY",
+    "cvc": "CVC",
+    "cvc_placeholder": "123",
+    "subtotal": "Subtotal",
+    "annual_discount": "Annual Discount",
+    "tax": "Tax",
+    "total_due": "Total due",
+    "confirm_purchase": "Confirm Purchase →",
+    "secure_payments": "Payments are secure and encrypted",
+    "processing_payment": "Processing Payment...",
+    "processing_message": "Please do not close this window",
+    "payment_failed": "Payment failed. Please try again.",
+    "payment_methods": {
+      "card": "Card",
+      "paypal": "PayPal",
+      "pix": "Pix",
+      "crypto": "Crypto"
+    },
+    "integrations": {
+      "paypal_mock": "PayPal integration mock",
+      "pix_mock": "Pix integration mock (QR Code generation)",
+      "crypto_mock": "Crypto integration mock"
+    }
+  },
   "settings": {
     "title": "App Settings and API Management",
     "subtitle": "Manage your application preferences and AI service integrations.",
@@ -228,4 +265,4 @@ export default {
       "no_tokens": "You haven't added any AI API tokens yet."
     }
   }
-}
+};

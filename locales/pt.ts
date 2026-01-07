@@ -202,6 +202,43 @@ export default {
     "annual": "Anual",
     "loading": "Carregando planos..."
   },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete seu pagamento seguro para atualizar",
+    "back": "Voltar",
+    "contact_information": "Informações de Contato",
+    "email_address": "Endereço de e-mail",
+    "payment_method": "Método de Pagamento",
+    "order_summary": "Resumo do Pedido",
+    "cardholder_name": "Nome do Titular",
+    "cardholder_name_placeholder": "Nome como no cartão",
+    "card_number": "Número do Cartão",
+    "card_number_placeholder": "0000 0000 0000 0000",
+    "expiry_date": "Data de Vencimento",
+    "expiry_date_placeholder": "MM / AA",
+    "cvc": "CVC",
+    "cvc_placeholder": "123",
+    "subtotal": "Subtotal",
+    "annual_discount": "Desconto Anual",
+    "tax": "Imposto",
+    "total_due": "Total a Pagar",
+    "confirm_purchase": "Confirmar Compra →",
+    "secure_payments": "Os pagamentos são seguros e criptografados",
+    "processing_payment": "Processando Pagamento...",
+    "processing_message": "Por favor, não feche esta janela",
+    "payment_failed": "O pagamento falhou. Por favor, tente novamente.",
+    "payment_methods": {
+      "card": "Cartão",
+      "paypal": "PayPal",
+      "pix": "Pix",
+      "crypto": "Cripto"
+    },
+    "integrations": {
+      "paypal_mock": "Integração PayPal simulada",
+      "pix_mock": "Integração Pix simulada (geração de QR Code)",
+      "crypto_mock": "Integração Cripto simulada"
+    }
+  },
   "settings": {
     "title": "Configurações do App e Gerenciamento de API",
     "subtitle": "Gerencie suas preferências de aplicativo e integrações de serviços de IA.",
