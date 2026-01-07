@@ -109,17 +109,154 @@ export interface PlanFeature {
     included: boolean;
 }
 
-export interface Plan {
+export class Plan {
+    private readonly _id: string;
+    private readonly _name: string;
+    private readonly _description?: string;
+    private readonly _price: number;
+    private readonly _currency: Currency;
+    private readonly _interval: 'month' | 'year';
+    private readonly _features: PlanFeature[];
+    private readonly _isPopular?: boolean;
+    private readonly _discountMessage?: string;
+    private readonly _originalPrice?: number;
+
+    private constructor(props: PlanProps) {
+        this._id = props.id;
+        this._name = props.name;
+        this._description = props.description;
+        this._price = props.price;
+        this._currency = props.currency;
+        this._interval = props.interval;
+        this._features = props.features;
+        this._isPopular = props.isPopular;
+        this._discountMessage = props.discountMessage;
+        this._originalPrice = props.originalPrice;
+    }
+
+    public static create(props: PlanProps): Plan {
+        return new Plan(props);
+    }
+
+    public get id(): string {
+        return this._id;
+    }
+
+    public get name(): string {
+        return this._name;
+    }
+
+    public get description(): string | undefined {
+        return this._description;
+    }
+
+    public get price(): number {
+        return this._price;
+    }
+
+    public get currency(): Currency {
+        return this._currency;
+    }
+
+    public get interval(): 'month' | 'year' {
+        return this._interval;
+    }
+
+    public get features(): PlanFeature[] {
+        return [...this._features];
+    }
+
+    public get isPopular(): boolean | undefined {
+        return this._isPopular;
+    }
+
+    public get discountMessage(): string | undefined {
+        return this._discountMessage;
+    }
+
+    public get originalPrice(): number | undefined {
+        return this._originalPrice;
+    }
+
+    public get formattedPrice(): string {
+        return this._currency.format(this._price);
+    }
+
+    public get formattedOriginalPrice(): string | undefined {
+        return this._originalPrice ? this._currency.format(this._originalPrice) : undefined;
+    }
+
+    public get discountPercentage(): number | undefined {
+        if (!this._originalPrice || this._originalPrice <= this._price) {
+            return undefined;
+        }
+        return Math.round(((this._originalPrice - this._price) / this._originalPrice) * 100);
+    }
+
+    public get hasDiscount(): boolean {
+        return this._originalPrice !== undefined && this._originalPrice > this._price;
+    }
+
+    public get yearlyEquivalent(): number {
+        return this._interval === 'year' ? this._price : this._price * 12;
+    }
+
+    public get formattedYearlyEquivalent(): string {
+        return this._currency.format(this.yearlyEquivalent);
+    }
+
+    public get monthlyEquivalent(): number {
+        return this._interval === 'month' ? this._price : this._price / 12;
+    }
+
+    public get formattedMonthlyEquivalent(): string {
+        return this._currency.format(this.monthlyEquivalent);
+    }
+
+    public get savingsFromMonthly(): number | undefined {
+        if (this._interval !== 'year') {
+            return undefined;
+        }
+        const monthlyTotal = this.monthlyEquivalent * 12;
+        return monthlyTotal - this.yearlyEquivalent;
+    }
+
+    public get formattedSavingsFromMonthly(): string | undefined {
+        const savings = this.savingsFromMonthly;
+        return savings !== undefined ? this._currency.format(savings) : undefined;
+    }
+
+    public equals(other: Plan): boolean {
+        return other instanceof Plan && this._id === other._id;
+    }
+
+    public toJSON(): PlanProps {
+        return {
+            id: this._id,
+            name: this._name,
+            description: this._description,
+            price: this._price,
+            currency: this._currency,
+            interval: this._interval,
+            features: this._features,
+            isPopular: this._isPopular,
+            discountMessage: this._discountMessage,
+            originalPrice: this._originalPrice,
+        };
+    }
+}
+
+export interface PlanProps {
     id: string;
     name: string;
     description?: string;
     price: number;
     currency: Currency;
-    interval: 'month' | 'year'; // billing frequency
+    interval: 'month' | 'year';
     features: PlanFeature[];
     isPopular?: boolean;
     discountMessage?: string;
-    originalPrice?: number; // for showing strikethrough prices if needed (e.g. yearly plan breakdown)
+    originalPrice?: number;
 }
 
 export type PaymentMethodType = 'card' | 'paypal' | 'pix' | 'crypto';

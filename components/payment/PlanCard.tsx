@@ -31,7 +31,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                 </h3>
                 <div className="mt-2 flex items-baseline gap-1">
                     <span className="text-4xl font-bold text-white">
-                        {plan.currency.format(plan.price)}
+                        {plan.formattedPrice}
                     </span>
                     <span className="text-sm text-gray-400">/{plan.interval}</span>
                 </div>

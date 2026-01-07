@@ -7,53 +7,22 @@ interface OrderSummaryProps {
 }
 
 export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0 }) => {
-    // Calculate totals
-    // Assuming plan.price is the monthly breakdown price.
-    // If it's annual, the total billed is different.
-
+    // Use Plan value object methods for calculations
     let subtotal = plan.price;
     let totalDue = plan.price;
     let discountAmount = 0;
 
     if (plan.interval === 'year') {
-        // If annual, usually we show the full year price.
-        // In the screenshot:
-        // Subtotal $84.56
-        // Annual Discount -$12.68
-        // Tax $0
-        // Total Due $71.88
+        // For annual plans, calculate yearly totals
+        totalDue = plan.yearlyEquivalent;
 
-        // So base price was $84.56 (approx $7.05/mo)
-        // Final price $71.88 ($5.99/mo)
-
-        // If we have originalPrice in the Plan entity, use it as subtotal.
-        if (plan.originalPrice) {
-            subtotal = plan.originalPrice; // 84.56 (implied roughly)
-            totalDue = plan.price * 12;    // 71.88
-
-            // Wait, plan.price for annual was stored as 5.99 in mock. 
-            // So totalDue = 5.99 * 12 = 71.88.
-            // Subtotal = ? If we don't have it, we calculate backwards from discount?
-            // The mock set `originalPrice` to `71.88` which doesn't match the "Subtotal $84.56" logic perfectly if 15% off.
-            // Let's adjust logic to be consistent with the entity data we have.
-
-            // If mock has `originalPrice` equal to the DISCOUNTED total (which I set in step 28 code as `annualTotal` which was 71.88? Wait).
-            // In Step 28:
-            // price: 5.99
-            // annualTotal = 71.88
-            // originalPrice: annualTotal (71.88) --- this was a mistake in my thought process there?
-            // "Billed $71.88 yearly with 15% off."
-            // So 71.88 is the FINAL price.
-            // Original price would be 71.88 / 0.85 = 84.56.
-
-            // In `CheckoutSummary`, let's recalculate for display perfection if we want to match screenshot.
-            totalDue = plan.price * 12; // 71.88
-            subtotal = totalDue / 0.85; // 84.56
+        // Use the value object's discount calculations
+        if (plan.hasDiscount && plan.originalPrice) {
+            subtotal = plan.originalPrice;
             discountAmount = subtotal - totalDue;
         } else {
-            // Monthly
-            subtotal = plan.price;
-            totalDue = plan.price;
+            // No discount, subtotal equals total
+            subtotal = totalDue;
         }
     }
 
@@ -72,9 +41,9 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
                         <span className="text-sm text-gray-400">
                             {plan.description?.split('.')[0] || `Billed ${plan.interval}ly`}
                         </span>
-                        {plan.discountMessage && (
+                        {plan.discountPercentage && (
                             <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-[10px] font-bold text-green-500">
-                                -15%
+                                -{plan.discountPercentage}%
                             </span>
                         )}
                     </div>

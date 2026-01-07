@@ -39,6 +39,16 @@ export class MockPaymentRepository implements PaymentRepository {
         const annualPricePerMonth = isPt ? 29.90 : 5.99;
         const annualTotal = isPt ? 358.80 : 71.88;
 
+        const ultraPricePerMonth = isPt ? 49.90 : 9.99;
+        const ultraTotal = isPt ? 598.80 : 119.88;
+
+        const ultraFeatures = [
+            { text: isPt ? 'Tudo incluso nos planos anteriores' : 'All-in-one', included: true },
+            { text: isPt ? 'Análise nutricional suportada' : 'Nutrition analysis supported', included: true },
+            { text: isPt ? 'Histórico ilimitado' : 'Unlimited history', included: true },
+            { text: isPt ? 'Apenas rastreamento macro' : 'Macro tracking only', included: false }, // implied by "Macro tracking only" as subtitle
+        ]
+
         const commonFeatures = [
             { text: isPt ? 'Sem chave de API necessária (Nós gerenciamos a IA)' : 'No API needed (We handle all AI processing)', included: true },
             { text: isPt ? 'Análise nutricional suportada' : 'Nutrition analysis supported', included: true },
@@ -52,7 +62,7 @@ export class MockPaymentRepository implements PaymentRepository {
         ];
 
         return [
-            {
+            Plan.create({
                 id: 'free',
                 name: isPt ? 'Plano Gratuito' : 'Free Plan',
                 description: isPt ? 'Acesso básico para desenvolvedores.' : 'Basic access for developers and hobbyists.',
@@ -61,8 +71,8 @@ export class MockPaymentRepository implements PaymentRepository {
                 interval: 'month',
                 features: freeFeatures,
                 isPopular: false,
-            },
-            {
+            }),
+            Plan.create({
                 id: 'member_monthly',
                 name: isPt ? 'Plano Membro (Mensal)' : 'Member Plan (Monthly)',
                 description: isPt ? 'Cobrado mensalmente.' : 'Billed monthly.',
@@ -71,8 +81,8 @@ export class MockPaymentRepository implements PaymentRepository {
                 interval: 'month',
                 features: commonFeatures,
                 isPopular: false,
-            },
-            {
+            }),
+            Plan.create({
                 id: 'member_annual',
                 name: isPt ? 'Plano Membro (Anual)' : 'Member Plan (Annual)',
                 description: isPt ? `Cobrado ${currency.format(annualTotal)} anualmente com 15% de desconto.` : `Billed ${currency.format(annualTotal)} yearly with 15% off.`,
@@ -83,7 +93,19 @@ export class MockPaymentRepository implements PaymentRepository {
                 features: commonFeatures,
                 isPopular: true,
                 discountMessage: isPt ? 'MELHOR VALOR' : 'MOST POPULAR',
-            },
+            }),
+            // Plan.create({
+            //     id: 'ultra_annual',
+            //     name: isPt ? 'Plano Ultra (Anual)' : 'Ultra Plan (Annual)',
+            //     description: isPt ? `Cobrado ${currency.format(annualTotal)} anualmente com 15% de desconto.` : `Billed ${currency.format(annualTotal)} yearly with 15% off.`,
+            //     price: ultraPricePerMonth, // We display the per-month price usually
+            //     originalPrice: ultraTotal, // Useful payload for checkout
+            //     currency, // Now a Currency Value Object
+            //     interval: 'year',
+            //     features: ultraFeatures,
+            //     isPopular: true,
+            //     discountMessage: isPt ? 'MELHOR VALOR' : 'MOST POPULAR',
+            // }),
         ];
     }
 
