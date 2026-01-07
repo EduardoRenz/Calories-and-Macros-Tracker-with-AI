@@ -127,6 +127,46 @@ describe('Browser Navigation', () => {
   });
 });
 
+describe('Logout Functionality', () => {
+  it('should redirect to login when user clicks logout', () => {
+    login();
+    
+    // Verify user is on dashboard
+    cy.url().should('include', '/dashboard');
+    cy.get('h2').contains('Dashboard').should('be.visible');
+    
+    // Click on user avatar to open dropdown menu
+    cy.get('button[aria-label="User menu"]').click();
+    
+    // Click logout button
+    cy.contains('Logout').click();
+    
+    // Should redirect to login page
+    cy.url().should('include', '/login');
+    cy.get('[data-testid="google-signin-button"]').should('be.visible');
+    
+    // Verify no infinite loading - should see login form quickly
+    cy.get('[data-testid="google-signin-button"]').should('not.be.disabled');
+  });
+
+  it('should clear user session after logout', () => {
+    login();
+    
+    // Navigate to a protected route
+    cy.visit('/profile');
+    cy.url().should('include', '/profile');
+    
+    // Logout
+    cy.get('button[aria-label="User menu"]').click();
+    cy.contains('Logout').click();
+    
+    // Try to access protected route again - should redirect to login
+    cy.visit('/dashboard');
+    cy.url().should('include', '/login');
+    cy.get('[data-testid="google-signin-button"]').should('be.visible');
+  });
+});
+
 describe('Root Path Redirect', () => {
   it('should redirect authenticated user from / to /dashboard', () => {
     login();
