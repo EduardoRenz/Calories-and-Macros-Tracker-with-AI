@@ -6,9 +6,9 @@ interface DonationPanelProps {
 }
 
 export const DonationPanel: React.FC<DonationPanelProps> = ({ variant = 'compact' }) => {
-    const pixKey = process.env.PIX_KEY;
-    const btcAddress = process.env.BTC_ADDRESS;
-    const usdcAddress = process.env.USDC_ADDRESS;
+    const pixKey = process.env.NEXT_PUBLIC_PIX_KEY;
+    const btcAddress = process.env.NEXT_PUBLIC_BTC_ADDRESS;
+    const usdcAddress = process.env.NEXT_PUBLIC_USDC_ADDRESS;
 
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
