@@ -11,13 +11,13 @@ export class FallbackImageRecognitionService implements ImageRecognitionService 
         }
     }
 
-    async analyzeMealImage(image: Blob, language: string): Promise<Omit<Ingredient, 'id'>[]> {
+    async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const errors: Error[] = [];
 
         for (const [index, service] of this.services.entries()) {
             try {
                 console.log(`[FallbackImageService] Attempting analysis with service ${index + 1}/${this.services.length}: ${service.constructor.name}`);
-                const result = await service.analyzeMealImage(image, language);
+                const result = await service.analyzeMealImage(image, language, prompt);
                 console.log(`[FallbackImageService] Success with ${service.constructor.name}`);
                 return result;
             } catch (error) {

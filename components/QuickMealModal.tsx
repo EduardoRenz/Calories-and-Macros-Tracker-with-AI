@@ -36,6 +36,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [editForm, setEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
     const [originalEditForm, setOriginalEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
+    const [imagePrompt, setImagePrompt] = useState<string>('');
 
     const dashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
     const imageRecognitionService: ImageRecognitionService = useMemo(() => ServiceFactory.getImageRecognitionService(), []);
@@ -71,6 +72,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setEditingIndex(null);
         setEditForm(null);
         setOriginalEditForm(null);
+        setImagePrompt('');
     };
 
     const handleCameraInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +92,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setError(null);
 
         try {
-            const ingredients = await imageRecognitionService.analyzeMealImage(image, language);
+            const ingredients = await imageRecognitionService.analyzeMealImage(image, language, imagePrompt);
 
             if (ingredients && ingredients.length > 0) {
                 setAnalyzedIngredients(ingredients);
@@ -204,6 +206,22 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 {imagePreview ? (
                     <div className="mb-4">
                         <Image src={imagePreview} alt="Meal preview" width={400} height={192} className="w-full h-48 object-cover rounded-lg mb-4" />
+
+                        <div className="mb-4">
+                            <label htmlFor="imagePrompt" className="block text-sm font-medium text-healthpal-text-secondary mb-2">
+                                {t('quick_meal_modal.prompt_label')} ({t('quick_meal_modal.prompt_optional')})
+                            </label>
+                            <textarea
+                                id="imagePrompt"
+                                value={imagePrompt}
+                                onChange={(e) => setImagePrompt(e.target.value)}
+                                placeholder={t('quick_meal_modal.prompt_placeholder')}
+                                className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 text-white placeholder-healthpal-text-secondary focus:ring-healthpal-green focus:border-healthpal-green resize-none"
+                                rows={3}
+                                data-testid="image-prompt-textarea"
+                            />
+                        </div>
+
                         <div className="flex gap-4">
                             <button onClick={handleReset} className="w-full bg-healthpal-card text-healthpal-text-primary font-bold py-3 rounded-lg hover:bg-healthpal-border transition-all">
                                 {t('quick_meal_modal.change_image_button')}

@@ -9,4 +9,7 @@ trigger: always_on
 - To run test, use the command `yarn cy:run`
 - When implementing repositories and service, use the tool ConcurrencyRequestManager to avoid multiple api calls
 - Always make Small and Readable Components in pages to be easier to maintain and read
+- Don´t use any, always define types
+- When a fix or feature is created, bump version in package.json
+
 

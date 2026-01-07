@@ -2,8 +2,8 @@ import { ImageRecognitionService } from '../../domain/services/ImageRecognitionS
 import { Ingredient } from '../../domain/entities/dashboard';
 
 export class MockImageRecognitionService implements ImageRecognitionService {
-    async analyzeMealImage(image: Blob, language: string): Promise<Omit<Ingredient, 'id'>[]> {
-        console.log(`[MockImageRecognitionService] Analyzing image of ${image.size} bytes in ${language}`);
+    async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
+        console.log(`[MockImageRecognitionService] Analyzing image of ${image.size} bytes in ${language}${prompt ? ` with prompt: "${prompt}"` : ''}`);
 
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 2000));

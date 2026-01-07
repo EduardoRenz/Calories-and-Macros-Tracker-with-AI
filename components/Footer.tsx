@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export const Footer: React.FC = () => {
     return (
-        <footer className="w-full bg-healthpal-panel border-t border-healthpal-border py-8 mt-12">
+        <footer className="w-full bg-healthpal-panel border-t border-healthpal-border py-8 mt-12 pb-24 md:pb-8 z-30">
             <div className="w-full px-6 lg:px-8">
                 {/* <DonationPanel variant="wide" /> */}
 
