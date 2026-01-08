@@ -137,7 +137,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
       isOpen={isOpen}
       onClose={onClose}
       title={`${t('add_ingredient_modal.title')} ${t(`meals.${mealType}`)}`}
-      size="md"
+      size="xl"
       dataTestId="add-ingredient-modal"
       bodyClassName="p-8"
     >

@@ -2,7 +2,7 @@ import React, { useEffect, useId, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { XMarkIcon } from '../icons';
 
-type ModalSize = 'sm' | 'md' | 'lg';
+type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
 
 interface ModalProps {
     isOpen: boolean;
@@ -25,6 +25,7 @@ const sizeToMaxWidthClass: Record<ModalSize, string> = {
     sm: 'max-w-sm',
     md: 'max-w-md',
     lg: 'max-w-lg',
+    xl: 'max-w-xl',
 };
 
 const Modal: React.FC<ModalProps> = ({
