@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguage, Language } from '@/contexts/LanguageContext';
-import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, XMarkIcon, ChevronUpIcon, ChevronDownIcon } from '@/components/icons';
+import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@/components/icons';
 import { ServiceFactory } from '@/data/ServiceFactory';
+import Modal from '@/components/ui/Modal';
 
 // Types
 type ProviderId = 'gemini' | 'openai' | 'deepseek';
@@ -18,7 +19,7 @@ interface ApiKey {
 const PROVIDERS: { id: ProviderId; name: string; icon: React.ReactNode }[] = [
     { id: 'gemini', name: 'Google Gemini', icon: <GoogleIcon className="w-6 h-6" /> },
     { id: 'openai', name: 'OpenAI', icon: <SparklesIcon className="w-6 h-6" /> },
-    { id: 'deepseek', name: 'DeepSeek', icon: <RkIcon className="w-6 h-6" /> },
+    { id: 'deepseek', name: 'DeepSeek (Text only)', icon: <RkIcon className="w-6 h-6" /> },
 ];
 
 const LanguageSelector: React.FC = () => {
@@ -208,77 +209,72 @@ const AddApiKeyModal: React.FC<{ onClose: () => void, onSave: (key: ApiKey) => v
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-healthpal-panel w-full max-w-md rounded-2xl border border-healthpal-border shadow-2xl overflow-hidden">
-                <div className="flex justify-between items-center p-4 border-b border-healthpal-border bg-healthpal-card/50">
-                    <h3 className="tex-lg font-bold flex items-center gap-2">
-                        <RkIcon className="w-5 h-5 text-healthpal-green" />
-                        Add New API Key
-                    </h3>
-                    <button onClick={onClose} className="text-healthpal-text-secondary hover:text-white transition-colors">
-                        <XMarkIcon className="w-6 h-6" />
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-healthpal-text-secondary">AI Provider Model</label>
-                        <div className="relative">
-                            <select
-                                value={provider}
-                                onChange={(e) => setProvider(e.target.value as ProviderId)}
-                                className="w-full bg-healthpal-card border border-healthpal-border text-healthpal-text-primary rounded-xl px-4 py-3 appearance-none focus:ring-2 focus:ring-healthpal-green focus:border-transparent outline-none"
-                                style={{ colorScheme: 'dark' }}
-                            >
-                                {PROVIDERS.map(p => (
-                                    <option key={p.id} value={p.id}>{p.name}</option>
-                                ))}
-                            </select>
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-healthpal-text-secondary">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </div>
+        <Modal
+            isOpen={true}
+            onClose={onClose}
+            title="Add New API Key"
+            size="md"
+            showCloseButton
+            dataTestId="add-api-key-modal"
+        >
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                    <label className="text-sm font-semibold text-healthpal-text-secondary">AI Provider Model</label>
+                    <div className="relative">
+                        <select
+                            value={provider}
+                            onChange={(e) => setProvider(e.target.value as ProviderId)}
+                            className="w-full bg-healthpal-card border border-healthpal-border text-healthpal-text-primary rounded-xl px-4 py-3 appearance-none focus:ring-2 focus:ring-healthpal-green focus:border-transparent outline-none"
+                            style={{ colorScheme: 'dark' }}
+                        >
+                            {PROVIDERS.map(p => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-healthpal-text-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                         </div>
                     </div>
+                </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-healthpal-text-secondary">API Key</label>
-                        <input
-                            type="text"
-                            value={key}
-                            onChange={(e) => setKey(e.target.value)}
-                            placeholder="Paste your key here (e.g. sk-...)"
-                            className="w-full bg-healthpal-card border border-healthpal-border text-healthpal-text-primary rounded-xl px-4 py-3 placeholder-healthpal-text-secondary/50 focus:ring-2 focus:ring-healthpal-green focus:border-transparent outline-none"
-                            autoFocus
-                        />
-                        <p className="text-xs text-healthpal-text-secondary flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
-                                <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-                            </svg>
-                            Your key is encrypted and stored locally on your device.
-                        </p>
-                    </div>
+                <div className="space-y-2">
+                    <label className="text-sm font-semibold text-healthpal-text-secondary">API Key</label>
+                    <input
+                        type="text"
+                        value={key}
+                        onChange={(e) => setKey(e.target.value)}
+                        placeholder="Paste your key here (e.g. sk-...)"
+                        className="w-full bg-healthpal-card border border-healthpal-border text-healthpal-text-primary rounded-xl px-4 py-3 placeholder-healthpal-text-secondary/50 focus:ring-2 focus:ring-healthpal-green focus:border-transparent outline-none"
+                        autoFocus
+                    />
+                    <p className="text-xs text-healthpal-text-secondary flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                            <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                        </svg>
+                        Your key is encrypted and stored locally on your device.
+                    </p>
+                </div>
 
-                    <div className="pt-4 flex gap-3">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 px-4 py-3 rounded-xl font-semibold text-healthpal-text-primary hover:bg-healthpal-card transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={!key.trim()}
-                            className="flex-1 px-4 py-3 rounded-xl font-bold bg-healthpal-green text-black hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-healthpal-green/20"
-                        >
-                            Save Configuration
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="pt-4 flex gap-3">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="flex-1 px-4 py-3 rounded-xl font-semibold text-healthpal-text-primary hover:bg-healthpal-card transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={!key.trim()}
+                        className="flex-1 px-4 py-3 rounded-xl font-bold bg-healthpal-green text-black hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-healthpal-green/20"
+                    >
+                        Save Configuration
+                    </button>
+                </div>
+            </form>
+        </Modal>
     );
 }
 
