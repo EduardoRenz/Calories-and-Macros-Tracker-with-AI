@@ -1,4 +1,4 @@
-
+/// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -10,8 +10,23 @@
 // ***********************************************
 //
 //
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+
+
+export {}
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(): Chainable
+    }
+  }
+}
+
+Cypress.Commands.add('login', () => {
+    cy.visit('/');
+    cy.url().should('include', 'login');
+    cy.contains('Sign in with Google').click();
+})
 //
 //
 // -- This is a child command --

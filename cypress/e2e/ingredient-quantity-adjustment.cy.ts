@@ -103,19 +103,19 @@ describe('Ingredient Quantity Adjustment', () => {
     cy.get('[data-testid="analyze-meal-button"]').click();
     
     // Wait for analysis results to appear (ingredients list)
-    cy.get('.max-h-40').should('be.visible');
+    cy.get('[data-testid="quick-meal-modal-ingredients"]').scrollIntoView().should('be.visible');
     
     // Wait for ingredients to be populated
-    cy.get('.max-h-40 .p-2').should('have.length.greaterThan', 0);
+    cy.get('[data-testid="quick-meal-modal-ingredients"]').should('have.length.greaterThan', 0);
     
     // Find the first ingredient and click edit to test quantity adjustment
-    cy.get('.max-h-40 .p-2').first().within(() => {
+    cy.get('[data-testid="quick-meal-modal-ingredients"]').first().within(() => {
       // Click the edit button for the first ingredient
       cy.get('button').first().click(); // Click edit button
     });
     
     // Now we should be in edit mode for the first ingredient
-    cy.get('.max-h-40 .p-2').first().within(() => {
+    cy.get('[data-testid="quick-meal-modal-ingredients"]').first().within(() => {
       // Verify edit mode is active
       cy.get('input[name="name"]').should('be.visible');
       cy.get('input[name="quantity"]').should('be.visible');

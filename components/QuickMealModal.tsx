@@ -179,8 +179,8 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={onClose} data-testid="quick-meal-modal">
-            <div className="bg-healthpal-panel w-full max-w-lg p-8 rounded-2xl border border-healthpal-border shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4" onClick={onClose} data-testid="quick-meal-modal">
+            <div className="bg-healthpal-panel w-full max-w-lg max-h-[85vh] overflow-y-auto p-8 rounded-2xl border border-healthpal-border shadow-2xl" onClick={e => e.stopPropagation()}>
                 <h2 className="text-2xl font-bold mb-2 flex items-center gap-2 text-white">
                     <SparklesIcon className="w-6 h-6 text-healthpal-green" />
                     {t('quick_meal_modal.title')}
@@ -258,10 +258,10 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 {error && <p className="text-red-400 text-sm text-center my-2">{error}</p>}
 
                 {analyzedIngredients.length > 0 && (
-                    <div className="mt-6">
+                    <div className="mt-6" data-testid="quick-meal-modal-ingredients">
                         <h3 className="font-bold text-lg mb-2">{t('quick_meal_modal.gemini_results')}</h3>
                         <p className="text-sm text-healthpal-text-secondary mb-4">{t('quick_meal_modal.review_prompt')}</p>
-                        <div className="max-h-40 overflow-y-auto bg-healthpal-card p-3 rounded-lg space-y-2">
+                        <div className="max-h-60 overflow-y-auto bg-healthpal-card p-3 rounded-lg space-y-2">
                             {analyzedIngredients.map((ing, index) => (
                                 <div key={index} className="p-2 bg-healthpal-panel rounded">
                                     {editingIndex === index && editForm ? (
