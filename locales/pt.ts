@@ -95,6 +95,7 @@ export default {
     "camera_error": "Acesso à câmera negado ou não disponível",
     "change_image_button": "Alterar Imagem",
     "analyzing_button": "Analisando...",
+    "analyze_image": "Analisar Imagem",
     "add_to_diary_button": "Adicionar ao Diário",
     "analysis_error": "Desculpe, não consegui analisar essa imagem. Por favor, tente outra.",
     "add_error": "Falha ao adicionar os itens. Por favor, tente novamente.",

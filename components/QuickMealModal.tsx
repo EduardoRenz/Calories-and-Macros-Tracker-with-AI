@@ -235,7 +235,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                             {t('quick_meal_modal.change_image_button')}
                         </button>
                         <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-healthpal-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" data-testid="analyze-meal-button">
-                            {isLoading ? t('quick_meal_modal.analyzing_button') : t('navbar.quick_meal')}
+                            {isLoading ? t('quick_meal_modal.analyzing_button') : t('quick_meal_modal.analyze_image')}
                         </button>
                     </div>
                 </div>
