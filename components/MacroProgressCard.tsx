@@ -17,7 +17,7 @@ const MacroProgressCard: React.FC<MacroProgressCardProps> = ({ title, current, g
       <div className="flex justify-between items-baseline mb-3">
         <h3 className="font-bold text-healthpal-text-primary">{title}</h3>
         <p className="text-sm text-healthpal-text-secondary">
-          <span className="font-semibold text-healthpal-text-primary">{current}</span> / {goal} {unit}
+          <span className="font-semibold text-healthpal-text-primary">{current}</span> / <span data-testid={`macro-goal-${title.toLowerCase()}`}>{goal}</span> {unit}
         </p>
       </div>
       <div className="w-full bg-healthpal-panel h-2.5 rounded-full">
