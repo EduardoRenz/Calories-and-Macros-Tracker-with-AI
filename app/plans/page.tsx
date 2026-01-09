@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RepositoryFactory } from '../../data/RepositoryFactory';
 import { Plan } from '../../domain/entities/payment';
@@ -10,7 +10,7 @@ import { PlanCard } from '../../components/payment/PlanCard';
 import PublicNavbar from '../../components/PublicNavbar';
 import { Footer } from '../../components/Footer';
 
-export default function PlansPage() {
+function PlansContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { t } = useTranslation();
@@ -117,5 +117,17 @@ export default function PlansPage() {
 
             <Footer />
         </div>
+    );
+}
+
+export default function PlansPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <div className="text-center text-gray-400">Loading...</div>
+            </div>
+        }>
+            <PlansContent />
+        </Suspense>
     );
 }

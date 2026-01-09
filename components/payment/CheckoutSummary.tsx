@@ -12,7 +12,7 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
 
     // Use Plan value object methods for calculations
     let subtotal = plan.price;
-    let totalDue = plan.price;
+    const totalDue = plan.price;
     let discountAmount = 0;
 
     // Use the value object's discount calculations
