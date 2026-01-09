@@ -32,7 +32,6 @@ export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     const { profile } = useProfile();
-
     const computedGoals = useMemo(() => {
         if (profile) return CalorieCalculationService.calculateGoals(profile);
         return null;
@@ -42,10 +41,10 @@ export default function DashboardPage() {
         if (!data) return null;
 
         const fallbackGoals = {
-            calories: data.macros.calories.goal ?? computedGoals?.calories ?? 2000,
-            protein: data.macros.protein.goal ?? computedGoals?.protein ?? 140,
-            carbs: data.macros.carbs.goal ?? computedGoals?.carbs ?? 250,
-            fats: data.macros.fats.goal ?? computedGoals?.fats ?? 65,
+            calories: computedGoals?.calories ?? data.macros.calories.goal ?? 0,
+            protein: computedGoals?.protein ?? data.macros.protein.goal ?? 0,
+            carbs: computedGoals?.carbs ?? data.macros.carbs.goal ?? 0,
+            fats: computedGoals?.fats ?? data.macros.fats.goal ?? 0,
         };
 
         return {
