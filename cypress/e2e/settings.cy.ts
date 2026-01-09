@@ -62,7 +62,7 @@ describe('Settings Page', () => {
         it('should add multiple keys and verify order', () => {
             addKey('Google Gemini', 'sk-gemini-1');
             addKey('OpenAI', 'sk-openai-2');
-            addKey('DeepSeek', 'sk-deepseek-3');
+            addKey('DeepSeek (Text only)', 'sk-deepseek-3');
 
             cy.get('[data-testid^="api-key-item-"]').should('have.length', 3);
             cy.get('[data-testid="api-key-item-gemini"]').should('be.visible');
@@ -100,7 +100,7 @@ describe('Settings Page', () => {
             cy.contains('button', 'Save Configuration').click();
 
             cy.contains('button', 'Add API Token').click();
-            cy.contains('label', 'AI Provider Model').parent().find('select').select('DeepSeek');
+            cy.contains('label', 'AI Provider Model').parent().find('select').select('DeepSeek (Text only)');
             cy.get('input[placeholder*="sk-"]').type('key-3-deepseek');
             cy.contains('button', 'Save Configuration').click();
         });

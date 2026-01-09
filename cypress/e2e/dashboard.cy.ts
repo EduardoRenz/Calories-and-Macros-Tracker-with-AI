@@ -37,7 +37,7 @@ describe('Dashboard Meal Management', () => {
     });
 
     // 3. Fill in Ingredient Modal
-    cy.contains('h2', 'Add Ingredient to Lunch').should('be.visible');
+    cy.contains('h3', 'Add Ingredient to Lunch').should('be.visible');
 
     // Calorie calculation: (31 * 4) + (0 * 4) + (3.6 * 9) = 124 + 32.4 = 156.4 -> 156
     const expectedCalories = 156;
@@ -57,10 +57,10 @@ describe('Dashboard Meal Management', () => {
     cy.get('input[name="calories"]').should('have.value', expectedCalories.toString());
 
     // 4. Save
-    cy.contains('button', 'Add Ingredient').click();
+    cy.get('[data-testid="save-ingredient-button"]').click();
 
     // 5. Verify Modal Closed
-    cy.contains('h2', 'Add Ingredient to Lunch').should('not.exist');
+    cy.contains('h3', 'Add Ingredient to Lunch').should('not.exist');
 
     // 6. Verify Ingredient Added to List
     cy.get('#meal-details-lunch').within(() => {
