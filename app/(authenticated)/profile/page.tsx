@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { useTranslation } from '@/hooks/useTranslation';
-import { UserProfile, WeightEntry } from '@/domain/entities/profile';
+import { WeightEntry } from '@/domain/entities/profile';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/contexts/AuthContext';

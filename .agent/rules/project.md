@@ -11,6 +11,8 @@ trigger: always_on
 - Always make Small and Readable Components in pages to be easier to maintain and read
 - Don´t use any, always define types
 - When a fix or feature is created, bump version in package.json
+- Remove unused variables and imports
+- Always use const if the variable is not going to be reassigned
 
 
 
