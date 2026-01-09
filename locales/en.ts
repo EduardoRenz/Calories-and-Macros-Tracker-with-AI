@@ -96,6 +96,7 @@ export default {
     "camera_error": "Camera access denied or not available",
     "change_image_button": "Change Image",
     "analyzing_button": "Analyzing...",
+    "analyze_image": "Analyze Image",
     "add_to_diary_button": "Add to Diary",
     "analysis_error": "Sorry, I couldn't analyze that image. Please try another one.",
     "add_error": "Failed to add items. Please try again.",

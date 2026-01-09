@@ -1,11 +1,4 @@
 
-const login = () => {
-  cy.visit('/');
-  cy.url().should('include', '/login');
-  cy.contains('Sign in with Google').click();
-};
-
-
 describe('Route Protection', () => {
   it('should redirect unauthenticated users to login from /dashboard', () => {
     cy.visit('/dashboard');
@@ -36,21 +29,21 @@ describe('Authenticated User Access', () => {
 
   it('should allow authenticated user to access /dashboard', () => {
 
-    login();
+    cy.login();
     cy.visit('/dashboard'); // Test persistence across visit within same test
     cy.url().should('include', '/dashboard');
     cy.get('h2').contains('Dashboard').should('be.visible');
   });
 
   it('should allow authenticated user to access /profile', () => {
-    login();
+    cy.login();
     cy.visit('/profile');
     cy.url().should('include', '/profile');
     cy.get('h2').contains('My Profile').should('be.visible');
   });
 
   it('should allow authenticated user to access /settings', () => {
-    login();
+    cy.login();
     cy.visit('/settings');
     cy.url().should('include', '/settings');
     cy.get('h2').contains('App Settings').should('be.visible');
@@ -59,7 +52,7 @@ describe('Authenticated User Access', () => {
 
 describe('URL Navigation', () => {
   it('should update URL when clicking navbar links', () => {
-    login();
+    cy.login();
 
     // Click History in navbar
     cy.get('[data-testid="desktop-nav"]').contains('History').click();
@@ -84,7 +77,7 @@ describe('URL Navigation', () => {
 
   it('should update URL when using mobile bottom navbar', () => {
     cy.viewport(375, 667);
-    login();
+    cy.login();
 
     // Click Profile in bottom navbar
     cy.get('[data-testid="mobile-nav"]').contains('Profile').click();
@@ -100,7 +93,7 @@ describe('URL Navigation', () => {
 
 describe('Browser Navigation', () => {
   it('should work with browser back and forward buttons', () => {
-    login();
+    cy.login();
 
     // Navigate to profile
     cy.get('[data-testid="desktop-nav"]').contains('Profile').click();
@@ -127,9 +120,49 @@ describe('Browser Navigation', () => {
   });
 });
 
+describe('Logout Functionality', () => {
+  it('should redirect to login when user clicks logout', () => {
+    cy.login();
+    
+    // Verify user is on dashboard
+    cy.url().should('include', '/dashboard');
+    cy.get('h2').contains('Dashboard').should('be.visible');
+    
+    // Click on user avatar to open dropdown menu
+    cy.get('button[aria-label="User menu"]').click();
+    
+    // Click logout button
+    cy.contains('Logout').click();
+    
+    // Should redirect to login page
+    cy.url().should('include', '/login');
+    cy.get('[data-testid="google-signin-button"]').should('be.visible');
+    
+    // Verify no infinite loading - should see login form quickly
+    cy.get('[data-testid="google-signin-button"]').should('not.be.disabled');
+  });
+
+  it('should clear user session after logout', () => {
+    cy.login();
+    
+    // Navigate to a protected route
+    cy.visit('/profile');
+    cy.url().should('include', '/profile');
+    
+    // Logout
+    cy.get('button[aria-label="User menu"]').click();
+    cy.contains('Logout').click();
+    
+    // Try to access protected route again - should redirect to login
+    cy.visit('/dashboard');
+    cy.url().should('include', '/login');
+    cy.get('[data-testid="google-signin-button"]').should('be.visible');
+  });
+});
+
 describe('Root Path Redirect', () => {
   it('should redirect authenticated user from / to /dashboard', () => {
-    login();
+    cy.login();
 
     // Visit root again to test redirect when already authenticated
     cy.visit('/');

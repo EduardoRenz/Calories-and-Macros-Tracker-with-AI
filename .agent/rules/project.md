@@ -13,3 +13,9 @@ trigger: always_on
 - When a fix or feature is created, bump version in package.json
 
 
+
+### Reusable components
+- Modal component in `components/ui/Modal.tsx` when you need to create a new modal
+
+
+

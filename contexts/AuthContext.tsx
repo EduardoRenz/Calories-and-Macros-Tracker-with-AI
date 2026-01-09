@@ -44,7 +44,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signOut = async () => {
     setLoading(true);
     await authRepository.signOut();
-    // The onAuthStateChanged listener will handle setting the user and loading state.
+    // Force loading to false after signOut to prevent infinite loading
+    setLoading(false);
+    setUser(null);
   };
 
   const value = { user, loading, signIn, signInWithGoogle, signOut };
