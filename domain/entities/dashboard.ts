@@ -28,7 +28,7 @@ export interface MealSummary {
 
 export interface Macro {
   current: number;
-  goal: number;
+  goal?: number;
 }
 
 export interface DashboardData {

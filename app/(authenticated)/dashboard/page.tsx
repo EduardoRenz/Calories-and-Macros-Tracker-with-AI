@@ -14,6 +14,8 @@ import { DashboardData, Ingredient, MealSummary } from '@/domain/entities/dashbo
 import { DashboardRepository } from '@/domain/repositories/DashboardRepository';
 import AddIngredientModal from '@/components/AddIngredientModal';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
+import { useProfile } from '@/contexts/ProfileContext';
+import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 
 const getFormattedDate = (date: Date) => {
     const year = date.getFullYear();
@@ -28,6 +30,31 @@ export default function DashboardPage() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const { profile } = useProfile();
+
+    const computedGoals = useMemo(() => {
+        if (profile) return CalorieCalculationService.calculateGoals(profile);
+        return null;
+    }, [profile]);
+
+    const macrosWithGoals = useMemo(() => {
+        if (!data) return null;
+
+        const fallbackGoals = {
+            calories: data.macros.calories.goal ?? computedGoals?.calories ?? 2000,
+            protein: data.macros.protein.goal ?? computedGoals?.protein ?? 140,
+            carbs: data.macros.carbs.goal ?? computedGoals?.carbs ?? 250,
+            fats: data.macros.fats.goal ?? computedGoals?.fats ?? 65,
+        };
+
+        return {
+            calories: { ...data.macros.calories, goal: fallbackGoals.calories },
+            protein: { ...data.macros.protein, goal: fallbackGoals.protein },
+            carbs: { ...data.macros.carbs, goal: fallbackGoals.carbs },
+            fats: { ...data.macros.fats, goal: fallbackGoals.fats },
+        };
+    }, [data, computedGoals]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMealType, setSelectedMealType] = useState<keyof MealSummary | null>(null);
@@ -135,7 +162,7 @@ export default function DashboardPage() {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
     }
 
-    const caloriesRemaining = data.macros.calories.goal - data.macros.calories.current;
+    const caloriesRemaining = ((macrosWithGoals?.calories.goal ?? 0) - data.macros.calories.current);
     const isOverLimit = caloriesRemaining < 0;
 
     return (
@@ -172,14 +199,14 @@ export default function DashboardPage() {
                 <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Shown only on mobile - progress bars instead of chart */}
                     <div className="block md:hidden">
-                        <MobileNutrientSummary data={data.macros} />
+                        {macrosWithGoals && <MobileNutrientSummary data={macrosWithGoals} />}
                     </div>
                     <div className="hidden md:block">
                         <MacroProgressCard
                             title={t('dashboard.calories')}
                             unit="kcal"
                             current={data.macros.calories.current}
-                            goal={data.macros.calories.goal}
+                            goal={macrosWithGoals?.calories.goal ?? 0}
                             color="bg-healthpal-green"
                         />
                     </div>
@@ -188,7 +215,7 @@ export default function DashboardPage() {
                             title={t('dashboard.protein')}
                             unit="g"
                             current={data.macros.protein.current}
-                            goal={data.macros.protein.goal}
+                            goal={macrosWithGoals?.protein.goal ?? 0}
                             color="bg-healthpal-protein"
                         />
                     </div>
@@ -197,7 +224,7 @@ export default function DashboardPage() {
                             title={t('dashboard.carbs')}
                             unit="g"
                             current={data.macros.carbs.current}
-                            goal={data.macros.carbs.goal}
+                            goal={macrosWithGoals?.carbs.goal ?? 0}
                             color="bg-healthpal-carbs"
                         />
                     </div>
@@ -206,7 +233,7 @@ export default function DashboardPage() {
                             title={t('dashboard.fats')}
                             unit="g"
                             current={data.macros.fats.current}
-                            goal={data.macros.fats.goal}
+                            goal={macrosWithGoals?.fats.goal ?? 0}
                             color="bg-healthpal-fats"
                         />
                     </div>

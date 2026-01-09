@@ -1,8 +1,5 @@
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/dashboard';
-import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
-import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { RepositoryFactory } from '../RepositoryFactory';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
@@ -34,13 +31,13 @@ type DashboardIngredientRow = {
   fiber: number;
 };
 
-const createEmptyDashboard = (date: string, goals: { calories: number; protein: number; carbs: number; fats: number }): DashboardData => ({
+const createEmptyDashboard = (date: string, goals?: { calories: number; protein: number; carbs: number; fats: number }): DashboardData => ({
   date,
   macros: {
-    calories: { current: 0, goal: goals.calories },
-    protein: { current: 0, goal: goals.protein },
-    carbs: { current: 0, goal: goals.carbs },
-    fats: { current: 0, goal: goals.fats },
+    calories: { current: 0, goal: goals?.calories ?? 0 },
+    protein: { current: 0, goal: goals?.protein ?? 0 },
+    carbs: { current: 0, goal: goals?.carbs ?? 0 },
+    fats: { current: 0, goal: goals?.fats ?? 0 },
   },
   meals: {
     breakfast: { name: 'Breakfast', calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, ingredients: [] },
@@ -81,16 +78,20 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 };
 
 export class SupabaseDashboardRepository implements DashboardRepository {
-  private profileRepository: ProfileRepository = RepositoryFactory.getProfileRepository();
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
   private dataCacheManager: DataCacheManager = new DataCacheManager();
 
+  private async getUserId(): Promise<string> {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    if (!data.user) throw new Error('No authenticated user found for dashboard operations.');
+    return data.user.id;
+  }
+
   private async getOrCreateDashboardDay(date: string): Promise<DashboardDayRow> {
     const supabase = getSupabaseClient();
-    const userId = await this.profileRepository.getUserId();
-
-    const profile = await this.profileRepository.getProfile();
-    const goals = CalorieCalculationService.calculateGoals(profile);
+    const userId = await this.getUserId();
 
     const { data: existing, error: existingError } = await supabase
       .from('dashboard_days')
@@ -102,29 +103,6 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     if (existingError) throw existingError;
 
     if (existing) {
-      const needsGoalUpdate =
-        existing.calories_goal !== goals.calories ||
-        existing.protein_goal !== goals.protein ||
-        existing.carbs_goal !== goals.carbs ||
-        existing.fats_goal !== goals.fats;
-
-      if (needsGoalUpdate) {
-        const { data: updated, error: updateError } = await supabase
-          .from('dashboard_days')
-          .update({
-            calories_goal: goals.calories,
-            protein_goal: goals.protein,
-            carbs_goal: goals.carbs,
-            fats_goal: goals.fats,
-          })
-          .eq('id', existing.id)
-          .select('*')
-          .single();
-
-        if (updateError) throw updateError;
-        return updated as DashboardDayRow;
-      }
-
       return existing as DashboardDayRow;
     }
 
@@ -134,13 +112,13 @@ export class SupabaseDashboardRepository implements DashboardRepository {
         user_id: userId,
         date,
         calories_current: 0,
-        calories_goal: goals.calories,
+        calories_goal: 0,
         protein_current: 0,
-        protein_goal: goals.protein,
+        protein_goal: 0,
         carbs_current: 0,
-        carbs_goal: goals.carbs,
+        carbs_goal: 0,
         fats_current: 0,
-        fats_goal: goals.fats,
+        fats_goal: 0,
       })
       .select('*')
       .single();
@@ -202,9 +180,12 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
         const day = await this.getOrCreateDashboardDay(date);
-
-        const profile = await this.profileRepository.getProfile();
-        const goals = CalorieCalculationService.calculateGoals(profile);
+        const goals = {
+          calories: day.calories_goal ?? 0,
+          protein: day.protein_goal ?? 0,
+          carbs: day.carbs_goal ?? 0,
+          fats: day.fats_goal ?? 0,
+        };
 
         const ingredients = await this.loadIngredients(day.id);
         const data = this.toDashboardData(date, goals, ingredients);
@@ -220,7 +201,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     const key = `getDashboardRange:${startDate}:${endDate}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const userId = await this.profileRepository.getUserId();
+        const userId = await this.getUserId();
         const supabase = getSupabaseClient();
 
         // 1. Fetch days
@@ -260,9 +241,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
           ingredientsMap.get(ing.dashboard_day_id)!.push(ing);
         }
 
-        // 4. Get profile for goals
-        const profile = await this.profileRepository.getProfile();
-        const goals = CalorieCalculationService.calculateGoals(profile);
+        const defaultGoals = { calories: 0, protein: 0, carbs: 0, fats: 0 };
 
         // 5. Build seamless range
         const listDates = (start: string, end: string): string[] => {
@@ -305,15 +284,15 @@ export class SupabaseDashboardRepository implements DashboardRepository {
             // But the dayRow has stored goals: dayRow.calories_goal, etc.
             const historicGoals = {
               calories: dayRow.calories_goal,
-              protein: dayRow.protein_goal ?? goals.protein,
-              carbs: dayRow.carbs_goal ?? goals.carbs,
-              fats: dayRow.fats_goal ?? goals.fats,
+              protein: dayRow.protein_goal ?? defaultGoals.protein,
+              carbs: dayRow.carbs_goal ?? defaultGoals.carbs,
+              fats: dayRow.fats_goal ?? defaultGoals.fats,
             };
 
             result.push(this.toDashboardData(date, historicGoals, dayIngredients));
           } else {
             // Missing day - Return ephemeral empty dashboard (mimicking creation but not saving)
-            result.push(createEmptyDashboard(date, goals));
+            result.push(createEmptyDashboard(date, defaultGoals));
           }
         }
 
@@ -328,7 +307,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
 
   async addIngredients(date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]): Promise<DashboardData> {
     const supabase = getSupabaseClient();
-    const userId = await this.profileRepository.getUserId();
+    const userId = await this.getUserId();
 
     const day = await this.getOrCreateDashboardDay(date);
 
@@ -348,8 +327,12 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     const { error } = await supabase.from('dashboard_ingredients').insert(rows);
     if (error) throw error;
 
-    const profile = await this.profileRepository.getProfile();
-    const goals = CalorieCalculationService.calculateGoals(profile);
+    const goals = {
+      calories: day.calories_goal ?? 0,
+      protein: day.protein_goal ?? 0,
+      carbs: day.carbs_goal ?? 0,
+      fats: day.fats_goal ?? 0,
+    };
 
     const refreshedIngredients = await this.loadIngredients(day.id);
     const updated = this.toDashboardData(date, goals, refreshedIngredients);
@@ -376,8 +359,12 @@ export class SupabaseDashboardRepository implements DashboardRepository {
 
     if (error) throw error;
 
-    const profile = await this.profileRepository.getProfile();
-    const goals = CalorieCalculationService.calculateGoals(profile);
+    const goals = {
+      calories: day.calories_goal ?? 0,
+      protein: day.protein_goal ?? 0,
+      carbs: day.carbs_goal ?? 0,
+      fats: day.fats_goal ?? 0,
+    };
 
     const refreshedIngredients = await this.loadIngredients(day.id);
     const updated = this.toDashboardData(date, goals, refreshedIngredients);

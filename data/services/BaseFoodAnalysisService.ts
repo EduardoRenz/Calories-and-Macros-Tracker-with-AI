@@ -1,6 +1,7 @@
 import { FoodAnalysisReport, VitaminStatus } from '../../domain/entities/analysis';
 import { FoodAnalysisInput, FoodAnalysisService } from '../../domain/services/FoodAnalysisService';
 import { DashboardData, Ingredient } from '../../domain/entities/dashboard';
+import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 
 export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
 
@@ -26,18 +27,8 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
             .join('\n');
     }
 
-    protected getMacroGoals(dashboardData: DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
-        if (dashboardData.length === 0) {
-            return { calories: 2000, protein: 140, carbs: 250, fats: 65 };
-        }
-
-        const recentDay = dashboardData[dashboardData.length - 1];
-        return {
-            calories: recentDay.macros.calories.goal,
-            protein: recentDay.macros.protein.goal,
-            carbs: recentDay.macros.carbs.goal,
-            fats: recentDay.macros.fats.goal
-        };
+    protected getMacroGoals(profile: FoodAnalysisInput['profile']): { calories: number; protein: number; carbs: number; fats: number } {
+        return CalorieCalculationService.calculateGoals(profile);
     }
 
     protected calculateMacroAverages(dashboardData: DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
@@ -91,7 +82,7 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
         const mealSummary = this.consolidateMealData(dashboardData);
         const dateRange = this.getDateRange(dashboardData);
         const macroAverages = this.calculateMacroAverages(dashboardData);
-        const macroGoals = this.getMacroGoals(dashboardData);
+        const macroGoals = this.getMacroGoals(profile);
 
         return `You are a nutrition expert AI assistant. Analyze the following meal data and provide a comprehensive nutrition report.
 

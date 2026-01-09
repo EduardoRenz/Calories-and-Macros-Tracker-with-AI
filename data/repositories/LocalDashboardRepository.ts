@@ -1,18 +1,15 @@
-import { RepositoryFactory } from '../RepositoryFactory';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/dashboard';
-import { LocalProfileRepository } from './LocalProfileRepository';
-import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 
-const createEmptyDashboard = (date: string, goals: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
+const createEmptyDashboard = (date: string, goals?: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
     date,
     macros: {
-        calories: { current: 0, goal: goals.calories },
-        protein: { current: 0, goal: goals.protein },
-        carbs: { current: 0, goal: goals.carbs },
-        fats: { current: 0, goal: goals.fats },
+        calories: { current: 0, goal: goals?.calories ?? 0 },
+        protein: { current: 0, goal: goals?.protein ?? 0 },
+        carbs: { current: 0, goal: goals?.carbs ?? 0 },
+        fats: { current: 0, goal: goals?.fats ?? 0 },
     },
     meals: {
         breakfast: { name: "Breakfast", calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, ingredients: [] },
@@ -76,13 +73,6 @@ const createIngredient = (id: string, name: string, calories: number, protein: n
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class LocalDashboardRepository implements DashboardRepository {
-    // We cast to LocalProfileRepository because we know in 'mock' mode it is one. 
-    // However, RepositoryFactory.getProfileRepository() returns ProfileRepository interface.
-    // For seeding, it expects LocalProfileRepository explicitly in the method signature?
-    // Let's check seedMockDashboards signature: (profileRepository: LocalProfileRepository)
-    // So we'll need to cast it or change the signature.
-    // Since this is LocalDashboardRepository, it's safe to assume we are in mock mode.
-    private profileRepository = RepositoryFactory.getProfileRepository() as LocalProfileRepository;
     // Simulate a local data store
     private dailyDataStore = new Map<string, DashboardData>();
     private isSeeded = false;
@@ -90,14 +80,13 @@ export class LocalDashboardRepository implements DashboardRepository {
     private dataCacheManager = new DataCacheManager();
 
     constructor() {
-        this.seedMockDashboards(this.profileRepository);
+        this.seedMockDashboards();
     }
 
-    private seedMockDashboards = async (profileRepository: LocalProfileRepository) => {
+    private seedMockDashboards = async () => {
         if (this.isSeeded) return;
 
-        const profile = await profileRepository.getProfile();
-        const goals = CalorieCalculationService.calculateGoals(profile);
+        const goals = { calories: 0, protein: 0, carbs: 0, fats: 0 };
 
         const today = new Date();
         const date = (daysAgo: number) => {
@@ -186,12 +175,10 @@ export class LocalDashboardRepository implements DashboardRepository {
         return this.dataCacheManager.getCached(key, async () => {
             return this.concurrencyManager.run(key, async () => {
                 await new Promise(resolve => setTimeout(resolve, 300));
-                await this.seedMockDashboards(this.profileRepository);
+                await this.seedMockDashboards();
 
                 if (!this.dailyDataStore.has(date)) {
-                    const profile = await this.profileRepository.getProfile();
-                    const goals = CalorieCalculationService.calculateGoals(profile);
-                    this.dailyDataStore.set(date, createEmptyDashboard(date, goals));
+                    this.dailyDataStore.set(date, createEmptyDashboard(date));
                 }
                 return JSON.parse(JSON.stringify(this.dailyDataStore.get(date)!));
             });
@@ -206,7 +193,7 @@ export class LocalDashboardRepository implements DashboardRepository {
                 // Ensure seed data for range? No efficient way to seed range without iterating.
                 // But seeding logic is date-based. 'seedMockDashboards' fills relative to today.
                 // Assuming seedMockDashboards(this.profileRepository) covers relevant mock data.
-                await this.seedMockDashboards(this.profileRepository);
+                await this.seedMockDashboards();
 
                 const listDates = (start: string, end: string): string[] => {
                     const result: string[] = [];
@@ -234,8 +221,7 @@ export class LocalDashboardRepository implements DashboardRepository {
 
                 const allDates = listDates(startDate, endDate);
                 const result: DashboardData[] = [];
-                const profile = await this.profileRepository.getProfile();
-                const goals = CalorieCalculationService.calculateGoals(profile);
+                const goals = { calories: 0, protein: 0, carbs: 0, fats: 0 };
 
                 for (const date of allDates) {
                     if (this.dailyDataStore.has(date)) {
@@ -258,15 +244,13 @@ export class LocalDashboardRepository implements DashboardRepository {
         await new Promise(resolve => setTimeout(resolve, 300));
 
         // Ensure seed data is loaded before modifying any data
-        await this.seedMockDashboards(this.profileRepository);
+        await this.seedMockDashboards();
 
         let dataForDay = this.dailyDataStore.get(date);
 
         if (!dataForDay) {
             // This case handles adding food to a day that hasn't been viewed yet.
-            const profile = await this.profileRepository.getProfile();
-            const goals = CalorieCalculationService.calculateGoals(profile);
-            dataForDay = createEmptyDashboard(date, goals);
+            dataForDay = createEmptyDashboard(date);
         }
 
         const newIngredients: Ingredient[] = ingredients.map(ing => ({
@@ -289,7 +273,7 @@ export class LocalDashboardRepository implements DashboardRepository {
         await new Promise(resolve => setTimeout(resolve, 300));
 
         // Ensure seed data is loaded before modifying any data
-        await this.seedMockDashboards(this.profileRepository);
+        await this.seedMockDashboards();
 
         const dataForDay = this.dailyDataStore.get(date);
         if (!dataForDay) {
