@@ -8,6 +8,7 @@ import MacroProgressCard from '@/components/MacroProgressCard';
 import MobileNutrientSummary from '@/components/MobileNutrientSummary';
 import MealSummaryCard from '@/components/MealSummaryCard';
 import MacroSplitChart from '@/components/MacroSplitChart';
+import CalorieDisplayCard from '@/components/CalorieDisplayCard';
 import { useTranslation } from '@/hooks/useTranslation';
 import { DashboardData, Ingredient, MealSummary } from '@/domain/entities/dashboard';
 import { DashboardRepository } from '@/domain/repositories/DashboardRepository';
@@ -225,17 +226,11 @@ export default function DashboardPage() {
                             <MacroSplitChart data={data} />
                         </div>
                     </div>
-                    <div className="bg-healthpal-card p-6 rounded-2xl flex flex-col justify-center items-center text-center h-full order-last lg:order-first">
-                        <h3 className="text-healthpal-text-secondary font-medium">
-                            {isOverLimit ? t('dashboard.calories_over') : t('dashboard.calories_remaining')}
-                        </h3>
-                        <p className={`text-6xl font-bold my-2 ${isOverLimit ? 'text-red-500' : 'text-healthpal-green'}`}>
-                            {Math.abs(caloriesRemaining)}
-                        </p>
-                        <p className="text-healthpal-text-secondary text-sm">
-                            {isOverLimit ? t('dashboard.limit_exceeded') : t('dashboard.doing_great')}
-                        </p>
-                    </div>
+                    <CalorieDisplayCard
+                        caloriesRemaining={caloriesRemaining}
+                        isOverLimit={isOverLimit}
+                        t={t}
+                    />
                 </div>
             </main>
         </>
