@@ -14,7 +14,10 @@ trigger: always_on
 - Remove unused variables and imports
 - Always use const if the variable is not going to be reassigned
 
+### Architecture
 
+- Use Repository Pattern to separate data access from business logic
+- Repositories should only fetch/persist data (without calling other repositories nor applying business rules).
 
 ### Reusable components
 
