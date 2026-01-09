@@ -17,6 +17,10 @@ trigger: always_on
 
 
 ### Reusable components
+
+- Always try to create pure and resuable components wich receive data as props and callback, for example: QuickMealModal.tsx
+
+#### Created reusable components
 - Modal component in `components/ui/Modal.tsx` when you need to create a new modal
 
 

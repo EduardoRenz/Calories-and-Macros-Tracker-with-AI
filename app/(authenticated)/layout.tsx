@@ -10,6 +10,8 @@ import { Footer } from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import InstallPWA from '@/components/InstallPWA';
+import { RepositoryFactory } from '@/data/RepositoryFactory';
+import type { Ingredient, MealSummary } from '@/domain/entities/dashboard';
 
 
 export default function AuthenticatedLayout({
@@ -20,6 +22,11 @@ export default function AuthenticatedLayout({
     const pathname = usePathname();
     const { user, loading } = useAuth();
     const [isQuickMealOpen, setIsQuickMealOpen] = useState(false);
+    const dashboardRepository = RepositoryFactory.getDashboardRepository();
+
+    const handleQuickAddIngredients = async (date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]) => {
+        await dashboardRepository.addIngredients(date, mealType, ingredients);
+    };
 
     const handleQuickMealSuccess = () => {
         setIsQuickMealOpen(false);
@@ -61,6 +68,7 @@ export default function AuthenticatedLayout({
                     isOpen={isQuickMealOpen}
                     onClose={() => setIsQuickMealOpen(false)}
                     onSuccess={handleQuickMealSuccess}
+                    onAddIngredients={handleQuickAddIngredients}
                 />
                 <InstallPWA />
             </ProfileProvider>
