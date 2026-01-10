@@ -7,12 +7,12 @@ import Modal from './ui/Modal';
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
-import { RepositoryFactory } from '../data/RepositoryFactory';
 
 interface QuickMealModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    onAddIngredients: (date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]) => Promise<void>;
 }
 
 const getMealTypeForCurrentTime = (): keyof MealSummary => {
@@ -23,7 +23,7 @@ const getMealTypeForCurrentTime = (): keyof MealSummary => {
     return 'snacks';
 };
 
-const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSuccess }) => {
+const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSuccess, onAddIngredients }) => {
     const { t } = useTranslation();
     const { language } = useLanguage();
     const [image, setImage] = useState<File | null>(null);
@@ -38,7 +38,6 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [originalEditForm, setOriginalEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
     const [imagePrompt, setImagePrompt] = useState<string>('');
 
-    const dashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
     const imageRecognitionService: ImageRecognitionService = useMemo(() => ServiceFactory.getImageRecognitionService(), []);
 
     useEffect(() => {
@@ -116,7 +115,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             const date = `${year}-${month}-${day}`;
-            await dashboardRepository.addIngredients(date, mealType, analyzedIngredients);
+            await onAddIngredients(date, mealType, analyzedIngredients);
             onSuccess();
         } catch (err) {
             console.error("Failed to add ingredients:", err);

@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { useTranslation } from '@/hooks/useTranslation';
-import { UserProfile, WeightEntry } from '@/domain/entities/profile';
-import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
+import { WeightEntry } from '@/domain/entities/profile';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 import { Avatar } from '@/components/ui/Avatar';
-import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/contexts/ProfileContext';
 import { EditIcon } from '@/components/icons';
 
 // --- Reusable Chart Components ---
@@ -87,29 +86,10 @@ const GoalProgressChart: React.FC<{ percentage: number }> = ({ percentage }) => 
 export default function ProfilePage() {
     const { t } = useTranslation();
     const { user } = useAuth();
+    const { profile, loading, updateProfile, editProfile, resetProfile, hasChanges } = useProfile();
     const [activeTab, setActiveTab] = useState('settings');
-    const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [showSaveMessage, setShowSaveMessage] = useState(false);
-
-    const profileRepository: ProfileRepository = useMemo(() => RepositoryFactory.getProfileRepository(), []);
-    const hasFetchedRef = useRef(false);
-
-    const fetchProfile = useCallback(async () => {
-        if (hasFetchedRef.current) return;
-
-        console.log('Fetching profile...');
-        hasFetchedRef.current = true;
-        setIsLoading(true);
-        const userProfile = await profileRepository.getProfile();
-        setProfile(userProfile);
-        setIsLoading(false);
-    }, [profileRepository]);
-
-    useEffect(() => {
-        fetchProfile();
-    }, [fetchProfile]);
 
     const calorieGoal = useMemo(() => {
         if (!profile) return 0;
@@ -119,40 +99,39 @@ export default function ProfilePage() {
     const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (!profile) return;
         const { name, value } = e.target;
-        setProfile(prev => prev ? {
-            ...prev,
-            personalInfo: { ...prev.personalInfo, [name]: name === 'gender' ? value : parseFloat(value) || 0 }
-        } : null);
+        editProfile({
+            personalInfo: { ...profile.personalInfo, [name]: name === 'gender' ? value : parseFloat(value) || 0 }
+        });
     };
 
     const handleFitnessGoalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (!profile) return;
         const { name, value } = e.target;
-        setProfile(prev => prev ? {
-            ...prev,
-            fitnessGoals: { ...prev.fitnessGoals, [name]: name === 'activityLevel' ? value : parseFloat(value) || 0 }
-        } : null);
+        editProfile({
+            fitnessGoals: { ...profile.fitnessGoals, [name]: name === 'activityLevel' ? value : parseFloat(value) || 0 }
+        });
     };
 
     const handlePrimaryGoalClick = (goal: 'lose' | 'maintain' | 'gain') => {
         if (!profile) return;
-        setProfile(prev => prev ? {
-            ...prev,
-            fitnessGoals: { ...prev.fitnessGoals, primaryGoal: goal }
-        } : null);
+        editProfile({
+            fitnessGoals: { ...profile.fitnessGoals, primaryGoal: goal }
+        });
     };
 
     const handleUpdateProfile = async () => {
         if (!profile) return;
 
         setIsSaving(true);
-        await profileRepository.updateProfile(profile);
-        const updatedProfile = await profileRepository.getProfile();
-        setProfile(updatedProfile);
-        setIsSaving(false);
-
-        setShowSaveMessage(true);
-        setTimeout(() => setShowSaveMessage(false), 2000);
+        try {
+            await updateProfile(profile);
+            setShowSaveMessage(true);
+            setTimeout(() => setShowSaveMessage(false), 2000);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const goalProgressPercentage = useMemo(() => {
@@ -173,7 +152,7 @@ export default function ProfilePage() {
         return Math.max(0, Math.min(percentage, 100));
     }, [profile]);
 
-    if (isLoading) {
+    if (loading) {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('profile.loading')}</div>;
     }
 
@@ -274,9 +253,17 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex justify-end items-center gap-4">
                         {showSaveMessage && <p className="text-healthpal-green text-sm">{t('profile.update_success')}</p>}
+                        {hasChanges && (
+                            <button
+                                onClick={resetProfile}
+                                className="px-4 py-3 rounded-lg font-semibold text-healthpal-text-primary hover:bg-healthpal-card transition-colors"
+                            >
+                                {t('profile.cancel')}
+                            </button>
+                        )}
                         <button
                             onClick={handleUpdateProfile}
-                            disabled={isSaving}
+                            disabled={isSaving || !hasChanges}
                             className="bg-healthpal-green text-black font-bold py-3 px-6 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isSaving ? t('profile.saving') : t('profile.update_profile')}

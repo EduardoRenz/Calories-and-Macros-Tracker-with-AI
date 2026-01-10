@@ -3,20 +3,17 @@ import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/da
 import { doc, getDoc, setDoc, collection, query, where, getDocs, documentId } from 'firebase/firestore';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';
-import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
-import { RepositoryFactory } from '../RepositoryFactory';
-import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 // Helper function to create an empty dashboard structure for a new day
-const createEmptyDashboard = (date: string, goals: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
+const createEmptyDashboard = (date: string, goals?: { calories: number; protein: number; carbs: number; fats: number; }): DashboardData => ({
     date,
     macros: {
-        calories: { current: 0, goal: goals.calories },
-        protein: { current: 0, goal: goals.protein },
-        carbs: { current: 0, goal: goals.carbs },
-        fats: { current: 0, goal: goals.fats },
+        calories: { current: 0, goal: goals?.calories ?? 0 },
+        protein: { current: 0, goal: goals?.protein ?? 0 },
+        carbs: { current: 0, goal: goals?.carbs ?? 0 },
+        fats: { current: 0, goal: goals?.fats ?? 0 },
     },
     meals: {
         breakfast: { name: "Breakfast", calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, ingredients: [] },
@@ -59,7 +56,6 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 
 export class FirestoreDashboardRepository implements DashboardRepository {
     private auth = getAuth();
-    private profileRepository: ProfileRepository = RepositoryFactory.getProfileRepository();
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
 
@@ -78,11 +74,8 @@ export class FirestoreDashboardRepository implements DashboardRepository {
                 const docRef = this.getDocRef(date);
                 const docSnap = await getDoc(docRef);
 
-                const profile = await this.profileRepository.getProfile();
-                const goals = CalorieCalculationService.calculateGoals(profile);
-
                 if (!docSnap.exists()) {
-                    const newDashboard = createEmptyDashboard(date, goals);
+                    const newDashboard = createEmptyDashboard(date);
                     await setDoc(docRef, newDashboard);
                     return newDashboard;
                 }
@@ -90,20 +83,15 @@ export class FirestoreDashboardRepository implements DashboardRepository {
                 const data = docSnap.data() as DashboardData;
                 let needsUpdate = false;
 
-                // Ensure `macros` object and its properties exist and goals are up-to-date.
+                // Ensure `macros` object and its properties exist.
                 if (!data.macros) {
-                    data.macros = createEmptyDashboard(date, goals).macros;
+                    data.macros = createEmptyDashboard(date).macros;
                     needsUpdate = true;
-                } else {
-                    if (data.macros.calories.goal !== goals.calories) { data.macros.calories.goal = goals.calories; needsUpdate = true; }
-                    if (data.macros.protein.goal !== goals.protein) { data.macros.protein.goal = goals.protein; needsUpdate = true; }
-                    if (data.macros.carbs.goal !== goals.carbs) { data.macros.carbs.goal = goals.carbs; needsUpdate = true; }
-                    if (data.macros.fats.goal !== goals.fats) { data.macros.fats.goal = goals.fats; needsUpdate = true; }
                 }
 
                 // Ensure `meals` object exists.
                 if (!data.meals) {
-                    data.meals = createEmptyDashboard(date, goals).meals;
+                    data.meals = createEmptyDashboard(date).meals;
                     needsUpdate = true;
                 }
 
@@ -153,9 +141,6 @@ export class FirestoreDashboardRepository implements DashboardRepository {
 
                 const snap = await getDocs(q);
 
-                const profile = await this.profileRepository.getProfile();
-                const goals = CalorieCalculationService.calculateGoals(profile);
-
                 const fetchedDataMap = new Map<string, DashboardData>();
 
                 snap.docs.forEach(d => {
@@ -194,7 +179,7 @@ export class FirestoreDashboardRepository implements DashboardRepository {
                     if (fetchedDataMap.has(date)) {
                         result.push(fetchedDataMap.get(date)!);
                     } else {
-                        result.push(createEmptyDashboard(date, goals));
+                        result.push(createEmptyDashboard(date));
                     }
                 }
 
@@ -237,5 +222,23 @@ export class FirestoreDashboardRepository implements DashboardRepository {
         this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
 
         return updatedData;
+    }
+
+    async updateGoals(date: string, goals: { calories: number; protein: number; carbs: number; fats: number }): Promise<DashboardData> {
+        const dataForDay = await this.getDashboardForDate(date);
+
+        // Update goals in the dashboard data
+        dataForDay.macros.calories.goal = goals.calories;
+        dataForDay.macros.protein.goal = goals.protein;
+        dataForDay.macros.carbs.goal = goals.carbs;
+        dataForDay.macros.fats.goal = goals.fats;
+
+        // Save the updated data
+        await setDoc(this.getDocRef(date), dataForDay);
+
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+
+        return dataForDay;
     }
 }

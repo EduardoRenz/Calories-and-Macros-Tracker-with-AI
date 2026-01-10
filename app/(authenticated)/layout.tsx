@@ -8,7 +8,10 @@ import QuickMealModal from '@/components/QuickMealModal';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Footer } from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
+import { ProfileProvider } from '@/contexts/ProfileContext';
 import InstallPWA from '@/components/InstallPWA';
+import { RepositoryFactory } from '@/data/RepositoryFactory';
+import type { Ingredient, MealSummary } from '@/domain/entities/dashboard';
 
 
 export default function AuthenticatedLayout({
@@ -19,6 +22,11 @@ export default function AuthenticatedLayout({
     const pathname = usePathname();
     const { user, loading } = useAuth();
     const [isQuickMealOpen, setIsQuickMealOpen] = useState(false);
+    const dashboardRepository = RepositoryFactory.getDashboardRepository();
+
+    const handleQuickAddIngredients = async (date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]) => {
+        await dashboardRepository.addIngredients(date, mealType, ingredients);
+    };
 
     const handleQuickMealSuccess = () => {
         setIsQuickMealOpen(false);
@@ -37,30 +45,33 @@ export default function AuthenticatedLayout({
 
     return (
         <ProtectedRoute>
-            <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex flex-col">
-                <div className="flex justify-center flex-1">
-                    <div className="w-full max-w-screen-2xl bg-healthpal-dark flex flex-col min-h-screen">
-                        {showNavbar && (
-                            <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
-                        )}
-                        <div className="flex-1 pb-24 md:pb-0">
-                            <main className="p-6 lg:p-8">
-                                {children}
-                            </main>
+            <ProfileProvider>
+                <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex flex-col">
+                    <div className="flex justify-center flex-1">
+                        <div className="w-full max-w-screen-2xl bg-healthpal-dark flex flex-col min-h-screen">
+                            {showNavbar && (
+                                <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+                            )}
+                            <div className="flex-1 pb-24 md:pb-0">
+                                <main className="p-6 lg:p-8">
+                                    {children}
+                                </main>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            {showNavbar && <Footer />}
-            {showNavbar && (
-                <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
-            )}
-            <QuickMealModal
-                isOpen={isQuickMealOpen}
-                onClose={() => setIsQuickMealOpen(false)}
-                onSuccess={handleQuickMealSuccess}
-            />
-            <InstallPWA />
+                {showNavbar && <Footer />}
+                {showNavbar && (
+                    <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+                )}
+                <QuickMealModal
+                    isOpen={isQuickMealOpen}
+                    onClose={() => setIsQuickMealOpen(false)}
+                    onSuccess={handleQuickMealSuccess}
+                    onAddIngredients={handleQuickAddIngredients}
+                />
+                <InstallPWA />
+            </ProfileProvider>
         </ProtectedRoute>
     );
 }

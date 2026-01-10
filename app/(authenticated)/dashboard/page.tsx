@@ -2,17 +2,20 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MacroProgressCard from '@/components/MacroProgressCard';
 import MobileNutrientSummary from '@/components/MobileNutrientSummary';
 import MealSummaryCard from '@/components/MealSummaryCard';
 import MacroSplitChart from '@/components/MacroSplitChart';
+import CalorieDisplayCard from '@/components/CalorieDisplayCard';
 import { useTranslation } from '@/hooks/useTranslation';
 import { DashboardData, Ingredient, MealSummary } from '@/domain/entities/dashboard';
 import { DashboardRepository } from '@/domain/repositories/DashboardRepository';
 import AddIngredientModal from '@/components/AddIngredientModal';
+import DashboardNavigation from '@/components/DashboardNavigation';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
+import { useProfile } from '@/contexts/ProfileContext';
+import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 
 const getFormattedDate = (date: Date) => {
     const year = date.getFullYear();
@@ -24,9 +27,34 @@ const getFormattedDate = (date: Date) => {
 export default function DashboardPage() {
     const { t } = useTranslation();
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const { profile, goalsManagementService } = useProfile();
+    const computedGoals = useMemo(() => {
+        if (profile) return CalorieCalculationService.calculateGoals(profile);
+        return null;
+    }, [profile]);
+
+    const macrosWithGoals = useMemo(() => {
+        if (!data) return null;
+
+        const fallbackGoals = {
+            calories: computedGoals?.calories ?? data.macros.calories.goal ?? 0,
+            protein: computedGoals?.protein ?? data.macros.protein.goal ?? 0,
+            carbs: computedGoals?.carbs ?? data.macros.carbs.goal ?? 0,
+            fats: computedGoals?.fats ?? data.macros.fats.goal ?? 0,
+        };
+
+        return {
+            calories: { ...data.macros.calories, goal: fallbackGoals.calories },
+            protein: { ...data.macros.protein, goal: fallbackGoals.protein },
+            carbs: { ...data.macros.carbs, goal: fallbackGoals.carbs },
+            fats: { ...data.macros.fats, goal: fallbackGoals.fats },
+        };
+    }, [data, computedGoals]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMealType, setSelectedMealType] = useState<keyof MealSummary | null>(null);
@@ -49,9 +77,14 @@ export default function DashboardPage() {
 
         const request = (async () => {
             setIsLoading(true);
-            console.log('Calling fetchDashboardData for date: ', dateString);
+
+            // Get dashboard data first
             const dashboardData = await dashboardRepository.getDashboardForDate(dateString);
-            setData(dashboardData);
+
+            // Update goals if needed using the new function
+            const finalData = await goalsManagementService.updateGoalsIfNeeded(dateString, dashboardData);
+            setData(finalData);
+
             setIsLoading(false);
         })().finally(() => {
             if (inFlightRequestRef.current === request) {
@@ -62,7 +95,7 @@ export default function DashboardPage() {
         inFlightRequestRef.current = request;
 
         return request;
-    }, [dashboardRepository]);
+    }, [dashboardRepository, goalsManagementService]);
 
     useEffect(() => {
         if (!dateParam) return;
@@ -93,15 +126,24 @@ export default function DashboardPage() {
     }, [currentDate, fetchDashboardData]);
 
     const handleDateChange = (days: number) => {
-        setCurrentDate(prevDate => {
-            const newDate = new Date(prevDate);
-            newDate.setDate(newDate.getDate() + days);
-            return newDate;
-        });
+        const newDate = new Date(currentDate);
+        newDate.setDate(newDate.getDate() + days);
+
+        // Update URL with new date
+        const newDateString = getFormattedDate(newDate);
+        router.push(`/dashboard?date=${newDateString}`);
+
+        setCurrentDate(newDate);
     };
 
     const handleGoToToday = () => {
-        setCurrentDate(new Date());
+        const today = new Date();
+        const todayString = getFormattedDate(today);
+
+        // Update URL with today's date
+        router.push(`/dashboard?date=${todayString}`);
+
+        setCurrentDate(today);
     };
 
     const handleOpenModal = (mealType: keyof MealSummary) => {
@@ -134,7 +176,7 @@ export default function DashboardPage() {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
     }
 
-    const caloriesRemaining = data.macros.calories.goal - data.macros.calories.current;
+    const caloriesRemaining = ((macrosWithGoals?.calories.goal ?? 0) - data.macros.calories.current);
     const isOverLimit = caloriesRemaining < 0;
 
     return (
@@ -145,40 +187,28 @@ export default function DashboardPage() {
                 onSave={handleAddIngredient}
                 mealType={selectedMealType}
             />
-            {/* Dashboard Header */}
-            <section className="flex flex-col md:flex-row justify-between items-start md:items-center my-8 gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold">{t('dashboard.title')}</h2>
-                    <p className="text-healthpal-text-secondary mt-1">{displayDate}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    {!isToday && (
-                        <button onClick={handleGoToToday} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
-                            {t('dashboard.today')}
-                        </button>
-                    )}
-                    <button onClick={() => handleDateChange(-1)} className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors">
-                        <ChevronLeftIcon className="h-5 w-5" />
-                    </button>
-                    <button onClick={() => handleDateChange(1)} className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors">
-                        <ChevronRightIcon className="h-5 w-5" />
-                    </button>
-                </div>
-            </section>
+            <DashboardNavigation
+                isToday={isToday}
+                displayDate={displayDate}
+                onDateChange={handleDateChange}
+                onGoToToday={handleGoToToday}
+                todayLabel={t('dashboard.today')}
+                title={t('dashboard.title')}
+            />
 
             {/* Main Grid */}
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Shown only on mobile - progress bars instead of chart */}
                     <div className="block md:hidden">
-                        <MobileNutrientSummary data={data.macros} />
+                        {macrosWithGoals && <MobileNutrientSummary data={macrosWithGoals} />}
                     </div>
                     <div className="hidden md:block">
                         <MacroProgressCard
                             title={t('dashboard.calories')}
                             unit="kcal"
                             current={data.macros.calories.current}
-                            goal={data.macros.calories.goal}
+                            goal={macrosWithGoals?.calories.goal ?? 0}
                             color="bg-healthpal-green"
                         />
                     </div>
@@ -187,7 +217,7 @@ export default function DashboardPage() {
                             title={t('dashboard.protein')}
                             unit="g"
                             current={data.macros.protein.current}
-                            goal={data.macros.protein.goal}
+                            goal={macrosWithGoals?.protein.goal ?? 0}
                             color="bg-healthpal-protein"
                         />
                     </div>
@@ -196,7 +226,7 @@ export default function DashboardPage() {
                             title={t('dashboard.carbs')}
                             unit="g"
                             current={data.macros.carbs.current}
-                            goal={data.macros.carbs.goal}
+                            goal={macrosWithGoals?.carbs.goal ?? 0}
                             color="bg-healthpal-carbs"
                         />
                     </div>
@@ -205,7 +235,7 @@ export default function DashboardPage() {
                             title={t('dashboard.fats')}
                             unit="g"
                             current={data.macros.fats.current}
-                            goal={data.macros.fats.goal}
+                            goal={macrosWithGoals?.fats.goal ?? 0}
                             color="bg-healthpal-fats"
                         />
                     </div>
@@ -225,17 +255,11 @@ export default function DashboardPage() {
                             <MacroSplitChart data={data} />
                         </div>
                     </div>
-                    <div className="bg-healthpal-card p-6 rounded-2xl flex flex-col justify-center items-center text-center h-full order-last lg:order-first">
-                        <h3 className="text-healthpal-text-secondary font-medium">
-                            {isOverLimit ? t('dashboard.calories_over') : t('dashboard.calories_remaining')}
-                        </h3>
-                        <p className={`text-6xl font-bold my-2 ${isOverLimit ? 'text-red-500' : 'text-healthpal-green'}`}>
-                            {Math.abs(caloriesRemaining)}
-                        </p>
-                        <p className="text-healthpal-text-secondary text-sm">
-                            {isOverLimit ? t('dashboard.limit_exceeded') : t('dashboard.doing_great')}
-                        </p>
-                    </div>
+                    <CalorieDisplayCard
+                        caloriesRemaining={caloriesRemaining}
+                        isOverLimit={isOverLimit}
+                        t={t}
+                    />
                 </div>
             </main>
         </>

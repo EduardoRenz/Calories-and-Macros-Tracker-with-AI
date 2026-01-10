@@ -6,9 +6,6 @@ import { HistoryPage } from '../../domain/repositories/HistoryRepository';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 import { DashboardData, MealSummary } from '../../domain/entities/dashboard';
-import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
-import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { RepositoryFactory } from '../RepositoryFactory';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
@@ -30,7 +27,6 @@ const calculateTotalFiber = (meals?: MealSummary): number => {
 
 export class FirestoreHistoryRepository implements HistoryRepository {
   private auth = getAuth();
-  private profileRepository: ProfileRepository = RepositoryFactory.getProfileRepository();
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
 
@@ -38,8 +34,13 @@ export class FirestoreHistoryRepository implements HistoryRepository {
     const key = `history:goals:${userId}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const profile = await this.profileRepository.getProfile();
-        return CalorieCalculationService.calculateGoals(profile);
+        // Default goals - removed profile repository dependency
+        return {
+          calories: 2000,
+          protein: 50,
+          carbs: 250,
+          fats: 65
+        };
       });
     });
   }
