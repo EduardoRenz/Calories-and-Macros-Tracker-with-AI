@@ -77,7 +77,6 @@ export class SupabaseHistoryRepository implements HistoryRepository {
 
         return days
           .map(d => {
-            console.log(d);
             const extra = fibers.get(d.id) ?? { fiber: 0, hasEntry: false };
             return {
               date: d.date,
