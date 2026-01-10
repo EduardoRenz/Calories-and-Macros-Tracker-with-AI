@@ -2,8 +2,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MacroProgressCard from '@/components/MacroProgressCard';
 import MobileNutrientSummary from '@/components/MobileNutrientSummary';
 import MealSummaryCard from '@/components/MealSummaryCard';
@@ -13,6 +12,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { DashboardData, Ingredient, MealSummary } from '@/domain/entities/dashboard';
 import { DashboardRepository } from '@/domain/repositories/DashboardRepository';
 import AddIngredientModal from '@/components/AddIngredientModal';
+import DashboardNavigation from '@/components/DashboardNavigation';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { useProfile } from '@/contexts/ProfileContext';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
@@ -27,11 +27,12 @@ const getFormattedDate = (date: Date) => {
 export default function DashboardPage() {
     const { t } = useTranslation();
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const { profile } = useProfile();
+    const { profile, goalsManagementService } = useProfile();
     const computedGoals = useMemo(() => {
         if (profile) return CalorieCalculationService.calculateGoals(profile);
         return null;
@@ -76,9 +77,14 @@ export default function DashboardPage() {
 
         const request = (async () => {
             setIsLoading(true);
-            console.log('Calling fetchDashboardData for date: ', dateString);
+
+            // Get dashboard data first
             const dashboardData = await dashboardRepository.getDashboardForDate(dateString);
-            setData(dashboardData);
+
+            // Update goals if needed using the new function
+            const finalData = await goalsManagementService.updateGoalsIfNeeded(dateString, dashboardData);
+            setData(finalData);
+
             setIsLoading(false);
         })().finally(() => {
             if (inFlightRequestRef.current === request) {
@@ -89,7 +95,7 @@ export default function DashboardPage() {
         inFlightRequestRef.current = request;
 
         return request;
-    }, [dashboardRepository]);
+    }, [dashboardRepository, goalsManagementService]);
 
     useEffect(() => {
         if (!dateParam) return;
@@ -120,15 +126,24 @@ export default function DashboardPage() {
     }, [currentDate, fetchDashboardData]);
 
     const handleDateChange = (days: number) => {
-        setCurrentDate(prevDate => {
-            const newDate = new Date(prevDate);
-            newDate.setDate(newDate.getDate() + days);
-            return newDate;
-        });
+        const newDate = new Date(currentDate);
+        newDate.setDate(newDate.getDate() + days);
+
+        // Update URL with new date
+        const newDateString = getFormattedDate(newDate);
+        router.push(`/dashboard?date=${newDateString}`);
+
+        setCurrentDate(newDate);
     };
 
     const handleGoToToday = () => {
-        setCurrentDate(new Date());
+        const today = new Date();
+        const todayString = getFormattedDate(today);
+
+        // Update URL with today's date
+        router.push(`/dashboard?date=${todayString}`);
+
+        setCurrentDate(today);
     };
 
     const handleOpenModal = (mealType: keyof MealSummary) => {
@@ -172,26 +187,14 @@ export default function DashboardPage() {
                 onSave={handleAddIngredient}
                 mealType={selectedMealType}
             />
-            {/* Dashboard Header */}
-            <section className="flex flex-col md:flex-row justify-between items-start md:items-center my-8 gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold">{t('dashboard.title')}</h2>
-                    <p className="text-healthpal-text-secondary mt-1">{displayDate}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    {!isToday && (
-                        <button onClick={handleGoToToday} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
-                            {t('dashboard.today')}
-                        </button>
-                    )}
-                    <button onClick={() => handleDateChange(-1)} className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors">
-                        <ChevronLeftIcon className="h-5 w-5" />
-                    </button>
-                    <button onClick={() => handleDateChange(1)} className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors">
-                        <ChevronRightIcon className="h-5 w-5" />
-                    </button>
-                </div>
-            </section>
+            <DashboardNavigation
+                isToday={isToday}
+                displayDate={displayDate}
+                onDateChange={handleDateChange}
+                onGoToToday={handleGoToToday}
+                todayLabel={t('dashboard.today')}
+                title={t('dashboard.title')}
+            />
 
             {/* Main Grid */}
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -169,6 +169,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
         protein_current: data.macros.protein.current,
         carbs_current: data.macros.carbs.current,
         fats_current: data.macros.fats.current,
+
       })
       .eq('id', dayId);
 
@@ -369,6 +370,36 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     const refreshedIngredients = await this.loadIngredients(day.id);
     const updated = this.toDashboardData(date, goals, refreshedIngredients);
 
+    await this.persistTotals(day.id, updated);
+
+    // Invalidate cache for this date
+    this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+
+    return updated;
+  }
+
+  async updateGoals(date: string, goals: { calories: number; protein: number; carbs: number; fats: number }): Promise<DashboardData> {
+    const supabase = getSupabaseClient();
+    const day = await this.getOrCreateDashboardDay(date);
+
+    // Update goals in database
+    const { error } = await supabase
+      .from('dashboard_days')
+      .update({
+        calories_goal: goals.calories,
+        protein_goal: goals.protein,
+        carbs_goal: goals.carbs,
+        fats_goal: goals.fats,
+      })
+      .eq('id', day.id);
+
+    if (error) throw error;
+
+    // Load current ingredients and recalculate dashboard with new goals
+    const ingredients = await this.loadIngredients(day.id);
+    const updated = this.toDashboardData(date, goals, ingredients);
+
+    // Persist the updated totals (though goals are already updated above)
     await this.persistTotals(day.id, updated);
 
     // Invalidate cache for this date
