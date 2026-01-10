@@ -45,6 +45,7 @@ class LocalUserRepository implements UserRepository {
 
 Don't create anemic models, always make a domain wit*Wh attributes and behaviors. 
 
+---
 
 ### Reusable components
 
