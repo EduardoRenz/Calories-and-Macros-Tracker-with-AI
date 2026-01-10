@@ -95,7 +95,7 @@ export default function DashboardPage() {
         inFlightRequestRef.current = request;
 
         return request;
-    }, [dashboardRepository]);
+    }, [dashboardRepository, goalsManagementService]);
 
     useEffect(() => {
         if (!dateParam) return;
@@ -188,7 +188,6 @@ export default function DashboardPage() {
                 mealType={selectedMealType}
             />
             <DashboardNavigation
-                currentDate={currentDate}
                 isToday={isToday}
                 displayDate={displayDate}
                 onDateChange={handleDateChange}

@@ -2,7 +2,6 @@ import React from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/icons';
 
 interface DashboardNavigationProps {
-    currentDate: Date;
     isToday: boolean;
     displayDate: string;
     onDateChange: (days: number) => void;
@@ -12,7 +11,6 @@ interface DashboardNavigationProps {
 }
 
 export default function DashboardNavigation({
-    currentDate,
     isToday,
     displayDate,
     onDateChange,
