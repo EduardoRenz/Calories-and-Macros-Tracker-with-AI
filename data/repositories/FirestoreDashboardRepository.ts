@@ -223,4 +223,22 @@ export class FirestoreDashboardRepository implements DashboardRepository {
 
         return updatedData;
     }
+
+    async updateGoals(date: string, goals: { calories: number; protein: number; carbs: number; fats: number }): Promise<DashboardData> {
+        const dataForDay = await this.getDashboardForDate(date);
+
+        // Update goals in the dashboard data
+        dataForDay.macros.calories.goal = goals.calories;
+        dataForDay.macros.protein.goal = goals.protein;
+        dataForDay.macros.carbs.goal = goals.carbs;
+        dataForDay.macros.fats.goal = goals.fats;
+
+        // Save the updated data
+        await setDoc(this.getDocRef(date), dataForDay);
+
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+
+        return dataForDay;
+    }
 }

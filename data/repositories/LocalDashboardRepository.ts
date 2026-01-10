@@ -291,4 +291,33 @@ export class LocalDashboardRepository implements DashboardRepository {
 
         return JSON.parse(JSON.stringify(updatedData));
     }
+
+    async updateGoals(date: string, goals: { calories: number; protein: number; carbs: number; fats: number }): Promise<DashboardData> {
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Ensure seed data is loaded before modifying any data
+        await this.seedMockDashboards();
+
+        const dataForDay = this.dailyDataStore.get(date);
+        if (!dataForDay) {
+            // Create a new dashboard if it doesn't exist
+            const newDashboard = createEmptyDashboard(date, goals);
+            this.dailyDataStore.set(date, newDashboard);
+            return JSON.parse(JSON.stringify(newDashboard));
+        }
+
+        // Update goals in the dashboard data
+        dataForDay.macros.calories.goal = goals.calories;
+        dataForDay.macros.protein.goal = goals.protein;
+        dataForDay.macros.carbs.goal = goals.carbs;
+        dataForDay.macros.fats.goal = goals.fats;
+
+        // Save the updated data
+        this.dailyDataStore.set(date, dataForDay);
+
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+
+        return JSON.parse(JSON.stringify(dataForDay));
+    }
 }
