@@ -110,7 +110,24 @@ export default {
     "tabs": {
       "settings": "Profile Settings",
       "progress": "Progress",
-      "food_analysis": "Food Analysis"
+    },
+    "food_analysis": "Food Analysis",
+    "health_conditions": {
+      "title": "Health Conditions",
+      "subtitle": "Select any conditions that apply so we can tailor safe dietary recommendations.",
+      "importance": "This information is important: your Food Analysis will use these conditions to avoid unsafe suggestions and prioritize safer alternatives.",
+      "options": {
+        "diabetes": "Diabetes",
+        "lactose_intolerance": "Lactose intolerance",
+        "gluten_intolerance": "Gluten intolerance",
+        "celiac_disease": "Celiac disease",
+        "hypertension": "Hypertension (high blood pressure)",
+        "high_cholesterol": "High cholesterol",
+        "kidney_disease": "Kidney disease",
+        "gout": "Gout",
+        "ibs": "Irritable bowel syndrome (IBS)",
+        "gerd": "GERD / Acid reflux"
+      }
     },
     "upload_picture": "Upload new picture",
     "personal_info": {
@@ -139,6 +156,7 @@ export default {
     "update_profile": "Update Profile",
     "saving": "Saving...",
     "update_success": "Profile updated successfully!",
+    "cancel": "Cancel",
     "loading": "Loading profile...",
     "load_error": "Could not load profile data.",
     "progress_summary": {

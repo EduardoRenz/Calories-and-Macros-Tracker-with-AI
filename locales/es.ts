@@ -110,7 +110,24 @@ export default {
     "tabs": {
       "settings": "Ajustes de Perfil",
       "progress": "Progreso",
-      "food_analysis": "Análisis de Alimentación"
+      "food_analysis": "Análisis de Alimentación",
+      "health_conditions": {
+        "title": "Condiciones de Salud",
+        "subtitle": "Selecciona las condiciones que apliquen para recibir recomendaciones alimentarias más seguras.",
+        "importance": "Esta información es importante: el Análisis de Alimentación usará estas condiciones para evitar sugerencias inseguras y priorizar alternativas más seguras.",
+        "options": {
+          "diabetes": "Diabetes",
+          "lactose_intolerance": "Intolerancia a la lactosa",
+          "gluten_intolerance": "Intolerancia al gluten",
+          "celiac_disease": "Enfermedad celíaca",
+          "hypertension": "Hipertensión",
+          "high_cholesterol": "Colesterol alto",
+          "kidney_disease": "Enfermedad renal",
+          "gout": "Gota",
+          "ibs": "Síndrome del intestino irritable (SII)",
+          "gerd": "Reflujo / Acidez"
+        }
+      },
     },
     "upload_picture": "Subir nueva foto",
     "personal_info": {
@@ -139,6 +156,7 @@ export default {
     "update_profile": "Actualizar Perfil",
     "saving": "Guardando...",
     "update_success": "¡Perfil actualizado con éxito!",
+    "cancel": "Cancelar",
     "loading": "Cargando perfil...",
     "load_error": "No se pudieron cargar los datos del perfil.",
     "progress_summary": {

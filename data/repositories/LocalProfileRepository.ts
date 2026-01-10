@@ -22,7 +22,8 @@ const initialProfile: UserProfile = {
         { date: "2023-10-08", weight: 64.5 },
         { date: "2023-10-15", weight: 63 },
         { date: "2023-10-22", weight: 62.5 },
-    ]
+    ],
+    healthConditions: { selected: [] },
 };
 
 // Simulate a local data store
