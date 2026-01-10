@@ -1,5 +1,5 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { HealthConditions, UserProfile } from '../../domain/entities/profile';
+import { HealthConditionKey, HealthConditions, UserProfile } from '../../domain/entities/profile';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
@@ -15,7 +15,7 @@ type ProfilesRow = {
   primary_goal: 'lose' | 'maintain' | 'gain';
   target_weight: number;
   activity_level: 'sedentary' | 'lightly' | 'moderately' | 'very';
-  health_conditions: HealthConditions | null;
+  health_conditions: string[] | null;
 };
 
 type WeightHistoryRow = {
@@ -28,8 +28,8 @@ export class SupabaseProfileRepository implements ProfileRepository {
   private dataCacheManager: DataCacheManager = new DataCacheManager();
   private userId: string | undefined;
 
-  private getDefaultHealthConditions(): HealthConditions {
-    return { selected: [] };
+  private getDefaultHealthConditions(): string[] {
+    return [];
   }
 
   async getUserId(): Promise<string> {
@@ -62,7 +62,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
       weightHistory: weightHistory
         .map(w => ({ date: w.date, weight: Number(w.weight) }))
         .sort((a, b) => (a.date < b.date ? -1 : 1)),
-      healthConditions: profile.health_conditions ?? this.getDefaultHealthConditions(),
+      healthConditions: { selected: (profile.health_conditions ?? []) as HealthConditionKey[] },
     };
   }
 
@@ -149,7 +149,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
           primary_goal: profile.fitnessGoals.primaryGoal,
           target_weight: profile.fitnessGoals.targetWeight,
           activity_level: profile.fitnessGoals.activityLevel,
-          health_conditions: profile.healthConditions ?? this.getDefaultHealthConditions(),
+          health_conditions: profile.healthConditions?.selected ?? [],
         },
         { onConflict: 'user_id' }
       );
