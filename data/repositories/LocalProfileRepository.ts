@@ -1,6 +1,6 @@
 
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile, WeightEntry } from '../../domain/entities/profile';
+import { UserProfile } from '../../domain/entities/profile';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 const initialProfile: UserProfile = {
