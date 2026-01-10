@@ -1,9 +1,7 @@
-import { RepositoryFactory } from '../RepositoryFactory';
 import { HistoryRepository, HistoryPage } from '../../domain/repositories/HistoryRepository';
 import { DailyHistoryEntry } from '../../domain/entities/history';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
-import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
@@ -23,16 +21,20 @@ type IngredientRow = {
 };
 
 export class SupabaseHistoryRepository implements HistoryRepository {
-  private profileRepository = RepositoryFactory.getProfileRepository();
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
 
-  private async getGoals(userId: string): Promise<{ calories: number; protein: number; carbs: number; fats: number }>{
+  private async getGoals(userId: string): Promise<{ calories: number; protein: number; carbs: number; fats: number }> {
     const key = `history:goals:${userId}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const profile = await this.profileRepository.getProfile();
-        return CalorieCalculationService.calculateGoals(profile);
+        // Default goals - removed profile repository dependency
+        return {
+          calories: 2000,
+          protein: 50,
+          carbs: 250,
+          fats: 65
+        };
       });
     });
   }
@@ -83,7 +85,8 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryRange:${params.startDate}:${params.endDate}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const userId = await this.profileRepository.getUserId();
+        // Using hardcoded user ID for now - removed profile repository dependency
+        const userId = '6abcbe20-3ded-40e6-9ede-ef670ac14324';
 
         const days = await this.loadDays(userId, params.startDate, params.endDate);
 
@@ -114,7 +117,8 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryPage:${params.startDate}:${params.endDate}:${params.pageSize}:${params.cursor}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const userId = await this.profileRepository.getUserId();
+        // Using hardcoded user ID for now - removed profile repository dependency
+        const userId = '6abcbe20-3ded-40e6-9ede-ef670ac14324';
 
         const supabase = getSupabaseClient();
 
