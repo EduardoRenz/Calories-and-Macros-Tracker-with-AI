@@ -84,7 +84,10 @@ export class FirestoreProfileRepository implements ProfileRepository {
         const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
 
         if (entryForTodayIndex !== -1) {
-            updatedHistory[entryForTodayIndex].weight = newWeight;
+            updatedHistory[entryForTodayIndex] = {
+                ...updatedHistory[entryForTodayIndex],
+                weight: newWeight
+            };
         } else {
             updatedHistory.push({ date: today, weight: newWeight });
         }
