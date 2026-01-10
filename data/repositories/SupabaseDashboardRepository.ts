@@ -169,10 +169,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
         protein_current: data.macros.protein.current,
         carbs_current: data.macros.carbs.current,
         fats_current: data.macros.fats.current,
-        calories_goal: data.macros.calories.goal,
-        protein_goal: data.macros.protein.goal,
-        carbs_goal: data.macros.carbs.goal,
-        fats_goal: data.macros.fats.goal,
+
       })
       .eq('id', dayId);
 
