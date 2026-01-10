@@ -136,9 +136,27 @@ export default {
       "moderately_active": "Moderadamente Ativo",
       "very_active": "Muito Ativo"
     },
+    "health_conditions": {
+      "title": "Condições de Saúde",
+      "subtitle": "Marque as condições que se aplicam para receber recomendações alimentares mais seguras.",
+      "importance": "Essa informação é importante: a Análise da Alimentação vai usar essas condições para evitar sugestões potencialmente perigosas e priorizar alternativas mais seguras.",
+      "options": {
+        "diabetes": "Diabetes",
+        "lactose_intolerance": "Intolerância à lactose",
+        "gluten_intolerance": "Intolerância ao glúten",
+        "celiac_disease": "Doença celíaca",
+        "hypertension": "Hipertensão",
+        "high_cholesterol": "Colesterol alto",
+        "kidney_disease": "Doença renal",
+        "gout": "Gota",
+        "ibs": "Síndrome do intestino irritável (SII)",
+        "gerd": "Refluxo / Azia"
+      }
+    },
     "update_profile": "Atualizar Perfil",
     "saving": "Salvando...",
     "update_success": "Perfil atualizado com sucesso!",
+    "cancel": "Cancelar",
     "loading": "Carregando perfil...",
     "load_error": "Não foi possível carregar os dados do perfil.",
     "progress_summary": {

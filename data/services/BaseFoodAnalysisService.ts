@@ -84,6 +84,9 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
         const macroAverages = this.calculateMacroAverages(dashboardData);
         const macroGoals = this.getMacroGoals(profile);
 
+        const selectedHealthConditions = (profile.healthConditions?.selected ?? []).join(', ');
+        const healthConditionsNotes = profile.healthConditions?.notes ?? '';
+
         return `You are a nutrition expert AI assistant. Analyze the following meal data and provide a comprehensive nutrition report.
 
 User Profile:
@@ -93,6 +96,12 @@ User Profile:
 - Height: ${profile.personalInfo.height} cm
 - Goal: ${profile.fitnessGoals.primaryGoal}
 - Activity Level: ${profile.fitnessGoals.activityLevel}
+
+Health conditions & dietary constraints (CRITICAL):
+- Selected conditions: ${selectedHealthConditions || 'None provided'}
+- Notes: ${healthConditionsNotes || 'None'}
+
+IMPORTANT SAFETY RULE: Your recommendations MUST respect the health conditions listed above. If any suggestion could be unsafe (e.g. diabetes glycemic load, gluten intolerance/celiac, lactose intolerance, hypertension sodium, kidney disease protein/potassium/phosphorus), avoid it and propose safer alternatives.
 
 User's Daily Macro Goals:
 - Calories: ${macroGoals.calories} kcal

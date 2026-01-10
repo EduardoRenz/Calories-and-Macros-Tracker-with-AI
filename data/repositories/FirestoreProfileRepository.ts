@@ -20,6 +20,7 @@ const initialProfileData = {
         activityLevel: 'lightly' as 'sedentary' | 'lightly' | 'moderately' | 'very',
     },
     weightHistory: [],
+    healthConditions: { selected: [] },
 };
 
 export class FirestoreProfileRepository implements ProfileRepository {
@@ -65,7 +66,11 @@ export class FirestoreProfileRepository implements ProfileRepository {
                     return newProfile;
                 }
 
-                return docSnap.data() as UserProfile;
+                const loaded = docSnap.data() as UserProfile;
+                return {
+                    ...loaded,
+                    healthConditions: loaded.healthConditions ?? { selected: [] },
+                };
             });
         });
     }
@@ -84,6 +89,7 @@ export class FirestoreProfileRepository implements ProfileRepository {
         const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
 
         if (entryForTodayIndex !== -1) {
+            console.log("Updating existing entry for today");
             updatedHistory[entryForTodayIndex].weight = newWeight;
         } else {
             updatedHistory.push({ date: today, weight: newWeight });

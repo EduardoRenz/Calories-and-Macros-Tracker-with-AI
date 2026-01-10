@@ -1,5 +1,5 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile } from '../../domain/entities/profile';
+import { HealthConditions, UserProfile } from '../../domain/entities/profile';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
@@ -15,6 +15,7 @@ type ProfilesRow = {
   primary_goal: 'lose' | 'maintain' | 'gain';
   target_weight: number;
   activity_level: 'sedentary' | 'lightly' | 'moderately' | 'very';
+  health_conditions: HealthConditions | null;
 };
 
 type WeightHistoryRow = {
@@ -26,6 +27,10 @@ export class SupabaseProfileRepository implements ProfileRepository {
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
   private dataCacheManager: DataCacheManager = new DataCacheManager();
   private userId: string | undefined;
+
+  private getDefaultHealthConditions(): HealthConditions {
+    return { selected: [] };
+  }
 
   async getUserId(): Promise<string> {
     if (this.userId) return this.userId;
@@ -57,6 +62,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
       weightHistory: weightHistory
         .map(w => ({ date: w.date, weight: Number(w.weight) }))
         .sort((a, b) => (a.date < b.date ? -1 : 1)),
+      healthConditions: profile.health_conditions ?? this.getDefaultHealthConditions(),
     };
   }
 
@@ -98,6 +104,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
             primary_goal: 'maintain',
             target_weight: 70,
             activity_level: 'lightly',
+            health_conditions: this.getDefaultHealthConditions(),
           };
 
           const { data: created, error: createError } = await supabase
@@ -142,6 +149,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
           primary_goal: profile.fitnessGoals.primaryGoal,
           target_weight: profile.fitnessGoals.targetWeight,
           activity_level: profile.fitnessGoals.activityLevel,
+          health_conditions: profile.healthConditions ?? this.getDefaultHealthConditions(),
         },
         { onConflict: 'user_id' }
       );

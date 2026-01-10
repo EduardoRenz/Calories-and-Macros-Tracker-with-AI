@@ -161,6 +161,7 @@ async function migrate() {
                     primary_goal: profileData.fitnessGoals?.primaryGoal ?? 'maintain',
                     target_weight: profileData.fitnessGoals?.targetWeight ?? 70,
                     activity_level: profileData.fitnessGoals?.activityLevel ?? 'lightly',
+                    health_conditions: profileData.healthConditions ?? { selected: [] },
                 }, { onConflict: 'user_id' });
 
             if (profileError) {
