@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, ReactNode, useEffect, useMe
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { UserProfile } from '../domain/entities/profile';
+import { GoalsManagementService } from '../data/services/GoalsManagementService';
 
 interface ProfileContextType {
     profile: UserProfile | null;
@@ -12,6 +13,7 @@ interface ProfileContextType {
     editProfile: (updates: Partial<UserProfile>) => void;
     resetProfile: () => void;
     hasChanges: boolean;
+    goalsManagementService: GoalsManagementService;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -21,6 +23,11 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [originalProfile, setOriginalProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const profileRepository: ProfileRepository = useMemo(() => RepositoryFactory.getProfileRepository(), []);
+    const goalsManagementService: GoalsManagementService = useMemo(() =>
+        new GoalsManagementService(
+            RepositoryFactory.getDashboardRepository(),
+            profileRepository
+        ), [profileRepository]);
 
     const refreshProfile = async () => {
         setLoading(true);
@@ -44,6 +51,14 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
         try {
             await profileRepository.updateProfile(updatedProfile);
             await refreshProfile(); // Refresh to get the latest data
+
+            // Apply goals to today after profile update
+            try {
+                await goalsManagementService.applyGoalsForToday();
+            } catch (goalsError) {
+                console.warn('Failed to apply goals after profile update:', goalsError);
+                // Don't throw here as profile update was successful
+            }
         } catch (error) {
             console.error('Error updating profile:', error);
             throw error;
@@ -66,7 +81,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
         return JSON.stringify(profile) !== JSON.stringify(originalProfile);
     }, [profile, originalProfile]);
 
-    const value = { profile, loading, updateProfile, refreshProfile, editProfile, resetProfile, hasChanges };
+    const value = { profile, loading, updateProfile, refreshProfile, editProfile, resetProfile, hasChanges, goalsManagementService };
 
     return (
         <ProfileContext.Provider value={value}>
