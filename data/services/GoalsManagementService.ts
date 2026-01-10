@@ -1,5 +1,6 @@
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
+import { DashboardData } from '../../domain/entities/dashboard';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 import { RepositoryFactory } from '../RepositoryFactory';
 
@@ -17,10 +18,13 @@ export class GoalsManagementService {
      */
     async applyGoalsForDate(date: string): Promise<void> {
         try {
+            console.log(`[GoalsManagementService] Applying goals for date: ${date}`);
+
             const profile = await this.profileRepository.getProfile();
             const goals = CalorieCalculationService.calculateGoals(profile);
 
             await this.dashboardRepository.updateGoals(date, goals);
+            console.log(`[GoalsManagementService] Goals applied for date: ${date}`);
         } catch (error) {
             console.error('Error applying goals for date:', date, error);
             throw error;
@@ -52,46 +56,42 @@ export class GoalsManagementService {
      * Apply goals to today's date (common use case when profile is updated)
      */
     async applyGoalsForToday(): Promise<void> {
+        console.log('Applying goals for today');
         const today = new Date().toISOString().split('T')[0];
         await this.applyGoalsForDate(today);
     }
 
     /**
-     * Check if goals need to be updated for a given date
-     * Returns true if goals are zero or undefined
+     * Update goals if they are zero or undefined in the provided dashboard data
      */
-    async needsGoalsUpdate(date: string): Promise<boolean> {
-        try {
-            const dashboardData = await this.dashboardRepository.getDashboardForDate(date);
+    async updateGoalsIfNeeded(date: string, dashboardData: DashboardData): Promise<DashboardData> {
+        // Check if goals are zero or undefined
+        const hasZeroGoals =
+            dashboardData.macros.calories.goal === 0 ||
+            dashboardData.macros.protein.goal === 0 ||
+            dashboardData.macros.carbs.goal === 0 ||
+            dashboardData.macros.fats.goal === 0 ||
+            dashboardData.macros.calories.goal === undefined ||
+            dashboardData.macros.protein.goal === undefined ||
+            dashboardData.macros.carbs.goal === undefined ||
+            dashboardData.macros.fats.goal === undefined;
 
-            const hasZeroGoals =
-                dashboardData.macros.calories.goal === 0 ||
-                dashboardData.macros.protein.goal === 0 ||
-                dashboardData.macros.carbs.goal === 0 ||
-                dashboardData.macros.fats.goal === 0;
-
-            const hasUndefinedGoals =
-                dashboardData.macros.calories.goal === undefined ||
-                dashboardData.macros.protein.goal === undefined ||
-                dashboardData.macros.carbs.goal === undefined ||
-                dashboardData.macros.fats.goal === undefined;
-
-            return hasZeroGoals || hasUndefinedGoals;
-        } catch (error) {
-            console.error('Error checking if goals need update:', date, error);
-            return true; // Assume update needed if we can't check
+        if (hasZeroGoals) {
+            try {
+                console.log(`[GoalsManagementService] Goals are zero for ${date}, applying goals`);
+                await this.applyGoalsForDate(date);
+                // Refetch to get updated goals
+                const updatedData = await this.dashboardRepository.getDashboardForDate(date);
+                return updatedData;
+            } catch (goalsError) {
+                console.warn('Failed to apply goals for date:', date, goalsError);
+                // Return original data if goals update failed
+                return dashboardData;
+            }
+        } else {
+            console.log(`[GoalsManagementService] Goals already set for ${date}`);
+            return dashboardData;
         }
-    }
-
-    /**
-     * Apply goals only if they need to be updated
-     */
-    async applyGoalsIfNeeded(date: string): Promise<boolean> {
-        if (await this.needsGoalsUpdate(date)) {
-            await this.applyGoalsForDate(date);
-            return true;
-        }
-        return false;
     }
 }
 
@@ -119,20 +119,4 @@ export async function applyGoalsForToday(): Promise<void> {
 export async function applyGoalsForDate(date: string): Promise<void> {
     const service = createGoalsManagementService();
     await service.applyGoalsForDate(date);
-}
-
-/**
- * Convenience function to check if goals need update for a date
- */
-export async function needsGoalsUpdate(date: string): Promise<boolean> {
-    const service = createGoalsManagementService();
-    return await service.needsGoalsUpdate(date);
-}
-
-/**
- * Convenience function to apply goals only if needed
- */
-export async function applyGoalsIfNeeded(date: string): Promise<boolean> {
-    const service = createGoalsManagementService();
-    return await service.applyGoalsIfNeeded(date);
 }
