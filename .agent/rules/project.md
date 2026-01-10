@@ -16,8 +16,35 @@ trigger: always_on
 
 ### Architecture
 
+
+##### Repository Pattern
+
 - Use Repository Pattern to separate data access from business logic
 - Repositories should only fetch/persist data (without calling other repositories nor applying business rules).
+- The name of the interface should be Repository itself and the name of the implementation should be the specification. For example: 
+
+```typescript
+interface UserRepository {}
+
+class FirebaseUserRepository implements UserRepository {
+    static instance: FirebaseUserRepository;
+    // Remaining code...
+}
+
+class LocalUserRepository implements UserRepository {
+    static instance: LocalUserRepository;
+    // Remaining code...
+}
+```
+
+- Don't use the "I" prefix in the interface name. And don't use the "Impl" suffix in the implementation name.
+- A repositry never should call another repository. Make a service or a Use case.
+- A repository should always have a static property to be used as a singleton.
+
+##### Domains and Entities
+
+Don't create anemic models, always make a domain wit*Wh attributes and behaviors. 
+
 
 ### Reusable components
 
