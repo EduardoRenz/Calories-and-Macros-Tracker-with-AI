@@ -24,21 +24,6 @@ export class SupabaseHistoryRepository implements HistoryRepository {
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
 
-  private async getGoals(userId: string): Promise<{ calories: number; protein: number; carbs: number; fats: number }> {
-    const key = `history:goals:${userId}`;
-    return this.dataCacheManager.getCached(key, async () => {
-      return this.concurrencyManager.run(key, async () => {
-        // Default goals - removed profile repository dependency
-        return {
-          calories: 2000,
-          protein: 50,
-          carbs: 250,
-          fats: 65
-        };
-      });
-    });
-  }
-
   private async loadDays(userId: string, startDate: string, endDate: string): Promise<DashboardDayRow[]> {
     const supabase = getSupabaseClient();
 
@@ -87,15 +72,12 @@ export class SupabaseHistoryRepository implements HistoryRepository {
       return this.concurrencyManager.run(key, async () => {
         // Using hardcoded user ID for now - removed profile repository dependency
         const userId = '6abcbe20-3ded-40e6-9ede-ef670ac14324';
-
         const days = await this.loadDays(userId, params.startDate, params.endDate);
-
-        const goals = await this.getGoals(userId);
-
         const fibers = await this.loadFibersForDays(days.map(d => d.id));
 
         return days
           .map(d => {
+            console.log(d);
             const extra = fibers.get(d.id) ?? { fiber: 0, hasEntry: false };
             return {
               date: d.date,
@@ -104,7 +86,7 @@ export class SupabaseHistoryRepository implements HistoryRepository {
               fats: d.fats_current ?? 0,
               fiber: Math.round(extra.fiber),
               calories: d.calories_current ?? 0,
-              calorieGoal: d.calories_goal ?? goals.calories,
+              calorieGoal: d.calories_goal,
               hasEntry: extra.hasEntry,
             };
           })
@@ -119,7 +101,6 @@ export class SupabaseHistoryRepository implements HistoryRepository {
       return this.concurrencyManager.run(key, async () => {
         // Using hardcoded user ID for now - removed profile repository dependency
         const userId = '6abcbe20-3ded-40e6-9ede-ef670ac14324';
-
         const supabase = getSupabaseClient();
 
         let q = supabase
@@ -140,8 +121,6 @@ export class SupabaseHistoryRepository implements HistoryRepository {
 
         const days = (data ?? []) as DashboardDayRow[];
 
-        const goals = await this.getGoals(userId);
-
         const fibers = await this.loadFibersForDays(days.map(d => d.id));
 
         const items: DailyHistoryEntry[] = days.map(d => {
@@ -153,7 +132,7 @@ export class SupabaseHistoryRepository implements HistoryRepository {
             fats: d.fats_current ?? 0,
             fiber: Math.round(extra.fiber),
             calories: d.calories_current ?? 0,
-            calorieGoal: d.calories_goal ?? goals.calories,
+            calorieGoal: d.calories_goal,
             hasEntry: extra.hasEntry,
           };
         });
