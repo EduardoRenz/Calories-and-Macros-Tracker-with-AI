@@ -31,7 +31,7 @@ export default function DashboardPage() {
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const { profile } = useProfile();
+    const { profile, goalsManagementService } = useProfile();
     const computedGoals = useMemo(() => {
         if (profile) return CalorieCalculationService.calculateGoals(profile);
         return null;
@@ -76,9 +76,14 @@ export default function DashboardPage() {
 
         const request = (async () => {
             setIsLoading(true);
-            console.log('Calling fetchDashboardData for date: ', dateString);
+
+            // Get dashboard data first
             const dashboardData = await dashboardRepository.getDashboardForDate(dateString);
-            setData(dashboardData);
+
+            // Update goals if needed using the new function
+            const finalData = await goalsManagementService.updateGoalsIfNeeded(dateString, dashboardData);
+            setData(finalData);
+
             setIsLoading(false);
         })().finally(() => {
             if (inFlightRequestRef.current === request) {
