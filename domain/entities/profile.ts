@@ -1,3 +1,5 @@
+export type DietType = 'omnivore' | 'vegetarian' | 'vegan' | 'pescatarian' | 'carnivore' | 'flexitarian';
+
 export interface PersonalInfo {
     age: number;
     height: number;
@@ -40,4 +42,5 @@ export interface UserProfile {
     fitnessGoals: FitnessGoals;
     weightHistory: WeightEntry[];
     healthConditions: HealthConditions;
+    dietType?: DietType;
 }

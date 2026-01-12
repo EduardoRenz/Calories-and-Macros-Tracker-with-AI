@@ -121,7 +121,16 @@ export default {
       "gender": "Gênero",
       "female": "Feminino",
       "male": "Masculino",
-      "other": "Outro"
+      "other": "Outro",
+      "diet_type": "Tipo de Dieta",
+      "diet_types": {
+        "omnivore": "Onívoro",
+        "vegetarian": "Vegetariano",
+        "vegan": "Vegano",
+        "pescatarian": "Pescetariano",
+        "carnivore": "Carnívoro",
+        "flexitarian": "Flexitariano"
+      }
     },
     "fitness_goals": {
       "title": "Metas de Fitness",
