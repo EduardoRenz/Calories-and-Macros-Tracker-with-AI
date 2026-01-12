@@ -50,7 +50,7 @@ The provider is defined by the `BACKEND_PROVIDER` variable in the `.env` file:
 - [x] Add fiber consumption in meals
 - [x] Kcal calc based on macro calc when adding/editing ingredients, and no more manually
 - [x] Health conditions
-- [ ] Diet type
+- [x] Diet type
 - [ ] Remote config set AI models
 - [ ] Add payment methods
 
