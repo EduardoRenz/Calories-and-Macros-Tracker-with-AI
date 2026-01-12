@@ -97,6 +97,17 @@ User Profile:
 - Goal: ${profile.fitnessGoals.primaryGoal}
 - Activity Level: ${profile.fitnessGoals.activityLevel}
 
+CRITICAL DIETARY PREFERENCE:
+- Diet Type: ${profile.dietType ?? 'omnivore'}
+
+IMPORTANT: All food recommendations MUST strictly respect the user's diet type:
+- Vegan: NO animal products (meat, fish, dairy, eggs, honey)
+- Vegetarian: NO meat or fish (dairy and eggs allowed)
+- Pescatarian: NO meat (fish, dairy, eggs allowed)
+- Carnivore: Primarily animal-based foods
+- Flexitarian: Mostly plant-based with occasional meat
+- Omnivore: All food types allowed
+
 Health conditions & dietary constraints (CRITICAL):
 - Selected conditions: ${selectedHealthConditions || 'None provided'}
 - Notes: ${healthConditionsNotes || 'None'}

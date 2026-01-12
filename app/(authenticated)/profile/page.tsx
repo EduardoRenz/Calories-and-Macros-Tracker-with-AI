@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { useTranslation } from '@/hooks/useTranslation';
-import { HealthConditionKey, WeightEntry } from '@/domain/entities/profile';
+import { DietType, HealthConditionKey, WeightEntry } from '@/domain/entities/profile';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -145,6 +145,13 @@ export default function ProfilePage() {
         });
     };
 
+    const handleDietTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        if (!profile) return;
+        editProfile({
+            dietType: e.target.value as DietType
+        });
+    };
+
     const handlePrimaryGoalClick = (goal: 'lose' | 'maintain' | 'gain') => {
         if (!profile) return;
         editProfile({
@@ -250,6 +257,17 @@ export default function ProfilePage() {
                                     <option value="female">{t('profile.personal_info.female')}</option>
                                     <option value="male">{t('profile.personal_info.male')}</option>
                                     <option value="other">{t('profile.personal_info.other')}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.diet_type')}</label>
+                                <select name="dietType" value={profile.dietType ?? 'omnivore'} onChange={handleDietTypeChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
+                                    <option value="omnivore">{t('profile.personal_info.diet_types.omnivore')}</option>
+                                    <option value="vegetarian">{t('profile.personal_info.diet_types.vegetarian')}</option>
+                                    <option value="vegan">{t('profile.personal_info.diet_types.vegan')}</option>
+                                    <option value="pescatarian">{t('profile.personal_info.diet_types.pescatarian')}</option>
+                                    <option value="carnivore">{t('profile.personal_info.diet_types.carnivore')}</option>
+                                    <option value="flexitarian">{t('profile.personal_info.diet_types.flexitarian')}</option>
                                 </select>
                             </div>
                         </div>

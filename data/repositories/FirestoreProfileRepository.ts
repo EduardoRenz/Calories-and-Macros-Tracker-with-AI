@@ -1,5 +1,5 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile } from '../../domain/entities/profile';
+import { DietType, UserProfile } from '../../domain/entities/profile';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -21,6 +21,7 @@ const initialProfileData = {
     },
     weightHistory: [],
     healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
 };
 
 export class FirestoreProfileRepository implements ProfileRepository {
@@ -70,6 +71,7 @@ export class FirestoreProfileRepository implements ProfileRepository {
                 return {
                     ...loaded,
                     healthConditions: loaded.healthConditions ?? { selected: [] },
+                    dietType: loaded.dietType ?? 'omnivore',
                 };
             });
         });
