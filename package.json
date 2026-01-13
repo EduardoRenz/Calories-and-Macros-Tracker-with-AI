@@ -1,7 +1,7 @@
 {
   "name": "caloriecounter-profile-goals",
   "private": true,
-  "version": "1.6.0",
+  "version": "1.7.0",
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
@@ -22,7 +22,9 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-is": "^19.0.0",
-    "recharts": "^3.3.0"
+    "react-markdown": "^9.0.1",
+    "recharts": "^3.3.0",
+    "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
