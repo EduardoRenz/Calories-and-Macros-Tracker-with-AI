@@ -224,6 +224,44 @@ export class FirestoreDashboardRepository implements DashboardRepository {
         return updatedData;
     }
 
+    async updateIngredient(date: string, mealType: keyof MealSummary, ingredientId: string, updates: Partial<Omit<Ingredient, 'id'>>): Promise<DashboardData> {
+        const dataForDay = await this.getDashboardForDate(date);
+
+        const meal = dataForDay.meals[mealType];
+        const ingredientIndex = meal.ingredients.findIndex(ing => ing.id === ingredientId);
+
+        if (ingredientIndex === -1) {
+            throw new Error(`Ingredient ${ingredientId} not found in ${mealType}`);
+        }
+
+        // Update the ingredient with the provided updates
+        meal.ingredients[ingredientIndex] = {
+            ...meal.ingredients[ingredientIndex],
+            ...updates,
+        };
+
+        const updatedData = recalculateTotals(dataForDay);
+        await setDoc(this.getDocRef(date), updatedData);
+        // Invalidate cache
+        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+
+        return updatedData;
+    }
+
+    async findIngredient(date: string, ingredientId: string): Promise<{ mealType: keyof MealSummary; ingredient: Ingredient } | null> {
+        const dataForDay = await this.getDashboardForDate(date);
+
+        for (const mealType of ['breakfast', 'lunch', 'dinner', 'snacks'] as const) {
+            const meal = dataForDay.meals[mealType];
+            const ingredient = meal.ingredients.find(ing => ing.id === ingredientId);
+            if (ingredient) {
+                return { mealType, ingredient };
+            }
+        }
+
+        return null;
+    }
+
     async updateGoals(date: string, goals: { calories: number; protein: number; carbs: number; fats: number }): Promise<DashboardData> {
         const dataForDay = await this.getDashboardForDate(date);
 

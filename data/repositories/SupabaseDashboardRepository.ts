@@ -378,6 +378,69 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     return updated;
   }
 
+  async updateIngredient(date: string, mealType: keyof MealSummary, ingredientId: string, updates: Partial<Ingredient>): Promise<DashboardData> {
+    const supabase = getSupabaseClient();
+    const day = await this.getOrCreateDashboardDay(date);
+
+    const { error } = await supabase
+      .from('dashboard_ingredients')
+      .update({
+        name: updates.name,
+        quantity: updates.quantity,
+        calories: updates.calories,
+        protein: updates.protein,
+        carbs: updates.carbs,
+        fats: updates.fats,
+        fiber: updates.fiber,
+      })
+      .eq('id', ingredientId)
+      .eq('dashboard_day_id', day.id);
+
+    if (error) throw error;
+
+    const goals = {
+      calories: day.calories_goal ?? 0,
+      protein: day.protein_goal ?? 0,
+      carbs: day.carbs_goal ?? 0,
+      fats: day.fats_goal ?? 0,
+    };
+
+    const refreshedIngredients = await this.loadIngredients(day.id);
+    const updated = this.toDashboardData(date, goals, refreshedIngredients);
+
+    await this.persistTotals(day.id, updated);
+
+    // Invalidate cache for this date
+    this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+
+    return updated;
+  }
+
+  async findIngredient(date: string, ingredientId: string): Promise<{ mealType: keyof MealSummary; ingredient: Ingredient } | null> {
+    const day = await this.getOrCreateDashboardDay(date);
+    const ingredients = await this.loadIngredients(day.id);
+
+    for (const row of ingredients) {
+      if (row.id === ingredientId) {
+        return {
+          mealType: row.meal_type,
+          ingredient: {
+            id: row.id,
+            name: row.name,
+            quantity: row.quantity || '1',
+            calories: row.calories,
+            protein: row.protein,
+            carbs: row.carbs,
+            fats: row.fats,
+            fiber: row.fiber,
+          }
+        };
+      }
+    }
+
+    return null;
+  }
+
   async updateGoals(date: string, goals: { calories: number; protein: number; carbs: number; fats: number }): Promise<DashboardData> {
     const supabase = getSupabaseClient();
     const day = await this.getOrCreateDashboardDay(date);
