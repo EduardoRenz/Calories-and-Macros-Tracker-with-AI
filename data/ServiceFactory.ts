@@ -9,6 +9,8 @@ import { MockImageRecognitionService } from './services/MockImageRecognitionServ
 import { ChatAssistantService } from '../domain/services/ChatAssistantService';
 import { MockChatAssistantService } from './services/MockChatAssistantService';
 import { GeminiChatAssistantService } from './services/GeminiChatAssistantService';
+import { OpenAIChatAssistantService } from './services/OpenAIChatAssistantService';
+import { DeepSeekChatAssistantService } from './services/DeepSeekChatAssistantService';
 
 import { GeminiNutritionAnalysisService } from './services/GeminiNutritionAnalysisService';
 import { OpenAINutritionAnalysisService } from './services/OpenAINutritionAnalysisService';
@@ -197,7 +199,10 @@ export class ServiceFactory {
                 switch (keyConfig.provider) {
                     case 'gemini':
                         return new GeminiChatAssistantService(keyConfig.key);
-                    // Add other providers here when implemented
+                    case 'deepseek':
+                        return new DeepSeekChatAssistantService(keyConfig.key);
+                    case 'openai':
+                        return new OpenAIChatAssistantService(keyConfig.key);
                 }
             } catch (e) {
                 console.error(`Failed to instantiate chat service for ${keyConfig.provider}`, e);
@@ -207,6 +212,12 @@ export class ServiceFactory {
         if (typeof window === 'undefined') {
             if (process.env.GEMINI_API_KEY) {
                 return new GeminiChatAssistantService(process.env.GEMINI_API_KEY);
+            }
+            if (process.env.DEEPSEEK_API_KEY) {
+                return new DeepSeekChatAssistantService(process.env.DEEPSEEK_API_KEY);
+            }
+            if (process.env.OPENAI_API_KEY) {
+                return new OpenAIChatAssistantService(process.env.OPENAI_API_KEY);
             }
             return new MockChatAssistantService();
         }
