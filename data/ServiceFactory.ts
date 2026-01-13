@@ -6,6 +6,8 @@ import { DeepSeekFoodAnalysisService } from './services/DeepSeekFoodAnalysisServ
 import { FallbackFoodAnalysisService } from './services/FallbackFoodAnalysisService';
 import { MockNutritionAnalysisService } from './services/MockNutritionAnalysisService';
 import { MockImageRecognitionService } from './services/MockImageRecognitionService';
+import { ChatAssistantService } from '../domain/services/ChatAssistantService';
+import { MockChatAssistantService } from './services/MockChatAssistantService';
 
 
 import { GeminiNutritionAnalysisService } from './services/GeminiNutritionAnalysisService';
@@ -70,6 +72,12 @@ export class ServiceFactory {
         }
         this.imageInstance = this.createImageServiceChain();
         return this.imageInstance;
+    }
+
+    public static getChatAssistantService(): ChatAssistantService {
+        // For now, always return MockService or implement a basic fallback
+        // The real implementation will be added later with providers
+        return new MockChatAssistantService();
     }
 
     public static reset(): void {
