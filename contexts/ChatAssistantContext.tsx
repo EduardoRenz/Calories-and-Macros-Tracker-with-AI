@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useProfile } from './ProfileContext';
+import { useLanguage } from './LanguageContext';
 import { ChatMessage, PendingAction } from '../domain/entities/ChatMessage';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { RepositoryFactory } from '../data/RepositoryFactory';
@@ -25,6 +27,8 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isSending, setIsSending] = useState(false);
     const { t } = useTranslation();
+    const { profile } = useProfile();
+    const { language } = useLanguage();
 
     // Initial message
     useEffect(() => {
@@ -52,7 +56,22 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
 
         try {
             const service = ServiceFactory.getChatAssistantService();
-            const response = await service.sendMessage([...messages, userMsg], content);
+            const dashboardRepo = RepositoryFactory.getDashboardRepository();
+
+            // Get local date string for dashboard context
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`;
+
+            const dashboardData = await dashboardRepo.getDashboardForDate(today);
+
+            const response = await service.sendMessage([...messages, userMsg], {
+                userProfile: profile,
+                dashboardData,
+                language
+            });
             setMessages(prev => [...prev, response]);
         } catch (error) {
             console.error('Failed to send message:', error);
