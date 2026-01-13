@@ -16,8 +16,7 @@ export class OpenAIChatAssistantService extends BaseChatAssistantService {
 
     async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {
         // Build System Prompt
-        let systemContent = `You are HealthPal AI, a smart nutrition assistant.
-Your goal is to help users track their calories and macros, manage their meals, and answer nutritional questions.
+        let systemContent = `${this.getPersonaHeader()}
 
 ${this.buildContextString(context)}
 
