@@ -106,7 +106,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             const assistantMessage: ChatMessage = {
                 id: `msg-${Date.now()}`,
                 role: 'assistant',
-                content: message.content || "I have prepared an action.",
+                content: message.content || ``,
                 timestamp: new Date()
             };
 
