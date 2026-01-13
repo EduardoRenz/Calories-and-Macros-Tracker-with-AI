@@ -8,7 +8,7 @@ import { MockNutritionAnalysisService } from './services/MockNutritionAnalysisSe
 import { MockImageRecognitionService } from './services/MockImageRecognitionService';
 import { ChatAssistantService } from '../domain/services/ChatAssistantService';
 import { MockChatAssistantService } from './services/MockChatAssistantService';
-
+import { GeminiChatAssistantService } from './services/GeminiChatAssistantService';
 
 import { GeminiNutritionAnalysisService } from './services/GeminiNutritionAnalysisService';
 import { OpenAINutritionAnalysisService } from './services/OpenAINutritionAnalysisService';
@@ -24,6 +24,7 @@ import { FallbackImageRecognitionService } from './services/FallbackImageRecogni
 import { NextApiFoodAnalysisService } from './services/NextApiFoodAnalysisService';
 import { NextApiNutritionAnalysisService } from './services/NextApiNutritionAnalysisService';
 import { NextApiImageRecognitionService } from './services/NextApiImageRecognitionService';
+import { NextApiChatAssistantService } from './services/NextApiChatAssistantService';
 
 import { RepositoryFactory } from './RepositoryFactory';
 
@@ -40,6 +41,7 @@ export class ServiceFactory {
     private static instance: FoodAnalysisService | null = null;
     private static nutritionInstance: import("../domain/services/NutritionAnalysisService").NutritionAnalysisService | null = null;
     private static imageInstance: ImageRecognitionService | null = null;
+    private static chatInstance: ChatAssistantService | null = null;
 
     public static getFoodAnalysisService(): FoodAnalysisService {
         if (USE_MOCKS) {
@@ -75,15 +77,21 @@ export class ServiceFactory {
     }
 
     public static getChatAssistantService(): ChatAssistantService {
-        // For now, always return MockService or implement a basic fallback
-        // The real implementation will be added later with providers
-        return new MockChatAssistantService();
+        if (USE_MOCKS) {
+            return new MockChatAssistantService();
+        }
+        if (this.chatInstance) {
+            return this.chatInstance;
+        }
+        this.chatInstance = this.createChatServiceChain();
+        return this.chatInstance;
     }
 
     public static reset(): void {
         this.instance = null;
         this.nutritionInstance = null;
         this.imageInstance = null;
+        this.chatInstance = null;
     }
 
     private static createServiceChain(): FoodAnalysisService {
@@ -179,6 +187,32 @@ export class ServiceFactory {
 
         if (services.length === 0) console.warn("No Image Recognition services available.");
         return new FallbackImageRecognitionService(services);
+    }
+
+    private static createChatServiceChain(): ChatAssistantService {
+        const savedKeys = this.loadKeys();
+
+        for (const keyConfig of savedKeys) {
+            try {
+                switch (keyConfig.provider) {
+                    case 'gemini':
+                        return new GeminiChatAssistantService(keyConfig.key);
+                    // Add other providers here when implemented
+                }
+            } catch (e) {
+                console.error(`Failed to instantiate chat service for ${keyConfig.provider}`, e);
+            }
+        }
+
+        if (typeof window === 'undefined') {
+            if (process.env.GEMINI_API_KEY) {
+                return new GeminiChatAssistantService(process.env.GEMINI_API_KEY);
+            }
+            return new MockChatAssistantService();
+        }
+
+        const authRepo = RepositoryFactory.getAuthRepository();
+        return new NextApiChatAssistantService(authRepo);
     }
 
     private static loadKeys(): ApiKey[] {
