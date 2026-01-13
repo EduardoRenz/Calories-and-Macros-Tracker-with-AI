@@ -242,5 +242,16 @@ export default {
       "remove": "Remove",
       "no_tokens": "You haven't added any AI API tokens yet."
     }
+  },
+  "assistant": {
+    "title": "HealthPal Assistant",
+    "status_online": "ONLINE",
+    "close": "Close chat",
+    "input_placeholder": "Ask HealthPal...",
+    "send": "Send",
+    "confirm_action": "Action pending confirmation",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "thinking": "Thinking..."
   }
 }
