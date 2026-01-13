@@ -4,6 +4,7 @@ import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 import { useChatAssistant } from '../../contexts/ChatAssistantContext';
 
+
 const ChatWindow: React.FC = () => {
     const {
         isOpen,
