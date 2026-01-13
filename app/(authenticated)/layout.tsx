@@ -12,6 +12,7 @@ import { ProfileProvider } from '@/contexts/ProfileContext';
 import InstallPWA from '@/components/InstallPWA';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import type { Ingredient, MealSummary } from '@/domain/entities/dashboard';
+import { ChatAssistantProvider } from '@/contexts/ChatAssistantContext';
 
 
 export default function AuthenticatedLayout({
@@ -46,31 +47,33 @@ export default function AuthenticatedLayout({
     return (
         <ProtectedRoute>
             <ProfileProvider>
-                <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex flex-col">
-                    <div className="flex justify-center flex-1">
-                        <div className="w-full max-w-screen-2xl bg-healthpal-dark flex flex-col min-h-screen">
-                            {showNavbar && (
-                                <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
-                            )}
-                            <div className="flex-1 pb-24 md:pb-0">
-                                <main className="p-6 lg:p-8">
-                                    {children}
-                                </main>
+                <ChatAssistantProvider>
+                    <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex flex-col">
+                        <div className="flex justify-center flex-1">
+                            <div className="w-full max-w-screen-2xl bg-healthpal-dark flex flex-col min-h-screen">
+                                {showNavbar && (
+                                    <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+                                )}
+                                <div className="flex-1 pb-24 md:pb-0">
+                                    <main className="p-6 lg:p-8">
+                                        {children}
+                                    </main>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                {showNavbar && <Footer />}
-                {showNavbar && (
-                    <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
-                )}
-                <QuickMealModal
-                    isOpen={isQuickMealOpen}
-                    onClose={() => setIsQuickMealOpen(false)}
-                    onSuccess={handleQuickMealSuccess}
-                    onAddIngredients={handleQuickAddIngredients}
-                />
-                <InstallPWA />
+                    {showNavbar && <Footer />}
+                    {showNavbar && (
+                        <BottomNavbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
+                    )}
+                    <QuickMealModal
+                        isOpen={isQuickMealOpen}
+                        onClose={() => setIsQuickMealOpen(false)}
+                        onSuccess={handleQuickMealSuccess}
+                        onAddIngredients={handleQuickAddIngredients}
+                    />
+                    <InstallPWA />
+                </ChatAssistantProvider>
             </ProfileProvider>
         </ProtectedRoute>
     );
