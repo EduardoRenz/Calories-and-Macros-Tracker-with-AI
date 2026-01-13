@@ -22,6 +22,8 @@ export default {
                 'healthpal-yellow': 'var(--healthpal-yellow)',
                 'healthpal-text-primary': 'var(--healthpal-text-primary)',
                 'healthpal-text-secondary': 'var(--healthpal-text-secondary)',
+                'healthpal-primary': 'var(--healthpal-green)',
+                'healthpal-background': 'var(--healthpal-dark)',
             },
         },
     },
