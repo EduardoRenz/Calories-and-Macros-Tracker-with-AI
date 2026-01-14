@@ -26,7 +26,7 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-healthpal-panel/80 backdrop-blur-sm border-t border-healthpal-border z-40">
-            <nav className="flex items-center justify-around h-full max-w-md mx-auto px-2" data-testid="mobile-nav">
+            <nav className="flex items-center justify-around h-full max-w-md mx-auto px-2" data-testid="mobile-bottom-nav">
                 <div className="w-1/3">
                     <Link
                         href="/dashboard"

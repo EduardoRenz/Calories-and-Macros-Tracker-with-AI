@@ -92,6 +92,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
                         className="hover:border-healthpal-green transition-colors"
                         aria-label="User menu"
+                        data-testid="user-menu-button"
                     >
                         <Avatar
                             name={user?.displayName || 'User'}
@@ -112,6 +113,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                                 href="/profile"
                                 onClick={() => setIsAvatarMenuOpen(false)}
                                 className="w-full flex items-center gap-3 px-4 py-3 text-healthpal-text-secondary hover:text-healthpal-text-primary hover:bg-healthpal-card transition-colors"
+                                data-testid="profile-link"
                             >
                                 <UserIcon className="w-5 h-5" />
                                 <span>{t('navbar.profile')}</span>
