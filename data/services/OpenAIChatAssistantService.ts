@@ -1,15 +1,18 @@
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage, PendingAction } from '../../domain/entities/ChatMessage';
+import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 
 export class OpenAIChatAssistantService extends BaseChatAssistantService {
     protected apiKey: string;
     protected baseUrl: string;
     protected model: string;
+    protected dashboardRepo?: DashboardRepository;
 
-    constructor(apiKey: string, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
+    constructor(apiKey: string, dashboardRepo?: DashboardRepository, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
         super();
         this.apiKey = apiKey;
+        this.dashboardRepo = dashboardRepo;
         this.baseUrl = baseUrl;
         this.model = model;
     }
@@ -25,100 +28,146 @@ ${this.getSystemCapabilities()}
 IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE 'create_action' TOOL provided. Do not output JSON text.
 `;
 
-        const apiMessages = [
+        const apiMessages: any[] = [
             { role: 'system', content: systemContent },
             ...messages.map(m => ({ role: m.role, content: m.content }))
         ];
 
-        const tools = [{
-            type: "function",
-            function: {
-                name: "create_action",
-                description: "Proposes an action to modify the dashboard.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        type: {
-                            type: "string",
-                            enum: ["add_ingredient", "update_ingredient", "remove_ingredient"],
-                            description: "The type of action to perform."
-                        },
-                        data: {
-                            type: "object",
-                            description: "The data for the action.",
-                            properties: {
-                                mealType: {
-                                    type: "string",
-                                    enum: ["breakfast", "lunch", "dinner", "snacks"],
-                                    description: "The meal to modify. Must be lowercase."
-                                },
-                                ingredientId: {
-                                    type: "string",
-                                    description: "The ID of the ingredient (required for update/remove)."
-                                },
-                                ingredient: {
-                                    type: "object",
-                                    description: "The ingredient details (required for add/update).",
-                                    properties: {
-                                        name: { type: "string" },
-                                        quantity: { type: "string", description: "Quantity in string format e.g. '100g'" },
-                                        calories: { type: "number" },
-                                        protein: { type: "number" },
-                                        carbs: { type: "number" },
-                                        fats: { type: "number" },
-                                        fiber: { type: "number" }
-                                    },
-                                    required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
-                                }
+        const tools = [
+            {
+                type: "function",
+                function: {
+                    name: "create_action",
+                    description: "Proposes an action to modify the dashboard.",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            type: {
+                                type: "string",
+                                enum: ["add_ingredient", "update_ingredient", "remove_ingredient"],
+                                description: "The type of action to perform."
                             },
-                            required: ["mealType"]
-                        }
-                    },
-                    required: ["type", "data"]
+                            data: {
+                                type: "object",
+                                description: "The data for the action.",
+                                properties: {
+                                    mealType: {
+                                        type: "string",
+                                        enum: ["breakfast", "lunch", "dinner", "snacks"],
+                                        description: "The meal to modify. Must be lowercase."
+                                    },
+                                    ingredientId: {
+                                        type: "string",
+                                        description: "The ID of the ingredient (required for update/remove)."
+                                    },
+                                    ingredient: {
+                                        type: "object",
+                                        description: "The ingredient details (required for add/update).",
+                                        properties: {
+                                            name: { type: "string" },
+                                            quantity: { type: "string", description: "Quantity in string format e.g. '100g'" },
+                                            calories: { type: "number" },
+                                            protein: { type: "number" },
+                                            carbs: { type: "number" },
+                                            fats: { type: "number" },
+                                            fiber: { type: "number" }
+                                        },
+                                        required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
+                                    }
+                                },
+                                required: ["mealType"]
+                            }
+                        },
+                        required: ["type", "data"]
+                    }
+                }
+            },
+            {
+                type: "function",
+                function: {
+                    name: "get_dashboard_for_date",
+                    description: "Fetches the nutritional data and ingredients for a specific date.",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            date: { type: "string", description: "The date to fetch (yyyy-mm-dd)." }
+                        },
+                        required: ["date"]
+                    }
                 }
             }
-        }];
+        ];
 
         try {
-            const response = await fetch(`${this.baseUrl}/chat/completions`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.apiKey}`
-                },
-                body: JSON.stringify({
-                    model: this.model,
-                    messages: apiMessages,
-                    tools: tools,
-                    tool_choice: "auto"
-                })
-            });
+            let currentMessages = [...apiMessages];
 
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`OpenAI API Error: ${response.status} - ${errText}`);
-            }
+            while (true) {
+                const response = await fetch(`${this.baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: this.model,
+                        messages: currentMessages,
+                        tools: tools,
+                        tool_choice: "auto"
+                    })
+                });
 
-            const data = await response.json();
-            const choice = data.choices[0];
-            const message = choice.message;
-
-            const assistantMessage: ChatMessage = {
-                id: `msg-${Date.now()}`,
-                role: 'assistant',
-                content: message.content || ``,
-                timestamp: new Date()
-            };
-
-            if (message.tool_calls && message.tool_calls.length > 0) {
-                const toolCall = message.tool_calls[0];
-                if (toolCall.function.name === 'create_action') {
-                    const args = JSON.parse(toolCall.function.arguments);
-                    assistantMessage.pendingAction = this.createPendingAction(args);
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`OpenAI API Error: ${response.status} - ${errText}`);
                 }
-            }
 
-            return assistantMessage;
+                const data = await response.json();
+                const choice = data.choices[0];
+                const message = choice.message;
+
+                if (message.tool_calls && message.tool_calls.length > 0) {
+                    const toolCall = message.tool_calls[0];
+                    if (toolCall.function.name === 'get_dashboard_for_date') {
+                        const args = JSON.parse(toolCall.function.arguments);
+                        let dataResult = "{}";
+                        if (this.dashboardRepo) {
+                            try {
+                                const dashboardData = await this.dashboardRepo.getDashboardForDate(args.date);
+                                dataResult = JSON.stringify(dashboardData);
+                            } catch (e) {
+                                dataResult = "Error fetching data for this date.";
+                            }
+                        } else {
+                            dataResult = "Repository not available on server.";
+                        }
+
+                        currentMessages.push(message);
+                        currentMessages.push({
+                            role: 'tool',
+                            tool_call_id: toolCall.id,
+                            content: dataResult
+                        });
+                        continue;
+                    }
+                }
+
+                const assistantMessage: ChatMessage = {
+                    id: `msg-${Date.now()}`,
+                    role: 'assistant',
+                    content: message.content || ``,
+                    timestamp: new Date()
+                };
+
+                if (message.tool_calls && message.tool_calls.length > 0) {
+                    const toolCall = message.tool_calls[0];
+                    if (toolCall.function.name === 'create_action') {
+                        const args = JSON.parse(toolCall.function.arguments);
+                        assistantMessage.pendingAction = this.createPendingAction(args);
+                    }
+                }
+
+                return assistantMessage;
+            }
         } catch (error) {
             console.error("OpenAI/DeepSeek Chat Error:", error);
             return {

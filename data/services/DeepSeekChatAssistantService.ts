@@ -1,8 +1,9 @@
+import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { OpenAIChatAssistantService } from './OpenAIChatAssistantService';
 
 export class DeepSeekChatAssistantService extends OpenAIChatAssistantService {
-    constructor(apiKey: string) {
+    constructor(apiKey: string, dashboardRepo?: DashboardRepository) {
         // DeepSeek API is fully OpenAI Compatible
-        super(apiKey, 'https://api.deepseek.com', 'deepseek-chat');
+        super(apiKey, dashboardRepo, 'https://api.deepseek.com', 'deepseek-chat');
     }
 }

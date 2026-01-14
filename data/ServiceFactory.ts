@@ -205,11 +205,11 @@ export class ServiceFactory {
             try {
                 switch (keyConfig.provider) {
                     case 'gemini':
-                        return new GeminiChatAssistantService(keyConfig.key);
+                        return new GeminiChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
                     case 'deepseek':
-                        return new DeepSeekChatAssistantService(keyConfig.key);
+                        return new DeepSeekChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
                     case 'openai':
-                        return new OpenAIChatAssistantService(keyConfig.key);
+                        return new OpenAIChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
                 }
             } catch (e) {
                 console.error(`Failed to instantiate chat service for ${keyConfig.provider}`, e);
@@ -218,13 +218,13 @@ export class ServiceFactory {
 
         if (typeof window === 'undefined') {
             if (process.env.GEMINI_API_KEY) {
-                return new GeminiChatAssistantService(process.env.GEMINI_API_KEY);
+                return new GeminiChatAssistantService(process.env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository());
             }
             if (process.env.DEEPSEEK_API_KEY) {
-                return new DeepSeekChatAssistantService(process.env.DEEPSEEK_API_KEY);
+                return new DeepSeekChatAssistantService(process.env.DEEPSEEK_API_KEY, RepositoryFactory.getDashboardRepository());
             }
             if (process.env.OPENAI_API_KEY) {
-                return new OpenAIChatAssistantService(process.env.OPENAI_API_KEY);
+                return new OpenAIChatAssistantService(process.env.OPENAI_API_KEY, RepositoryFactory.getDashboardRepository());
             }
             return new MockChatAssistantService();
         }
