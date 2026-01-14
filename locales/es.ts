@@ -67,7 +67,8 @@ export default {
     "ingredient": "Ingrediente",
     "quantity": "Cantidad",
     "total_macros": "Macros Totales",
-    "add_ingredient": "Añadir Ingrediente"
+    "add_ingredient": "Añadir Ingrediente",
+    "edit_quantity": "Haga clic para editar la cantidad"
   },
   "add_ingredient_modal": {
     "title": "Añadir Ingrediente a",

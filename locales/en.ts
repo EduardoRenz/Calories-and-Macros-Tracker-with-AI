@@ -67,7 +67,8 @@ export default {
     "ingredient": "Ingredient",
     "quantity": "Quantity",
     "total_macros": "Total Meal Macros",
-    "add_ingredient": "Add Ingredient"
+    "add_ingredient": "Add Ingredient",
+    "edit_quantity": "Click to edit quantity"
   },
   "add_ingredient_modal": {
     "title": "Add Ingredient to",
