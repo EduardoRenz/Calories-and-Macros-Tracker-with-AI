@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meal, MealSummary } from '@/domain/entities/dashboard';
+import { Meal, Ingredient, MealSummary } from '@/domain/entities/dashboard';
 import { useTranslation } from '@/hooks/useTranslation';
 import { IngredientItem } from './IngredientItem';
 import { IngredientsHeader } from './IngredientsHeader';
@@ -11,13 +11,15 @@ interface MealDetailsProps {
     mealType: keyof MealSummary;
     onAddIngredient: () => void;
     onRemoveIngredient: (id: string) => void;
+    onUpdateIngredient: (ingredientId: string, updates: Partial<Ingredient>) => void;
 }
 
 export const MealDetails: React.FC<MealDetailsProps> = ({
     meal,
     mealType,
     onAddIngredient,
-    onRemoveIngredient
+    onRemoveIngredient,
+    onUpdateIngredient
 }) => {
     const { t } = useTranslation();
 
@@ -32,6 +34,7 @@ export const MealDetails: React.FC<MealDetailsProps> = ({
                             key={ingredient.id}
                             ingredient={ingredient}
                             onRemove={onRemoveIngredient}
+                            onUpdate={onUpdateIngredient}
                         />
                     ))}
                 </ul>

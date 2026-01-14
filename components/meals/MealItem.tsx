@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meal, MealSummary } from '@/domain/entities/dashboard';
+import { Meal, Ingredient, MealSummary } from '@/domain/entities/dashboard';
 import { ChevronDownIcon } from '../icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import { MealDetails } from './MealDetails';
@@ -9,6 +9,7 @@ interface MealItemProps {
     mealType: keyof MealSummary;
     onAddIngredient: () => void;
     onRemoveIngredient: (id: string) => void;
+    onUpdateIngredient: (ingredientId: string, updates: Partial<Ingredient>) => void;
     'data-testid'?: string;
 }
 
@@ -17,6 +18,7 @@ export const MealItem: React.FC<MealItemProps> = ({
     mealType,
     onAddIngredient,
     onRemoveIngredient,
+    onUpdateIngredient,
     'data-testid': testId
 }) => {
     const { t } = useTranslation();
@@ -46,6 +48,7 @@ export const MealItem: React.FC<MealItemProps> = ({
                         mealType={mealType}
                         onAddIngredient={onAddIngredient}
                         onRemoveIngredient={onRemoveIngredient}
+                        onUpdateIngredient={onUpdateIngredient}
                     />
                 </div>
             )}
