@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useProfile } from './ProfileContext';
 import { useLanguage } from './LanguageContext';
-import { ChatMessage, PendingAction } from '../domain/entities/ChatMessage';
+import { ChatMessage, PendingAction, AddIngredientActionData, RemoveIngredientActionData } from '../domain/entities/ChatMessage';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { useTranslation } from '../hooks/useTranslation';
@@ -105,9 +105,9 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
 
             switch (action.type) {
                 case 'add_ingredient': {
-                    const data = action.data as any;
+                    const data = action.data as AddIngredientActionData;
                     const { date, mealType } = data;
-                    const ingredient = data.updates || data.ingredient;
+                    const ingredient = data.ingredient || (data as any).updates;
 
                     if (!ingredient) {
                         console.error("No ingredient data found in action.data", data);
@@ -129,7 +129,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                     break;
                 }
                 case 'update_ingredient': {
-                    const data = action.data as any;
+                    const data = action.data as AddIngredientActionData;
                     const { date, mealType, ingredientId } = data;
                     const updates = data.updates || data.ingredient;
 
@@ -142,7 +142,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                     break;
                 }
                 case 'remove_ingredient': {
-                    const { date, mealType, ingredientId } = action.data as { date: string, mealType: keyof MealSummary, ingredientId: string };
+                    const { date, mealType, ingredientId } = action.data as RemoveIngredientActionData;
                     await dashboardRepo.removeIngredient(date, mealType, ingredientId);
                     successMessage = `✅ ${t('assistant.action_success')}`;
                     break;

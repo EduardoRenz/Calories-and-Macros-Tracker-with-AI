@@ -13,22 +13,22 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                 remarkPlugins={[remarkGfm]}
                 components={{
                     // Customize heading styles
-                    h1: ({ node, ...props }) => <h1 className="text-xl font-bold mb-2" {...props} />,
-                    h2: ({ node, ...props }) => <h2 className="text-lg font-bold mb-2" {...props} />,
-                    h3: ({ node, ...props }) => <h3 className="text-base font-bold mb-1" {...props} />,
+                    h1: ({ ...props }) => <h1 className="text-xl font-bold mb-2" {...props} />,
+                    h2: ({ ...props }) => <h2 className="text-lg font-bold mb-2" {...props} />,
+                    h3: ({ ...props }) => <h3 className="text-base font-bold mb-1" {...props} />,
 
                     // Customize paragraph
-                    p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,
+                    p: ({ ...props }) => <p className="mb-2 leading-relaxed" {...props} />,
 
                     // Customize lists
-                    ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
-                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
-                    li: ({ node, ...props }) => <li className="ml-2" {...props} />,
+                    ul: ({ ...props }) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
+                    ol: ({ ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
+                    li: ({ ...props }) => <li className="ml-2" {...props} />,
 
                     // Customize code blocks
                     // Customize code blocks
-                    code: (props: any) => {
-                        const { node, inline, className, children, ...rest } = props;
+                    code: (props: React.ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
+                        const { inline, children, ...rest } = props;
                         return inline ? (
                             <code className="bg-healthpal-card px-1.5 py-0.5 rounded text-sm font-mono" {...rest}>
                                 {children}
@@ -51,18 +51,18 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                             <table className="min-w-full border-collapse border border-healthpal-border" {...props} />
                         </div>
                     ),
-                    th: ({ node, ...props }) => (
+                    th: ({ ...props }) => (
                         <th className="border border-healthpal-border bg-healthpal-card px-3 py-2 text-left font-semibold" {...props} />
                     ),
-                    td: ({ node, ...props }) => (
+                    td: ({ ...props }) => (
                         <td className="border border-healthpal-border px-3 py-2" {...props} />
                     ),
 
                     // Customize strong/bold
-                    strong: ({ node, ...props }) => <strong className="font-bold text-white" {...props} />,
+                    strong: ({ ...props }) => <strong className="font-bold text-white" {...props} />,
 
                     // Customize emphasis/italic
-                    em: ({ node, ...props }) => <em className="italic" {...props} />,
+                    em: ({ ...props }) => <em className="italic" {...props} />,
                 }}
             >
                 {content}

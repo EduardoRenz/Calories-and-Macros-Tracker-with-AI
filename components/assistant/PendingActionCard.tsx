@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckIcon, XMarkIcon } from '../icons';
-import { PendingAction } from '../../domain/entities/ChatMessage';
+import { PendingAction, AddIngredientActionData } from '../../domain/entities/ChatMessage';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface PendingActionCardProps {
@@ -15,13 +15,13 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
     onCancel
 }) => {
     const { t } = useTranslation();
-    const data = action.data as any;
 
     const renderActionDetails = () => {
         switch (action.type) {
             case 'add_ingredient':
-            case 'update_ingredient':
-                const ing = data.ingredient || (action.type === 'update_ingredient' ? data.updates : null);
+            case 'update_ingredient': {
+                const data = action.data as AddIngredientActionData;
+                const ing = data.ingredient || data.updates;
                 if (!ing) return null;
 
                 return (
@@ -50,6 +50,7 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                         </div>
                     </div>
                 );
+            }
 
             case 'remove_ingredient':
                 return (
