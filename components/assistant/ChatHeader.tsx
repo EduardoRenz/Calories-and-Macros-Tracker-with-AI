@@ -10,7 +10,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onClose }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="flex items-center justify-between p-4 bg-healthpal-panel rounded-t-2xl border-b border-healthpal-border">
+        <div id='chat-header' className="flex items-center justify-between p-4 bg-healthpal-panel rounded-t-2xl border-b border-healthpal-border">
             <div className="flex items-center gap-3">
                 <div className="relative">
                     <div className="w-10 h-10 rounded-full bg-healthpal-green flex items-center justify-center text-black">

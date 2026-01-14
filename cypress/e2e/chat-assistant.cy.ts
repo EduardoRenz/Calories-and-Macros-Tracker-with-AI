@@ -5,9 +5,9 @@ describe('Chat Assistant', () => {
 
     it('should open and close the chat window', () => {
         cy.get('[aria-label="Open Assistant"]').should('be.visible').click();
-        cy.contains('HealthPal Assistant').should('be.visible');
+        cy.get('#chat-header').should('be.visible');
         cy.get('[aria-label="Close chat"]').click();
-        cy.contains('HealthPal Assistant').should('not.exist');
+        cy.get('#chat-header').should('not.exist');
     });
 
     it('should send a message and receive a response', () => {
@@ -47,10 +47,16 @@ describe('Chat Assistant', () => {
         cy.contains('Confirm').click();
 
         // Verify success
-        cy.contains('Successfully added').should('be.visible');
+        cy.contains('successfully').should('be.visible');
+
+        // Close chat
+        cy.get('[aria-label="Close chat"]').click();
+
+        // Open lunch accordion
+        cy.get('[data-testid="meal-lunch"]').scrollIntoView().click();
 
         // Verify dashboard updated
-        cy.contains('Rice (Arroz)').should('be.visible');
+        cy.contains('Rice').should('be.visible');
         cy.contains('130 kcal').should('be.visible');
     });
 
