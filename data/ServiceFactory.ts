@@ -46,8 +46,12 @@ export class ServiceFactory {
     private static chatInstance: ChatAssistantService | null = null;
 
     public static getFoodAnalysisService(): FoodAnalysisService {
+        if (this.instance) {
+            return this.instance;
+        }
         if (USE_MOCKS) {
-            return new MockFoodAnalysisService();
+            this.instance = new MockFoodAnalysisService();
+            return this.instance;
         }
 
         if (!this.instance) {
@@ -57,10 +61,11 @@ export class ServiceFactory {
     }
 
     public static getNutritionAnalysisService(): import("../domain/services/NutritionAnalysisService").NutritionAnalysisService {
-        if (USE_MOCKS) {
-            return new MockNutritionAnalysisService();
-        }
         if (this.nutritionInstance) {
+            return this.nutritionInstance;
+        }
+        if (USE_MOCKS) {
+            this.nutritionInstance = new MockNutritionAnalysisService();
             return this.nutritionInstance;
         }
         this.nutritionInstance = this.createNutritionServiceChain();
@@ -68,10 +73,11 @@ export class ServiceFactory {
     }
 
     public static getImageRecognitionService(): ImageRecognitionService {
-        if (USE_MOCKS) {
-            return new MockImageRecognitionService();
-        }
         if (this.imageInstance) {
+            return this.imageInstance;
+        }
+        if (USE_MOCKS) {
+            this.imageInstance = new MockImageRecognitionService();
             return this.imageInstance;
         }
         this.imageInstance = this.createImageServiceChain();
@@ -79,10 +85,11 @@ export class ServiceFactory {
     }
 
     public static getChatAssistantService(): ChatAssistantService {
-        if (USE_MOCKS) {
-            return new MockChatAssistantService();
-        }
         if (this.chatInstance) {
+            return this.chatInstance;
+        }
+        if (USE_MOCKS) {
+            this.chatInstance = new MockChatAssistantService();
             return this.chatInstance;
         }
         this.chatInstance = this.createChatServiceChain();
