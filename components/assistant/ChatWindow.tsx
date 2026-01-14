@@ -27,7 +27,7 @@ const ChatWindow: React.FC = () => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed bottom-24 right-6 w-full max-w-[400px] h-[600px] max-h-[80vh] bg-healthpal-panel rounded-2xl shadow-2xl border border-healthpal-border flex flex-col z-[49] animate-in slide-in-from-bottom-10 fade-in duration-300">
+        <div className="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:right-6 md:translate-x-0 w-[calc(100%-2rem)] md:w-full max-w-[400px] h-[600px] max-h-[80vh] bg-healthpal-panel rounded-2xl shadow-2xl border border-healthpal-border flex flex-col z-[49] animate-in slide-in-from-bottom-10 fade-in duration-300">
             <ChatHeader onClose={closeChat} />
 
             <ChatMessages
