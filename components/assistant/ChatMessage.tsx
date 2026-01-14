@@ -6,14 +6,12 @@ import PendingActionCard from './PendingActionCard';
 
 interface ChatMessageProps {
     message: IChatMessage;
-    isLast: boolean;
     onConfirmAction: (actionId: string) => void;
     onCancelAction: (actionId: string) => void;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({
     message,
-    isLast,
     onConfirmAction,
     onCancelAction
 }) => {

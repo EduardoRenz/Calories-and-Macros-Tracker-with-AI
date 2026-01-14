@@ -41,12 +41,12 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                     },
 
                     // Customize links
-                    a: ({ node, ...props }) => (
+                    a: ({ ...props }) => (
                         <a className="text-healthpal-primary hover:underline" {...props} />
                     ),
 
                     // Customize tables
-                    table: ({ node, ...props }) => (
+                    table: ({ ...props }) => (
                         <div className="overflow-x-auto my-2">
                             <table className="min-w-full border-collapse border border-healthpal-border" {...props} />
                         </div>
