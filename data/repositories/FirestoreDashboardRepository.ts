@@ -225,6 +225,11 @@ export class FirestoreDashboardRepository implements DashboardRepository {
     }
 
     async updateIngredient(date: string, mealType: keyof MealSummary, ingredientId: string, updates: Partial<Omit<Ingredient, 'id'>>): Promise<DashboardData> {
+        if (!updates || Object.keys(updates).length === 0) {
+            console.warn("No updates provided to updateIngredient");
+            return this.getDashboardForDate(date);
+        }
+
         const dataForDay = await this.getDashboardForDate(date);
 
         const meal = dataForDay.meals[mealType];
@@ -235,17 +240,31 @@ export class FirestoreDashboardRepository implements DashboardRepository {
         }
 
         // Update the ingredient with the provided updates
-        meal.ingredients[ingredientIndex] = {
+        const updatedIngredient = {
             ...meal.ingredients[ingredientIndex],
             ...updates,
         };
 
-        const updatedData = recalculateTotals(dataForDay);
-        await setDoc(this.getDocRef(date), updatedData);
-        // Invalidate cache
-        this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+        // Ensure calories/macros are numbers if updated
+        if (typeof updatedIngredient.calories !== 'number') updatedIngredient.calories = Number(updatedIngredient.calories) || 0;
+        if (typeof updatedIngredient.protein !== 'number') updatedIngredient.protein = Number(updatedIngredient.protein) || 0;
+        if (typeof updatedIngredient.carbs !== 'number') updatedIngredient.carbs = Number(updatedIngredient.carbs) || 0;
+        if (typeof updatedIngredient.fats !== 'number') updatedIngredient.fats = Number(updatedIngredient.fats) || 0;
+        if (typeof (updatedIngredient as any).fiber !== 'number') (updatedIngredient as any).fiber = Number((updatedIngredient as any).fiber) || 0;
 
-        return updatedData;
+        meal.ingredients[ingredientIndex] = updatedIngredient;
+
+        const updatedData = recalculateTotals(dataForDay);
+
+        try {
+            await setDoc(this.getDocRef(date), updatedData);
+            // Invalidate cache
+            this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
+            return updatedData;
+        } catch (error: any) {
+            console.error("Firestore update failed:", error);
+            throw new Error(`Failed to update Firestore: ${error.message}`);
+        }
     }
 
     async findIngredient(date: string, ingredientId: string): Promise<{ mealType: keyof MealSummary; ingredient: Ingredient } | null> {

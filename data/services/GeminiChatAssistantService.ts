@@ -58,9 +58,9 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                         type: Type.STRING,
                                         description: "The ID of the ingredient (required for update/remove)."
                                     },
-                                    ingredient: {
+                                    updates: {
                                         type: Type.OBJECT,
-                                        description: "The ingredient details (required for add/update).",
+                                        description: "The ingredient details or updates (required for add/update).",
                                         properties: {
                                             name: { type: Type.STRING },
                                             quantity: { type: Type.STRING, description: "Quantity in string format e.g. '100g'" },
@@ -69,8 +69,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                             carbs: { type: Type.NUMBER },
                                             fats: { type: Type.NUMBER },
                                             fiber: { type: Type.NUMBER }
-                                        },
-                                        required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
+                                        }
                                     }
                                 },
                                 required: ["mealType"]
@@ -226,7 +225,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
         let description = '';
         switch (actionType) {
             case 'add_ingredient':
-                description = `Add ${actionData.ingredient?.quantity || ''} ${actionData.ingredient?.name} to ${formattedData.mealType || actionData.mealType}`;
+                description = `Add ${actionData.updates?.quantity || actionData.ingredient?.quantity || ''} ${actionData.updates?.name || actionData.ingredient?.name || ''} to ${formattedData.mealType || actionData.mealType}`;
                 break;
             case 'update_ingredient':
                 description = `Update ingredient in ${formattedData.mealType || actionData.mealType}`;

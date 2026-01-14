@@ -111,7 +111,14 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                     break;
                 }
                 case 'update_ingredient': {
-                    const { date, mealType, ingredientId, updates } = action.data as { date: string, mealType: keyof MealSummary, ingredientId: string, updates: Partial<Ingredient> };
+                    const data = action.data as any;
+                    const { date, mealType, ingredientId } = data;
+                    const updates = data.updates || data.ingredient;
+
+                    if (!date || !mealType || !ingredientId || !updates) {
+                        throw new Error(t('assistant.action_error'));
+                    }
+
                     await dashboardRepo.updateIngredient(date, mealType, ingredientId, updates);
                     successMessage = `✅ ${t('assistant.action_success')}`;
                     break;
@@ -148,12 +155,13 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                 return newMessages;
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Action failed:', error);
+            const errorMessage = error instanceof Error ? error.message : t('assistant.action_error');
             setMessages(prev => [...prev, {
                 id: Date.now().toString(),
                 role: 'system',
-                content: t('assistant.action_error'),
+                content: `❌ ${errorMessage}`,
                 timestamp: new Date(),
             }]);
         }
