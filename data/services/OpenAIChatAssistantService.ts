@@ -162,7 +162,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                     const toolCall = message.tool_calls[0];
                     if (toolCall.function.name === 'create_action') {
                         const args = JSON.parse(toolCall.function.arguments);
-                        assistantMessage.pendingAction = this.createPendingAction(args);
+                        assistantMessage.pendingAction = this.createPendingAction(args, context);
                     }
                 }
 
@@ -179,13 +179,13 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
         }
     }
 
-    private createPendingAction(args: { type: string, data: any }): PendingAction {
+    private createPendingAction(args: { type: string, data: any }, context: ChatAssistantContextData): PendingAction {
         const actionType = args.type as any;
         const actionData = args.data;
         let formattedData: any = { ...actionData };
 
         // Ensure date
-        formattedData.date = new Date().toISOString().split('T')[0];
+        formattedData.date = context.currentDate || new Date().toISOString().split('T')[0];
 
         // Validation Fallback
         if (actionType === 'add_ingredient' && !actionData.mealType) {

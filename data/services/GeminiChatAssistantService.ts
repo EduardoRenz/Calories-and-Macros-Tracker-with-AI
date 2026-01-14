@@ -178,7 +178,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             };
 
             if (functionCallPart && functionCallPart.name === "create_action") {
-                assistantMessage.pendingAction = this.createPendingAction(functionCallPart.args as any);
+                assistantMessage.pendingAction = this.createPendingAction(functionCallPart.args as any, context);
             }
 
             return assistantMessage;
@@ -194,13 +194,13 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
         }
     }
 
-    private createPendingAction(args: { type: string, data: any }): PendingAction {
+    private createPendingAction(args: { type: string, data: any }, context: ChatAssistantContextData): PendingAction {
         const actionType = args.type as any;
         const actionData = args.data;
         let formattedData: any = { ...actionData };
 
-        // Ensure date is set inferred
-        formattedData.date = (() => {
+        // Ensure date is set inferred from context or fallback to server local date (UTC usually)
+        formattedData.date = context.currentDate || (() => {
             const d = new Date();
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');

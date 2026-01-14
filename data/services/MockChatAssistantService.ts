@@ -25,7 +25,7 @@ export class MockChatAssistantService implements ChatAssistantService {
                 id: `action-${Date.now()}`,
                 type: 'add_ingredient',
                 data: {
-                    date: (() => {
+                    date: context.currentDate || (() => {
                         const d = new Date();
                         const year = d.getFullYear();
                         const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -61,7 +61,7 @@ export class MockChatAssistantService implements ChatAssistantService {
                 id: `action-${Date.now()}`,
                 type: 'update_ingredient',
                 data: {
-                    date: (() => {
+                    date: context.currentDate || (() => {
                         const d = new Date();
                         const year = d.getFullYear();
                         const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -93,7 +93,7 @@ export class MockChatAssistantService implements ChatAssistantService {
                 id: `action-${Date.now()}`,
                 type: 'remove_ingredient',
                 data: {
-                    date: (() => {
+                    date: context.currentDate || (() => {
                         const d = new Date();
                         const year = d.getFullYear();
                         const month = String(d.getMonth() + 1).padStart(2, '0');

@@ -70,7 +70,9 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             const response = await service.sendMessage([...messages, userMsg], {
                 userProfile: profile,
                 dashboardData,
-                language
+                language,
+                currentDate: today,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             });
             setMessages(prev => [...prev, response]);
         } catch (error) {

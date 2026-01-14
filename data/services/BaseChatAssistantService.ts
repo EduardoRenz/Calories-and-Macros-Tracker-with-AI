@@ -6,7 +6,8 @@ export abstract class BaseChatAssistantService implements ChatAssistantService {
     abstract sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage>;
 
     protected buildContextString(context: ChatAssistantContextData): string {
-        const today = new Date().toISOString().split('T')[0];
+        const today = context.currentDate || new Date().toISOString().split('T')[0];
+        const timezone = context.timezone || 'UTC';
 
         // Format dashboard data for context
         let dashboardContext = "No dashboard data available.";
@@ -30,6 +31,7 @@ Diet: ${context.userProfile.dietType || 'Not specified'}
 
         return `Context:
 Date: ${today}
+Timezone: ${timezone}
 Language: ${context.language || 'en'}
 ${profileContext}
 ${dashboardContext}`;
