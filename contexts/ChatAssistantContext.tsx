@@ -105,7 +105,25 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
 
             switch (action.type) {
                 case 'add_ingredient': {
-                    const { date, mealType, ingredient } = action.data as { date: string, mealType: keyof MealSummary, ingredient: Omit<Ingredient, 'id'> };
+                    const data = action.data as any;
+                    const { date, mealType } = data;
+                    const ingredient = data.updates || data.ingredient;
+
+                    if (!ingredient) {
+                        console.error("No ingredient data found in action.data", data);
+                        throw new Error(t('assistant.error_generic'));
+                    }
+
+                    // Validate mandatory fields
+                    const requiredFields = ['name', 'quantity', 'calories', 'protein', 'carbs', 'fats'] as const;
+                    for (const field of requiredFields) {
+                        const val = (ingredient as any)[field];
+                        if (val === undefined || val === null || (typeof val === 'number' && isNaN(val))) {
+                            console.error(`Missing mandatory field: ${field}`, ingredient);
+                            throw new Error(t('assistant.error_generic'));
+                        }
+                    }
+
                     await dashboardRepo.addIngredient(date, mealType, ingredient);
                     successMessage = `✅ ${t('assistant.action_success')}`;
                     break;

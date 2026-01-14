@@ -69,7 +69,8 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                             carbs: { type: Type.NUMBER },
                                             fats: { type: Type.NUMBER },
                                             fiber: { type: Type.NUMBER }
-                                        }
+                                        },
+                                        required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
                                     }
                                 },
                                 required: ["mealType"]

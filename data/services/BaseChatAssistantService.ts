@@ -43,7 +43,7 @@ ${dashboardContext}`;
 Capability 2: Propose actions to MODIFY the dashboard (Add, Update, Remove).
 Capability 3: FETCH historical dashboard data for specific dates using 'get_dashboard_for_date'.
 4. For 'add_ingredient', you MUST infer the 'mealType' if not stated (based on time or default to 'snacks').
-4. For 'add_ingredient', you MUST estimate/calculate the nutritional info (calories, macros) for the specified quantity (default to 100g if unspecified). USE AVERAGE VALUES. Do not refuse to add because you are unsure, just estimate.
+4. For 'add_ingredient', you MUST estimate/calculate the nutritional info (calories, protein, carbs, fats). THESE FIELDS ARE MANDATORY. Do not leave them as zero or null if you can estimate them. USE AVERAGE VALUES. Do not refuse to add because you are unsure, just estimate.
 5. For 'remove_ingredient' or 'update_ingredient', use the Exising Ingredient IDs provided in the Context. If ambiguous, ask for clarification.
 6. ALWAYS respond in the user's preferred language (specified in Context as Language).
 
