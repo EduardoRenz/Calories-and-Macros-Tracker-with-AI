@@ -253,6 +253,10 @@ export default {
     "confirm_action": "Ação pendente de confirmação",
     "confirm": "Confirmar",
     "cancel": "Cancelar",
-    "thinking": "Pensando..."
+    "thinking": "Pensando...",
+    "action_success": "Ação executada com sucesso!",
+    "action_error": "Falha ao executar a ação. Por favor, tente novamente.",
+    "action_cancelled": "Ação cancelada.",
+    "prepared_action": "Preparei a ação para você."
   }
 }

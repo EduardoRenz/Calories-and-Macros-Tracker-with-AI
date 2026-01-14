@@ -81,7 +81,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             setMessages(prev => [...prev, {
                 id: Date.now().toString(),
                 role: 'system',
-                content: 'Sorry, I encountered an error processing your request.',
+                content: t('assistant.action_error'),
                 timestamp: new Date(),
             }]);
         } finally {
@@ -107,19 +107,19 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                 case 'add_ingredient': {
                     const { date, mealType, ingredient } = action.data as { date: string, mealType: keyof MealSummary, ingredient: Omit<Ingredient, 'id'> };
                     await dashboardRepo.addIngredient(date, mealType, ingredient);
-                    successMessage = `Successfully added ${ingredient.name} to ${mealType}.`;
+                    successMessage = `✅ ${t('assistant.action_success')}`;
                     break;
                 }
                 case 'update_ingredient': {
                     const { date, mealType, ingredientId, updates } = action.data as { date: string, mealType: keyof MealSummary, ingredientId: string, updates: Partial<Ingredient> };
                     await dashboardRepo.updateIngredient(date, mealType, ingredientId, updates);
-                    successMessage = `Successfully updated ingredient.`;
+                    successMessage = `✅ ${t('assistant.action_success')}`;
                     break;
                 }
                 case 'remove_ingredient': {
                     const { date, mealType, ingredientId } = action.data as { date: string, mealType: keyof MealSummary, ingredientId: string };
                     await dashboardRepo.removeIngredient(date, mealType, ingredientId);
-                    successMessage = `Successfully removed ingredient.`;
+                    successMessage = `✅ ${t('assistant.action_success')}`;
                     break;
                 }
             }
@@ -153,7 +153,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             setMessages(prev => [...prev, {
                 id: Date.now().toString(),
                 role: 'system',
-                content: 'Failed to execute action. Please try again manually.',
+                content: t('assistant.action_error'),
                 timestamp: new Date(),
             }]);
         }
@@ -174,7 +174,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         setMessages(prev => [...prev, {
             id: Date.now().toString(),
             role: 'system',
-            content: 'Action cancelled.',
+            content: t('assistant.action_cancelled'),
             timestamp: new Date(),
         }]);
     };

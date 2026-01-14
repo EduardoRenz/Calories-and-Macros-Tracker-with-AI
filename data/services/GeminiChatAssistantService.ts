@@ -170,10 +170,17 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                 }
             }
 
+            const preparedActionMessages: Record<string, string> = {
+                'pt': "✅ Preparei a ação para você.",
+                'es': "✅ He preparado la acción para ti.",
+                'en': "✅ I have prepared the action for you."
+            };
+            const defaultPreparedMessage = preparedActionMessages[context.language] || preparedActionMessages['en'];
+
             const assistantMessage: ChatMessage = {
                 id: `msg-${Date.now()}`,
                 role: 'assistant',
-                content: content || (functionCallPart ? "I have prepared the action for you." : "I didn't have anything to say."),
+                content: content || (functionCallPart ? defaultPreparedMessage : "I didn't have anything to say."),
                 timestamp: new Date(),
             };
 
