@@ -4,10 +4,14 @@ import { Ingredient, MealSummary } from './dashboard';
 export interface AddIngredientActionData {
     date: string;
     mealType: keyof MealSummary;
+    ingredient: Omit<Ingredient, 'id'>;
+}
+
+export interface UpdateIngredientActionData {
+    date: string;
+    mealType: keyof MealSummary;
     ingredientId: string;
     updates: Partial<Omit<Ingredient, 'id'>>;
-    // Support legacy naming used in some services
-    ingredient?: Partial<Omit<Ingredient, 'id'>>;
 }
 
 export interface RemoveIngredientActionData {
@@ -16,7 +20,7 @@ export interface RemoveIngredientActionData {
     ingredientId: string;
 }
 
-export type ActionData = AddIngredientActionData | RemoveIngredientActionData;
+export type ActionData = AddIngredientActionData | UpdateIngredientActionData | RemoveIngredientActionData;
 
 export interface PendingAction {
     id: string;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckIcon, XMarkIcon } from '../icons';
-import { PendingAction, AddIngredientActionData } from '../../domain/entities/ChatMessage';
+import { PendingAction, AddIngredientActionData, UpdateIngredientActionData } from '../../domain/entities/ChatMessage';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface PendingActionCardProps {
@@ -18,10 +18,9 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
 
     const renderActionDetails = () => {
         switch (action.type) {
-            case 'add_ingredient':
-            case 'update_ingredient': {
+            case 'add_ingredient': {
                 const data = action.data as AddIngredientActionData;
-                const ing = data.ingredient || data.updates;
+                const ing = data.ingredient;
                 if (!ing) return null;
 
                 return (
@@ -48,6 +47,55 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                             <p className="text-healthpal-text-secondary text-xs">Total Calories</p>
                             <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
                         </div>
+                    </div>
+                );
+            }
+
+            case 'update_ingredient': {
+                const data = action.data as UpdateIngredientActionData;
+                const ing = data.updates;
+                if (!ing) return null;
+
+                return (
+                    <div className="bg-healthpal-panel rounded-lg p-3 my-2 text-sm border border-healthpal-border">
+                        <div className="grid grid-cols-2 gap-2 text-center my-2">
+                            {ing.protein !== undefined && (
+                                <div>
+                                    <p className="text-healthpal-text-secondary text-xs">Protein</p>
+                                    <p className="font-bold text-green-400">{ing.protein}g</p>
+                                </div>
+                            )}
+                            {ing.carbs !== undefined && (
+                                <div>
+                                    <p className="text-healthpal-text-secondary text-xs">Carbs</p>
+                                    <p className="font-bold text-yellow-500">{ing.carbs}g</p>
+                                </div>
+                            )}
+                            {ing.fats !== undefined && (
+                                <div>
+                                    <p className="text-healthpal-text-secondary text-xs">Fats</p>
+                                    <p className="font-bold text-orange-400">{ing.fats}g</p>
+                                </div>
+                            )}
+                            {ing.fiber !== undefined && (
+                                <div>
+                                    <p className="text-healthpal-text-secondary text-xs">Fiber</p>
+                                    <p className="font-bold text-blue-400">{ing.fiber}g</p>
+                                </div>
+                            )}
+                        </div>
+                        {ing.calories !== undefined && (
+                            <div className="text-center border-t border-healthpal-border pt-2 mt-2">
+                                <p className="text-healthpal-text-secondary text-xs">Total Calories</p>
+                                <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
+                            </div>
+                        )}
+                        {ing.quantity !== undefined && (
+                            <div className="text-center mt-1">
+                                <p className="text-healthpal-text-secondary text-xs">New Quantity</p>
+                                <p className="font-bold text-white">{ing.quantity}</p>
+                            </div>
+                        )}
                     </div>
                 );
             }

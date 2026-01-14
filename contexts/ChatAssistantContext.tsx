@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useProfile } from './ProfileContext';
 import { useLanguage } from './LanguageContext';
-import { ChatMessage, PendingAction, AddIngredientActionData, RemoveIngredientActionData } from '../domain/entities/ChatMessage';
+import { ChatMessage, PendingAction, AddIngredientActionData, UpdateIngredientActionData, RemoveIngredientActionData } from '../domain/entities/ChatMessage';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { useTranslation } from '../hooks/useTranslation';
@@ -106,8 +106,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             switch (action.type) {
                 case 'add_ingredient': {
                     const data = action.data as AddIngredientActionData;
-                    const { date, mealType } = data;
-                    const ingredient = data.ingredient || (data as any).updates;
+                    const { date, mealType, ingredient } = data;
 
                     if (!ingredient) {
                         console.error("No ingredient data found in action.data", data);
@@ -129,9 +128,8 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                     break;
                 }
                 case 'update_ingredient': {
-                    const data = action.data as AddIngredientActionData;
-                    const { date, mealType, ingredientId } = data;
-                    const updates = data.updates || data.ingredient;
+                    const data = action.data as UpdateIngredientActionData;
+                    const { date, mealType, ingredientId, updates } = data;
 
                     if (!date || !mealType || !ingredientId || !updates) {
                         throw new Error(t('assistant.action_error'));

@@ -38,11 +38,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
             )}
 
             {/* Messages */}
-            {messages.map((msg, idx) => (
+            {messages.map((msg) => (
                 <ChatMessage
                     key={msg.id}
                     message={msg}
-                    isLast={idx === messages.length - 1}
                     onConfirmAction={onConfirmAction}
                     onCancelAction={onCancelAction}
                 />
