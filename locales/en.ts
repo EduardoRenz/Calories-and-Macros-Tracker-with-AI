@@ -67,7 +67,8 @@ export default {
     "ingredient": "Ingredient",
     "quantity": "Quantity",
     "total_macros": "Total Meal Macros",
-    "add_ingredient": "Add Ingredient"
+    "add_ingredient": "Add Ingredient",
+    "edit_quantity": "Click to edit quantity"
   },
   "add_ingredient_modal": {
     "title": "Add Ingredient to",
@@ -242,5 +243,20 @@ export default {
       "remove": "Remove",
       "no_tokens": "You haven't added any AI API tokens yet."
     }
+  },
+  "assistant": {
+    "title": "HealthPal Assistant",
+    "status_online": "ONLINE",
+    "close": "Close chat",
+    "input_placeholder": "Ask HealthPal...",
+    "send": "Send",
+    "confirm_action": "Action pending confirmation",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "thinking": "Thinking...",
+    "action_success": "Action executed successfully!",
+    "action_error": "Failed to execute action. Please try again.",
+    "action_cancelled": "Action cancelled.",
+    "prepared_action": "I have prepared the action for you."
   }
 }

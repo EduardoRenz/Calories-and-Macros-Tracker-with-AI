@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon } from './icons';
+import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon, UserIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { Avatar } from './ui/Avatar';
@@ -92,6 +92,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
                         className="hover:border-healthpal-green transition-colors"
                         aria-label="User menu"
+                        data-testid="user-menu-button"
                     >
                         <Avatar
                             name={user?.displayName || 'User'}
@@ -108,6 +109,15 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                                 <p className="font-medium text-healthpal-text-primary truncate">{user?.displayName || 'User'}</p>
                                 <p className="text-sm text-healthpal-text-secondary truncate">{user?.email}</p>
                             </div>
+                            <Link
+                                href="/profile"
+                                onClick={() => setIsAvatarMenuOpen(false)}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-healthpal-text-secondary hover:text-healthpal-text-primary hover:bg-healthpal-card transition-colors"
+                                data-testid="profile-link"
+                            >
+                                <UserIcon className="w-5 h-5" />
+                                <span>{t('navbar.profile')}</span>
+                            </Link>
                             <button
                                 onClick={() => {
                                     signOut();

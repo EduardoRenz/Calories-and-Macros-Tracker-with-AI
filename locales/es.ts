@@ -67,7 +67,8 @@ export default {
     "ingredient": "Ingrediente",
     "quantity": "Cantidad",
     "total_macros": "Macros Totales",
-    "add_ingredient": "Añadir Ingrediente"
+    "add_ingredient": "Añadir Ingrediente",
+    "edit_quantity": "Haga clic para editar la cantidad"
   },
   "add_ingredient_modal": {
     "title": "Añadir Ingrediente a",
@@ -242,5 +243,20 @@ export default {
       "remove": "Eliminar",
       "no_tokens": "Todavía no has añadido ningún token de API de IA."
     }
+  },
+  "assistant": {
+    "title": "Asistente HealthPal",
+    "status_online": "EN LÍNEA",
+    "close": "Cerrar chat",
+    "input_placeholder": "Pregunta a HealthPal...",
+    "send": "Enviar",
+    "confirm_action": "Acción pendiente de confirmación",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "thinking": "Pensando...",
+    "action_success": "¡Acción ejecutada con éxito!",
+    "action_error": "Error al ejecutar la acción. Por favor, inténtelo de nuevo.",
+    "action_cancelled": "Acción cancelada.",
+    "prepared_action": "He preparado la acción para ti."
   }
 }
