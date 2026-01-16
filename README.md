@@ -2,12 +2,6 @@
 <img width="650" height="573" alt="image" src="https://github.com/user-attachments/assets/4b1cb8c9-8001-4f29-b247-c7854799970e" />
 
 
-## Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/15Gzoaml2qCGeO2C4AHEczXPfqg5grOm4
-
 ## Run Locally
 
 **Prerequisites:**  Node.js
@@ -55,7 +49,9 @@ The provider is defined by the `BACKEND_PROVIDER` variable in the `.env` file:
 - [x] Add food consumption analysis
 - [x] Add fiber consumption in meals
 - [x] Kcal calc based on macro calc when adding/editing ingredients, and no more manually
-- [ ] Remote config set models
+- [x] Health conditions
+- [x] Diet type
+- [ ] Remote config set AI models
 - [ ] Add payment methods
 
 

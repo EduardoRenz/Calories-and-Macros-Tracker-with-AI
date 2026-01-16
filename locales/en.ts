@@ -68,7 +68,8 @@ export default {
     "ingredient": "Ingredient",
     "quantity": "Quantity",
     "total_macros": "Total Meal Macros",
-    "add_ingredient": "Add Ingredient"
+    "add_ingredient": "Add Ingredient",
+    "edit_quantity": "Click to edit quantity"
   },
   "add_ingredient_modal": {
     "title": "Add Ingredient to",
@@ -111,7 +112,24 @@ export default {
     "tabs": {
       "settings": "Profile Settings",
       "progress": "Progress",
-      "food_analysis": "Food Analysis"
+    },
+    "food_analysis": "Food Analysis",
+    "health_conditions": {
+      "title": "Health Conditions",
+      "subtitle": "Select any conditions that apply so we can tailor safe dietary recommendations.",
+      "importance": "This information is important: your Food Analysis will use these conditions to avoid unsafe suggestions and prioritize safer alternatives.",
+      "options": {
+        "diabetes": "Diabetes",
+        "lactose_intolerance": "Lactose intolerance",
+        "gluten_intolerance": "Gluten intolerance",
+        "celiac_disease": "Celiac disease",
+        "hypertension": "Hypertension (high blood pressure)",
+        "high_cholesterol": "High cholesterol",
+        "kidney_disease": "Kidney disease",
+        "gout": "Gout",
+        "ibs": "Irritable bowel syndrome (IBS)",
+        "gerd": "GERD / Acid reflux"
+      }
     },
     "upload_picture": "Upload new picture",
     "personal_info": {
@@ -122,7 +140,16 @@ export default {
       "gender": "Gender",
       "female": "Female",
       "male": "Male",
-      "other": "Other"
+      "other": "Other",
+      "diet_type": "Diet Type",
+      "diet_types": {
+        "omnivore": "Omnivore",
+        "vegetarian": "Vegetarian",
+        "vegan": "Vegan",
+        "pescatarian": "Pescatarian",
+        "carnivore": "Carnivore",
+        "flexitarian": "Flexitarian"
+      }
     },
     "fitness_goals": {
       "title": "Fitness Goals",
@@ -140,6 +167,7 @@ export default {
     "update_profile": "Update Profile",
     "saving": "Saving...",
     "update_success": "Profile updated successfully!",
+    "cancel": "Cancel",
     "loading": "Loading profile...",
     "load_error": "Could not load profile data.",
     "progress_summary": {
@@ -265,5 +293,20 @@ export default {
       "remove": "Remove",
       "no_tokens": "You haven't added any AI API tokens yet."
     }
+  },
+  "assistant": {
+    "title": "HealthPal Assistant",
+    "status_online": "ONLINE",
+    "close": "Close chat",
+    "input_placeholder": "Ask HealthPal...",
+    "send": "Send",
+    "confirm_action": "Action pending confirmation",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "thinking": "Thinking...",
+    "action_success": "Action executed successfully!",
+    "action_error": "Failed to execute action. Please try again.",
+    "action_cancelled": "Action cancelled.",
+    "prepared_action": "I have prepared the action for you."
   }
 };

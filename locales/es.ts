@@ -68,7 +68,8 @@ export default {
     "ingredient": "Ingrediente",
     "quantity": "Cantidad",
     "total_macros": "Macros Totales",
-    "add_ingredient": "Añadir Ingrediente"
+    "add_ingredient": "Añadir Ingrediente",
+    "edit_quantity": "Haga clic para editar la cantidad"
   },
   "add_ingredient_modal": {
     "title": "Añadir Ingrediente a",
@@ -111,7 +112,24 @@ export default {
     "tabs": {
       "settings": "Ajustes de Perfil",
       "progress": "Progreso",
-      "food_analysis": "Análisis de Alimentación"
+      "food_analysis": "Análisis de Alimentación",
+      "health_conditions": {
+        "title": "Condiciones de Salud",
+        "subtitle": "Selecciona las condiciones que apliquen para recibir recomendaciones alimentarias más seguras.",
+        "importance": "Esta información es importante: el Análisis de Alimentación usará estas condiciones para evitar sugerencias inseguras y priorizar alternativas más seguras.",
+        "options": {
+          "diabetes": "Diabetes",
+          "lactose_intolerance": "Intolerancia a la lactosa",
+          "gluten_intolerance": "Intolerancia al gluten",
+          "celiac_disease": "Enfermedad celíaca",
+          "hypertension": "Hipertensión",
+          "high_cholesterol": "Colesterol alto",
+          "kidney_disease": "Enfermedad renal",
+          "gout": "Gota",
+          "ibs": "Síndrome del intestino irritable (SII)",
+          "gerd": "Reflujo / Acidez"
+        }
+      },
     },
     "upload_picture": "Subir nueva foto",
     "personal_info": {
@@ -122,7 +140,16 @@ export default {
       "gender": "Género",
       "female": "Femenino",
       "male": "Masculino",
-      "other": "Otro"
+      "other": "Otro",
+      "diet_type": "Tipo de Dieta",
+      "diet_types": {
+        "omnivore": "Omnívoro",
+        "vegetarian": "Vegetariano",
+        "vegan": "Vegano",
+        "pescatarian": "Pescetariano",
+        "carnivore": "Carnívoro",
+        "flexitarian": "Flexitariano"
+      }
     },
     "fitness_goals": {
       "title": "Metas de Fitness",
@@ -140,6 +167,7 @@ export default {
     "update_profile": "Actualizar Perfil",
     "saving": "Guardando...",
     "update_success": "¡Perfil actualizado con éxito!",
+    "cancel": "Cancelar",
     "loading": "Cargando perfil...",
     "load_error": "No se pudieron cargar los datos del perfil.",
     "progress_summary": {
@@ -265,5 +293,20 @@ export default {
       "remove": "Eliminar",
       "no_tokens": "Todavía no has añadido ningún token de API de IA."
     }
+  },
+  "assistant": {
+    "title": "Asistente HealthPal",
+    "status_online": "EN LÍNEA",
+    "close": "Cerrar chat",
+    "input_placeholder": "Pregunta a HealthPal...",
+    "send": "Enviar",
+    "confirm_action": "Acción pendiente de confirmación",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "thinking": "Pensando...",
+    "action_success": "¡Acción ejecutada con éxito!",
+    "action_error": "Error al ejecutar la acción. Por favor, inténtelo de nuevo.",
+    "action_cancelled": "Acción cancelada.",
+    "prepared_action": "He preparado la acción para ti."
   }
 }

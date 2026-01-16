@@ -1,5 +1,5 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile } from '../../domain/entities/profile';
+import { DietType, HealthConditionKey, HealthConditions, UserProfile } from '../../domain/entities/profile';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
@@ -15,6 +15,8 @@ type ProfilesRow = {
   primary_goal: 'lose' | 'maintain' | 'gain';
   target_weight: number;
   activity_level: 'sedentary' | 'lightly' | 'moderately' | 'very';
+  health_conditions: string[] | null;
+  diet_type: DietType | null;
 };
 
 type WeightHistoryRow = {
@@ -26,6 +28,10 @@ export class SupabaseProfileRepository implements ProfileRepository {
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
   private dataCacheManager: DataCacheManager = new DataCacheManager();
   private userId: string | undefined;
+
+  private getDefaultHealthConditions(): string[] {
+    return [];
+  }
 
   async getUserId(): Promise<string> {
     if (this.userId) return this.userId;
@@ -57,6 +63,8 @@ export class SupabaseProfileRepository implements ProfileRepository {
       weightHistory: weightHistory
         .map(w => ({ date: w.date, weight: Number(w.weight) }))
         .sort((a, b) => (a.date < b.date ? -1 : 1)),
+      healthConditions: { selected: (profile.health_conditions ?? []) as HealthConditionKey[] },
+      dietType: profile.diet_type ?? 'omnivore',
     };
   }
 
@@ -98,6 +106,8 @@ export class SupabaseProfileRepository implements ProfileRepository {
             primary_goal: 'maintain',
             target_weight: 70,
             activity_level: 'lightly',
+            health_conditions: this.getDefaultHealthConditions(),
+            diet_type: 'omnivore',
           };
 
           const { data: created, error: createError } = await supabase
@@ -142,6 +152,8 @@ export class SupabaseProfileRepository implements ProfileRepository {
           primary_goal: profile.fitnessGoals.primaryGoal,
           target_weight: profile.fitnessGoals.targetWeight,
           activity_level: profile.fitnessGoals.activityLevel,
+          health_conditions: profile.healthConditions?.selected ?? [],
+          diet_type: profile.dietType ?? 'omnivore',
         },
         { onConflict: 'user_id' }
       );

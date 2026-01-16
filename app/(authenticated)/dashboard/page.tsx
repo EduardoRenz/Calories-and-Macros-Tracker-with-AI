@@ -165,6 +165,12 @@ export default function DashboardPage() {
         setData(updatedData);
     };
 
+    const handleUpdateIngredient = async (mealType: keyof MealSummary, ingredientId: string, updates: Partial<Ingredient>) => {
+        if (!data) return;
+        const updatedData = await dashboardRepository.updateIngredient(data.date, mealType, ingredientId, updates);
+        setData(updatedData);
+    };
+
     const isToday = getFormattedDate(currentDate) === getFormattedDate(new Date());
     const displayDate = new Intl.DateTimeFormat(undefined, {
         year: 'numeric',
@@ -244,6 +250,7 @@ export default function DashboardPage() {
                             meals={data.meals}
                             onAddIngredient={handleOpenModal}
                             onRemoveIngredient={handleRemoveIngredient}
+                            onUpdateIngredient={handleUpdateIngredient}
                         />
                     </div>
                 </div>

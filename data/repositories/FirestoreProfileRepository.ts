@@ -1,5 +1,5 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile } from '../../domain/entities/profile';
+import { DietType, UserProfile } from '../../domain/entities/profile';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -20,6 +20,8 @@ const initialProfileData = {
         activityLevel: 'lightly' as 'sedentary' | 'lightly' | 'moderately' | 'very',
     },
     weightHistory: [],
+    healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
 };
 
 export class FirestoreProfileRepository implements ProfileRepository {
@@ -65,7 +67,12 @@ export class FirestoreProfileRepository implements ProfileRepository {
                     return newProfile;
                 }
 
-                return docSnap.data() as UserProfile;
+                const loaded = docSnap.data() as UserProfile;
+                return {
+                    ...loaded,
+                    healthConditions: loaded.healthConditions ?? { selected: [] },
+                    dietType: loaded.dietType ?? 'omnivore',
+                };
             });
         });
     }
@@ -84,7 +91,10 @@ export class FirestoreProfileRepository implements ProfileRepository {
         const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
 
         if (entryForTodayIndex !== -1) {
-            updatedHistory[entryForTodayIndex].weight = newWeight;
+            updatedHistory[entryForTodayIndex] = {
+                ...updatedHistory[entryForTodayIndex],
+                weight: newWeight
+            };
         } else {
             updatedHistory.push({ date: today, weight: newWeight });
         }

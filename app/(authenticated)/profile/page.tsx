@@ -4,12 +4,14 @@ import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { useTranslation } from '@/hooks/useTranslation';
-import { WeightEntry } from '@/domain/entities/profile';
+import { DietType, HealthConditionKey, WeightEntry } from '@/domain/entities/profile';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { EditIcon } from '@/components/icons';
+import ProfileNavigation from '@/components/ProfileNavigation';
+import HealthConditionsSection, { type HealthConditionOption } from '@/components/HealthConditionsSection';
 
 // --- Reusable Chart Components ---
 const WeightProgressChart: React.FC<{ data: WeightEntry[] }> = ({ data }) => {
@@ -91,6 +93,21 @@ export default function ProfilePage() {
     const [isSaving, setIsSaving] = useState(false);
     const [showSaveMessage, setShowSaveMessage] = useState(false);
 
+    const healthConditionOptions: HealthConditionOption[] = useMemo(() => {
+        return [
+            { key: 'diabetes', label: t('profile.health_conditions.options.diabetes') },
+            { key: 'lactoseIntolerance', label: t('profile.health_conditions.options.lactose_intolerance') },
+            { key: 'glutenIntolerance', label: t('profile.health_conditions.options.gluten_intolerance') },
+            { key: 'celiacDisease', label: t('profile.health_conditions.options.celiac_disease') },
+            { key: 'hypertension', label: t('profile.health_conditions.options.hypertension') },
+            { key: 'highCholesterol', label: t('profile.health_conditions.options.high_cholesterol') },
+            { key: 'kidneyDisease', label: t('profile.health_conditions.options.kidney_disease') },
+            { key: 'gout', label: t('profile.health_conditions.options.gout') },
+            { key: 'ibs', label: t('profile.health_conditions.options.ibs') },
+            { key: 'gerd', label: t('profile.health_conditions.options.gerd') },
+        ];
+    }, [t]);
+
     const calorieGoal = useMemo(() => {
         if (!profile) return 0;
         return CalorieCalculationService.calculateGoals(profile).calories;
@@ -109,6 +126,29 @@ export default function ProfilePage() {
         const { name, value } = e.target;
         editProfile({
             fitnessGoals: { ...profile.fitnessGoals, [name]: name === 'activityLevel' ? value : parseFloat(value) || 0 }
+        });
+    };
+
+    const handleHealthConditionToggle = (key: HealthConditionKey) => {
+        if (!profile) return;
+
+        const currentSelected = profile.healthConditions?.selected ?? [];
+        const nextSelected = currentSelected.includes(key)
+            ? currentSelected.filter(k => k !== key)
+            : [...currentSelected, key];
+
+        editProfile({
+            healthConditions: {
+                ...(profile.healthConditions ?? { selected: [] }),
+                selected: nextSelected,
+            },
+        });
+    };
+
+    const handleDietTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        if (!profile) return;
+        editProfile({
+            dietType: e.target.value as DietType
         });
     };
 
@@ -166,14 +206,12 @@ export default function ProfilePage() {
         <div className="text-healthpal-text-primary">
             <h2 className="text-3xl font-bold my-8">{t('profile.title')}</h2>
 
-            <div className="flex border-b border-healthpal-border mb-8">
-                <button
-                    onClick={() => setActiveTab('settings')}
-                    className={`pb-2 px-1 mr-6 text-md font-medium ${activeTab === 'settings' ? 'text-healthpal-green border-b-2 border-healthpal-green' : 'text-healthpal-text-secondary'}`}
-                >
-                    {t('profile.tabs.settings')}
-                </button>
-            </div>
+            <ProfileNavigation
+                activeTab={activeTab === 'food_analysis' ? 'food_analysis' : 'settings'}
+                onChangeTab={setActiveTab}
+                settingsLabel={t('profile.tabs.settings')}
+                foodAnalysisLabel={t('profile.tabs.food_analysis')}
+            />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column */}
@@ -221,6 +259,17 @@ export default function ProfilePage() {
                                     <option value="other">{t('profile.personal_info.other')}</option>
                                 </select>
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.diet_type')}</label>
+                                <select name="dietType" value={profile.dietType ?? 'omnivore'} onChange={handleDietTypeChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
+                                    <option value="omnivore">{t('profile.personal_info.diet_types.omnivore')}</option>
+                                    <option value="vegetarian">{t('profile.personal_info.diet_types.vegetarian')}</option>
+                                    <option value="vegan">{t('profile.personal_info.diet_types.vegan')}</option>
+                                    <option value="pescatarian">{t('profile.personal_info.diet_types.pescatarian')}</option>
+                                    <option value="carnivore">{t('profile.personal_info.diet_types.carnivore')}</option>
+                                    <option value="flexitarian">{t('profile.personal_info.diet_types.flexitarian')}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -251,6 +300,15 @@ export default function ProfilePage() {
                             </div>
                         </div>
                     </div>
+
+                    <HealthConditionsSection
+                        title={t('profile.health_conditions.title')}
+                        subtitle={t('profile.health_conditions.subtitle')}
+                        importanceText={t('profile.health_conditions.importance')}
+                        options={healthConditionOptions}
+                        selected={profile.healthConditions?.selected ?? []}
+                        onToggle={handleHealthConditionToggle}
+                    />
                     <div className="flex justify-end items-center gap-4">
                         {showSaveMessage && <p className="text-healthpal-green text-sm">{t('profile.update_success')}</p>}
                         {hasChanges && (

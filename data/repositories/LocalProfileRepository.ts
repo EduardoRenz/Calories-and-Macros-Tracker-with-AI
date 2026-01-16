@@ -1,6 +1,6 @@
 
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile } from '../../domain/entities/profile';
+import { DietType, UserProfile } from '../../domain/entities/profile';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 const initialProfile: UserProfile = {
@@ -22,7 +22,9 @@ const initialProfile: UserProfile = {
         { date: "2023-10-08", weight: 64.5 },
         { date: "2023-10-15", weight: 63 },
         { date: "2023-10-22", weight: 62.5 },
-    ]
+    ],
+    healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
 };
 
 // Simulate a local data store

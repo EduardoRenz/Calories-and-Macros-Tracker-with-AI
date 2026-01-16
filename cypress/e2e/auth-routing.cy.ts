@@ -75,17 +75,18 @@ describe('URL Navigation', () => {
     cy.get('h2').contains('Dashboard').should('be.visible');
   });
 
-  it('should update URL when using mobile bottom navbar', () => {
+  it('should update URL when using mobile navigation', () => {
     cy.viewport(375, 667);
     cy.login();
 
-    // Click Profile in bottom navbar
-    cy.get('[data-testid="mobile-nav"]').contains('Profile').click();
+    // Click Profile in avatar menu (Top Navbar)
+    cy.get('[data-testid="user-menu-button"]').click();
+    cy.get('[data-testid="profile-link"]').click();
     cy.url().should('include', '/profile');
     cy.get('h2').contains('My Profile').should('be.visible');
 
     // Click Dashboard in bottom navbar
-    cy.get('[data-testid="mobile-nav"]').contains('Dashboard').click();
+    cy.get('[data-testid="mobile-bottom-nav"]').contains('Dashboard').click();
     cy.url().should('include', '/dashboard');
     cy.get('h2').contains('Dashboard').should('be.visible');
   });
@@ -123,36 +124,36 @@ describe('Browser Navigation', () => {
 describe('Logout Functionality', () => {
   it('should redirect to login when user clicks logout', () => {
     cy.login();
-    
+
     // Verify user is on dashboard
     cy.url().should('include', '/dashboard');
     cy.get('h2').contains('Dashboard').should('be.visible');
-    
+
     // Click on user avatar to open dropdown menu
     cy.get('button[aria-label="User menu"]').click();
-    
+
     // Click logout button
     cy.contains('Logout').click();
-    
+
     // Should redirect to login page
     cy.url().should('include', '/login');
     cy.get('[data-testid="google-signin-button"]').should('be.visible');
-    
+
     // Verify no infinite loading - should see login form quickly
     cy.get('[data-testid="google-signin-button"]').should('not.be.disabled');
   });
 
   it('should clear user session after logout', () => {
     cy.login();
-    
+
     // Navigate to a protected route
     cy.visit('/profile');
     cy.url().should('include', '/profile');
-    
+
     // Logout
     cy.get('button[aria-label="User menu"]').click();
     cy.contains('Logout').click();
-    
+
     // Try to access protected route again - should redirect to login
     cy.visit('/dashboard');
     cy.url().should('include', '/login');

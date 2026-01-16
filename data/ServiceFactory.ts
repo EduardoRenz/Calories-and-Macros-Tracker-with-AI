@@ -6,7 +6,11 @@ import { DeepSeekFoodAnalysisService } from './services/DeepSeekFoodAnalysisServ
 import { FallbackFoodAnalysisService } from './services/FallbackFoodAnalysisService';
 import { MockNutritionAnalysisService } from './services/MockNutritionAnalysisService';
 import { MockImageRecognitionService } from './services/MockImageRecognitionService';
-
+import { ChatAssistantService } from '../domain/services/ChatAssistantService';
+import { MockChatAssistantService } from './services/MockChatAssistantService';
+import { GeminiChatAssistantService } from './services/GeminiChatAssistantService';
+import { OpenAIChatAssistantService } from './services/OpenAIChatAssistantService';
+import { DeepSeekChatAssistantService } from './services/DeepSeekChatAssistantService';
 
 import { GeminiNutritionAnalysisService } from './services/GeminiNutritionAnalysisService';
 import { OpenAINutritionAnalysisService } from './services/OpenAINutritionAnalysisService';
@@ -22,6 +26,7 @@ import { FallbackImageRecognitionService } from './services/FallbackImageRecogni
 import { NextApiFoodAnalysisService } from './services/NextApiFoodAnalysisService';
 import { NextApiNutritionAnalysisService } from './services/NextApiNutritionAnalysisService';
 import { NextApiImageRecognitionService } from './services/NextApiImageRecognitionService';
+import { NextApiChatAssistantService } from './services/NextApiChatAssistantService';
 
 import { RepositoryFactory } from './RepositoryFactory';
 
@@ -38,10 +43,15 @@ export class ServiceFactory {
     private static instance: FoodAnalysisService | null = null;
     private static nutritionInstance: import("../domain/services/NutritionAnalysisService").NutritionAnalysisService | null = null;
     private static imageInstance: ImageRecognitionService | null = null;
+    private static chatInstance: ChatAssistantService | null = null;
 
     public static getFoodAnalysisService(): FoodAnalysisService {
+        if (this.instance) {
+            return this.instance;
+        }
         if (USE_MOCKS) {
-            return new MockFoodAnalysisService();
+            this.instance = new MockFoodAnalysisService();
+            return this.instance;
         }
 
         if (!this.instance) {
@@ -51,10 +61,11 @@ export class ServiceFactory {
     }
 
     public static getNutritionAnalysisService(): import("../domain/services/NutritionAnalysisService").NutritionAnalysisService {
-        if (USE_MOCKS) {
-            return new MockNutritionAnalysisService();
-        }
         if (this.nutritionInstance) {
+            return this.nutritionInstance;
+        }
+        if (USE_MOCKS) {
+            this.nutritionInstance = new MockNutritionAnalysisService();
             return this.nutritionInstance;
         }
         this.nutritionInstance = this.createNutritionServiceChain();
@@ -62,20 +73,34 @@ export class ServiceFactory {
     }
 
     public static getImageRecognitionService(): ImageRecognitionService {
-        if (USE_MOCKS) {
-            return new MockImageRecognitionService();
-        }
         if (this.imageInstance) {
+            return this.imageInstance;
+        }
+        if (USE_MOCKS) {
+            this.imageInstance = new MockImageRecognitionService();
             return this.imageInstance;
         }
         this.imageInstance = this.createImageServiceChain();
         return this.imageInstance;
     }
 
+    public static getChatAssistantService(): ChatAssistantService {
+        if (this.chatInstance) {
+            return this.chatInstance;
+        }
+        if (USE_MOCKS) {
+            this.chatInstance = new MockChatAssistantService();
+            return this.chatInstance;
+        }
+        this.chatInstance = this.createChatServiceChain();
+        return this.chatInstance;
+    }
+
     public static reset(): void {
         this.instance = null;
         this.nutritionInstance = null;
         this.imageInstance = null;
+        this.chatInstance = null;
     }
 
     private static createServiceChain(): FoodAnalysisService {
@@ -171,6 +196,41 @@ export class ServiceFactory {
 
         if (services.length === 0) console.warn("No Image Recognition services available.");
         return new FallbackImageRecognitionService(services);
+    }
+
+    private static createChatServiceChain(): ChatAssistantService {
+        const savedKeys = this.loadKeys();
+
+        for (const keyConfig of savedKeys) {
+            try {
+                switch (keyConfig.provider) {
+                    case 'gemini':
+                        return new GeminiChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                    case 'deepseek':
+                        return new DeepSeekChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                    case 'openai':
+                        return new OpenAIChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                }
+            } catch (e) {
+                console.error(`Failed to instantiate chat service for ${keyConfig.provider}`, e);
+            }
+        }
+
+        if (typeof window === 'undefined') {
+            if (process.env.GEMINI_API_KEY) {
+                return new GeminiChatAssistantService(process.env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository());
+            }
+            if (process.env.DEEPSEEK_API_KEY) {
+                return new DeepSeekChatAssistantService(process.env.DEEPSEEK_API_KEY, RepositoryFactory.getDashboardRepository());
+            }
+            if (process.env.OPENAI_API_KEY) {
+                return new OpenAIChatAssistantService(process.env.OPENAI_API_KEY, RepositoryFactory.getDashboardRepository());
+            }
+            return new MockChatAssistantService();
+        }
+
+        const authRepo = RepositoryFactory.getAuthRepository();
+        return new NextApiChatAssistantService(authRepo);
     }
 
     private static loadKeys(): ApiKey[] {
