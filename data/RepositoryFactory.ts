@@ -4,6 +4,7 @@ import { AuthRepository } from '../domain/repositories/AuthRepository';
 import { FoodAnalysisRepository } from '../domain/repositories/FoodAnalysisRepository';
 import { HistoryRepository } from '../domain/repositories/HistoryRepository';
 import { FeatureFlagRepository } from '../domain/repositories/FeatureFlagRepository';
+import { ModelConfigRepository } from '../domain/repositories/ModelConfigRepository';
 
 import { LocalDashboardRepository } from './repositories/LocalDashboardRepository';
 import { LocalProfileRepository } from './repositories/LocalProfileRepository';
@@ -22,6 +23,8 @@ import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryReposit
 import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
 import { LocalFeatureFlagRepository } from './repositories/LocalFeatureFlagRepository';
 import { FirebaseFeatureFlagRepository } from './repositories/FirebaseFeatureFlagRepository';
+import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfigRepository';
+import { LocalModelConfigRepository } from './repositories/LocalModelConfigRepository';
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
@@ -34,6 +37,7 @@ interface RepositoryStrategy {
     foodAnalysis: () => FoodAnalysisRepository;
     history: () => HistoryRepository;
     featureFlag: () => FeatureFlagRepository;
+    modelConfig: () => ModelConfigRepository;
 }
 
 const strategies: Record<Provider, RepositoryStrategy> = {
@@ -44,6 +48,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
         featureFlag: () => new FirebaseFeatureFlagRepository(),
+        modelConfig: () => new FirebaseModelConfigRepository(),
     },
     supabase: {
         dashboard: () => new SupabaseDashboardRepository(),
@@ -52,6 +57,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
         featureFlag: () => new FirebaseFeatureFlagRepository(), // Remote Config can still be used with Supabase or we could use another one
+        modelConfig: () => new FirebaseModelConfigRepository(),
     },
     mock: {
         dashboard: () => new LocalDashboardRepository(),
@@ -60,6 +66,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => new LocalFoodAnalysisRepository(),
         history: () => new LocalHistoryRepository(),
         featureFlag: () => new LocalFeatureFlagRepository(),
+        modelConfig: () => new LocalModelConfigRepository(),
     },
 };
 
@@ -70,6 +77,7 @@ export class RepositoryFactory {
     private static foodAnalysisRepository: FoodAnalysisRepository | null = null;
     private static historyRepository: HistoryRepository | null = null;
     private static featureFlagRepository: FeatureFlagRepository | null = null;
+    private static modelConfigRepository: ModelConfigRepository | null = null;
 
     private static getStrategy(): RepositoryStrategy {
         return strategies[BACKEND_PROVIDER] || strategies.firebase;
@@ -115,5 +123,12 @@ export class RepositoryFactory {
             this.featureFlagRepository = this.getStrategy().featureFlag();
         }
         return this.featureFlagRepository;
+    }
+
+    public static getModelConfigRepository(): ModelConfigRepository {
+        if (!this.modelConfigRepository) {
+            this.modelConfigRepository = this.getStrategy().modelConfig();
+        }
+        return this.modelConfigRepository;
     }
 }

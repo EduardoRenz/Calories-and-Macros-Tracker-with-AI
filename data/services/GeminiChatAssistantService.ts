@@ -3,18 +3,33 @@ import { ChatAssistantContextData } from '../../domain/services/ChatAssistantSer
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage, PendingAction } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
+import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 
 export class GeminiChatAssistantService extends BaseChatAssistantService {
     private ai: GoogleGenAI;
     private model: string = process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+    private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey?: string, private dashboardRepo?: DashboardRepository) {
         super();
+        this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
         const key = apiKey || process.env.GEMINI_API_KEY;
         if (!key) {
             console.error("Gemini API key not found. Chat Assistant will fail.");
         }
         this.ai = new GoogleGenAI({ apiKey: key || 'dummy' });
+    }
+
+    private async getModelVersion(): Promise<string> {
+        try {
+            return await this.modelConfigRepo.getModelVersion('gemini', 'chat')
+                || process.env.GEMINI_FAST_DEFAULT_MODEL
+                || 'gemini-2.5-flash-lite';
+        } catch (error) {
+            console.warn('Failed to get model version from remote config, using fallback:', error);
+            return process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+        }
     }
 
     async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {
@@ -110,8 +125,9 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             let candidate;
 
             while (true) {
+                const currentModel = await this.getModelVersion();
                 result = await (this.ai as any).models.generateContent({
-                    model: this.model,
+                    model: currentModel,
                     contents: contents,
                     tools: tools as any
                 });

@@ -2,12 +2,15 @@ import { ChatAssistantContextData } from '../../domain/services/ChatAssistantSer
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage, PendingAction } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
+import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 
 export class OpenAIChatAssistantService extends BaseChatAssistantService {
     protected apiKey: string;
     protected baseUrl: string;
     protected model: string;
     protected dashboardRepo?: DashboardRepository;
+    private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey: string, dashboardRepo?: DashboardRepository, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
         super();
@@ -15,6 +18,18 @@ export class OpenAIChatAssistantService extends BaseChatAssistantService {
         this.dashboardRepo = dashboardRepo;
         this.baseUrl = baseUrl;
         this.model = model;
+        this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
+    }
+
+    private async getModelVersion(): Promise<string> {
+        try {
+            return await this.modelConfigRepo.getModelVersion('openai', 'chat')
+                || this.model
+                || 'gpt-4o';
+        } catch (error) {
+            console.warn('Failed to get model version from remote config, using fallback:', error);
+            return this.model || 'gpt-4o';
+        }
     }
 
     async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {
@@ -109,7 +124,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                         'Authorization': `Bearer ${this.apiKey}`
                     },
                     body: JSON.stringify({
-                        model: this.model,
+                        model: await this.getModelVersion(),
                         messages: currentMessages,
                         tools: tools,
                         tool_choice: "auto"

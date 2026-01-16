@@ -32,6 +32,14 @@
 @layer base {
     body {
         @apply bg-healthpal-dark text-healthpal-text-primary;
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    
+    * {
+        -webkit-tap-highlight-color: transparent;
     }
 }
 
