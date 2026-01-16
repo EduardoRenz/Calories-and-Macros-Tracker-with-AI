@@ -41,11 +41,84 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     }, []);
 
+    // Cleanup scroll lock on unmount
+    useEffect(() => {
+        return () => {
+            // Restore body scroll when component unmounts
+            if (typeof window !== 'undefined') {
+                const scrollY = document.body.style.top;
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+                document.body.style.top = '';
+                if (scrollY) {
+                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                }
+            }
+        };
+    }, []);
+
+    // Handle resize events to toggle scroll lock based on screen size
+    useEffect(() => {
+        const handleResize = () => {
+            if (typeof window !== 'undefined' && isOpen) {
+                const isMobile = window.innerWidth < 768;
+                if (!isMobile) {
+                    // Restore scroll on desktop
+                    const scrollY = document.body.style.top;
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                    document.body.style.top = '';
+                    if (scrollY) {
+                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                    }
+                } else {
+                    // Apply scroll lock on mobile
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.position = 'fixed';
+                    document.body.style.width = '100%';
+                    document.body.style.top = `-${window.scrollY}px`;
+                }
+            }
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+        }
+    }, [isOpen]);
+
     const openChat = () => {
         if (!isEnabled) return;
         setIsOpen(true);
+        // Prevent body scroll on mobile when chat is open
+        if (typeof window !== 'undefined') {
+            // Check if it's a mobile device
+            const isMobile = window.innerWidth < 768; // md breakpoint
+            if (isMobile) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = `-${window.scrollY}px`;
+            }
+        }
     };
-    const closeChat = () => setIsOpen(false);
+
+    const closeChat = () => {
+        setIsOpen(false);
+        // Restore body scroll on mobile when chat is closed
+        if (typeof window !== 'undefined') {
+            const scrollY = document.body.style.top;
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.top = '';
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+        }
+    };
 
     const sendMessage = async (content: string) => {
         if (!content.trim()) return;
