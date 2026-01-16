@@ -29,15 +29,34 @@ export class MockChatAssistantService implements ChatAssistantService {
 
         // Check for adding ingredient pattern
         if (lowerMessage.includes('adicione') || lowerMessage.includes('adicionar') || lowerMessage.includes('add') || lowerMessage.includes('añadir')) {
+            // Extract quantity and convert to grams
+            let quantity = '100g'; // default
+            let ingredientName = 'Arroz';
+
+            if (lowerMessage.includes('copo')) {
+                quantity = '200g';
+            } else if (lowerMessage.includes('ovo')) {
+                quantity = '50g';
+                ingredientName = 'Ovo';
+            } else if (lowerMessage.includes('fatia')) {
+                quantity = '30g';
+            } else if (lowerMessage.includes('colher')) {
+                quantity = '15g';
+            } else if (lowerMessage.includes('xícara') || lowerMessage.includes('xicara')) {
+                quantity = '240g';
+            } else if (lowerMessage.includes('prato')) {
+                quantity = '250g';
+            }
+
             const descriptions = {
-                'pt': 'Adicionar 100g de Arroz ao Almoço',
-                'en': 'Add 100g of Rice to Lunch',
-                'es': 'Añadir 100g de Arroz al Almuerzo'
+                'pt': `Adicionar ${quantity} de ${ingredientName} ao Almoço`,
+                'en': `Add ${quantity} of ${ingredientName} to Lunch`,
+                'es': `Añadir ${quantity} de ${ingredientName} al Almuerzo`
             };
             const contents = {
-                'pt': '✅ Entendi! Você quer adicionar **100g de Arroz** ao seu **Almoço**.\n\n**Informação Nutricional:**\n- Calorias: 130 kcal\n- Proteína: 2.7g\n- Carboidratos: 28g\n- Gorduras: 0.3g\n- Fibras: 0.4g\n\nDeseja confirmar?',
-                'en': '✅ Got it! You want to add **100g of Rice** to your **Lunch**.\n\n**Nutritional Info:**\n- Calories: 130 kcal\n- Protein: 2.7g\n- Carbs: 28g\n- Fats: 0.3g\n- Fiber: 0.4g\n\nDo you want to confirm?',
-                'es': '✅ ¡Entendido! Quieres añadir **100g de Arroz** a tu **Almuerzo**.\n\n**Información Nutricional:**\n- Calorías: 130 kcal\n- Proteína: 2.7g\n- Carbohidratos: 28g\n- Grasas: 0.3g\n- Fibra: 0.4g\n\n¿Quieres confirmar?'
+                'pt': `✅ Entendi! Você quer adicionar **${quantity} de ${ingredientName}** ao seu **Almoço**.\n\n**Informação Nutricional:**\n- Calorias: 130 kcal\n- Proteína: 2.7g\n- Carboidratos: 28g\n- Gorduras: 0.3g\n- Fibras: 0.4g\n\nDeseja confirmar?`,
+                'en': `✅ Got it! You want to add **${quantity} of ${ingredientName}** to your **Lunch**.\n\n**Nutritional Info:**\n- Calories: 130 kcal\n- Protein: 2.7g\n- Carbs: 28g\n- Fats: 0.3g\n- Fiber: 0.4g\n\nDo you want to confirm?`,
+                'es': `✅ ¡Entendido! Quieres añadir **${quantity} de ${ingredientName}** a tu **Almuerzo**.\n\n**Información Nutricional:**\n- Calorías: 130 kcal\n- Proteína: 2.7g\n- Carbohidratos: 28g\n- Grasas: 0.3g\n- Fibra: 0.4g\n\n¿Quieres confirmar?`
             };
 
             const pendingAction: PendingAction = {
@@ -47,8 +66,8 @@ export class MockChatAssistantService implements ChatAssistantService {
                     date: context.currentDate || new Date().toISOString().split('T')[0],
                     mealType: 'lunch',
                     ingredient: {
-                        name: lang === 'pt' ? 'Arroz' : (lang === 'es' ? 'Arroz' : 'Rice'),
-                        quantity: '100g',
+                        name: ingredientName,
+                        quantity: quantity,
                         calories: 130,
                         protein: 2.7,
                         carbs: 28,
