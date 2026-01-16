@@ -78,6 +78,10 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                         type: "string",
                                         description: "The ID of the ingredient (required for update/remove)."
                                     },
+                                    name: {
+                                        type: "string",
+                                        description: "The name of the ingredient to remove (required for remove)."
+                                    },
                                     updates: {
                                         type: "object",
                                         description: "The ingredient details or updates (required for add/update).",
@@ -93,7 +97,21 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                         required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
                                     }
                                 },
-                                required: ["mealType"]
+                                required: ["mealType"],
+                                allOf: [
+                                    {
+                                        if: { "properties": { "type": { "const": "remove_ingredient" } } },
+                                        then: { "required": ["mealType", "ingredientId", "name"] }
+                                    },
+                                    {
+                                        if: { "properties": { "type": { "const": "update_ingredient" } } },
+                                        then: { "required": ["mealType", "ingredientId", "updates"] }
+                                    },
+                                    {
+                                        if: { "properties": { "type": { "const": "add_ingredient" } } },
+                                        then: { "required": ["mealType", "ingredient"] }
+                                    }
+                                ]
                             }
                         },
                         required: ["type", "data"]
@@ -202,40 +220,5 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                 timestamp: new Date()
             };
         }
-    }
-
-    private createPendingAction(args: { type: string, data: any }, context: ChatAssistantContextData): PendingAction {
-        const actionType = args.type as any;
-        const actionData = args.data;
-        let formattedData: any = { ...actionData };
-
-        // Ensure date
-        formattedData.date = context.currentDate || new Date().toISOString().split('T')[0];
-
-        // Validation Fallback
-        if (actionType === 'add_ingredient' && !actionData.mealType) {
-            console.warn("AI missing mealType, defaulting to 'snacks'");
-            formattedData.mealType = 'snacks';
-        }
-
-        let description = '';
-        switch (actionType) {
-            case 'add_ingredient':
-                description = `Add ${actionData.updates?.quantity || actionData.ingredient?.quantity || ''} ${actionData.updates?.name || actionData.ingredient?.name || ''} to ${formattedData.mealType}`;
-                break;
-            case 'update_ingredient':
-                description = `Update ingredient in ${formattedData.mealType}`;
-                break;
-            case 'remove_ingredient':
-                description = `Remove ingredient from ${formattedData.mealType}`;
-                break;
-        }
-
-        return {
-            id: `action-${Date.now()}`,
-            type: actionType,
-            data: formattedData,
-            description: description
-        };
     }
 }

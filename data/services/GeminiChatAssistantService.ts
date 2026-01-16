@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
-import { ChatMessage, PendingAction } from '../../domain/entities/ChatMessage';
+import { ChatMessage } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
 import { RepositoryFactory } from '../RepositoryFactory';
@@ -72,6 +72,10 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                     ingredientId: {
                                         type: Type.STRING,
                                         description: "The ID of the ingredient (required for update/remove)."
+                                    },
+                                    name: {
+                                        type: Type.STRING,
+                                        description: "The name of the ingredient to remove (required for remove)."
                                     },
                                     updates: {
                                         type: Type.OBJECT,
@@ -215,48 +219,5 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                 timestamp: new Date()
             };
         }
-    }
-
-    private createPendingAction(args: { type: string, data: any }, context: ChatAssistantContextData): PendingAction {
-        const actionType = args.type as any;
-        const actionData = args.data;
-        let formattedData: any = { ...actionData };
-
-        // Ensure date is set inferred from context or fallback to server local date (UTC usually)
-        formattedData.date = context.currentDate || (() => {
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        })();
-
-        // Basic Validation / Fallback
-        if (actionType === 'add_ingredient') {
-            if (!actionData.mealType) {
-                console.warn("AI didn't specify mealType in Tool Call, defaulting to 'snacks'");
-                formattedData.mealType = 'snacks';
-            }
-        }
-
-        let description = '';
-        switch (actionType) {
-            case 'add_ingredient':
-                description = `Add ${actionData.updates?.quantity || actionData.ingredient?.quantity || ''} ${actionData.updates?.name || actionData.ingredient?.name || ''} to ${formattedData.mealType || actionData.mealType}`;
-                break;
-            case 'update_ingredient':
-                description = `Update ingredient in ${formattedData.mealType || actionData.mealType}`;
-                break;
-            case 'remove_ingredient':
-                description = `Remove ingredient from ${formattedData.mealType || actionData.mealType}`;
-                break;
-        }
-
-        return {
-            id: `action-${Date.now()}`,
-            type: actionType,
-            data: formattedData,
-            description: description
-        };
     }
 }

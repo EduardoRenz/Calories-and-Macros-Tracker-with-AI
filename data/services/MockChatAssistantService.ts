@@ -117,6 +117,7 @@ export class MockChatAssistantService implements ChatAssistantService {
                         date: context.currentDate || new Date().toISOString().split('T')[0],
                         ingredientId: 'mock-id-123',
                         mealType: 'snacks',
+                        name: 'item',
                     },
                     description: descriptions[lang] || descriptions['en'],
                 },

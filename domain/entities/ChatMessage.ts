@@ -16,15 +16,19 @@ export interface UpdateIngredientActionData {
 
 export interface RemoveIngredientActionData {
     date: string;
+    name: string;
     mealType: keyof MealSummary;
     ingredientId: string;
 }
 
 export type ActionData = AddIngredientActionData | UpdateIngredientActionData | RemoveIngredientActionData;
 
+
+export type ActionDataType = 'add_ingredient' | 'update_ingredient' | 'remove_ingredient';
+
 export interface PendingAction {
     id: string;
-    type: 'add_ingredient' | 'update_ingredient' | 'remove_ingredient';
+    type: ActionDataType;
     data: ActionData;
     description: string;
 }

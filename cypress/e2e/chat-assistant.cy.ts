@@ -139,4 +139,30 @@ describe('Chat Assistant', () => {
         cy.contains('Action pending confirmation').should('not.exist');
         cy.contains('Action cancelled').should('be.visible');
     });
+
+    it('should handle delete meal flow', () => {
+        cy.get('[aria-label="Open Assistant"]').click();
+
+        // First add an ingredient to have something to delete
+        cy.get('textarea').type('Add rice to lunch');
+        cy.get('[aria-label="Send"]').click();
+        cy.contains('Action pending confirmation').should('be.visible');
+        cy.contains('Confirm').click();
+        cy.contains('successfully').should('be.visible');
+
+        // Now test delete
+        // MockChatAssistantService triggers delete for "delete" keyword
+        cy.get('textarea').type('Delete the lunch meal');
+        cy.get('[aria-label="Send"]').click();
+
+        cy.contains('Action pending confirmation').should('be.visible');
+        cy.contains('This action cannot be easily undone').should('be.visible');
+
+        cy.contains('Cancel').click();
+
+        // Card should disappear
+        cy.contains('Action pending confirmation').should('not.exist');
+        cy.contains('Action cancelled').should('be.visible');
+    });
+
 });
