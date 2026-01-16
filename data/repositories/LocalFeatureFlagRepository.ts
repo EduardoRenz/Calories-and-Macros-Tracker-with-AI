@@ -4,7 +4,7 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
     static instance: LocalFeatureFlagRepository;
 
     private flags: Record<string, boolean> = {
-        'enable_chatbot': false,
+        'enable_chatbot': true,
     };
 
     constructor() {
