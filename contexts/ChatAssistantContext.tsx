@@ -4,6 +4,7 @@ import { useLanguage } from './LanguageContext';
 import { ChatMessage, PendingAction, AddIngredientActionData, UpdateIngredientActionData, RemoveIngredientActionData } from '../domain/entities/ChatMessage';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { RepositoryFactory } from '../data/RepositoryFactory';
+import { useFeatureFlags } from './FeatureFlagContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import FloatingChatButton from '../components/assistant/FloatingChatButton';
@@ -29,6 +30,9 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     const { t } = useTranslation();
     const { profile } = useProfile();
     const { language } = useLanguage();
+    const { isFeatureEnabled } = useFeatureFlags();
+
+    const isEnabled = isFeatureEnabled('enable_chatbot');
 
     // Initial message
     useEffect(() => {
@@ -37,7 +41,10 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     }, []);
 
-    const openChat = () => setIsOpen(true);
+    const openChat = () => {
+        if (!isEnabled) return;
+        setIsOpen(true);
+    };
     const closeChat = () => setIsOpen(false);
 
     const sendMessage = async (content: string) => {
@@ -215,8 +222,12 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             isSending
         }}>
             {children}
-            <FloatingChatButton onClick={openChat} isOpen={isOpen} />
-            <ChatWindow />
+            {isEnabled && (
+                <>
+                    <FloatingChatButton onClick={openChat} isOpen={isOpen} />
+                    <ChatWindow />
+                </>
+            )}
         </ChatAssistantContext.Provider>
     );
 };

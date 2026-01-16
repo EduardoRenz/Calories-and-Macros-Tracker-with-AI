@@ -3,9 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HomeIcon, SparklesIcon, ChatBubbleLeftRightIcon } from './icons';
+import { HomeIcon, SparklesIcon, ChatBubbleLeftRightIcon, UserIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useChatAssistant } from '../contexts/ChatAssistantContext';
+import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 
 interface BottomNavbarProps {
     onQuickMealClick: () => void;
@@ -15,6 +16,9 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
     const pathname = usePathname();
     const { openChat, closeChat, isOpen } = useChatAssistant();
+    const { isFeatureEnabled } = useFeatureFlags();
+
+    const isChatEnabled = isFeatureEnabled('enable_chatbot');
 
     const handleChatClick = () => {
         if (isOpen) {
@@ -44,16 +48,29 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                 <div className="w-1/3" />
 
                 <div className="w-1/3">
-                    <button
-                        onClick={handleChatClick}
-                        className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${isOpen
-                            ? 'text-healthpal-green'
-                            : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
-                            }`}
-                    >
-                        <ChatBubbleLeftRightIcon className="w-6 h-6" />
-                        <span className="text-xs mt-1">{t('assistant.title')}</span>
-                    </button>
+                    {isChatEnabled ? (
+                        <button
+                            onClick={handleChatClick}
+                            className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${isOpen
+                                ? 'text-healthpal-green'
+                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                }`}
+                        >
+                            <ChatBubbleLeftRightIcon className="w-6 h-6" />
+                            <span className="text-xs mt-1">{t('assistant.title')}</span>
+                        </button>
+                    ) : (
+                        <Link
+                            href="/profile"
+                            className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${pathname === '/profile'
+                                ? 'text-healthpal-green'
+                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                }`}
+                        >
+                            <UserIcon className="w-6 h-6" />
+                            <span className="text-xs mt-1">{t('navbar.profile')}</span>
+                        </Link>
+                    )}
                 </div>
             </nav>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">

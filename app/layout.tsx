@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
 import SWRegistration from "@/components/SWRegistration";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,9 +31,11 @@ export default function RootLayout({
             <body className={inter.className}>
                 <SWRegistration />
                 <LanguageProvider>
-                    <AuthProvider>
-                        {children}
-                    </AuthProvider>
+                    <FeatureFlagProvider>
+                        <AuthProvider>
+                            {children}
+                        </AuthProvider>
+                    </FeatureFlagProvider>
                 </LanguageProvider>
             </body>
         </html>
