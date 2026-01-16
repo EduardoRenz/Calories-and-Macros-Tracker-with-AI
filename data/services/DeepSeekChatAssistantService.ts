@@ -6,4 +6,8 @@ export class DeepSeekChatAssistantService extends OpenAIChatAssistantService {
         // DeepSeek API is fully OpenAI Compatible
         super(apiKey, dashboardRepo, 'https://api.deepseek.com', 'deepseek');
     }
+
+    protected getDefaultModel(): string {
+        return 'deepseek-chat';
+    }
 }

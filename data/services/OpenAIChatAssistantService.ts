@@ -31,17 +31,8 @@ export class OpenAIChatAssistantService extends BaseChatAssistantService {
         }
     }
 
-    private getDefaultModel(): string {
-        switch (this.providerName) {
-            case 'deepseek':
-                return 'deepseek-chat';
-            case 'openai':
-                return 'gpt-4o';
-            case 'gemini':
-                return 'gemini-2.5-flash-lite';
-            default:
-                return 'gpt-4o';
-        }
+    protected getDefaultModel(): string {
+        return 'gpt-4o';
     }
 
     async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {
