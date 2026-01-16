@@ -8,27 +8,39 @@ import { RepositoryFactory } from '../RepositoryFactory';
 export class OpenAIChatAssistantService extends BaseChatAssistantService {
     protected apiKey: string;
     protected baseUrl: string;
-    protected model: string;
     protected dashboardRepo?: DashboardRepository;
     private modelConfigRepo: ModelConfigRepository;
+    protected providerName: string;
 
-    constructor(apiKey: string, dashboardRepo?: DashboardRepository, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
+    constructor(apiKey: string, dashboardRepo?: DashboardRepository, baseUrl: string = 'https://api.openai.com/v1', providerName: string = 'openai') {
         super();
         this.apiKey = apiKey;
         this.dashboardRepo = dashboardRepo;
         this.baseUrl = baseUrl;
-        this.model = model;
+        this.providerName = providerName;
         this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
     }
 
     private async getModelVersion(): Promise<string> {
         try {
-            return await this.modelConfigRepo.getModelVersion('openai', 'chat')
-                || this.model
-                || 'gpt-4o';
+            return await this.modelConfigRepo.getModelVersion(this.providerName, 'chat')
+                || this.getDefaultModel();
         } catch (error) {
             console.warn('Failed to get model version from remote config, using fallback:', error);
-            return this.model || 'gpt-4o';
+            return this.getDefaultModel();
+        }
+    }
+
+    private getDefaultModel(): string {
+        switch (this.providerName) {
+            case 'deepseek':
+                return 'deepseek-chat';
+            case 'openai':
+                return 'gpt-4o';
+            case 'gemini':
+                return 'gemini-2.5-flash-lite';
+            default:
+                return 'gpt-4o';
         }
     }
 
