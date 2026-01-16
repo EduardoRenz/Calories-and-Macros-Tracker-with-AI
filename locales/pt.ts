@@ -245,7 +245,7 @@ export default {
     }
   },
   "assistant": {
-    "title": "HealthPal Assistant",
+    "title": "Assistant",
     "status_online": "ONLINE",
     "close": "Fechar chat",
     "input_placeholder": "Pergunte ao HealthPal...",

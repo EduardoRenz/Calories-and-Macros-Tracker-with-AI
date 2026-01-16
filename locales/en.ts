@@ -245,10 +245,10 @@ export default {
     }
   },
   "assistant": {
-    "title": "HealthPal Assistant",
+    "title": "Assistant",
     "status_online": "ONLINE",
     "close": "Close chat",
-    "input_placeholder": "Ask HealthPal...",
+    "input_placeholder": "Ask Assistant...",
     "send": "Send",
     "confirm_action": "Action pending confirmation",
     "confirm": "Confirm",
