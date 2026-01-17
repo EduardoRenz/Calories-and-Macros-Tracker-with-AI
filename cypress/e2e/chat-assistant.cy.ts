@@ -27,7 +27,70 @@ describe('Chat Assistant', () => {
         cy.get('.text-healthpal-text-primary').should('have.length.at.least', 1);
     });
 
+    it('should prevent body scroll when chat is open on mobile', () => {
+        // Simulate mobile viewport
+        cy.viewport(375, 667); // iPhone 6/7/8 dimensions
+
+        // Open chat using mobile bottom navigation
+        cy.get('[data-testid="mobile-bottom-nav"] button').contains('Assistant').click();
+        cy.get('#chat-header').should('be.visible');
+
+        // Check if body has scroll lock styles
+        cy.get('body').should('have.css', 'overflow', 'hidden');
+        cy.get('body').should('have.css', 'position', 'fixed');
+
+        // Close chat
+        cy.get('[aria-label="Close chat"]').click();
+        cy.get('#chat-header').should('not.exist');
+
+        // Check if body scroll is restored
+        cy.get('body').should('not.have.css', 'overflow', 'hidden');
+        cy.get('body').should('not.have.css', 'position', 'fixed');
+    });
+
+    it('should not prevent body scroll when chat is open on desktop', () => {
+        // Simulate desktop viewport
+        cy.viewport(1200, 800);
+
+        // Open chat
+        cy.get('[aria-label="Open Assistant"]').should('be.visible').click();
+        cy.get('#chat-header').should('be.visible');
+
+        // Check if body does NOT have scroll lock styles on desktop
+        cy.get('body').should('not.have.css', 'overflow', 'hidden');
+        cy.get('body').should('not.have.css', 'position', 'fixed');
+
+        // Close chat
+        cy.get('[aria-label="Close chat"]').click();
+    });
+
+    it('should handle resize from mobile to desktop with chat open', () => {
+        // Start with mobile viewport
+        cy.viewport(375, 667);
+
+        // Open chat on mobile using mobile bottom navigation
+        cy.get('[data-testid="mobile-bottom-nav"] button').contains('Assistant').click();
+        cy.get('#chat-header').should('be.visible');
+
+        // Verify scroll lock is applied on mobile
+        cy.get('body').should('have.css', 'overflow', 'hidden');
+        cy.get('body').should('have.css', 'position', 'fixed');
+
+        // Resize to desktop
+        cy.viewport(1200, 800);
+
+        // Verify scroll lock is removed on desktop
+        cy.get('body').should('not.have.css', 'overflow', 'hidden');
+        cy.get('body').should('not.have.css', 'position', 'fixed');
+
+        // Close chat
+        cy.get('[aria-label="Close chat"]').click();
+    });
+
     it('should handle add ingredient flow', () => {
+        // Use desktop viewport for this test to avoid mobile scroll lock issues
+        cy.viewport(1200, 800);
+
         cy.get('[aria-label="Open Assistant"]').click();
 
         // Simulate request to add ingredient
@@ -76,4 +139,30 @@ describe('Chat Assistant', () => {
         cy.contains('Action pending confirmation').should('not.exist');
         cy.contains('Action cancelled').should('be.visible');
     });
+
+    it('should handle delete meal flow', () => {
+        cy.get('[aria-label="Open Assistant"]').click();
+
+        // First add an ingredient to have something to delete
+        cy.get('textarea').type('Add rice to lunch');
+        cy.get('[aria-label="Send"]').click();
+        cy.contains('Action pending confirmation').should('be.visible');
+        cy.contains('Confirm').click();
+        cy.contains('successfully').should('be.visible');
+
+        // Now test delete
+        // MockChatAssistantService triggers delete for "delete" keyword
+        cy.get('textarea').type('Delete the lunch meal');
+        cy.get('[aria-label="Send"]').click();
+
+        cy.contains('Action pending confirmation').should('be.visible');
+        cy.contains('This action cannot be easily undone').should('be.visible');
+
+        cy.contains('Cancel').click();
+
+        // Card should disappear
+        cy.contains('Action pending confirmation').should('not.exist');
+        cy.contains('Action cancelled').should('be.visible');
+    });
+
 });

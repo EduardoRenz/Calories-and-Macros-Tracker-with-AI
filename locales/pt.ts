@@ -295,7 +295,7 @@ export default {
     }
   },
   "assistant": {
-    "title": "HealthPal Assistant",
+    "title": "Assistant",
     "status_online": "ONLINE",
     "close": "Fechar chat",
     "input_placeholder": "Pergunte ao HealthPal...",
@@ -307,6 +307,15 @@ export default {
     "action_success": "Ação executada com sucesso!",
     "action_error": "Falha ao executar a ação. Por favor, tente novamente.",
     "action_cancelled": "Ação cancelada.",
-    "prepared_action": "Preparei a ação para você."
+    "prepared_action": "Preparei a ação para você.",
+    "errors": {
+      "api_key": "Estou tendo problemas de autenticação. Por favor, verifique minha configuração.",
+      "quota_exceeded": "Atingi meu limite de uso. Por favor, tente novamente em um momento.",
+      "model_error": "Estou tendo problemas com meu modelo de IA. Por favor, tente novamente mais tarde.",
+      "network_error": "Estou tendo problemas de conexão. Por favor, verifique sua internet e tente novamente.",
+      "safety_error": "Não consegui processar essa solicitação devido às diretrizes de segurança.",
+      "invalid_request": "Recebi um formato de solicitação inválido. Por favor, tente novamente.",
+      "unknown_error": "Desculpe, estou tendo problemas para me conectar ao meu cérebro agora. Por favor, tente novamente mais tarde."
+    }
   }
 }

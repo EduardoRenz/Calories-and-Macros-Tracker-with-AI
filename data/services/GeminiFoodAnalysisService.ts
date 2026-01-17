@@ -2,19 +2,34 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { FoodAnalysisInput } from '../../domain/services/FoodAnalysisService';
 import { FoodAnalysisReport, VitaminStatus } from '../../domain/entities/analysis';
 import { BaseFoodAnalysisService } from './BaseFoodAnalysisService';
+import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 
 export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
     private ai: GoogleGenAI;
     private model: string = process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+    private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey?: string) {
         super();
+        this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
         const key = apiKey || process.env.GEMINI_API_KEY;
         console.log("Gemini model: ", this.model);
         if (!key) {
             throw new Error("Gemini API key not found");
         }
         this.ai = new GoogleGenAI({ apiKey: key });
+    }
+
+    private async getModelVersion(): Promise<string> {
+        try {
+            return await this.modelConfigRepo.getModelVersion('gemini', 'food')
+                || process.env.GEMINI_FAST_DEFAULT_MODEL
+                || 'gemini-2.5-flash-lite';
+        } catch (error) {
+            console.warn('Failed to get model version from remote config, using fallback:', error);
+            return process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+        }
     }
 
     async generateAnalysis(input: FoodAnalysisInput): Promise<FoodAnalysisReport> {
@@ -30,8 +45,9 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
         const prompt = this.buildPrompt(input);
 
         try {
+            const currentModel = await this.getModelVersion();
             const response = await this.ai.models.generateContent({
-                model: this.model,
+                model: currentModel,
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",

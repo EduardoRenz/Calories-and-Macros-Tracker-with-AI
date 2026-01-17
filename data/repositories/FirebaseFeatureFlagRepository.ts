@@ -1,6 +1,7 @@
 import { FeatureFlagRepository } from '../../domain/repositories/FeatureFlagRepository';
 import { getRemoteConfig, getValue, fetchAndActivate } from "firebase/remote-config";
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { getApps, getApp } from "firebase/app";
+import { DEFAULT_MODEL_CONFIG } from '../config/DefaultModelConfig';
 
 export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
     static instance: FirebaseFeatureFlagRepository;
@@ -16,10 +17,11 @@ export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
             this.remoteConfig = getRemoteConfig(app);
             // Default configuration
             this.remoteConfig.settings = {
-                minimumFetchIntervalMillis: 1000000
+                minimumFetchIntervalMillis: 1000
             };
             this.remoteConfig.defaultConfig = {
                 'enable_chatbot': true,
+                'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
             };
         }
 

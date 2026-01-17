@@ -1,20 +1,38 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { FunctionCallingConfigMode, GoogleGenAI, Type } from "@google/genai";
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
-import { ChatMessage, PendingAction } from '../../domain/entities/ChatMessage';
+import { ChatMessage } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
+import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
+import en from '../../locales/en';
+import pt from '../../locales/pt';
+import es from '../../locales/es';
 
 export class GeminiChatAssistantService extends BaseChatAssistantService {
     private ai: GoogleGenAI;
     private model: string = process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+    private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey?: string, private dashboardRepo?: DashboardRepository) {
         super();
+        this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
         const key = apiKey || process.env.GEMINI_API_KEY;
         if (!key) {
             console.error("Gemini API key not found. Chat Assistant will fail.");
         }
         this.ai = new GoogleGenAI({ apiKey: key || 'dummy' });
+    }
+
+    private async getModelVersion(): Promise<string> {
+        try {
+            return await this.modelConfigRepo.getModelVersion('gemini', 'chat')
+                || process.env.GEMINI_FAST_DEFAULT_MODEL
+                || 'gemini-2.5-flash-lite';
+        } catch (error) {
+            console.warn('Failed to get model version from remote config, using fallback:', error);
+            return process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+        }
     }
 
     async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {
@@ -27,7 +45,12 @@ ${this.buildContextString(context)}
 
 ${this.getSystemCapabilities()}
 
-IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE 'create_action' TOOL provided. Do not output JSON text for actions in your response content. Just use the tool.
+WHEN TO USE TOOLS:
+- Use 'create_action' ONLY when user wants to ADD, UPDATE, or REMOVE ingredients
+- Use 'get_dashboard_for_date' ONLY when user asks for specific date data
+- For general questions about nutrition, calories, or advice - RESPOND DIRECTLY without tools
+
+CRITICAL: Do NOT use tools for general conversation or questions. Only use tools for specific actions.
 `;
 
         const prompt = `${systemPrompt}\n\nChat History:\n${messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n')}\n\nAssistant Response:`;
@@ -58,11 +81,28 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                         type: Type.STRING,
                                         description: "The ID of the ingredient (required for update/remove)."
                                     },
-                                    updates: {
+                                    name: {
+                                        type: Type.STRING,
+                                        description: "The name of the ingredient."
+                                    },
+                                    ingredient: {
                                         type: Type.OBJECT,
-                                        description: "The ingredient details or updates (required for add/update).",
+                                        description: "For ADD only!, the ingredient data",
                                         properties: {
                                             name: { type: Type.STRING },
+                                            quantity: { type: Type.STRING },
+                                            calories: { type: Type.NUMBER },
+                                            protein: { type: Type.NUMBER },
+                                            carbs: { type: Type.NUMBER },
+                                            fats: { type: Type.NUMBER },
+                                            fiber: { type: Type.NUMBER }
+                                        },
+                                        required: ["name", "quantity", "calories", "protein", "carbs", "fats", "fiber"]
+                                    },
+                                    updates: {
+                                        type: Type.OBJECT,
+                                        description: "For UPDATE only!, the data that will be updated",
+                                        properties: {
                                             quantity: { type: Type.STRING, description: "Quantity in string format e.g. '100g'" },
                                             calories: { type: Type.NUMBER },
                                             protein: { type: Type.NUMBER },
@@ -70,10 +110,10 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                             fats: { type: Type.NUMBER },
                                             fiber: { type: Type.NUMBER }
                                         },
-                                        required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
+                                        required: ["quantity", "calories", "protein", "carbs", "fats", "fiber"]
                                     }
                                 },
-                                required: ["mealType"]
+                                required: ["mealType", "name"]
                             }
                         },
                         required: ["type", "data"]
@@ -96,7 +136,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
         try {
             const contents = [
                 {
-                    role: 'user',
+                    role: 'model',
                     parts: [{ text: systemPrompt }]
                 },
                 ...messages.map(m => ({
@@ -110,10 +150,13 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             let candidate;
 
             while (true) {
+                const currentModel = await this.getModelVersion();
                 result = await (this.ai as any).models.generateContent({
-                    model: this.model,
+                    model: currentModel,
                     contents: contents,
-                    tools: tools as any
+                    config: {
+                        tools: tools
+                    }
                 });
 
                 candidate = result.response?.candidates?.[0] || result.candidates?.[0];
@@ -180,7 +223,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             const assistantMessage: ChatMessage = {
                 id: `msg-${Date.now()}`,
                 role: 'assistant',
-                content: content || (functionCallPart ? defaultPreparedMessage : "I didn't have anything to say."),
+                content: functionCallPart ? (content || defaultPreparedMessage) : (content || "I didn't have anything to say."),
                 timestamp: new Date(),
             };
 
@@ -191,56 +234,58 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             return assistantMessage;
 
         } catch (error) {
-            console.error("Gemini Chat Error:", error);
+            const translations = { en, pt, es };
+            const language = context?.language || 'en';
+            const locale = translations[language as keyof typeof translations] || en;
+            const errorId = `gemini-err-${Date.now()}`;
+
+            // Categorize and log detailed error information
+            let errorType = 'UNKNOWN_GEMINI_ERROR';
+            let userMessage = locale.assistant.errors.unknown_error;
+
+            if (error instanceof Error) {
+                const errorMessage = error.message.toLowerCase();
+
+
+                if (errorMessage.includes('api key') || errorMessage.includes('unauthorized')) {
+                    errorType = 'GEMINI_API_KEY_ERROR';
+                    userMessage = locale.assistant.errors.api_key;
+                } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
+                    errorType = 'GEMINI_QUOTA_ERROR';
+                    userMessage = locale.assistant.errors.quota_exceeded;
+                } else if (errorMessage.includes('model') || errorMessage.includes('not found')) {
+                    errorType = 'GEMINI_MODEL_ERROR';
+                    userMessage = locale.assistant.errors.model_error;
+                } else if (errorMessage.includes('timeout') || errorMessage.includes('network')) {
+                    errorType = 'GEMINI_NETWORK_ERROR';
+                    userMessage = locale.assistant.errors.network_error;
+                } else if (errorMessage.includes('safety') || errorMessage.includes('content')) {
+                    errorType = 'GEMINI_SAFETY_ERROR';
+                    userMessage = locale.assistant.errors.safety_error;
+                } else if (errorMessage.includes('invalid') || errorMessage.includes('parse')) {
+                    errorType = 'GEMINI_INVALID_REQUEST';
+                    userMessage = locale.assistant.errors.invalid_request;
+                }
+            }
+
+            console.error(`[${errorId}] Gemini Chat Error Details:`, {
+                errorType,
+                message: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                model: await this.getModelVersion().catch(() => 'unknown'),
+                requestContext: {
+                    messageCount: messages?.length || 0,
+                    hasContext: !!context,
+                    language: context?.language || 'en'
+                }
+            });
+
             return {
-                id: `err-${Date.now()}`,
+                id: errorId,
                 role: 'assistant',
-                content: "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later.",
+                content: userMessage,
                 timestamp: new Date()
             };
         }
-    }
-
-    private createPendingAction(args: { type: string, data: any }, context: ChatAssistantContextData): PendingAction {
-        const actionType = args.type as any;
-        const actionData = args.data;
-        let formattedData: any = { ...actionData };
-
-        // Ensure date is set inferred from context or fallback to server local date (UTC usually)
-        formattedData.date = context.currentDate || (() => {
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        })();
-
-        // Basic Validation / Fallback
-        if (actionType === 'add_ingredient') {
-            if (!actionData.mealType) {
-                console.warn("AI didn't specify mealType in Tool Call, defaulting to 'snacks'");
-                formattedData.mealType = 'snacks';
-            }
-        }
-
-        let description = '';
-        switch (actionType) {
-            case 'add_ingredient':
-                description = `Add ${actionData.updates?.quantity || actionData.ingredient?.quantity || ''} ${actionData.updates?.name || actionData.ingredient?.name || ''} to ${formattedData.mealType || actionData.mealType}`;
-                break;
-            case 'update_ingredient':
-                description = `Update ingredient in ${formattedData.mealType || actionData.mealType}`;
-                break;
-            case 'remove_ingredient':
-                description = `Remove ingredient from ${formattedData.mealType || actionData.mealType}`;
-                break;
-        }
-
-        return {
-            id: `action-${Date.now()}`,
-            type: actionType,
-            data: formattedData,
-            description: description
-        };
     }
 }

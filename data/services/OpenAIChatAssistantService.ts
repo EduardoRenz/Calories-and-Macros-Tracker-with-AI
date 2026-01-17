@@ -2,19 +2,37 @@ import { ChatAssistantContextData } from '../../domain/services/ChatAssistantSer
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage, PendingAction } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
+import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 
 export class OpenAIChatAssistantService extends BaseChatAssistantService {
     protected apiKey: string;
     protected baseUrl: string;
-    protected model: string;
     protected dashboardRepo?: DashboardRepository;
+    private modelConfigRepo: ModelConfigRepository;
+    protected providerName: string;
 
-    constructor(apiKey: string, dashboardRepo?: DashboardRepository, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
+    constructor(apiKey: string, dashboardRepo?: DashboardRepository, baseUrl: string = 'https://api.openai.com/v1', providerName: string = 'openai') {
         super();
         this.apiKey = apiKey;
         this.dashboardRepo = dashboardRepo;
         this.baseUrl = baseUrl;
-        this.model = model;
+        this.providerName = providerName;
+        this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
+    }
+
+    private async getModelVersion(): Promise<string> {
+        try {
+            return await this.modelConfigRepo.getModelVersion(this.providerName, 'chat')
+                || this.getDefaultModel();
+        } catch (error) {
+            console.warn('Failed to get model version from remote config, using fallback:', error);
+            return this.getDefaultModel();
+        }
+    }
+
+    protected getDefaultModel(): string {
+        return 'gpt-4o';
     }
 
     async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {
@@ -60,6 +78,10 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                         type: "string",
                                         description: "The ID of the ingredient (required for update/remove)."
                                     },
+                                    name: {
+                                        type: "string",
+                                        description: "The name of the ingredient to remove (required for remove)."
+                                    },
                                     updates: {
                                         type: "object",
                                         description: "The ingredient details or updates (required for add/update).",
@@ -75,7 +97,21 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                         required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
                                     }
                                 },
-                                required: ["mealType"]
+                                required: ["mealType"],
+                                allOf: [
+                                    {
+                                        if: { "properties": { "type": { "const": "remove_ingredient" } } },
+                                        then: { "required": ["mealType", "ingredientId", "name"] }
+                                    },
+                                    {
+                                        if: { "properties": { "type": { "const": "update_ingredient" } } },
+                                        then: { "required": ["mealType", "ingredientId", "updates"] }
+                                    },
+                                    {
+                                        if: { "properties": { "type": { "const": "add_ingredient" } } },
+                                        then: { "required": ["mealType", "ingredient"] }
+                                    }
+                                ]
                             }
                         },
                         required: ["type", "data"]
@@ -109,7 +145,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                         'Authorization': `Bearer ${this.apiKey}`
                     },
                     body: JSON.stringify({
-                        model: this.model,
+                        model: await this.getModelVersion(),
                         messages: currentMessages,
                         tools: tools,
                         tool_choice: "auto"
@@ -184,40 +220,5 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                 timestamp: new Date()
             };
         }
-    }
-
-    private createPendingAction(args: { type: string, data: any }, context: ChatAssistantContextData): PendingAction {
-        const actionType = args.type as any;
-        const actionData = args.data;
-        let formattedData: any = { ...actionData };
-
-        // Ensure date
-        formattedData.date = context.currentDate || new Date().toISOString().split('T')[0];
-
-        // Validation Fallback
-        if (actionType === 'add_ingredient' && !actionData.mealType) {
-            console.warn("AI missing mealType, defaulting to 'snacks'");
-            formattedData.mealType = 'snacks';
-        }
-
-        let description = '';
-        switch (actionType) {
-            case 'add_ingredient':
-                description = `Add ${actionData.updates?.quantity || actionData.ingredient?.quantity || ''} ${actionData.updates?.name || actionData.ingredient?.name || ''} to ${formattedData.mealType}`;
-                break;
-            case 'update_ingredient':
-                description = `Update ingredient in ${formattedData.mealType}`;
-                break;
-            case 'remove_ingredient':
-                description = `Remove ingredient from ${formattedData.mealType}`;
-                break;
-        }
-
-        return {
-            id: `action-${Date.now()}`,
-            type: actionType,
-            data: formattedData,
-            description: description
-        };
     }
 }

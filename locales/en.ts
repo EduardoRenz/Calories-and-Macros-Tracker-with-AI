@@ -295,10 +295,10 @@ export default {
     }
   },
   "assistant": {
-    "title": "HealthPal Assistant",
+    "title": "Assistant",
     "status_online": "ONLINE",
     "close": "Close chat",
-    "input_placeholder": "Ask HealthPal...",
+    "input_placeholder": "Ask Assistant...",
     "send": "Send",
     "confirm_action": "Action pending confirmation",
     "confirm": "Confirm",
@@ -307,6 +307,15 @@ export default {
     "action_success": "Action executed successfully!",
     "action_error": "Failed to execute action. Please try again.",
     "action_cancelled": "Action cancelled.",
-    "prepared_action": "I have prepared the action for you."
+    "prepared_action": "I have prepared the action for you.",
+    "errors": {
+      "api_key": "I'm having authentication issues. Please check my configuration.",
+      "quota_exceeded": "I've reached my usage limit. Please try again in a moment.",
+      "model_error": "I'm having trouble with my AI model. Please try again later.",
+      "network_error": "I'm having connection issues. Please check your internet and try again.",
+      "safety_error": "I couldn't process that request due to safety guidelines.",
+      "invalid_request": "I received an invalid request format. Please try again.",
+      "unknown_error": "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later."
+    }
   }
 };
