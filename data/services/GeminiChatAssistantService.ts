@@ -42,7 +42,12 @@ ${this.buildContextString(context)}
 
 ${this.getSystemCapabilities()}
 
-IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE 'create_action' TOOL provided. Do not output JSON text for actions in your response content. Just use the tool.
+WHEN TO USE TOOLS:
+- Use 'create_action' ONLY when user wants to ADD, UPDATE, or REMOVE ingredients
+- Use 'get_dashboard_for_date' ONLY when user asks for specific date data
+- For general questions about nutrition, calories, or advice - RESPOND DIRECTLY without tools
+
+CRITICAL: Do NOT use tools for general conversation or questions. Only use tools for specific actions.
 `;
 
         const prompt = `${systemPrompt}\n\nChat History:\n${messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n')}\n\nAssistant Response:`;
@@ -149,7 +154,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                     config: {
                         toolConfig: {
                             functionCallingConfig: {
-                                mode: FunctionCallingConfigMode.ANY,
+                                mode: FunctionCallingConfigMode.AUTO,
                                 allowedFunctionNames: ['create_action', 'get_dashboard_for_date']
                             }
                         },
