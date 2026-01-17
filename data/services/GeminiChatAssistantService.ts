@@ -5,6 +5,9 @@ import { ChatMessage } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
 import { RepositoryFactory } from '../RepositoryFactory';
+import en from '../../locales/en';
+import pt from '../../locales/pt';
+import es from '../../locales/es';
 
 export class GeminiChatAssistantService extends BaseChatAssistantService {
     private ai: GoogleGenAI;
@@ -231,33 +234,37 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
             return assistantMessage;
 
         } catch (error) {
+            const translations = { en, pt, es };
+            const language = context?.language || 'en';
+            const locale = translations[language as keyof typeof translations] || en;
             const errorId = `gemini-err-${Date.now()}`;
 
             // Categorize and log detailed error information
             let errorType = 'UNKNOWN_GEMINI_ERROR';
-            let userMessage = "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later.";
+            let userMessage = locale.assistant.errors.unknown_error;
 
             if (error instanceof Error) {
                 const errorMessage = error.message.toLowerCase();
 
+
                 if (errorMessage.includes('api key') || errorMessage.includes('unauthorized')) {
                     errorType = 'GEMINI_API_KEY_ERROR';
-                    userMessage = "I'm having authentication issues. Please check my configuration.";
+                    userMessage = locale.assistant.errors.api_key;
                 } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
                     errorType = 'GEMINI_QUOTA_ERROR';
-                    userMessage = "I've reached my usage limit. Please try again in a moment.";
+                    userMessage = locale.assistant.errors.quota_exceeded;
                 } else if (errorMessage.includes('model') || errorMessage.includes('not found')) {
                     errorType = 'GEMINI_MODEL_ERROR';
-                    userMessage = "I'm having trouble with my AI model. Please try again later.";
+                    userMessage = locale.assistant.errors.model_error;
                 } else if (errorMessage.includes('timeout') || errorMessage.includes('network')) {
                     errorType = 'GEMINI_NETWORK_ERROR';
-                    userMessage = "I'm having connection issues. Please check your internet and try again.";
+                    userMessage = locale.assistant.errors.network_error;
                 } else if (errorMessage.includes('safety') || errorMessage.includes('content')) {
                     errorType = 'GEMINI_SAFETY_ERROR';
-                    userMessage = "I couldn't process that request due to safety guidelines.";
+                    userMessage = locale.assistant.errors.safety_error;
                 } else if (errorMessage.includes('invalid') || errorMessage.includes('parse')) {
                     errorType = 'GEMINI_INVALID_REQUEST';
-                    userMessage = "I received an invalid request format. Please try again.";
+                    userMessage = locale.assistant.errors.invalid_request;
                 }
             }
 
@@ -266,7 +273,6 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
                 message: error instanceof Error ? error.message : String(error),
                 stack: error instanceof Error ? error.stack : undefined,
                 model: await this.getModelVersion().catch(() => 'unknown'),
-                timestamp: new Date().toISOString(),
                 requestContext: {
                     messageCount: messages?.length || 0,
                     hasContext: !!context,

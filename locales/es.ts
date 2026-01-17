@@ -257,6 +257,15 @@ export default {
     "action_success": "¡Acción ejecutada con éxito!",
     "action_error": "Error al ejecutar la acción. Por favor, inténtelo de nuevo.",
     "action_cancelled": "Acción cancelada.",
-    "prepared_action": "He preparado la acción para ti."
+    "prepared_action": "He preparado la acción para ti.",
+    "errors": {
+      "api_key": "Estoy teniendo problemas de autenticación. Por favor, verifica mi configuración.",
+      "quota_exceeded": "He alcanzado mi límite de uso. Por favor, intenta nuevamente en un momento.",
+      "model_error": "Estoy teniendo problemas con mi modelo de IA. Por favor, intenta nuevamente más tarde.",
+      "network_error": "Estoy teniendo problemas de conexión. Por favor, verifica tu internet e intenta nuevamente.",
+      "safety_error": "No pude procesar esa solicitud debido a las pautas de seguridad.",
+      "invalid_request": "Recibí un formato de solicitud inválido. Por favor, intenta nuevamente.",
+      "unknown_error": "Lo siento, estoy teniendo problemas para conectar con mi cerebro ahora. Por favor, intenta nuevamente más tarde."
+    }
   }
 }
