@@ -152,12 +152,6 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
                     model: currentModel,
                     contents: contents,
                     config: {
-                        toolConfig: {
-                            functionCallingConfig: {
-                                mode: FunctionCallingConfigMode.AUTO,
-                                allowedFunctionNames: ['create_action', 'get_dashboard_for_date']
-                            }
-                        },
                         tools: tools
                     }
                 });
@@ -237,11 +231,53 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
             return assistantMessage;
 
         } catch (error) {
-            console.error("Gemini Chat Error:", error);
+            const errorId = `gemini-err-${Date.now()}`;
+
+            // Categorize and log detailed error information
+            let errorType = 'UNKNOWN_GEMINI_ERROR';
+            let userMessage = "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later.";
+
+            if (error instanceof Error) {
+                const errorMessage = error.message.toLowerCase();
+
+                if (errorMessage.includes('api key') || errorMessage.includes('unauthorized')) {
+                    errorType = 'GEMINI_API_KEY_ERROR';
+                    userMessage = "I'm having authentication issues. Please check my configuration.";
+                } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
+                    errorType = 'GEMINI_QUOTA_ERROR';
+                    userMessage = "I've reached my usage limit. Please try again in a moment.";
+                } else if (errorMessage.includes('model') || errorMessage.includes('not found')) {
+                    errorType = 'GEMINI_MODEL_ERROR';
+                    userMessage = "I'm having trouble with my AI model. Please try again later.";
+                } else if (errorMessage.includes('timeout') || errorMessage.includes('network')) {
+                    errorType = 'GEMINI_NETWORK_ERROR';
+                    userMessage = "I'm having connection issues. Please check your internet and try again.";
+                } else if (errorMessage.includes('safety') || errorMessage.includes('content')) {
+                    errorType = 'GEMINI_SAFETY_ERROR';
+                    userMessage = "I couldn't process that request due to safety guidelines.";
+                } else if (errorMessage.includes('invalid') || errorMessage.includes('parse')) {
+                    errorType = 'GEMINI_INVALID_REQUEST';
+                    userMessage = "I received an invalid request format. Please try again.";
+                }
+            }
+
+            console.error(`[${errorId}] Gemini Chat Error Details:`, {
+                errorType,
+                message: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                model: await this.getModelVersion().catch(() => 'unknown'),
+                timestamp: new Date().toISOString(),
+                requestContext: {
+                    messageCount: messages?.length || 0,
+                    hasContext: !!context,
+                    language: context?.language || 'en'
+                }
+            });
+
             return {
-                id: `err-${Date.now()}`,
+                id: errorId,
                 role: 'assistant',
-                content: "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later.",
+                content: userMessage,
                 timestamp: new Date()
             };
         }
