@@ -13,6 +13,7 @@ trigger: always_on
 - When a fix or feature is created, bump version in package.json
 - Remove unused variables and imports
 - Always use const if the variable is not going to be reassigned
+- The project uses l18n, always make a translation for every text. fallback to key if translation not exists to be visible the missing translation
 
 ### Architecture
 
@@ -141,4 +142,8 @@ export default function DashboardNavigation({
 #### Created reusable components
 - Modal component in `components/ui/Modal.tsx` when you need to create a new modal
 
+#### Feature Flag system
 
+- This projects uses Feature Flags to enable and disable some resources. The repository is FeatureFlagRepository
+- Always check if the new feature should pass in a feature flag criterion before creating
+- Check the useFeatureFlags context
