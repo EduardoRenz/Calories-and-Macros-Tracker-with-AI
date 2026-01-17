@@ -2,9 +2,12 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { RepositoryFactory } from '../data/RepositoryFactory';
+import { FeatureFlags } from '../domain/repositories/FeatureFlagRepository';
 
 interface FeatureFlagContextType {
     isFeatureEnabled: (flagName: string) => boolean;
+    isUserApiKeysRequired: boolean;
+    hasUserApiKeys: boolean;
     loading: boolean;
 }
 
@@ -13,31 +16,74 @@ const FeatureFlagContext = createContext<FeatureFlagContextType | undefined>(und
 export const FeatureFlagProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [flags, setFlags] = useState<Record<string, boolean>>({});
     const [loading, setLoading] = useState(true);
+    const [hasUserApiKeys, setHasUserApiKeys] = useState(false);
 
     const checkFlags = async () => {
         const repo = RepositoryFactory.getFeatureFlagRepository();
 
-        // We can pre-fetch known flags here or fetch them on demand.
-        // For performance, pre-fetching important flags is better.
-        const enableChatbot = await repo.isEnabled('enable_chatbot');
-        console.log('enable_chatbot', enableChatbot);
+        // Pre-fetch known flags
+        const [enableChatbot, allowUserApiKeysOnly] = await Promise.all([
+            repo.isEnabled(FeatureFlags.ENABLE_CHATBOT),
+            repo.isEnabled(FeatureFlags.ALLOW_USER_API_KEYS_ONLY)
+        ]);
+
+        console.log('Flags loaded:', { enableChatbot, allowUserApiKeysOnly });
 
         setFlags({
-            'enable_chatbot': enableChatbot,
+            [FeatureFlags.ENABLE_CHATBOT]: enableChatbot,
+            [FeatureFlags.ALLOW_USER_API_KEYS_ONLY]: allowUserApiKeysOnly,
         });
         setLoading(false);
     };
 
+    const checkUserApiKeys = () => {
+        if (typeof window !== 'undefined') {
+            const keysStr = localStorage.getItem('ai_api_keys');
+            try {
+                const keys = keysStr ? JSON.parse(keysStr) : [];
+                setHasUserApiKeys(Array.isArray(keys) && keys.length > 0);
+            } catch (e) {
+                setHasUserApiKeys(false);
+            }
+        }
+    };
+
     useEffect(() => {
         checkFlags();
+        checkUserApiKeys();
+
+        // Listen for storage changes (if keys are updated in another tab)
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'ai_api_keys') {
+                checkUserApiKeys();
+            }
+        };
+
+        // Custom event for same-tab updates (since ServiceFactory.reset is called in settings)
+        const handleKeysUpdated = () => checkUserApiKeys();
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('ai-keys-updated', handleKeysUpdated);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('ai-keys-updated', handleKeysUpdated);
+        };
     }, []);
 
     const isFeatureEnabled = (flagName: string) => {
         return flags[flagName] ?? false;
     };
 
+    const isUserApiKeysRequired = isFeatureEnabled(FeatureFlags.ALLOW_USER_API_KEYS_ONLY) && !hasUserApiKeys;
+
     return (
-        <FeatureFlagContext.Provider value={{ isFeatureEnabled, loading }}>
+        <FeatureFlagContext.Provider value={{
+            isFeatureEnabled,
+            isUserApiKeysRequired,
+            hasUserApiKeys,
+            loading
+        }}>
             {children}
         </FeatureFlagContext.Provider>
     );
