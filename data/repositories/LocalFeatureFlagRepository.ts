@@ -1,10 +1,11 @@
-import { FeatureFlagRepository } from '../../domain/repositories/FeatureFlagRepository';
+import { FeatureFlagRepository, FeatureFlags } from '../../domain/repositories/FeatureFlagRepository';
 
 export class LocalFeatureFlagRepository implements FeatureFlagRepository {
     static instance: LocalFeatureFlagRepository;
 
     private flags: Record<string, boolean> = {
-        'enable_chatbot': true,
+        [FeatureFlags.ENABLE_CHATBOT]: true,
+        [FeatureFlags.ALLOW_USER_API_KEYS_ONLY]: true,
     };
 
     constructor() {
