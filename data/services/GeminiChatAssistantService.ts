@@ -115,7 +115,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
         try {
             const contents = [
                 {
-                    role: 'user',
+                    role: 'model',
                     parts: [{ text: systemPrompt }]
                 },
                 ...messages.map(m => ({
@@ -200,7 +200,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             const assistantMessage: ChatMessage = {
                 id: `msg-${Date.now()}`,
                 role: 'assistant',
-                content: content || (functionCallPart ? defaultPreparedMessage : "I didn't have anything to say."),
+                content: functionCallPart ? (content || defaultPreparedMessage) : (content || "I didn't have anything to say."),
                 timestamp: new Date(),
             };
 
