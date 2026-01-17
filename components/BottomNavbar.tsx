@@ -16,7 +16,7 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
     const pathname = usePathname();
     const { openChat, closeChat, isOpen } = useChatAssistant();
-    const { isFeatureEnabled } = useFeatureFlags();
+    const { isFeatureEnabled, isUserApiKeysRequired } = useFeatureFlags();
 
     const isChatEnabled = isFeatureEnabled('enable_chatbot');
 
@@ -75,9 +75,13 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
             </nav>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <button
-                    onClick={onQuickMealClick}
-                    className="w-16 h-16 bg-healthpal-green rounded-full flex items-center justify-center text-black shadow-lg shadow-black/30 hover:brightness-110 transition-all"
+                    onClick={isUserApiKeysRequired ? undefined : onQuickMealClick}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center text-black shadow-lg shadow-black/30 transition-all ${isUserApiKeysRequired
+                        ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed grayscale'
+                        : 'bg-healthpal-green hover:brightness-110'
+                        }`}
                     aria-label={t('navbar.quick_meal')}
+                    title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
                 >
                     <SparklesIcon className="w-8 h-8" />
                 </button>

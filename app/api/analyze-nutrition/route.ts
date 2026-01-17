@@ -3,10 +3,15 @@ import { GeminiNutritionAnalysisService } from '@/data/services/GeminiNutritionA
 import { OpenAINutritionAnalysisService } from '@/data/services/OpenAINutritionAnalysisService';
 import { DeepSeekNutritionAnalysisService } from '@/data/services/DeepSeekNutritionAnalysisService';
 import { verifyAuth } from '../auth-middleware';
+import { checkAiAccess } from '../feature-flag-check';
 
 export async function POST(req: NextRequest) {
     try {
         await verifyAuth(req.headers.get('Authorization'));
+
+        const accessCheck = await checkAiAccess();
+        if (accessCheck) return accessCheck;
+
         const { ingredientName, quantity, language } = await req.json();
 
         let service;

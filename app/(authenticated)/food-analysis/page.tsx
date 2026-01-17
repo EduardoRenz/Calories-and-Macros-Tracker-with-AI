@@ -10,6 +10,7 @@ import { FoodAnalysisService } from '@/domain/services/FoodAnalysisService';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 
 // Cache TTL: 24 hours in milliseconds
 const CACHE_TTL = 24 * 60 * 60 * 1000;
@@ -71,6 +72,7 @@ const MealIcon: React.FC<{ meal: string }> = ({ meal }) => {
 export default function FoodAnalysisPage() {
     const { t } = useTranslation();
     const { language } = useLanguage();
+    const { isUserApiKeysRequired } = useFeatureFlags();
     const router = useRouter();
 
     const [dateRangeOption, setDateRangeOption] = useState<DateRangeOption>('last7days');
@@ -223,12 +225,22 @@ export default function FoodAnalysisPage() {
                         {t('food_analysis.generate_prompt')}
                     </p>
                     <button
-                        onClick={generateReport}
-                        className="bg-healthpal-green text-black font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all"
+                        onClick={isUserApiKeysRequired ? undefined : generateReport}
+                        disabled={isUserApiKeysRequired}
+                        className={`font-bold py-3 px-8 rounded-lg transition-all ${isUserApiKeysRequired
+                            ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
+                            : 'bg-healthpal-green text-black hover:brightness-110 shadow-lg shadow-healthpal-green/20'
+                            }`}
                         id="generate-report-btn"
+                        title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
                     >
                         {t('food_analysis.generate_button')}
                     </button>
+                    {isUserApiKeysRequired && (
+                        <p className="mt-4 text-sm text-red-500 font-medium">
+                            {t('dashboard.api_keys_required_desc')}
+                        </p>
+                    )}
                 </div>
             )}
 

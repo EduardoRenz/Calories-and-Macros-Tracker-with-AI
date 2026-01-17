@@ -6,7 +6,6 @@ import { ServiceFactory } from '../data/ServiceFactory';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { useFeatureFlags } from './FeatureFlagContext';
 import { useTranslation } from '../hooks/useTranslation';
-import { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import FloatingChatButton from '../components/assistant/FloatingChatButton';
 import ChatWindow from '../components/assistant/ChatWindow';
 
@@ -30,16 +29,16 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     const { t } = useTranslation();
     const { profile } = useProfile();
     const { language } = useLanguage();
-    const { isFeatureEnabled } = useFeatureFlags();
+    const { isFeatureEnabled, isUserApiKeysRequired } = useFeatureFlags();
 
-    const isEnabled = isFeatureEnabled('enable_chatbot');
+    const isChatEnabled = isFeatureEnabled('enable_chatbot') && !isUserApiKeysRequired;
 
     // Initial message
     useEffect(() => {
         if (messages.length === 0) {
             // Optional: Add initial greeting if needed, or let component handle empty state
         }
-    }, []);
+    }, [messages.length]);
 
     // Cleanup scroll lock on unmount
     useEffect(() => {
@@ -90,7 +89,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     }, [isOpen]);
 
     const openChat = () => {
-        if (!isEnabled) return;
+        if (!isChatEnabled) return;
         setIsOpen(true);
         // Prevent body scroll on mobile when chat is open
         if (typeof window !== 'undefined') {
@@ -295,7 +294,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             isSending
         }}>
             {children}
-            {isEnabled && (
+            {isChatEnabled && (
                 <>
                     <FloatingChatButton onClick={openChat} isOpen={isOpen} />
                     <ChatWindow />

@@ -3,10 +3,15 @@ import { GeminiImageRecognitionService } from '@/data/services/GeminiImageRecogn
 import { OpenAIImageRecognitionService } from '@/data/services/OpenAIImageRecognitionService';
 import { DeepSeekImageRecognitionService } from '@/data/services/DeepSeekImageRecognitionService';
 import { verifyAuth } from '../auth-middleware';
+import { checkAiAccess } from '../feature-flag-check';
 
 export async function POST(req: NextRequest) {
     try {
         await verifyAuth(req.headers.get('Authorization'));
+
+        const accessCheck = await checkAiAccess();
+        if (accessCheck) return accessCheck;
+
         const formData = await req.formData();
         const image = formData.get('image') as File;
         const language = formData.get('language') as string;
