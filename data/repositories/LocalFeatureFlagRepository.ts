@@ -5,7 +5,7 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
 
     private flags: Record<string, boolean> = {
         [FeatureFlags.ENABLE_CHATBOT]: true,
-        [FeatureFlags.ALLOW_USER_API_KEYS_ONLY]: true,
+        [FeatureFlags.ALLOW_USER_API_KEYS_ONLY]: false,
     };
 
     constructor() {
