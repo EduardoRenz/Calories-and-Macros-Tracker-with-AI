@@ -77,9 +77,9 @@ You must respond with a JSON object adhering to this schema:
     "type": "add_ingredient" | "update_ingredient" | "remove_ingredient" | "none",
     "data": {
        "mealType"?: "breakfast" | "lunch" | "dinner" | "snacks", // MUST be lowercase
-       "name"?: "string", // Required for remove_ingredient
+       "name": "string", // Required for remove_ingredient or update
        "ingredientId"?: "string", // Required for update/remove
-       "ingredient"?: {
+       "ingredient"?: { // Only when adding a new ingredient
           "name": "string",
           "quantity": "string", // e.g. "100g"
           "calories": number,
@@ -88,8 +88,7 @@ You must respond with a JSON object adhering to this schema:
           "fats": number,
           "fiber": number
        },
-       "updates"?: {
-          "name"?: "string",
+       "updates"?: { // only for update a food
           "quantity"?: "string",
           "calories"?: number,
           "protein"?: number,
@@ -148,7 +147,8 @@ ${this.getOutputInstructions()}
                 break;
             case 'update_ingredient':
                 const updateActionData = actionData as UpdateIngredientActionData;
-                description = `Update ${updateActionData.updates?.name} in ${formattedData.mealType}`;
+                const updateName = updateActionData.name || updateActionData.updates?.name || updateActionData.ingredientId || 'item';
+                description = `Update ${updateName} in ${formattedData.mealType}`;
                 break;
             case 'remove_ingredient':
                 const removeActionData = actionData as RemoveIngredientActionData;

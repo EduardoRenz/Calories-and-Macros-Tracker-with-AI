@@ -11,6 +11,7 @@ export interface UpdateIngredientActionData {
     date: string;
     mealType: keyof MealSummary;
     ingredientId: string;
+    name: string;
     updates: Partial<Omit<Ingredient, 'id'>>;
 }
 

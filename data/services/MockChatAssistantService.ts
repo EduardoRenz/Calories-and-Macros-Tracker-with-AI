@@ -105,6 +105,7 @@ export class MockChatAssistantService implements ChatAssistantService {
                     id: `action-${Date.now()}`,
                     type: 'update_ingredient',
                     data: {
+                        name: 'Mock Ingredient',
                         date: context.currentDate || new Date().toISOString().split('T')[0],
                         ingredientId: 'mock-id-123',
                         mealType: 'breakfast',

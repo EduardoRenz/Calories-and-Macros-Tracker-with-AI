@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { FunctionCallingConfigMode, GoogleGenAI, Type } from "@google/genai";
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage } from '../../domain/entities/ChatMessage';
@@ -75,13 +75,26 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                     },
                                     name: {
                                         type: Type.STRING,
-                                        description: "The name of the ingredient to remove (required for remove)."
+                                        description: "The name of the ingredient."
+                                    },
+                                    ingredient: {
+                                        type: Type.OBJECT,
+                                        description: "For ADD only!, the ingredient data",
+                                        properties: {
+                                            name: { type: Type.STRING },
+                                            quantity: { type: Type.STRING },
+                                            calories: { type: Type.NUMBER },
+                                            protein: { type: Type.NUMBER },
+                                            carbs: { type: Type.NUMBER },
+                                            fats: { type: Type.NUMBER },
+                                            fiber: { type: Type.NUMBER }
+                                        },
+                                        required: ["name", "quantity", "calories", "protein", "carbs", "fats", "fiber"]
                                     },
                                     updates: {
                                         type: Type.OBJECT,
-                                        description: "The ingredient details or updates (required for add/update).",
+                                        description: "For UPDATE only!, the data that will be updated",
                                         properties: {
-                                            name: { type: Type.STRING },
                                             quantity: { type: Type.STRING, description: "Quantity in string format e.g. '100g'" },
                                             calories: { type: Type.NUMBER },
                                             protein: { type: Type.NUMBER },
@@ -89,10 +102,10 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                                             fats: { type: Type.NUMBER },
                                             fiber: { type: Type.NUMBER }
                                         },
-                                        required: ["name", "quantity", "calories", "protein", "carbs", "fats"]
+                                        required: ["quantity", "calories", "protein", "carbs", "fats", "fiber"]
                                     }
                                 },
-                                required: ["mealType"]
+                                required: ["mealType", "name"]
                             }
                         },
                         required: ["type", "data"]
@@ -133,7 +146,15 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
                 result = await (this.ai as any).models.generateContent({
                     model: currentModel,
                     contents: contents,
-                    tools: tools as any
+                    config: {
+                        toolConfig: {
+                            functionCallingConfig: {
+                                mode: FunctionCallingConfigMode.ANY,
+                                allowedFunctionNames: ['create_action', 'get_dashboard_for_date']
+                            }
+                        },
+                        tools: tools
+                    }
                 });
 
                 candidate = result.response?.candidates?.[0] || result.candidates?.[0];
