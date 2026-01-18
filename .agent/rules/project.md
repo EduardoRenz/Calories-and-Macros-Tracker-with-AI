@@ -148,8 +148,9 @@ export default function DashboardNavigation({
 ---
 
 ```
-#### Created reusable components
+#### Created reusable components and utils
 - Modal component in `components/ui/Modal.tsx` when you need to create a new modal
+- Use DataCacheManager when needs to use a cache sytem, do not recreate a cache system
 
 ---
 

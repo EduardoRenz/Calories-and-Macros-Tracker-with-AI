@@ -17,11 +17,11 @@ export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
             this.remoteConfig = getRemoteConfig(app);
             // Default configuration
             this.remoteConfig.settings = {
-                minimumFetchIntervalMillis: 1000
+                minimumFetchIntervalMillis: 10000
             };
             this.remoteConfig.defaultConfig = {
                 [FeatureFlags.ENABLE_CHATBOT]: true,
-                [FeatureFlags.ALLOW_USER_API_KEYS_ONLY]: false,
+                [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
                 'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
             };
         }

@@ -3,7 +3,7 @@ export interface FeatureFlagRepository {
 }
 
 export const FeatureFlags = {
-    ALLOW_USER_API_KEYS_ONLY: 'allow_user_api_keys_only',
+    MANDATORY_USER_API_KEYS: 'mandatory_users_apy_keys',
     ENABLE_CHATBOT: 'enable_chatbot'
 } as const;
 

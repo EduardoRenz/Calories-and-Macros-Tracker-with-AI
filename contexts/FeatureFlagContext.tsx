@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { FeatureFlags } from '../domain/repositories/FeatureFlagRepository';
+import { DataCacheManager } from '../data/infrastructure/DataCacheManager';
 
 interface FeatureFlagContextType {
     isFeatureEnabled: (flagName: string) => boolean;
@@ -22,16 +23,16 @@ export const FeatureFlagProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const repo = RepositoryFactory.getFeatureFlagRepository();
 
         // Pre-fetch known flags
-        const [enableChatbot, allowUserApiKeysOnly] = await Promise.all([
+        const [enableChatbot, mandatoryUserApiKeys] = await Promise.all([
             repo.isEnabled(FeatureFlags.ENABLE_CHATBOT),
-            repo.isEnabled(FeatureFlags.ALLOW_USER_API_KEYS_ONLY)
+            repo.isEnabled(FeatureFlags.MANDATORY_USER_API_KEYS)
         ]);
 
-        console.log('Flags loaded:', { enableChatbot, allowUserApiKeysOnly });
+        console.log('Flags loaded:', { enableChatbot, mandatoryUserApiKeys });
 
         setFlags({
             [FeatureFlags.ENABLE_CHATBOT]: enableChatbot,
-            [FeatureFlags.ALLOW_USER_API_KEYS_ONLY]: allowUserApiKeysOnly,
+            [FeatureFlags.MANDATORY_USER_API_KEYS]: mandatoryUserApiKeys,
         });
         setLoading(false);
     };
@@ -75,7 +76,7 @@ export const FeatureFlagProvider: React.FC<{ children: React.ReactNode }> = ({ c
         return flags[flagName] ?? false;
     };
 
-    const isUserApiKeysRequired = isFeatureEnabled(FeatureFlags.ALLOW_USER_API_KEYS_ONLY) && !hasUserApiKeys;
+    const isUserApiKeysRequired = isFeatureEnabled(FeatureFlags.MANDATORY_USER_API_KEYS) && !hasUserApiKeys;
 
     return (
         <FeatureFlagContext.Provider value={{
