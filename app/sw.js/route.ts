@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import { env } from '../../env';
 
 export async function GET() {
-  const version = process.env.NEXT_PUBLIC_APP_VERSION || 'v1';
+  const version = env.NEXT_PUBLIC_APP_VERSION || 'v1';
   const swCode = `
 const CACHE_NAME = 'calorie-counter-${version}';
 const ASSETS_TO_CACHE = [

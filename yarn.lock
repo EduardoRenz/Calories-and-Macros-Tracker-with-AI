@@ -1042,6 +1042,18 @@
   dependencies:
     tslib "^2.8.0"
 
+"@t3-oss/env-core@0.13.10":
+  version "0.13.10"
+  resolved "https://registry.yarnpkg.com/@t3-oss/env-core/-/env-core-0.13.10.tgz#ba6b90498d7f3bb72662c842ec8015caced27210"
+  integrity sha512-NNFfdlJ+HmPHkLi2HKy7nwuat9SIYOxei9K10lO2YlcSObDILY7mHZNSHsieIM3A0/5OOzw/P/b+yLvPdaG52g==
+
+"@t3-oss/env-nextjs@^0.13.10":
+  version "0.13.10"
+  resolved "https://registry.yarnpkg.com/@t3-oss/env-nextjs/-/env-nextjs-0.13.10.tgz#85dfccf9126fc97b5eb55a913b71d0d9cb2e1357"
+  integrity sha512-JfSA2WXOnvcc/uMdp31paMsfbYhhdvLLRxlwvrnlPE9bwM/n0Z+Qb9xRv48nPpvfMhOrkrTYw1I5Yc06WIKBJQ==
+  dependencies:
+    "@t3-oss/env-core" "0.13.10"
+
 "@tootallnate/once@2":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
@@ -6571,6 +6583,11 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.3.5.tgz#aeb269a6f9fc259b1212c348c7c5432aaa474d2a"
+  integrity sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==
 
 zwitch@^2.0.0:
   version "2.0.4"
