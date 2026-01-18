@@ -29,9 +29,9 @@ import { NextApiImageRecognitionService } from './services/NextApiImageRecogniti
 import { NextApiChatAssistantService } from './services/NextApiChatAssistantService';
 
 import { RepositoryFactory } from './RepositoryFactory';
+import { env } from '../env';
 
-const BACKEND_PROVIDER = process.env.BACKEND_PROVIDER ?? 'firebase';
-const USE_MOCKS = BACKEND_PROVIDER === 'mock';
+const USE_MOCKS = env.BACKEND_PROVIDER === 'mock';
 
 interface ApiKey {
     provider: 'gemini' | 'openai' | 'deepseek';
@@ -217,8 +217,8 @@ export class ServiceFactory {
         }
 
         if (typeof window === 'undefined') {
-            if (process.env.GEMINI_API_KEY) {
-                return new GeminiChatAssistantService(process.env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository());
+            if (env.GEMINI_API_KEY) {
+                return new GeminiChatAssistantService(env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository());
             }
             if (process.env.DEEPSEEK_API_KEY) {
                 return new DeepSeekChatAssistantService(process.env.DEEPSEEK_API_KEY, RepositoryFactory.getDashboardRepository());

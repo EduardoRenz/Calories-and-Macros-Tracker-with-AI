@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { CoffeeIcon, CopyIcon, QrCodeIcon, CheckIcon } from './icons';
+import { env } from '../env';
 
 interface DonationPanelProps {
     variant?: 'compact' | 'wide';
 }
 
 export const DonationPanel: React.FC<DonationPanelProps> = ({ variant = 'compact' }) => {
-    const pixKey = process.env.NEXT_PUBLIC_PIX_KEY;
-    const btcAddress = process.env.NEXT_PUBLIC_BTC_ADDRESS;
-    const usdcAddress = process.env.NEXT_PUBLIC_USDC_ADDRESS;
+    const pixKey = env.NEXT_PUBLIC_PIX_KEY;
+    const btcAddress = env.NEXT_PUBLIC_BTC_ADDRESS;
+    const usdcAddress = env.NEXT_PUBLIC_USDC_ADDRESS;
 
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
 

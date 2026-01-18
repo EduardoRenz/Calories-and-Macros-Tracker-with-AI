@@ -5,6 +5,7 @@ import { OpenAIFoodAnalysisService } from '@/data/services/OpenAIFoodAnalysisSer
 import { DeepSeekFoodAnalysisService } from '@/data/services/DeepSeekFoodAnalysisService';
 import { verifyAuth } from '../auth-middleware';
 import { checkAiAccess } from '../feature-flag-check';
+import { env } from '@/env';
 
 export async function POST(req: NextRequest) {
     try {
@@ -20,8 +21,8 @@ export async function POST(req: NextRequest) {
 
         let service;
 
-        if (process.env.GEMINI_API_KEY) {
-            service = new GeminiFoodAnalysisService(process.env.GEMINI_API_KEY);
+        if (env.GEMINI_API_KEY) {
+            service = new GeminiFoodAnalysisService(env.GEMINI_API_KEY);
         } else if (process.env.OPENAI_API_KEY) {
             service = new OpenAIFoodAnalysisService(process.env.OPENAI_API_KEY);
         } else if (process.env.DEEPSEEK_API_KEY) {
