@@ -71,6 +71,8 @@ const ApiTokenManager: React.FC = () => {
         setKeys(newKeys);
         localStorage.setItem('ai_api_keys', JSON.stringify(newKeys));
         ServiceFactory.reset();
+        // Notify other components/contexts (like FeatureFlagContext)
+        window.dispatchEvent(new CustomEvent('ai-keys-updated'));
     };
 
     const handleDelete = (provider: ProviderId) => {

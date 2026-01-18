@@ -4,10 +4,15 @@ import { GeminiFoodAnalysisService } from '@/data/services/GeminiFoodAnalysisSer
 import { OpenAIFoodAnalysisService } from '@/data/services/OpenAIFoodAnalysisService';
 import { DeepSeekFoodAnalysisService } from '@/data/services/DeepSeekFoodAnalysisService';
 import { verifyAuth } from '../auth-middleware';
+import { checkAiAccess } from '../feature-flag-check';
 
 export async function POST(req: NextRequest) {
     try {
         await verifyAuth(req.headers.get('Authorization'));
+
+        const accessCheck = await checkAiAccess();
+        if (accessCheck) return accessCheck;
+
         const input: FoodAnalysisInput = await req.json();
 
         // On the server, we use environment variables.

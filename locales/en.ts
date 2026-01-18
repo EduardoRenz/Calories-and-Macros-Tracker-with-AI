@@ -47,7 +47,10 @@ export default {
     "calories_over": "Calories Over",
     "limit_exceeded": "You've exceeded your limit.",
     "doing_great": "You're doing great!",
-    "macro_split": "Macro Split"
+    "macro_split": "Macro Split",
+    "api_keys_required_title": "API Keys Required",
+    "api_keys_required_desc": "To continue using AI features, please configure your own API keys in settings.",
+    "go_to_settings": "Go to Settings"
   },
   "meals": {
     "summary_title": "Meal Summary",

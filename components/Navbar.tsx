@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon, UserIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
+import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 import { Avatar } from './ui/Avatar';
 
 interface NavbarProps {
@@ -15,6 +16,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
     const { user, signOut } = useAuth();
+    const { isUserApiKeysRequired } = useFeatureFlags();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
@@ -64,8 +66,12 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
             </div>
             <div className="flex items-center gap-4">
                 <button
-                    onClick={onQuickMealClick}
-                    className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm hidden md:flex items-center gap-2"
+                    onClick={isUserApiKeysRequired ? undefined : onQuickMealClick}
+                    className={`font-bold py-2 px-4 rounded-lg transition-all text-sm hidden md:flex items-center gap-2 ${isUserApiKeysRequired
+                        ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
+                        : 'bg-healthpal-green text-black hover:brightness-110'
+                        }`}
+                    title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
                 >
                     <SparklesIcon className="w-5 h-5" />
                     <span>{t('navbar.quick_meal')}</span>
@@ -152,10 +158,15 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         ))}
                         <button
                             onClick={() => {
+                                if (isUserApiKeysRequired) return;
                                 onQuickMealClick();
                                 setIsMobileMenuOpen(false);
                             }}
-                            className="bg-healthpal-green text-black font-bold py-3 px-4 rounded-lg hover:brightness-110 transition-all text-sm flex items-center gap-2 mt-2"
+                            className={`font-bold py-3 px-4 rounded-lg transition-all text-sm flex items-center gap-2 mt-2 ${isUserApiKeysRequired
+                                ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
+                                : 'bg-healthpal-green text-black hover:brightness-110'
+                                }`}
+                            title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
                         >
                             <SparklesIcon className="w-5 h-5" />
                             <span>{t('navbar.quick_meal')}</span>

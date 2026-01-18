@@ -13,8 +13,10 @@ import { DashboardData, Ingredient, MealSummary } from '@/domain/entities/dashbo
 import { DashboardRepository } from '@/domain/repositories/DashboardRepository';
 import AddIngredientModal from '@/components/AddIngredientModal';
 import DashboardNavigation from '@/components/DashboardNavigation';
+import DashboardWarningBar from '@/components/DashboardWarningBar';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { useProfile } from '@/contexts/ProfileContext';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 
 const getFormattedDate = (date: Date) => {
@@ -31,6 +33,8 @@ export default function DashboardPage() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const { isUserApiKeysRequired } = useFeatureFlags();
 
     const { profile, goalsManagementService } = useProfile();
     const computedGoals = useMemo(() => {
@@ -171,12 +175,25 @@ export default function DashboardPage() {
         setData(updatedData);
     };
 
-    const isToday = getFormattedDate(currentDate) === getFormattedDate(new Date());
-    const displayDate = new Intl.DateTimeFormat(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    }).format(currentDate);
+    const [hasMounted, setHasMounted] = useState(false);
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    const isToday = useMemo(() => {
+        if (!hasMounted) return true; // Match server default or typical state
+        return getFormattedDate(currentDate) === getFormattedDate(new Date());
+    }, [currentDate, hasMounted]);
+
+    const displayDate = useMemo(() => {
+        if (!hasMounted) return ''; // Or a placeholder that matches server
+
+        return new Intl.DateTimeFormat(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        }).format(currentDate);
+    }, [currentDate, hasMounted]);
 
     if (isLoading || !data) {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
@@ -193,6 +210,9 @@ export default function DashboardPage() {
                 onSave={handleAddIngredient}
                 mealType={selectedMealType}
             />
+
+            {isUserApiKeysRequired && <DashboardWarningBar />}
+
             <DashboardNavigation
                 isToday={isToday}
                 displayDate={displayDate}

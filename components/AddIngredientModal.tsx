@@ -3,6 +3,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 import { SparklesIcon, SpinnerIcon } from './icons';
 import Modal from './ui/Modal';
 
@@ -29,6 +30,8 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const [formState, setFormState] = useState(initialFormState);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number; fiber: number } | null>(null);
+
+  const { isUserApiKeysRequired } = useFeatureFlags();
 
   const nutritionService = useMemo(() => ServiceFactory.getNutritionAnalysisService(), []);
 
@@ -145,10 +148,14 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         <div className="flex items-end gap-3">
           <button
             type="button"
-            onClick={handleAnalyze}
-            disabled={isAnalyzing || !formState.name || !formState.quantity}
-            className="p-3 bg-healthpal-green text-black rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={isUserApiKeysRequired ? undefined : handleAnalyze}
+            disabled={isAnalyzing || !formState.name || !formState.quantity || isUserApiKeysRequired}
+            className={`p-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${isUserApiKeysRequired
+              ? 'bg-healthpal-card text-healthpal-text-secondary'
+              : 'bg-healthpal-green text-black hover:brightness-110'
+              }`}
             aria-label={t('add_ingredient_modal.analyze_button_aria')}
+            title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
             data-testid="analyze-button"
           >
             {isAnalyzing ? <SpinnerIcon className="w-6 h-6" /> : <SparklesIcon className="w-6 h-6" />}

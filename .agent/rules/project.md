@@ -2,17 +2,24 @@
 trigger: always_on
 ---
 
+### Overall Rules
+
 - This project uses yarn
-- When testing the application, in the browser or cypress, use the `yarn dev:mock` command to start the app in mock mode
 - When a new page with new domains, repositories and services is created, also create mocked versions of it and configure in the factory.
 - When a new page is created, also make a new test in cypress for this page.
-- To run test, use the command `yarn cy:run`
 - When implementing repositories and service, use the tool ConcurrencyRequestManager to avoid multiple api calls
 - Always make Small and Readable Components in pages to be easier to maintain and read
 - Don´t use any, always define types
 - When a fix or feature is created, bump version in package.json
 - Remove unused variables and imports
 - Always use const if the variable is not going to be reassigned
+- The project uses l18n, always make a translation for every text. fallback to key if translation not exists to be visible the missing translation
+- Every Page should have a Error handling, giving a feedback to user, and an option to retry. And always inform the user what happened
+
+
+### Testing
+
+- When testing the application, in the browser or cypress, use the `yarn dev:mock` command to start the app in mock mode, To run test, use the command `yarn cy:run`
 
 ### Architecture
 
@@ -137,8 +144,17 @@ export default function DashboardNavigation({
     todayLabel={t('dashboard.today')}
     title={t('dashboard.title')}
 />
+
+---
+
 ```
 #### Created reusable components
 - Modal component in `components/ui/Modal.tsx` when you need to create a new modal
 
+---
 
+#### Feature Flag system
+
+- This projects uses Feature Flags to enable and disable some resources. The repository is FeatureFlagRepository
+- Always check if the new feature should pass in a feature flag criterion before creating
+- Check the useFeatureFlags context
