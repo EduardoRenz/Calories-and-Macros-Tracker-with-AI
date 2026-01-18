@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FoodAnalysisInput } from '@/domain/services/FoodAnalysisService';
 import { GeminiFoodAnalysisService } from '@/data/services/GeminiFoodAnalysisService';
-import { OpenAIFoodAnalysisService } from '@/data/services/OpenAIFoodAnalysisService';
-import { DeepSeekFoodAnalysisService } from '@/data/services/DeepSeekFoodAnalysisService';
 import { verifyAuth } from '../auth-middleware';
 import { checkAiAccess } from '../feature-flag-check';
 import { env } from '@/env';
@@ -23,11 +21,9 @@ export async function POST(req: NextRequest) {
 
         if (env.GEMINI_API_KEY) {
             service = new GeminiFoodAnalysisService(env.GEMINI_API_KEY);
-        } else if (process.env.OPENAI_API_KEY) {
-            service = new OpenAIFoodAnalysisService(process.env.OPENAI_API_KEY);
-        } else if (process.env.DEEPSEEK_API_KEY) {
-            service = new DeepSeekFoodAnalysisService(process.env.DEEPSEEK_API_KEY);
         }
+        // Note: OPENAI_API_KEY and DEEPSEEK_API_KEY are not in env schema
+        // These would need to be added if you want to use them server-side
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });

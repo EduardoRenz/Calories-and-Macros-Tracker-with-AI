@@ -29,9 +29,9 @@ The application supports multiple backend providers:
 
 ### Provider Configuration
 
-The provider is defined by the `BACKEND_PROVIDER` variable in the `.env.local` file:
-- `BACKEND_PROVIDER=firebase` (default)
-- `BACKEND_PROVIDER=supabase` (after migration)
+The provider is defined by the `NEXT_PUBLIC_BACKEND_PROVIDER` variable in the `.env.local` file:
+- `NEXT_PUBLIC_BACKEND_PROVIDER=firebase` (default)
+- `NEXT_PUBLIC_BACKEND_PROVIDER=supabase` (after migration)
 
 **Important**: The provider is defined at build/server time and cannot be changed at runtime in the browser.
 

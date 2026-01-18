@@ -29,7 +29,7 @@ import { env } from '../env';
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
-const BACKEND_PROVIDER = env.BACKEND_PROVIDER;
+const BACKEND_PROVIDER = env.NEXT_PUBLIC_BACKEND_PROVIDER;
 
 interface RepositoryStrategy {
     dashboard: () => DashboardRepository;
@@ -81,7 +81,7 @@ export class RepositoryFactory {
     private static modelConfigRepository: ModelConfigRepository | null = null;
 
     private static getStrategy(): RepositoryStrategy {
-        return strategies[BACKEND_PROVIDER] || strategies.firebase;
+        return strategies[BACKEND_PROVIDER ?? 'firebase'] || strategies.firebase;
     }
 
     public static getDashboardRepository(): DashboardRepository {
