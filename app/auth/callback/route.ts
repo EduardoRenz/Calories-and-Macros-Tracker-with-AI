@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/env';
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -8,8 +9,8 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!
+      env.SUPABASE_URL!,
+      env.SUPABASE_ANON_KEY!
     );
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
