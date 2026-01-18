@@ -9,7 +9,7 @@ export class ServerFeatureFlagRepository implements FeatureFlagRepository {
 
     constructor() {
         // Firebase Admin configuration
-        const projectId = env.FIREBASE_PROJECT_ID;
+        const projectId = env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
         const clientEmail = env.FIREBASE_CLIENT_EMAIL;
         const privateKey = env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 

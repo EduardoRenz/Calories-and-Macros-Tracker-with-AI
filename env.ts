@@ -12,23 +12,10 @@ export const env = createEnv({
         GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
         GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
 
-        // Backend Provider
-        BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']),
+        // Backend Provider (server-side fallback)
+        BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']).optional(),
 
-        // Firebase Configuration
-        FIREBASE_API_KEY: z.string().optional(),
-        FIREBASE_AUTH_DOMAIN: z.string().optional(),
-        FIREBASE_PROJECT_ID: z.string().optional(),
-        FIREBASE_STORAGE_BUCKET: z.string().optional(),
-        FIREBASE_MESSAGING_SENDER_ID: z.string().optional(),
-        FIREBASE_APP_ID: z.string().optional(),
-        FIREBASE_MEASUREMENT_ID: z.string().optional(),
-
-        // Supabase Configuration
-        SUPABASE_URL: z.string().optional(),
-        SUPABASE_ANON_KEY: z.string().optional(),
-
-        // Migration, Admin Credentials and backend service keys
+        // Migration, Admin Credentials and backend service keys (server-only)
         FIREBASE_CLIENT_EMAIL: z.string(),
         FIREBASE_PRIVATE_KEY: z.string(),
 
@@ -44,6 +31,26 @@ export const env = createEnv({
      * `NEXT_PUBLIC_`.
      */
     client: {
+        // Backend Provider (Client-side selection)
+        NEXT_PUBLIC_BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']),
+
+        // Gemini Models (Public - client-side)
+        NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
+        NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
+
+        // Firebase Configuration (Public - client-side)
+        NEXT_PUBLIC_FIREBASE_API_KEY: z.string().optional(),
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string().optional(),
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().optional(),
+        NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().optional(),
+        NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().optional(),
+        NEXT_PUBLIC_FIREBASE_APP_ID: z.string().optional(),
+        NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
+
+        // Supabase Configuration (Public - client-side)
+        NEXT_PUBLIC_SUPABASE_URL: z.string().optional(),
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
+
         // Donation Information (Public - available on client side)
         NEXT_PUBLIC_PIX_KEY: z.string().optional(),
         NEXT_PUBLIC_BTC_ADDRESS: z.string().optional(),
@@ -61,21 +68,36 @@ export const env = createEnv({
         GEMINI_FAST_DEFAULT_MODEL: process.env.GEMINI_FAST_DEFAULT_MODEL,
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
         BACKEND_PROVIDER: process.env.BACKEND_PROVIDER,
-        FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
-        FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-        FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-        FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
-        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
-        FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
-        SUPABASE_URL: process.env.SUPABASE_URL,
-        SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         NODE_ENV: process.env.NODE_ENV,
 
         // Client variables
+        NEXT_PUBLIC_BACKEND_PROVIDER:
+            process.env.NEXT_PUBLIC_BACKEND_PROVIDER ?? process.env.BACKEND_PROVIDER,
+        NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL:
+            process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL ?? process.env.GEMINI_FAST_DEFAULT_MODEL,
+        NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL:
+            process.env.NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL ?? process.env.GEMINI_PRO_DEFAULT_MODEL,
+        NEXT_PUBLIC_FIREBASE_API_KEY:
+            process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? process.env.FIREBASE_API_KEY,
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
+            process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? process.env.FIREBASE_AUTH_DOMAIN,
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID:
+            process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? process.env.FIREBASE_PROJECT_ID,
+        NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
+            process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? process.env.FIREBASE_STORAGE_BUCKET,
+        NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+            process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? process.env.FIREBASE_MESSAGING_SENDER_ID,
+        NEXT_PUBLIC_FIREBASE_APP_ID:
+            process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? process.env.FIREBASE_APP_ID,
+        NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
+            process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? process.env.FIREBASE_MEASUREMENT_ID,
+        NEXT_PUBLIC_SUPABASE_URL:
+            process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL,
+        NEXT_PUBLIC_SUPABASE_ANON_KEY:
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY,
         NEXT_PUBLIC_PIX_KEY: process.env.NEXT_PUBLIC_PIX_KEY,
         NEXT_PUBLIC_BTC_ADDRESS: process.env.NEXT_PUBLIC_BTC_ADDRESS,
         NEXT_PUBLIC_USDC_ADDRESS: process.env.NEXT_PUBLIC_USDC_ADDRESS,

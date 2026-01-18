@@ -2,11 +2,11 @@ import * as admin from 'firebase-admin';
 import { getSupabaseAdminClient } from '@/data/supabaseServer';
 import { env } from '@/env';
 
-const USE_MOCKS = env.BACKEND_PROVIDER === 'mock';
+const USE_MOCKS = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock';
 
 if (!USE_MOCKS && !admin.apps.length) {
     admin.initializeApp({
-        projectId: env.FIREBASE_PROJECT_ID,
+        projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     });
 }
 
@@ -33,7 +33,7 @@ export async function verifyAuth(authHeader: string | null): Promise<Authenticat
 
     const token = authHeader.split('Bearer ')[1];
 
-    if (env.BACKEND_PROVIDER === 'supabase') {
+    if (env.NEXT_PUBLIC_BACKEND_PROVIDER === 'supabase') {
         try {
             const supabase = getSupabaseAdminClient();
             const { data, error } = await supabase.auth.getUser(token);

@@ -31,7 +31,7 @@ import { NextApiChatAssistantService } from './services/NextApiChatAssistantServ
 import { RepositoryFactory } from './RepositoryFactory';
 import { env } from '../env';
 
-const USE_MOCKS = env.BACKEND_PROVIDER === 'mock';
+const USE_MOCKS = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock';
 
 interface ApiKey {
     provider: 'gemini' | 'openai' | 'deepseek';
