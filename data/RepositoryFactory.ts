@@ -27,10 +27,11 @@ import { LocalFeatureFlagRepository } from './repositories/LocalFeatureFlagRepos
 import { FirebaseFeatureFlagRepository } from './repositories/FirebaseFeatureFlagRepository';
 import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfigRepository';
 import { LocalModelConfigRepository } from './repositories/LocalModelConfigRepository';
+import { env } from '../env';
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
-const BACKEND_PROVIDER = (process.env.BACKEND_PROVIDER ?? 'firebase').toLowerCase() as Provider;
+const BACKEND_PROVIDER = env.BACKEND_PROVIDER;
 
 interface RepositoryStrategy {
     dashboard: () => DashboardRepository;

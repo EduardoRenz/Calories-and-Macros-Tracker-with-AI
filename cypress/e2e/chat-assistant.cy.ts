@@ -119,7 +119,7 @@ describe('Chat Assistant', () => {
         cy.get('[data-testid="meal-lunch"]').scrollIntoView().click();
 
         // Verify dashboard updated
-        cy.contains('Rice').should('be.visible');
+        cy.contains(/Rice|Arroz/i).should('be.visible');
         cy.contains('130 kcal').should('be.visible');
     });
 

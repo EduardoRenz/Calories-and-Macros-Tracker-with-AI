@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/app/api/auth-middleware';
+import { checkAiAccess } from '@/app/api/feature-flag-check';
 import { ServiceFactory } from '@/data/ServiceFactory';
 
 export async function POST(req: NextRequest) {
     try {
         await verifyAuth(req.headers.get('Authorization'));
+
+        const accessCheck = await checkAiAccess();
+        if (accessCheck) return accessCheck;
+
         const { messages, context } = await req.json();
 
         // Use Factory to get configured service (Gemini, DeepSeek, OpenAI)

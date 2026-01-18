@@ -3,16 +3,22 @@ import { GeminiNutritionAnalysisService } from '@/data/services/GeminiNutritionA
 import { OpenAINutritionAnalysisService } from '@/data/services/OpenAINutritionAnalysisService';
 import { DeepSeekNutritionAnalysisService } from '@/data/services/DeepSeekNutritionAnalysisService';
 import { verifyAuth } from '../auth-middleware';
+import { checkAiAccess } from '../feature-flag-check';
+import { env } from '@/env';
 
 export async function POST(req: NextRequest) {
     try {
         await verifyAuth(req.headers.get('Authorization'));
+
+        const accessCheck = await checkAiAccess();
+        if (accessCheck) return accessCheck;
+
         const { ingredientName, quantity, language } = await req.json();
 
         let service;
 
-        if (process.env.GEMINI_API_KEY) {
-            service = new GeminiNutritionAnalysisService(process.env.GEMINI_API_KEY);
+        if (env.GEMINI_API_KEY) {
+            service = new GeminiNutritionAnalysisService(env.GEMINI_API_KEY);
         } else if (process.env.OPENAI_API_KEY) {
             service = new OpenAINutritionAnalysisService(process.env.OPENAI_API_KEY);
         } else if (process.env.DEEPSEEK_API_KEY) {

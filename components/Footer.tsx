@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { env } from '../env';
 
 export const Footer: React.FC = () => {
     return (
@@ -23,7 +24,7 @@ export const Footer: React.FC = () => {
                         © {new Date().getFullYear()} CalorieApp. All rights reserved.
                     </p>
                     <p className="text-healthpal-text-secondary/60 text-[10px]">
-                        v{process.env.NEXT_PUBLIC_APP_VERSION}
+                        v{env.NEXT_PUBLIC_APP_VERSION}
                     </p>
                 </div>
             </div>

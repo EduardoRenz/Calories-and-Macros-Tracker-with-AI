@@ -29,7 +29,7 @@ The application supports multiple backend providers:
 
 ### Provider Configuration
 
-The provider is defined by the `BACKEND_PROVIDER` variable in the `.env` file:
+The provider is defined by the `BACKEND_PROVIDER` variable in the `.env.local` file:
 - `BACKEND_PROVIDER=firebase` (default)
 - `BACKEND_PROVIDER=supabase` (after migration)
 

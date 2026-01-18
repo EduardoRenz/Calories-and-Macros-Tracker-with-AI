@@ -4,10 +4,16 @@ import { GeminiFoodAnalysisService } from '@/data/services/GeminiFoodAnalysisSer
 import { OpenAIFoodAnalysisService } from '@/data/services/OpenAIFoodAnalysisService';
 import { DeepSeekFoodAnalysisService } from '@/data/services/DeepSeekFoodAnalysisService';
 import { verifyAuth } from '../auth-middleware';
+import { checkAiAccess } from '../feature-flag-check';
+import { env } from '@/env';
 
 export async function POST(req: NextRequest) {
     try {
         await verifyAuth(req.headers.get('Authorization'));
+
+        const accessCheck = await checkAiAccess();
+        if (accessCheck) return accessCheck;
+
         const input: FoodAnalysisInput = await req.json();
 
         // On the server, we use environment variables.
@@ -15,8 +21,8 @@ export async function POST(req: NextRequest) {
 
         let service;
 
-        if (process.env.GEMINI_API_KEY) {
-            service = new GeminiFoodAnalysisService(process.env.GEMINI_API_KEY);
+        if (env.GEMINI_API_KEY) {
+            service = new GeminiFoodAnalysisService(env.GEMINI_API_KEY);
         } else if (process.env.OPENAI_API_KEY) {
             service = new OpenAIFoodAnalysisService(process.env.OPENAI_API_KEY);
         } else if (process.env.DEEPSEEK_API_KEY) {

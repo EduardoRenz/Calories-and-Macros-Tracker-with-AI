@@ -48,7 +48,10 @@ export default {
     "calories_over": "Calorias Excedidas",
     "limit_exceeded": "Você excedeu seu limite.",
     "doing_great": "Você está indo ótimo!",
-    "macro_split": "Divisão de Macros"
+    "macro_split": "Divisão de Macros",
+    "api_keys_required_title": "Chaves de API Necessárias",
+    "api_keys_required_desc": "Para continuar usando os recursos de IA, configure suas próprias chaves de API nas configurações.",
+    "go_to_settings": "Ir para Configurações"
   },
   "meals": {
     "summary_title": "Resumo das Refeições",
