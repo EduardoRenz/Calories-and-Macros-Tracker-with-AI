@@ -28,7 +28,7 @@ export const FeatureFlagProvider: React.FC<{ children: React.ReactNode }> = ({ c
             repo.isEnabled(FeatureFlags.MANDATORY_USER_API_KEYS)
         ]);
 
-        console.log('Flags loaded:', { enableChatbot, mandatoryUserApiKeys });
+        console.log('Flags loaded:', { enableChatbot, mandatoryUserApiKeys }, ` From ${repo.constructor.name}`);
 
         setFlags({
             [FeatureFlags.ENABLE_CHATBOT]: enableChatbot,
