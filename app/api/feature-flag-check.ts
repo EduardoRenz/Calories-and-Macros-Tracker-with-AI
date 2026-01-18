@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { RepositoryFactory } from '@/data/RepositoryFactory';
+import { ServerFeatureFlagRepository } from './repositories/ServerFeatureFlagRepository';
 import { FeatureFlags } from '@/domain/repositories/FeatureFlagRepository';
 import { DataCacheManager } from '@/data/infrastructure/DataCacheManager';
 
@@ -11,7 +11,7 @@ const cacheManager = new DataCacheManager();
  * Returns null if the request is allowed to proceed.
  */
 export async function checkAiAccess() {
-    const ffRepo = RepositoryFactory.getFeatureFlagRepository();
+    const ffRepo = new ServerFeatureFlagRepository();
     const mandatoryUserApiKeys = await cacheManager.getCached('feature_flag:mandatory_users_apy_keys', async () => {
         return await ffRepo.isEnabled(FeatureFlags.MANDATORY_USER_API_KEYS);
     });
