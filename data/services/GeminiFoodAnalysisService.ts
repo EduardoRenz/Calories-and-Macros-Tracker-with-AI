@@ -4,16 +4,17 @@ import { FoodAnalysisReport, VitaminStatus } from '../../domain/entities/analysi
 import { BaseFoodAnalysisService } from './BaseFoodAnalysisService';
 import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
 import { RepositoryFactory } from '../RepositoryFactory';
+import { env } from '../../env';
 
 export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
     private ai: GoogleGenAI;
-    private model: string = process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+    private model: string = env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
     private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey?: string) {
         super();
         this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
-        const key = apiKey || process.env.GEMINI_API_KEY;
+        const key = apiKey || env.GEMINI_API_KEY;
         console.log("Gemini model: ", this.model);
         if (!key) {
             throw new Error("Gemini API key not found");
@@ -24,11 +25,11 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
     private async getModelVersion(): Promise<string> {
         try {
             return await this.modelConfigRepo.getModelVersion('gemini', 'food')
-                || process.env.GEMINI_FAST_DEFAULT_MODEL
+                || env.GEMINI_FAST_DEFAULT_MODEL
                 || 'gemini-2.5-flash-lite';
         } catch (error) {
             console.warn('Failed to get model version from remote config, using fallback:', error);
-            return process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+            return env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
         }
     }
 
