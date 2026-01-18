@@ -14,7 +14,7 @@ const firebaseConfig = {
   measurementId: env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const shouldInit = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'firebase' && !!firebaseConfig.apiKey;
+const shouldInit = firebaseConfig.apiKey;
 
 // Initialize Firebase
 const app = shouldInit ? initializeApp(firebaseConfig) : null;

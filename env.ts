@@ -16,6 +16,10 @@ export const env = createEnv({
         FIREBASE_CLIENT_EMAIL: z.string(),
         FIREBASE_PRIVATE_KEY: z.string(),
 
+        // Supabase Configuration (Server-side)
+        SUPABASE_URL: z.string(),
+        SUPABASE_ANON_KEY: z.string(),
+
         // Supabase Service Role Key (for server-side operations and migrations)
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
 
@@ -45,8 +49,8 @@ export const env = createEnv({
         NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
 
         // Supabase Configuration (Public - client-side)
-        NEXT_PUBLIC_SUPABASE_URL: z.string().optional(),
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
+        NEXT_PUBLIC_SUPABASE_URL: z.string(),
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
 
         // Donation Information (Public - available on client side)
         NEXT_PUBLIC_PIX_KEY: z.string().optional(),
@@ -67,6 +71,9 @@ export const env = createEnv({
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+
         NODE_ENV: process.env.NODE_ENV,
 
         // Client variables

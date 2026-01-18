@@ -48,7 +48,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new FirebaseAuthRepository(),
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
-        featureFlag: () => new FirebaseFeatureFlagRepository(),
+        featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
     supabase: {
@@ -57,7 +57,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new SupabaseAuthRepository(),
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
-        featureFlag: () => new FirebaseFeatureFlagRepository(), // Remote Config can still be used with Supabase or we could use another one
+        featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
     mock: {
