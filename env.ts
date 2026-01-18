@@ -86,7 +86,7 @@ export const env = createEnv({
      * Run `build` or `dev` with SKIP_ENV_VALIDATION to skip env var validation.
      * This is especially useful for Docker builds.
      */
-    skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+    skipValidation: !!process.env.SKIP_ENV_VALIDATION || process.env.BACKEND_PROVIDER === 'mock',
 
     /**
      * Makes it so that all variables including client side ones are validated.
