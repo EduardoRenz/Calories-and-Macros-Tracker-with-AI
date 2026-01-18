@@ -12,9 +12,6 @@ export const env = createEnv({
         GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
         GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
 
-        // Backend Provider (server-side fallback)
-        BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']).optional(),
-
         // Migration, Admin Credentials and backend service keys (server-only)
         FIREBASE_CLIENT_EMAIL: z.string(),
         FIREBASE_PRIVATE_KEY: z.string(),
@@ -67,15 +64,13 @@ export const env = createEnv({
         GEMINI_API_KEY: process.env.GEMINI_API_KEY,
         GEMINI_FAST_DEFAULT_MODEL: process.env.GEMINI_FAST_DEFAULT_MODEL,
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
-        BACKEND_PROVIDER: process.env.BACKEND_PROVIDER,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         NODE_ENV: process.env.NODE_ENV,
 
         // Client variables
-        NEXT_PUBLIC_BACKEND_PROVIDER:
-            process.env.NEXT_PUBLIC_BACKEND_PROVIDER ?? process.env.BACKEND_PROVIDER,
+        NEXT_PUBLIC_BACKEND_PROVIDER: process.env.NEXT_PUBLIC_BACKEND_PROVIDER,
         NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL:
             process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL ?? process.env.GEMINI_FAST_DEFAULT_MODEL,
         NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL:
@@ -108,7 +103,7 @@ export const env = createEnv({
      * Run `build` or `dev` with SKIP_ENV_VALIDATION to skip env var validation.
      * This is especially useful for Docker builds.
      */
-    skipValidation: !!process.env.SKIP_ENV_VALIDATION || process.env.BACKEND_PROVIDER === 'mock',
+    skipValidation: !!process.env.SKIP_ENV_VALIDATION || process.env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock',
 
     /**
      * Makes it so that all variables including client side ones are validated.
