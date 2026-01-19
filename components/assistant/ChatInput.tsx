@@ -62,6 +62,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                     disabled={isSending || disabled}
                     className="w-full bg-transparent border-0 focus:ring-0 text-healthpal-text-primary p-2 resize-none max-h-[120px] min-h-[44px] disabled:opacity-50"
                     rows={1}
+                    id="chat-input"
                 />
 
                 <button

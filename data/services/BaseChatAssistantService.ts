@@ -19,6 +19,16 @@ export abstract class BaseChatAssistantService implements ChatAssistantService {
         let dashboardContext = "No dashboard data available.";
         if (context.dashboardData) {
             dashboardContext = "Current Dashboard:\n";
+
+            // Add macros summary with goals and remaining
+            const macros = context.dashboardData.macros;
+            dashboardContext += "Daily Macros Progress:\n";
+            dashboardContext += `- Calories: ${macros.calories.current.toFixed(1)}${macros.calories.goal ? `/${macros.calories.goal}kcal (${(macros.calories.goal - macros.calories.current).toFixed(1)}kcal remaining)` : 'kcal (no goal set)'}\n`;
+            dashboardContext += `- Protein: ${macros.protein.current.toFixed(1)}${macros.protein.goal ? `/${macros.protein.goal}g (${(macros.protein.goal - macros.protein.current).toFixed(1)}g remaining)` : 'g (no goal set)'}\n`;
+            dashboardContext += `- Carbs: ${macros.carbs.current.toFixed(1)}${macros.carbs.goal ? `/${macros.carbs.goal}g (${(macros.carbs.goal - macros.carbs.current).toFixed(1)}g remaining)` : 'g (no goal set)'}\n`;
+            dashboardContext += `- Fats: ${macros.fats.current.toFixed(1)}${macros.fats.goal ? `/${macros.fats.goal}g (${(macros.fats.goal - macros.fats.current).toFixed(1)}g remaining)` : 'g (no goal set)'}\n\n`;
+
+            // Add meals details
             Object.entries(context.dashboardData.meals).forEach(([key, meal]) => {
                 const m = meal as any; // Cast for simplicity
                 dashboardContext += `- ${m.name} (${key}): ${m.calories}kcal. Ingredients: \n`;
@@ -46,14 +56,15 @@ ${dashboardContext}`;
     protected getSystemCapabilities(): string {
         return `Capabilities:
 1. Answer questions about nutrition, diet, and health.
-Capability 2: Propose actions to MODIFY the dashboard (Add, Update, Remove).
-Capability 3: FETCH historical dashboard data for specific dates using 'get_dashboard_for_date'.
-4. For 'add_ingredient', you MUST infer the 'mealType' if not stated (based on time or default to 'snacks').
-5. For 'add_ingredient', you MUST estimate/calculate the nutritional info (calories, protein, carbs, fats). THESE FIELDS ARE MANDATORY. Do not leave them as zero or null if you can estimate them. USE AVERAGE VALUES. Do not refuse to add because you are unsure, just estimate.
-6. UNIT CONVERSION: ALWAYS convert user quantities to GRAMS. Examples: "1 copo" → "200g", "1 ovo" → "50g", "1 fatia" → "30g", "1 colher" → "15g", "1 xícara" → "240g", "1 prato" → "250g". Use standard conversion values.
-7. For 'remove_ingredient', you MUST provide both 'ingredientId' AND 'name' fields. Use the Exising Ingredient IDs provided in the Context. If ambiguous, ask for clarification.
-8. For 'update_ingredient', you MUST provide both 'ingredientId' AND 'updates' fields. Use the Exising Ingredient IDs provided in the Context. If ambiguous, ask for clarification.
-9. ALWAYS respond in the user's preferred language (specified in Context as Language).
+2. Answer questions about daily macros progress, including current consumption, goals, and remaining amounts for calories, protein, carbs, and fats.
+Capability 3: Propose actions to MODIFY the dashboard (Add, Update, Remove).
+Capability 4: FETCH historical dashboard data for specific dates using 'get_dashboard_for_date'.
+5. For 'add_ingredient', you MUST infer the 'mealType' if not stated (based on time or default to 'snacks').
+6. For 'add_ingredient', you MUST estimate/calculate the nutritional info (calories, protein, carbs, fats). THESE FIELDS ARE MANDATORY. Do not leave them as zero or null if you can estimate them. USE AVERAGE VALUES. Do not refuse to add because you are unsure, just estimate.
+7. UNIT CONVERSION: ALWAYS convert user quantities to GRAMS. Examples: "1 copo" → "200g", "1 ovo" → "50g", "1 fatia" → "30g", "1 colher" → "15g", "1 xícara" → "240g", "1 prato" → "250g". Use standard conversion values.
+8. For 'remove_ingredient', you MUST provide both 'ingredientId' AND 'name' fields. Use the Exising Ingredient IDs provided in the Context. If ambiguous, ask for clarification.
+9. For 'update_ingredient', you MUST provide both 'ingredientId' AND 'updates' fields. Use the Exising Ingredient IDs provided in the Context. If ambiguous, ask for clarification.
+10. ALWAYS respond in the user's preferred language (specified in Context as Language).
 
 CRITICAL INSTRUCTIONS:
 - OBJECTIVE AND DIRECT: Answer directly what the user wants in the shortest way possible.
