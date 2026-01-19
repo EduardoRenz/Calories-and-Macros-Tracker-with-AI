@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { SendIcon, SpinnerIcon } from '../icons';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -10,13 +10,17 @@ interface ChatInputProps {
     disabled?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({
+export interface ChatInputRef {
+    focusInput: () => void;
+}
+
+const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
     value,
     onChange,
     onSend,
     isSending,
     disabled = false
-}) => {
+}, ref) => {
     const { t } = useTranslation();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -27,6 +31,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
             textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
         }
     }, [value]);
+
+    // Expor método focus para o componente pai
+    useImperativeHandle(ref, () => ({
+        focusInput: () => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+            }
+        }
+    }), []);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -69,6 +82,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
             </p>
         </div>
     );
-};
+});
+
+ChatInput.displayName = 'ChatInput';
 
 export default ChatInput;
