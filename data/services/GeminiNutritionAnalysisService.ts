@@ -25,7 +25,7 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
             const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats, fiber) for the following food item: "${quantity} of ${ingredientName}". Respond ONLY with a JSON object matching the provided schema. If you cannot determine the nutritional information, return an object with zero for all values. Important: estimate based on a plate size, if you don't know how to estimate the size and amount of an ingredient, estimate based on an average per serving. Also provide the estimated quantity in grams for the given amount.`;
 
             const response = await this.ai.models.generateContent({
-                model: env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
+                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",

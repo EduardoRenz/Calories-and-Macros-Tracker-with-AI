@@ -66,7 +66,7 @@ export const env = createEnv({
     runtimeEnv: {
         // Server variables
         GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-        GEMINI_FAST_DEFAULT_MODEL: process.env.GEMINI_FAST_DEFAULT_MODEL,
+        GEMINI_FAST_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL,
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,

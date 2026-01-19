@@ -1,4 +1,4 @@
-import { FunctionCallingConfigMode, GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage } from '../../domain/entities/ChatMessage';
@@ -12,7 +12,6 @@ import es from '../../locales/es';
 
 export class GeminiChatAssistantService extends BaseChatAssistantService {
     private ai: GoogleGenAI;
-    private model: string = env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
     private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey?: string, private dashboardRepo?: DashboardRepository) {
@@ -28,11 +27,11 @@ export class GeminiChatAssistantService extends BaseChatAssistantService {
     private async getModelVersion(): Promise<string> {
         try {
             return await this.modelConfigRepo.getModelVersion('gemini', 'chat')
-                || env.GEMINI_FAST_DEFAULT_MODEL
+                || env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL
                 || 'gemini-2.5-flash-lite';
         } catch (error) {
             console.warn('Failed to get model version from remote config, using fallback:', error);
-            return env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+            return env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
         }
     }
 
