@@ -12,7 +12,6 @@ import es from '../../locales/es';
 
 export class GeminiChatAssistantService extends BaseChatAssistantService {
     private ai: GoogleGenAI;
-    private model: string = env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
     private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey?: string, private dashboardRepo?: DashboardRepository) {
