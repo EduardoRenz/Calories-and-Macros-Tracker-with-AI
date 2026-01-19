@@ -54,7 +54,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             }
 
             const response = await this.ai.models.generateContent({
-                model: env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash',
+                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash',
                 contents: {
                     parts: [
                         { text: promptText },

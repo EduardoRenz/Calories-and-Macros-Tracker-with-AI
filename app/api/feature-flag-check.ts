@@ -11,7 +11,7 @@ const cacheManager = new DataCacheManager();
  * Returns null if the request is allowed to proceed.
  */
 export async function checkAiAccess() {
-    const ffRepo = new ServerFeatureFlagRepository();
+    const ffRepo = ServerFeatureFlagRepository.getInstance();
     const mandatoryUserApiKeys = await cacheManager.getCached('feature_flag:mandatory_users_apy_keys', async () => {
         return await ffRepo.isEnabled(FeatureFlags.MANDATORY_USER_API_KEYS);
     });
