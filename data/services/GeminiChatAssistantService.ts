@@ -1,4 +1,4 @@
-import { FunctionCallingConfigMode, GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage } from '../../domain/entities/ChatMessage';
