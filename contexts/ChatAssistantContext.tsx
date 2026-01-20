@@ -88,6 +88,45 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     }, [isOpen]);
 
+    const closeChat = () => {
+        setIsOpen(false);
+        // Restore body scroll on mobile when chat is closed
+        if (typeof window !== 'undefined') {
+            const scrollY = document.body.style.top;
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.top = '';
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+        }
+    };
+
+    // Handle browser back button to close chat on mobile
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const handlePopState = (event: PopStateEvent) => {
+            if (isOpen) {
+                event.preventDefault();
+                closeChat();
+                // Push a new state to prevent going back in browser history
+                window.history.pushState(null, '', window.location.pathname);
+            }
+        };
+
+        if (isOpen) {
+            // Add a new history entry when chat opens
+            window.history.pushState(null, '', window.location.pathname);
+            window.addEventListener('popstate', handlePopState);
+        }
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [isOpen, closeChat]);
+
     const openChat = () => {
         if (!isChatEnabled) return;
         setIsOpen(true);
@@ -100,21 +139,6 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                 document.body.style.position = 'fixed';
                 document.body.style.width = '100%';
                 document.body.style.top = `-${window.scrollY}px`;
-            }
-        }
-    };
-
-    const closeChat = () => {
-        setIsOpen(false);
-        // Restore body scroll on mobile when chat is closed
-        if (typeof window !== 'undefined') {
-            const scrollY = document.body.style.top;
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.width = '';
-            document.body.style.top = '';
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
             }
         }
     };

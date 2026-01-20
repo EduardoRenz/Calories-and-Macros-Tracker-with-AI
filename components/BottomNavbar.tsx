@@ -55,7 +55,7 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                                 ? 'text-healthpal-green'
                                 : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
                                 }`}
-                            data-testid="mobile-chat-button"
+                            id="mobile-chat-button"
                         >
                             <ChatBubbleLeftRightIcon className="w-6 h-6" />
                             <span className="text-xs mt-1">{t('assistant.title')}</span>
