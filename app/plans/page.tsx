@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { RepositoryFactory } from '../../data/RepositoryFactory';
+import { ClientGatewayFactory } from '../../data/ClientGatewayFactory';
 import { Plan } from '../../domain/entities/payment';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -23,7 +23,7 @@ function PlansContent() {
         const fetchPlans = async () => {
             setIsLoading(true);
             try {
-                const paymentGateway = RepositoryFactory.getPaymentGateway();
+                const paymentGateway = ClientGatewayFactory.getPaymentGateway();
                 const allPlans = await paymentGateway.getPlans(language);
                 setPlans(allPlans);
             } catch (error) {

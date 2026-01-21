@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { RepositoryFactory } from '../../../data/RepositoryFactory';
+import { ClientGatewayFactory } from '../../../data/ClientGatewayFactory';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -34,9 +34,9 @@ export default function CheckoutPage() {
 
         const fetchPlan = async () => {
             try {
-                const paymentGateway = RepositoryFactory.getPaymentGateway();
+                const paymentGateway = ClientGatewayFactory.getPaymentGateway();
                 const plans = await paymentGateway.getPlans(language);
-                const selected = plans.find(p => p.id === planId);
+                const selected = plans.find((p: Plan) => p.id === planId);
                 if (selected) {
                     setPlan(selected);
                 } else {
@@ -59,8 +59,8 @@ export default function CheckoutPage() {
 
         setIsProcessing(true);
         try {
-            const paymentGateway = RepositoryFactory.getPaymentGateway();
-            // Since we are mocking, we just collect arbitrary form data or pass basic info
+            const paymentGateway = ClientGatewayFactory.getPaymentGateway();
+
             const tx = await paymentGateway.processPayment({
                 userId: user.uid,
                 planId: plan.id,

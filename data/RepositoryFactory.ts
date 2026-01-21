@@ -3,7 +3,6 @@ import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { AuthRepository } from '../domain/repositories/AuthRepository';
 import { FoodAnalysisRepository } from '../domain/repositories/FoodAnalysisRepository';
 import { HistoryRepository } from '../domain/repositories/HistoryRepository';
-import { PaymentGateway } from '../domain/gateways/PaymentGateway';
 import { FeatureFlagRepository } from '../domain/repositories/FeatureFlagRepository';
 import { ModelConfigRepository } from '../domain/repositories/ModelConfigRepository';
 
@@ -22,8 +21,6 @@ import { SupabaseProfileRepository } from './repositories/SupabaseProfileReposit
 import { SupabaseFoodAnalysisRepository } from './repositories/SupabaseFoodAnalysisRepository';
 import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryRepository';
 import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
-// import { AbacatePayPaymentGateway } from './gateways/AbacatePayPaymentGateway';
-// import { HttpPaymentGateway } from './gateways/HttpPaymentGateway';
 import { LocalFeatureFlagRepository } from './repositories/LocalFeatureFlagRepository';
 import { FirebaseFeatureFlagRepository } from './repositories/FirebaseFeatureFlagRepository';
 import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfigRepository';
@@ -40,6 +37,7 @@ interface RepositoryStrategy {
     auth: () => AuthRepository;
     foodAnalysis: () => FoodAnalysisRepository;
     history: () => HistoryRepository;
+    // payment: () => PaymentGateway;
     featureFlag: () => FeatureFlagRepository;
     modelConfig: () => ModelConfigRepository;
 }
@@ -51,6 +49,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new FirebaseAuthRepository(),
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
+        // payment: () => new NextApiPaymentGateway(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -60,6 +59,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new SupabaseAuthRepository(),
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
+        // payment: () => new NextApiPaymentGateway(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -69,6 +69,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new MockAuthRepository(),
         foodAnalysis: () => new LocalFoodAnalysisRepository(),
         history: () => new LocalHistoryRepository(),
+        // payment: () => new NextApiPaymentGateway(),
         featureFlag: () => new LocalFeatureFlagRepository(),
         modelConfig: () => new LocalModelConfigRepository(),
     },
@@ -80,7 +81,6 @@ export class RepositoryFactory {
     private static authRepository: AuthRepository | null = null;
     private static foodAnalysisRepository: FoodAnalysisRepository | null = null;
     private static historyRepository: HistoryRepository | null = null;
-    private static paymentGateway: PaymentGateway | null = null;
     private static featureFlagRepository: FeatureFlagRepository | null = null;
     private static modelConfigRepository: ModelConfigRepository | null = null;
 
