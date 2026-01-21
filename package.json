@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
-    "dev:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock next dev --turbo",
+    "dev:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock next dev --turbo",
     "build": "next build",
-    "build:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock next build",
+    "build:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock next build",
     "start": "next start",
     "lint": "next lint",
-    "cy:open": "NEXT_PUBLIC_BACKEND_PROVIDER=mock cypress open",
-    "cy:run": "NEXT_PUBLIC_BACKEND_PROVIDER=mock cypress run"
+    "cy:open": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress open",
+    "cy:run": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress run"
   },
   "dependencies": {
     "@google/genai": "^1.26.0",

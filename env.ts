@@ -12,6 +12,11 @@ export const env = createEnv({
         GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
         GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
 
+        // Payment Configuration
+        ABACATE_PAY_API_KEY: z.string().optional(),
+        // Payment Provider (Server-side selection)
+        PAYMENT_PROVIDER: z.enum(['abacatepay', 'mock']),
+
         // Migration, Admin Credentials and backend service keys (server-only)
         FIREBASE_CLIENT_EMAIL: z.string(),
         FIREBASE_PRIVATE_KEY: z.string(),
@@ -67,12 +72,14 @@ export const env = createEnv({
         // Server variables
         GEMINI_API_KEY: process.env.GEMINI_API_KEY,
         GEMINI_FAST_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL,
+        ABACATE_PAY_API_KEY: process.env.ABACATE_PAY_API_KEY,
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER,
 
         NODE_ENV: process.env.NODE_ENV,
 
