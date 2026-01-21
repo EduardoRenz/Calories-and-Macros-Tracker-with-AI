@@ -22,8 +22,8 @@ import { SupabaseProfileRepository } from './repositories/SupabaseProfileReposit
 import { SupabaseFoodAnalysisRepository } from './repositories/SupabaseFoodAnalysisRepository';
 import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryRepository';
 import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
-import { MockPaymentGateway } from './gateways/MockPaymentGateway';
-import { AbacatePayPaymentGateway } from './gateways/AbacatePayPaymentGateway';
+// import { AbacatePayPaymentGateway } from './gateways/AbacatePayPaymentGateway';
+// import { HttpPaymentGateway } from './gateways/HttpPaymentGateway';
 import { LocalFeatureFlagRepository } from './repositories/LocalFeatureFlagRepository';
 import { FirebaseFeatureFlagRepository } from './repositories/FirebaseFeatureFlagRepository';
 import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfigRepository';
@@ -40,7 +40,6 @@ interface RepositoryStrategy {
     auth: () => AuthRepository;
     foodAnalysis: () => FoodAnalysisRepository;
     history: () => HistoryRepository;
-    payment: () => PaymentGateway;
     featureFlag: () => FeatureFlagRepository;
     modelConfig: () => ModelConfigRepository;
 }
@@ -52,7 +51,6 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new FirebaseAuthRepository(),
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
-        payment: () => env.ABACATE_PAY_API_KEY ? new AbacatePayPaymentGateway() : new MockPaymentGateway(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -62,7 +60,6 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new SupabaseAuthRepository(),
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
-        payment: () => env.ABACATE_PAY_API_KEY ? new AbacatePayPaymentGateway() : new MockPaymentGateway(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -72,7 +69,6 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new MockAuthRepository(),
         foodAnalysis: () => new LocalFoodAnalysisRepository(),
         history: () => new LocalHistoryRepository(),
-        payment: () => new MockPaymentGateway(),
         featureFlag: () => new LocalFeatureFlagRepository(),
         modelConfig: () => new LocalModelConfigRepository(),
     },
@@ -125,13 +121,6 @@ export class RepositoryFactory {
             this.historyRepository = this.getStrategy().history();
         }
         return this.historyRepository;
-    }
-
-    public static getPaymentGateway(): PaymentGateway {
-        if (!this.paymentGateway) {
-            this.paymentGateway = this.getStrategy().payment();
-        }
-        return this.paymentGateway;
     }
 
     public static getFeatureFlagRepository(): FeatureFlagRepository {
