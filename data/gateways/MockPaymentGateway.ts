@@ -1,7 +1,7 @@
 import { PaymentData, Plan, Transaction, Currency } from '../../domain/entities/payment';
-import { PaymentRepository } from '../../domain/repositories/PaymentRepository';
+import { PaymentGateway } from '../../domain/gateways/PaymentGateway';
 
-export class MockPaymentRepository implements PaymentRepository {
+export class MockPaymentGateway implements PaymentGateway {
     async getPlans(language: string): Promise<Plan[]> {
         // Simulate network delay
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -74,7 +74,7 @@ export class MockPaymentRepository implements PaymentRepository {
                 id: 'member_annual',
                 name: isPt ? 'Plano Membro (Anual)' : 'Member Plan (Annual)',
                 description: isPt ? `Cobrado ${currency.format(annualTotal)} anualmente com 15% de desconto.` : `Billed ${currency.format(annualTotal)} yearly with 15% off.`,
-                price: annualTotalWithDiscount , // Total annual price
+                price: annualTotalWithDiscount, // Total annual price
                 originalPrice: annualTotal, // What it would cost monthly for 12 months
                 currency, // Now a Currency Value Object
                 interval: 'year',

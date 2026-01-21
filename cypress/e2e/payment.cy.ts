@@ -1,5 +1,5 @@
 describe('Payment Flow (Mock Mode)', () => {
-    // Use mock mode to avoid external calls and use MockPaymentRepository
+    // Use mock mode to avoid external calls and use MockPaymentGateway
     // We assume USE_MOCKS=true logic or that we can force it, 
     // but here we are testing the UI flow which should work regardless if logic handles it.
     // Actually, the app reads env vars. 
@@ -99,7 +99,7 @@ describe('Payment Flow (Mock Mode)', () => {
 
         // Wait for success redirect
         // The successful payment redirect typically goes to dashboard or shows success message
-        // In MockPaymentRepository simulation, verify what happens.
+        // In MockPaymentGateway simulation, verify what happens.
         // CheckoutPage.tsx: router.push('/dashboard?payment_success=true');
         cy.url().should('include', '/dashboard');
         cy.url().should('include', 'payment_success=true');

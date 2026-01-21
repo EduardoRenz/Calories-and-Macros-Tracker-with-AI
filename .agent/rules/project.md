@@ -48,7 +48,12 @@ class LocalUserRepository implements UserRepository {
 - A repositry never should call another repository. Make a service or a Use case.
 - A repository should always have a static property to be used as a singleton.
 
-##### Domains and Entities
+### Gateways
+
+- Use Gateway Pattern to handle external services integrations (like Payment Gateways, Email Services, etc).
+- It follows the same principles as repositories: Interface in Domain, Implementation in Data.
+- Gateways should be agnostic of the external provider implementation.
+
 
 Don't create anemic models, always make a domain wit*Wh attributes and behaviors. 
 

@@ -3,7 +3,7 @@ import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { AuthRepository } from '../domain/repositories/AuthRepository';
 import { FoodAnalysisRepository } from '../domain/repositories/FoodAnalysisRepository';
 import { HistoryRepository } from '../domain/repositories/HistoryRepository';
-import { PaymentRepository } from '../domain/repositories/PaymentRepository';
+import { PaymentGateway } from '../domain/gateways/PaymentGateway';
 import { FeatureFlagRepository } from '../domain/repositories/FeatureFlagRepository';
 import { ModelConfigRepository } from '../domain/repositories/ModelConfigRepository';
 
@@ -22,7 +22,8 @@ import { SupabaseProfileRepository } from './repositories/SupabaseProfileReposit
 import { SupabaseFoodAnalysisRepository } from './repositories/SupabaseFoodAnalysisRepository';
 import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryRepository';
 import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
-import { MockPaymentRepository } from './repositories/MockPaymentRepository';
+import { MockPaymentGateway } from './gateways/MockPaymentGateway';
+import { AbacatePayPaymentGateway } from './gateways/AbacatePayPaymentGateway';
 import { LocalFeatureFlagRepository } from './repositories/LocalFeatureFlagRepository';
 import { FirebaseFeatureFlagRepository } from './repositories/FirebaseFeatureFlagRepository';
 import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfigRepository';
@@ -39,7 +40,7 @@ interface RepositoryStrategy {
     auth: () => AuthRepository;
     foodAnalysis: () => FoodAnalysisRepository;
     history: () => HistoryRepository;
-    payment: () => PaymentRepository;
+    payment: () => PaymentGateway;
     featureFlag: () => FeatureFlagRepository;
     modelConfig: () => ModelConfigRepository;
 }
@@ -51,7 +52,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new FirebaseAuthRepository(),
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
-        payment: () => new MockPaymentRepository(), // Mock for now
+        payment: () => env.ABACATE_PAY_API_KEY ? new AbacatePayPaymentGateway() : new MockPaymentGateway(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -61,7 +62,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new SupabaseAuthRepository(),
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
-        payment: () => new MockPaymentRepository(), // Mock for now
+        payment: () => env.ABACATE_PAY_API_KEY ? new AbacatePayPaymentGateway() : new MockPaymentGateway(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -71,7 +72,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new MockAuthRepository(),
         foodAnalysis: () => new LocalFoodAnalysisRepository(),
         history: () => new LocalHistoryRepository(),
-        payment: () => new MockPaymentRepository(),
+        payment: () => new MockPaymentGateway(),
         featureFlag: () => new LocalFeatureFlagRepository(),
         modelConfig: () => new LocalModelConfigRepository(),
     },
@@ -83,7 +84,7 @@ export class RepositoryFactory {
     private static authRepository: AuthRepository | null = null;
     private static foodAnalysisRepository: FoodAnalysisRepository | null = null;
     private static historyRepository: HistoryRepository | null = null;
-    private static paymentRepository: PaymentRepository | null = null;
+    private static paymentGateway: PaymentGateway | null = null;
     private static featureFlagRepository: FeatureFlagRepository | null = null;
     private static modelConfigRepository: ModelConfigRepository | null = null;
 
@@ -126,11 +127,11 @@ export class RepositoryFactory {
         return this.historyRepository;
     }
 
-    public static getPaymentRepository(): PaymentRepository {
-        if (!this.paymentRepository) {
-            this.paymentRepository = this.getStrategy().payment();
+    public static getPaymentGateway(): PaymentGateway {
+        if (!this.paymentGateway) {
+            this.paymentGateway = this.getStrategy().payment();
         }
-        return this.paymentRepository;
+        return this.paymentGateway;
     }
 
     public static getFeatureFlagRepository(): FeatureFlagRepository {

@@ -34,8 +34,8 @@ export default function CheckoutPage() {
 
         const fetchPlan = async () => {
             try {
-                const paymentRepo = RepositoryFactory.getPaymentRepository();
-                const plans = await paymentRepo.getPlans(language);
+                const paymentGateway = RepositoryFactory.getPaymentGateway();
+                const plans = await paymentGateway.getPlans(language);
                 const selected = plans.find(p => p.id === planId);
                 if (selected) {
                     setPlan(selected);
@@ -59,13 +59,18 @@ export default function CheckoutPage() {
 
         setIsProcessing(true);
         try {
-            const paymentRepo = RepositoryFactory.getPaymentRepository();
+            const paymentGateway = RepositoryFactory.getPaymentGateway();
             // Since we are mocking, we just collect arbitrary form data or pass basic info
-            await paymentRepo.processPayment({
+            const tx = await paymentGateway.processPayment({
                 userId: user.uid,
                 planId: plan.id,
                 paymentMethod: selectedMethod,
             });
+
+            if (tx.url) {
+                window.location.href = tx.url;
+                return;
+            }
 
             // Redirect to success or history
             // Ideally show a success modal or page.

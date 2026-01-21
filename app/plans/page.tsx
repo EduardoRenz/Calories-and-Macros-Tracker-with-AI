@@ -23,8 +23,8 @@ function PlansContent() {
         const fetchPlans = async () => {
             setIsLoading(true);
             try {
-                const paymentRepo = RepositoryFactory.getPaymentRepository();
-                const allPlans = await paymentRepo.getPlans(language);
+                const paymentGateway = RepositoryFactory.getPaymentGateway();
+                const allPlans = await paymentGateway.getPlans(language);
                 setPlans(allPlans);
             } catch (error) {
                 console.error('Failed to fetch plans', error);

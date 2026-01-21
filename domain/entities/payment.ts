@@ -66,7 +66,7 @@ export class Currency {
 
     public format(amount: number): string {
         const formattedAmount = amount.toFixed(this._decimalPlaces);
-        
+
         switch (this._code) {
             case 'USD':
                 return `${this._symbol}${formattedAmount}`;
@@ -83,11 +83,11 @@ export class Currency {
 
     public parseAmount(formattedString: string): number {
         const cleanString = formattedString.replace(/[^\d.,]/g, '');
-        
+
         if (this._code === 'BRL') {
             return parseFloat(cleanString.replace('.', '').replace(',', '.'));
         }
-        
+
         return parseFloat(cleanString.replace(',', ''));
     }
 
@@ -278,6 +278,7 @@ export interface Transaction {
     status: 'pending' | 'completed' | 'failed';
     date: Date;
     paymentMethod: PaymentMethodType;
+    url?: string;
 }
 
 export interface PaymentData {
