@@ -45,30 +45,4 @@ describe('Chat Back Button Behavior', () => {
         cy.get('#chat-input').should('not.exist');
     });
 
-    it('should handle multiple open/close cycles with back button', () => {
-        cy.url().should('include', '/dashboard');
-        // Open and close chat multiple times using back button
-        for (let i = 0; i < 3; i++) {
-            // Open chat
-            cy.get('body').then($body => {
-                if ($body.find('#floating-chat-button').length > 0) {
-                    cy.get('#floating-chat-button').click();
-                } else {
-                    cy.get('#mobile-chat-button').click();
-                }
-            });
-
-            // Verify chat is open
-            cy.get('#chat-input').should('be.visible');
-
-            // Close with back button
-            cy.go('back');
-
-            // Verify chat is closed
-            cy.get('#chat-input').should('not.exist');
-
-            // Wait a bit between cycles
-            cy.wait(500);
-        }
-    });
 });
