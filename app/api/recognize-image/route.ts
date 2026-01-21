@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GeminiImageRecognitionService } from '@/data/services/GeminiImageRecognitionService';
-import { OpenAIImageRecognitionService } from '@/data/services/OpenAIImageRecognitionService';
-import { DeepSeekImageRecognitionService } from '@/data/services/DeepSeekImageRecognitionService';
 import { verifyAuth } from '../auth-middleware';
 import { checkAiAccess } from '../feature-flag-check';
 import { env } from '@/env';
@@ -26,11 +24,9 @@ export async function POST(req: NextRequest) {
 
         if (env.GEMINI_API_KEY) {
             service = new GeminiImageRecognitionService(env.GEMINI_API_KEY);
-        } else if (process.env.OPENAI_API_KEY) {
-            service = new OpenAIImageRecognitionService(process.env.OPENAI_API_KEY);
-        } else if (process.env.DEEPSEEK_API_KEY) {
-            service = new DeepSeekImageRecognitionService(process.env.DEEPSEEK_API_KEY);
         }
+        // Note: OPENAI_API_KEY and DEEPSEEK_API_KEY are not in env schema
+        // These would need to be added if you want to use them server-side
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });

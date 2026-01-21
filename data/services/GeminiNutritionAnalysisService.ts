@@ -1,11 +1,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
+import { env } from '../../env';
 
 export class GeminiNutritionAnalysisService implements NutritionAnalysisService {
     private ai: GoogleGenAI;
 
     constructor(apiKey?: string) {
-        const key = apiKey || process.env.GEMINI_API_KEY;
+        const key = apiKey || env.GEMINI_API_KEY;
         if (!key) {
             throw new Error("GEMINI_API_KEY not set (neither in constructor nor environment).");
         }
@@ -24,7 +25,7 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
             const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats, fiber) for the following food item: "${quantity} of ${ingredientName}". Respond ONLY with a JSON object matching the provided schema. If you cannot determine the nutritional information, return an object with zero for all values. Important: estimate based on a plate size, if you don't know how to estimate the size and amount of an ingredient, estimate based on an average per serving. Also provide the estimated quantity in grams for the given amount.`;
 
             const response = await this.ai.models.generateContent({
-                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
+                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",

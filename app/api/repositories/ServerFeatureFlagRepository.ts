@@ -1,6 +1,8 @@
 import { FeatureFlagRepository } from '../../../domain/repositories/FeatureFlagRepository';
-import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { initializeApp, cert } from "firebase-admin/app";
 import { getRemoteConfig, RemoteConfig } from "firebase-admin/remote-config";
+import { env } from '@/env';
+
 
 export class ServerFeatureFlagRepository implements FeatureFlagRepository {
     static instance: ServerFeatureFlagRepository;
@@ -8,52 +10,31 @@ export class ServerFeatureFlagRepository implements FeatureFlagRepository {
 
     constructor() {
         // Firebase Admin configuration
-        const projectId = process.env.FIREBASE_PROJECT_ID;
-        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-        const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+        const projectId = env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+        const clientEmail = env.FIREBASE_CLIENT_EMAIL;
+        const privateKey = env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-        const shouldInitAdmin = !!(projectId && clientEmail && privateKey);
-
-        if (!shouldInitAdmin) {
-            console.warn('Firebase Admin credentials not configured. Missing:', {
-                projectId: !!projectId,
-                clientEmail: !!clientEmail,
-                privateKey: !!privateKey
+        try {
+            const serviceAccount = {
+                projectId,
+                clientEmail,
+                privateKey,
+            };
+            const adminApp = initializeApp({
+                credential: cert(serviceAccount),
+            }, 'admin-feature-flags');
+            this.remoteConfig = getRemoteConfig(adminApp);
+        } catch (error) {
+            console.error('Failed to initialize Firebase Admin Remote Config:', error);
+            console.error('Service account details:', {
+                projectId: projectId ? 'set' : 'missing',
+                clientEmail: clientEmail ? 'set' : 'missing',
+                privateKey: privateKey ? 'set' : 'missing'
             });
             this.remoteConfig = null;
-        } else {
-            try {
-                // Check if Firebase Admin app already exists
-                const existingApp = getApps().find(app => app.name === 'admin-feature-flags');
-
-                if (existingApp) {
-                    this.remoteConfig = getRemoteConfig(existingApp);
-                } else {
-                    const serviceAccount = {
-                        projectId,
-                        clientEmail,
-                        privateKey,
-                    };
-
-                    const adminApp = initializeApp({
-                        credential: cert(serviceAccount),
-                    }, 'admin-feature-flags');
-
-                    this.remoteConfig = getRemoteConfig(adminApp);
-                }
-            } catch (error) {
-                console.error('Failed to initialize Firebase Admin Remote Config:', error);
-                console.error('Service account details:', {
-                    projectId: projectId ? 'set' : 'missing',
-                    clientEmail: clientEmail ? 'set' : 'missing',
-                    privateKey: privateKey ? 'set' : 'missing'
-                });
-                this.remoteConfig = null;
-            }
         }
-
-        ServerFeatureFlagRepository.instance = this;
     }
+
 
     static getInstance(): ServerFeatureFlagRepository {
         if (!ServerFeatureFlagRepository.instance) {

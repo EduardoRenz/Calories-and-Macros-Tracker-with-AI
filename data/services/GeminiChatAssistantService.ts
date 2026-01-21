@@ -1,23 +1,23 @@
-import { FunctionCallingConfigMode, GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
 import { ChatMessage } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
 import { RepositoryFactory } from '../RepositoryFactory';
+import { env } from '../../env';
 import en from '../../locales/en';
 import pt from '../../locales/pt';
 import es from '../../locales/es';
 
 export class GeminiChatAssistantService extends BaseChatAssistantService {
     private ai: GoogleGenAI;
-    private model: string = process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
     private modelConfigRepo: ModelConfigRepository;
 
     constructor(apiKey?: string, private dashboardRepo?: DashboardRepository) {
         super();
         this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
-        const key = apiKey || process.env.GEMINI_API_KEY;
+        const key = apiKey || env.GEMINI_API_KEY;
         if (!key) {
             console.error("Gemini API key not found. Chat Assistant will fail.");
         }
@@ -27,11 +27,11 @@ export class GeminiChatAssistantService extends BaseChatAssistantService {
     private async getModelVersion(): Promise<string> {
         try {
             return await this.modelConfigRepo.getModelVersion('gemini', 'chat')
-                || process.env.GEMINI_FAST_DEFAULT_MODEL
+                || env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL
                 || 'gemini-2.5-flash-lite';
         } catch (error) {
             console.warn('Failed to get model version from remote config, using fallback:', error);
-            return process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+            return env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
         }
     }
 

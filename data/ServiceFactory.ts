@@ -31,7 +31,7 @@ import { NextApiChatAssistantService } from './services/NextApiChatAssistantServ
 import { RepositoryFactory } from './RepositoryFactory';
 import { env } from '../env';
 
-const USE_MOCKS = env.BACKEND_PROVIDER === 'mock';
+const USE_MOCKS = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock';
 
 interface ApiKey {
     provider: 'gemini' | 'openai' | 'deepseek';
@@ -220,12 +220,8 @@ export class ServiceFactory {
             if (env.GEMINI_API_KEY) {
                 return new GeminiChatAssistantService(env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository());
             }
-            if (process.env.DEEPSEEK_API_KEY) {
-                return new DeepSeekChatAssistantService(process.env.DEEPSEEK_API_KEY, RepositoryFactory.getDashboardRepository());
-            }
-            if (process.env.OPENAI_API_KEY) {
-                return new OpenAIChatAssistantService(process.env.OPENAI_API_KEY, RepositoryFactory.getDashboardRepository());
-            }
+            // Note: OPENAI_API_KEY and DEEPSEEK_API_KEY are not in env schema
+            // These would need to be added if you want to use them server-side
             return new MockChatAssistantService();
         }
 

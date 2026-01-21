@@ -33,7 +33,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     }
 
     return (
-        <div className={`flex w-full mb-4 ${isAssistant ? 'justify-start' : 'justify-end'}`}>
+        <div className={`flex w-full mb-4 ${isAssistant ? 'justify-start' : 'justify-end'}`} id="chat-message">
             <div className={`flex max-w-[85%] ${isAssistant ? 'flex-row' : 'flex-row-reverse'} gap-2`}>
 
                 {/* Avatar */}

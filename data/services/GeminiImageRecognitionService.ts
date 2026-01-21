@@ -1,6 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import type { Ingredient } from '../../domain/entities/dashboard';
+import { env } from '../../env';
 
 const blobToBase64 = async (blob: Blob): Promise<string> => {
     // Check if we are in a browser environment
@@ -28,7 +29,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
     private ai: GoogleGenAI;
 
     constructor(apiKey?: string) {
-        const key = apiKey || process.env.GEMINI_API_KEY;
+        const key = apiKey || env.GEMINI_API_KEY;
         if (!key) {
             throw new Error("GEMINI_API_KEY not set (neither in constructor nor environment).");
         }
@@ -53,7 +54,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             }
 
             const response = await this.ai.models.generateContent({
-                model: process.env.GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash',
+                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash',
                 contents: {
                     parts: [
                         { text: promptText },

@@ -31,7 +31,7 @@ import { env } from '../env';
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
-const BACKEND_PROVIDER = env.BACKEND_PROVIDER;
+const BACKEND_PROVIDER = env.NEXT_PUBLIC_BACKEND_PROVIDER;
 
 interface RepositoryStrategy {
     dashboard: () => DashboardRepository;
@@ -52,7 +52,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
         payment: () => new MockPaymentRepository(), // Mock for now
-        featureFlag: () => new FirebaseFeatureFlagRepository(),
+        featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
     supabase: {
@@ -62,7 +62,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
         payment: () => new MockPaymentRepository(), // Mock for now
-        featureFlag: () => new FirebaseFeatureFlagRepository(), // Remote Config can still be used with Supabase or we could use another one
+        featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
     mock: {
@@ -88,7 +88,7 @@ export class RepositoryFactory {
     private static modelConfigRepository: ModelConfigRepository | null = null;
 
     private static getStrategy(): RepositoryStrategy {
-        return strategies[BACKEND_PROVIDER] || strategies.firebase;
+        return strategies[BACKEND_PROVIDER ?? 'firebase'] || strategies.firebase;
     }
 
     public static getDashboardRepository(): DashboardRepository {
