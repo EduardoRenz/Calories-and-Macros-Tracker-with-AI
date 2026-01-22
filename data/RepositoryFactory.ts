@@ -26,6 +26,11 @@ import { FirebaseFeatureFlagRepository } from './repositories/FirebaseFeatureFla
 import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfigRepository';
 import { LocalModelConfigRepository } from './repositories/LocalModelConfigRepository';
 import { env } from '../env';
+import { PlansRepository } from '../domain/repositories/PlansRepository';
+
+import { SupabasePlansRepository } from './repositories/SupabasePlansRepository';
+import { FirestorePlansRepository } from './repositories/FirestorePlansRepository';
+import { MockPlansRepository } from './repositories/MockPlansRepository';
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
@@ -37,7 +42,7 @@ interface RepositoryStrategy {
     auth: () => AuthRepository;
     foodAnalysis: () => FoodAnalysisRepository;
     history: () => HistoryRepository;
-    // payment: () => PaymentGateway;
+    plans: () => PlansRepository;
     featureFlag: () => FeatureFlagRepository;
     modelConfig: () => ModelConfigRepository;
 }
@@ -49,7 +54,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new FirebaseAuthRepository(),
         foodAnalysis: () => new FirestoreFoodAnalysisRepository(),
         history: () => new FirestoreHistoryRepository(),
-        // payment: () => new NextApiPaymentGateway(),
+        plans: () => FirestorePlansRepository.getInstance(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -59,7 +64,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new SupabaseAuthRepository(),
         foodAnalysis: () => new SupabaseFoodAnalysisRepository(),
         history: () => new SupabaseHistoryRepository(),
-        // payment: () => new NextApiPaymentGateway(),
+        plans: () => SupabasePlansRepository.getInstance(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
         modelConfig: () => new FirebaseModelConfigRepository(),
     },
@@ -69,7 +74,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         auth: () => new MockAuthRepository(),
         foodAnalysis: () => new LocalFoodAnalysisRepository(),
         history: () => new LocalHistoryRepository(),
-        // payment: () => new NextApiPaymentGateway(),
+        plans: () => MockPlansRepository.getInstance(),
         featureFlag: () => new LocalFeatureFlagRepository(),
         modelConfig: () => new LocalModelConfigRepository(),
     },
@@ -83,6 +88,7 @@ export class RepositoryFactory {
     private static historyRepository: HistoryRepository | null = null;
     private static featureFlagRepository: FeatureFlagRepository | null = null;
     private static modelConfigRepository: ModelConfigRepository | null = null;
+    private static plansRepository: PlansRepository | null = null;
 
     private static getStrategy(): RepositoryStrategy {
         return strategies[BACKEND_PROVIDER ?? 'firebase'] || strategies.firebase;
@@ -136,4 +142,12 @@ export class RepositoryFactory {
         }
         return this.modelConfigRepository;
     }
+
+    public static getPlansRepository(): PlansRepository {
+        if (!this.plansRepository) {
+            this.plansRepository = this.getStrategy().plans();
+        }
+        return this.plansRepository;
+    }
 }
+

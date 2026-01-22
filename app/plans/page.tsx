@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ClientGatewayFactory } from '../../data/ClientGatewayFactory';
 import { Plan } from '../../domain/entities/payment';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { PlanCard } from '../../components/payment/PlanCard';
 import PublicNavbar from '../../components/PublicNavbar';
 import { Footer } from '../../components/Footer';
+import { RepositoryFactory } from '../../data/RepositoryFactory';
 
 function PlansContent() {
     const router = useRouter();
@@ -23,8 +23,8 @@ function PlansContent() {
         const fetchPlans = async () => {
             setIsLoading(true);
             try {
-                const paymentGateway = ClientGatewayFactory.getPaymentGateway();
-                const allPlans = await paymentGateway.getPlans(language);
+                const plansRepository = RepositoryFactory.getPlansRepository();
+                const allPlans = await plansRepository.getPlans(language);
                 setPlans(allPlans);
             } catch (error) {
                 console.error('Failed to fetch plans', error);
