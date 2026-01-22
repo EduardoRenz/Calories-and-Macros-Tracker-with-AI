@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ClientGatewayFactory } from '../../../data/ClientGatewayFactory';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useTranslation } from '../../../hooks/useTranslation';
@@ -10,6 +9,7 @@ import { Plan, PaymentMethodType } from '../../../domain/entities/payment';
 import { CheckoutSummary } from '../../../components/payment/CheckoutSummary';
 import { PaymentMethodSelector } from '../../../components/payment/PaymentMethodSelector';
 import { CheckoutForm } from '../../../components/payment/CheckoutForm';
+import { RepositoryFactory } from '../../../data/RepositoryFactory';
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -34,8 +34,8 @@ export default function CheckoutPage() {
 
         const fetchPlan = async () => {
             try {
-                const paymentGateway = ClientGatewayFactory.getPaymentGateway();
-                const plans = await paymentGateway.getPlans(language);
+                const plansRepository = RepositoryFactory.getPlansRepository();
+                const plans = await plansRepository.getPlans(language);
                 const selected = plans.find((p: Plan) => p.id === planId);
                 if (selected) {
                     setPlan(selected);
@@ -59,22 +59,23 @@ export default function CheckoutPage() {
 
         setIsProcessing(true);
         try {
-            const paymentGateway = ClientGatewayFactory.getPaymentGateway();
+            // TODO: Implement payment processing
+            // const paymentGateway = ClientGatewayFactory.getPaymentGateway();
 
-            const tx = await paymentGateway.processPayment({
-                userId: user.uid,
-                planId: plan.id,
-                paymentMethod: selectedMethod,
-            });
+            // const tx = await paymentGateway.processPayment({
+            //     userId: user.uid,
+            //     planId: plan.id,
+            //     paymentMethod: selectedMethod,
+            // });
 
-            if (tx.url) {
-                window.location.href = tx.url;
-                return;
-            }
+            // if (tx.url) {
+            //     window.location.href = tx.url;
+            //     return;
+            // }
 
-            // Redirect to success or history
-            // Ideally show a success modal or page.
-            // For now, redirect to dashboard with a query param
+            // // Redirect to success or history
+            // // Ideally show a success modal or page.
+            // // For now, redirect to dashboard with a query param
             router.push('/dashboard?payment_success=true');
         } catch (error) {
             console.error('Payment failed', error);

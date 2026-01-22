@@ -1,10 +1,42 @@
 import { PaymentGateway } from '../../../domain/gateways/PaymentGateway';
 import { PaymentData, Plan, Transaction, Currency } from '../../../domain/entities/payment';
 import { env } from '../../../env';
+import { ConcurrencyRequestManager } from '../../../data/infrastructure/ConcurrencyRequestManager';
+
+type AbacatePayFrequency = 'ONE_TIME' | 'MULTIPLE_PAYMENTS';
+
+interface AbacatePayApiResponse<T> {
+    data: T;
+    error: unknown;
+}
+
+interface AbacatePayBillingProduct {
+    id: string;
+    externalId: string;
+    quantity: number;
+    name?: string;
+    description?: string;
+    price?: number;
+}
+
+interface AbacatePayBilling {
+    id: string;
+    url: string;
+    status: 'PENDING' | 'EXPIRED' | 'CANCELLED' | 'PAID' | 'REFUNDED';
+    devMode: boolean;
+    methods: Array<'PIX' | 'CARD'>;
+    products: AbacatePayBillingProduct[];
+    frequency: AbacatePayFrequency;
+    amount: number;
+    nextBilling: string | null;
+    createdAt?: string;
+    updatedAt?: string;
+}
 
 export class AbacatePayPaymentGateway implements PaymentGateway {
     private readonly apiKey: string;
     private readonly baseUrl = 'https://api.abacatepay.com/v1';
+    private readonly concurrencyManager = new ConcurrencyRequestManager();
 
     private static instance: AbacatePayPaymentGateway | null = null;
 
@@ -25,111 +57,75 @@ export class AbacatePayPaymentGateway implements PaymentGateway {
         return this.instance;
     }
 
-    async getPlans(language: string): Promise<Plan[]> {
-        // Since AbacatePay "list billings" doesn't list "plans", we mock the plans structure
-        // to match what the UI expects, but these "products" will be sent to AbacatePay on checkout.
-
-        // Simulate network delay to feel like an API
-        // await new Promise((resolve) => setTimeout(resolve, 200));
-
-        const isPt = language === 'pt';
-        const currency = isPt ? Currency.BRL() : Currency.USD();
-
-        // Prices copied from Mock
-        const freePrice = 0;
-        const monthlyPrice = isPt ? 39.90 : 9.99;
-        const annualTotal = isPt ? 39.90 * 12 : 9.99 * 12;
-        const annualTotalWithDiscount = annualTotal * 0.85;
-
-        const memberFeatures = [
-            { text: isPt ? 'Sem chave de API necessária (Nós gerenciamos a IA)' : 'No API needed (We handle all AI processing)', included: true },
-            { text: isPt ? 'Análise nutricional suportada' : 'Nutrition analysis supported', included: true },
-        ];
-
-        const freeFeatures = [
-            { text: isPt ? 'Use sua própria chave de API' : 'Use own API keys only', included: true },
-            { text: isPt ? 'Sem análise nutricional' : 'No nutrition analysis', included: false },
-        ];
-
-        return [
-            Plan.create({
-                id: 'free',
-                name: isPt ? 'Plano Gratuito' : 'Free Plan',
-                description: isPt ? 'Acesso básico com suas pŕoprias chaves de API.' : 'Basic access with your own API keys.',
-                price: freePrice,
-                currency,
-                interval: 'month',
-                features: freeFeatures,
-                isPopular: false,
-            }),
-            Plan.create({
-                id: 'member_monthly',
-                name: isPt ? 'Plano Membro (Mensal)' : 'Member Plan (Monthly)',
-                description: isPt ? 'Cobrado mensalmente.' : 'Billed monthly.',
-                price: monthlyPrice,
-                currency,
-                interval: 'month',
-                features: memberFeatures,
-                isPopular: false,
-            }),
-            Plan.create({
-                id: 'member_annual',
-                name: isPt ? 'Plano Membro (Anual)' : 'Member Plan (Annual)',
-                description: isPt ? `Cobrado ${currency.format(annualTotal)} anualmente com 15% de desconto.` : `Billed ${currency.format(annualTotal)} yearly with 15% off.`,
-                price: annualTotalWithDiscount,
-                originalPrice: annualTotal,
-                currency,
-                interval: 'year',
-                features: memberFeatures,
-                isPopular: true,
-                discountMessage: isPt ? 'MELHOR VALOR' : 'MOST POPULAR',
-            }),
-        ];
-    }
-
     async createCheckoutSession(planId: string, userId: string): Promise<string> {
-        // This method is called to get a session ID or directly a URL. 
-        // We will create a billing and return the URL.
-        const plans = await this.getPlans('en'); // Language doesn't matter for finding price/id here
-        const plan = plans.find(p => p.id === planId);
-
-        if (!plan) {
-            throw new Error(`Plan not found: ${planId}`);
-        }
-
-        const billing = await this.createBilling(plan, userId);
-        return billing.url;
+        // TODO: Obter plan pelo PlansRepository quando necessário
+        throw new Error('[AbacatePayPaymentGateway] createCheckoutSession needs PlansRepository integration.');
     }
 
     async processPayment(data: PaymentData): Promise<Transaction> {
-        // In the context of AbacatePay, "processing" a payment usually means creating a billing
-        // and redirecting the user. The actual "processing" happens on their hosted page.
-        // We return a transaction with status 'pending' and the redirect URL.
+        // TODO: Obter plan pelo PlansRepository quando necessário
+        throw new Error('[AbacatePayPaymentGateway] processPayment needs PlansRepository integration.');
+    }
 
-        const plans = await this.getPlans('en');
-        const plan = plans.find(p => p.id === data.planId);
+    private async listBillings(): Promise<AbacatePayBilling[]> {
+        const urlPath = '/billing/list';
+        const key = `GET:${urlPath}`;
+        return this.concurrencyManager.run(key, async () => {
+            const result = await this.request<AbacatePayApiResponse<AbacatePayBilling[]>>(urlPath, {
+                method: 'GET',
+            });
 
-        if (!plan) {
-            throw new Error(`Plan not found: ${data.planId}`);
+            console.log('[AbacatePayPaymentGateway] raw billing/list response:', JSON.stringify(result, null, 2));
+
+            if (!result || !Array.isArray(result.data)) {
+                console.warn('[AbacatePayPaymentGateway] billing/list returned unexpected payload.');
+                return [];
+            }
+
+            return result.data;
+        });
+    }
+
+    private async request<T>(
+        path: string,
+        options: { method: 'GET' | 'POST'; body?: unknown },
+    ): Promise<T> {
+        if (!this.apiKey) {
+            throw new Error('AbacatePay API Key is missing');
+        }
+
+        const url = `${this.baseUrl}${path}`;
+        const hasBody = options.body !== undefined;
+        const requestId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+        console.log(`[AbacatePayPaymentGateway] [${requestId}] -> ${options.method} ${url}`);
+        if (hasBody) {
+            console.log(`[AbacatePayPaymentGateway] [${requestId}] request body keys: ${Object.keys(options.body as object).join(',')}`);
+        }
+
+        const response = await fetch(url, {
+            method: options.method,
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${this.apiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: hasBody ? JSON.stringify(options.body) : undefined,
+        });
+
+        const responseText = await response.text();
+        console.log(`[AbacatePayPaymentGateway] [${requestId}] <- ${response.status} ${response.statusText}`);
+
+        if (!response.ok) {
+            console.error(`[AbacatePayPaymentGateway] [${requestId}] error body: ${responseText.slice(0, 2000)}`);
+            throw new Error(`AbacatePay API Error: ${response.status} ${responseText}`);
         }
 
         try {
-            const billing = await this.createBilling(plan, data.userId);
-
-            return {
-                id: billing.id,
-                userId: data.userId,
-                planId: data.planId,
-                amount: plan.price,
-                currency: plan.currency,
-                status: 'pending',
-                date: new Date(),
-                paymentMethod: data.paymentMethod,
-                url: billing.url,
-            };
-        } catch (error) {
-            console.error('AbacatePay Error:', error);
-            throw error;
+            return JSON.parse(responseText) as T;
+        } catch {
+            console.error(`[AbacatePayPaymentGateway] [${requestId}] failed to parse JSON. body: ${responseText.slice(0, 2000)}`);
+            throw new Error('AbacatePay API returned invalid JSON');
         }
     }
 
@@ -142,19 +138,11 @@ export class AbacatePayPaymentGateway implements PaymentGateway {
         // Our plan.price is in standard units (e.g. 9.99)
         const priceInCents = Math.round(plan.price * 100);
 
-        const body = {
-            frequency: "ONE_TIME", // Or MULTIPLE_PAYMENTS if subscription? AbacatePay "Billing" seems to be one-off or subscription? Docs said ONE_TIME or MULTIPLE_PAYMENTS.
-            // For monthly subscription, we might need MULTIPLE_PAYMENTS, but docs are sparse on recurrence details in the snippet.
-            // Assuming ONE_TIME for now as "Billing" usually implies invoice. 
-            // If subscription, maybe AbacatePay has another endpoint or frequency handles it.
-            // "MULTIPLE_PAYMENTS" might be installments?
-            // "Assinatura" example in chunk 3 has "quantity": 2, price: 2000. frequency: "ONE_TIME".
-            // I'll stick to ONE_TIME for this MVP implementation unless I see subscription features.
-            // But the plans are "Monthly" / "Annual".
-            // I'll set frequency ONE_TIME and user manually renews or we assume subscription features later.
-            // To be safe for MVP: ONE_TIME.
+        const origin = 'http://localhost:3000';
 
-            methods: ["PIX", "CARD"],
+        const body = {
+            frequency: 'ONE_TIME' as const,
+            methods: ['PIX', 'CARD'] as const,
             products: [
                 {
                     externalId: plan.id,
@@ -162,31 +150,27 @@ export class AbacatePayPaymentGateway implements PaymentGateway {
                     description: plan.description || plan.name,
                     quantity: 1,
                     price: priceInCents,
-                }
+                },
             ],
-            returnUrl: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/plans`, // User cancelled
-            completionUrl: `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/dashboard?payment_success=true`, // Success
-            customerId: undefined, // We could create customer first but optional
-            // customer: { ... } // We could pass current user info if we had it (email etc).
-            // userId property is just an ID. passing metadata?
+            returnUrl: `${origin}/plans`,
+            completionUrl: `${origin}/dashboard?payment_success=true`,
+            externalId: `user:${userId}:plan:${plan.id}`,
+            metadata: {
+                userId,
+                planId: plan.id,
+            },
         };
 
-        const response = await fetch(`${this.baseUrl}/billing/create`, {
+        const result = await this.request<AbacatePayApiResponse<{ id: string; url: string }>>('/billing/create', {
             method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${this.apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
+            body,
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`AbacatePay API Error: ${response.status} ${errorText}`);
+        if (!result?.data?.id || !result?.data?.url) {
+            console.error('[AbacatePayPaymentGateway] billing/create returned unexpected payload.');
+            throw new Error('AbacatePay API returned invalid billing/create response');
         }
 
-        const result = await response.json();
         return {
             id: result.data.id,
             url: result.data.url,
