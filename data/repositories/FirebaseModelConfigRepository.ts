@@ -10,11 +10,7 @@ export class FirebaseModelConfigRepository implements ModelConfigRepository {
     private cacheTimestamp: number = 0;
     private readonly CACHE_DURATION = 3600000; // 1 hour in milliseconds
 
-    constructor() {
-        if (FirebaseModelConfigRepository.instance) {
-            return FirebaseModelConfigRepository.instance;
-        }
-
+    private constructor() {
         const app = getApps().length > 0 ? getApp() : undefined;
         if (app) {
             this.remoteConfig = getRemoteConfig(app);
@@ -27,8 +23,13 @@ export class FirebaseModelConfigRepository implements ModelConfigRepository {
                 'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
             };
         }
+    }
 
-        FirebaseModelConfigRepository.instance = this;
+    public static getInstance(): FirebaseModelConfigRepository {
+        if (!FirebaseModelConfigRepository.instance) {
+            FirebaseModelConfigRepository.instance = new FirebaseModelConfigRepository();
+        }
+        return FirebaseModelConfigRepository.instance;
     }
 
     async getModelVersion(provider: string, service: string): Promise<string> {

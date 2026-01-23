@@ -5,15 +5,16 @@ export class LocalModelConfigRepository implements ModelConfigRepository {
     static instance: LocalModelConfigRepository;
     private config: Record<string, Record<string, string>> = {};
 
-    constructor() {
-        if (LocalModelConfigRepository.instance) {
-            return LocalModelConfigRepository.instance;
-        }
-
+    private constructor() {
         // Default local configuration
         this.config = { ...DEFAULT_MODEL_CONFIG };
+    }
 
-        LocalModelConfigRepository.instance = this;
+    public static getInstance(): LocalModelConfigRepository {
+        if (!LocalModelConfigRepository.instance) {
+            LocalModelConfigRepository.instance = new LocalModelConfigRepository();
+        }
+        return LocalModelConfigRepository.instance;
     }
 
     async getModelVersion(provider: string, service: string): Promise<string> {

@@ -9,8 +9,18 @@ import { DataCacheManager } from '../infrastructure/DataCacheManager';
  * Used for testing and development.
  */
 export class LocalFoodAnalysisRepository implements FoodAnalysisRepository {
+    private static instance: LocalFoodAnalysisRepository;
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    public static getInstance(): LocalFoodAnalysisRepository {
+        if (!LocalFoodAnalysisRepository.instance) {
+            LocalFoodAnalysisRepository.instance = new LocalFoodAnalysisRepository();
+        }
+        return LocalFoodAnalysisRepository.instance;
+    }
     async getDashboardDataForRange(startDate: string, endDate: string): Promise<DashboardData[]> {
         const key = `getDashboardDataForRange:${startDate}:${endDate}`;
         return this.dataCacheManager.getCached(key, async () => {

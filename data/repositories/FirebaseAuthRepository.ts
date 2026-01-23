@@ -14,17 +14,25 @@ import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestM
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class FirebaseAuthRepository implements AuthRepository {
+    private static instance: FirebaseAuthRepository;
     private auth: Auth | null;
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
 
-    constructor() {
+    private constructor() {
         try {
             this.auth = getAuth();
         } catch (e) {
             console.warn("FirebaseAuthRepository: Authentication not initialized.", e);
             this.auth = null;
         }
+    }
+
+    public static getInstance(): FirebaseAuthRepository {
+        if (!FirebaseAuthRepository.instance) {
+            FirebaseAuthRepository.instance = new FirebaseAuthRepository();
+        }
+        return FirebaseAuthRepository.instance;
     }
 
     private mapFirebaseUserToDomain(firebaseUser: FirebaseUser | null): User | null {

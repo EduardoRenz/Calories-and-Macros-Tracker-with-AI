@@ -7,8 +7,18 @@ import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestM
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class SupabaseAuthRepository implements AuthRepository {
+  private static instance: SupabaseAuthRepository;
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
+
+  private constructor() { }
+
+  public static getInstance(): SupabaseAuthRepository {
+    if (!SupabaseAuthRepository.instance) {
+      SupabaseAuthRepository.instance = new SupabaseAuthRepository();
+    }
+    return SupabaseAuthRepository.instance;
+  }
 
   private mapUser(u: SupabaseUser): User {
     return {
@@ -30,9 +40,9 @@ export class SupabaseAuthRepository implements AuthRepository {
       callback(session?.user ? this.mapUser(session.user) : null);
     });
 
-   
+
     data.subscription.unsubscribe();
-  
+
   }
 
   async signIn(email: string, password?: string): Promise<User | null> {

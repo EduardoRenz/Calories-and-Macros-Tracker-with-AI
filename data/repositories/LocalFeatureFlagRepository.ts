@@ -8,11 +8,13 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
         [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
     };
 
-    constructor() {
-        if (LocalFeatureFlagRepository.instance) {
-            return LocalFeatureFlagRepository.instance;
+    private constructor() { }
+
+    public static getInstance(): LocalFeatureFlagRepository {
+        if (!LocalFeatureFlagRepository.instance) {
+            LocalFeatureFlagRepository.instance = new LocalFeatureFlagRepository();
         }
-        LocalFeatureFlagRepository.instance = this;
+        return LocalFeatureFlagRepository.instance;
     }
 
     async isEnabled(flagName: string): Promise<boolean> {

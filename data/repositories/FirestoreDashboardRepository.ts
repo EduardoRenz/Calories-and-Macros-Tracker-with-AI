@@ -55,9 +55,19 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 };
 
 export class FirestoreDashboardRepository implements DashboardRepository {
+    private static instance: FirestoreDashboardRepository;
     private auth = getAuth();
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    public static getInstance(): FirestoreDashboardRepository {
+        if (!FirestoreDashboardRepository.instance) {
+            FirestoreDashboardRepository.instance = new FirestoreDashboardRepository();
+        }
+        return FirestoreDashboardRepository.instance;
+    }
 
     private getDocRef(date: string) {
         const user = this.auth.currentUser;

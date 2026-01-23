@@ -79,8 +79,17 @@ const dataCacheManager = new DataCacheManager();
 const concurrencyManager = new ConcurrencyRequestManager();
 
 export class LocalDashboardRepository implements DashboardRepository {
-    constructor() {
+    private constructor() {
         this.seedMockDashboards();
+    }
+
+    private static instance: LocalDashboardRepository;
+
+    public static getInstance(): LocalDashboardRepository {
+        if (!LocalDashboardRepository.instance) {
+            LocalDashboardRepository.instance = new LocalDashboardRepository();
+        }
+        return LocalDashboardRepository.instance;
     }
 
     private seedMockDashboards = async () => {

@@ -25,9 +25,19 @@ const initialProfileData = {
 };
 
 export class FirestoreProfileRepository implements ProfileRepository {
+    private static instance: FirestoreProfileRepository;
     private auth = getAuth();
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    public static getInstance(): FirestoreProfileRepository {
+        if (!FirestoreProfileRepository.instance) {
+            FirestoreProfileRepository.instance = new FirestoreProfileRepository();
+        }
+        return FirestoreProfileRepository.instance;
+    }
 
     private getProfileDocRef() {
         const user = this.auth.currentUser;
