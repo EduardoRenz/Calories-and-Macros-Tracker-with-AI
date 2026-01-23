@@ -34,4 +34,4 @@ Some reinforment to check:
 
 ## Important Notes
 
-- Don't make any code changes withouth ask me. Suggest me and only make after my confirmation
+- Don't make any code changes without ask me. Suggest me and only make after my confirmation
