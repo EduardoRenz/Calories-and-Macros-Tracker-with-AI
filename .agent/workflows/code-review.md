@@ -30,3 +30,6 @@ Some reinforment to check:
   - Which pages and flows should be tested manually?
   - Suggest me Monkey Patchs to be used in the manual testing. To reproduce some expected behaviors
 
+## Important Notes
+
+- Don't make any code changes without ask me. Suggest me and only make after my confirmation
