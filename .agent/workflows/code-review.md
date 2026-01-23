@@ -5,12 +5,13 @@ You will check the current branch and compare with the main branch.
 ## Initial checks
 
 1. Check for all changed files, and make a summary of the changes.
-2. Understand and make a resume of the purpuse of this branch, what do you understand about the branch goal?
+2. Understand and make a resume of the purpose of this branch, what do you understand about the branch goal?
 
 ## Linting and testing
 
 1. Run linting to see if any issues are found.
-2. After detecting the file changes, run only tests related to these changes.
+2. Run `yarn build` to see if any issues are found.
+3. After detecting the file changes, run only tests related to these changes.
 
 ## Are the branch following the rules?
 
@@ -29,6 +30,7 @@ Some reinforment to check:
 1. Suggest me some manual testing.
   - Which pages and flows should be tested manually?
   - Suggest me Monkey Patchs to be used in the manual testing. To reproduce some expected behaviors
+
 
 ## Important Notes
 
