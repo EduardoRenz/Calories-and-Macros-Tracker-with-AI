@@ -42,6 +42,8 @@ export class MockPlansRepository implements PlansRepository {
                 interval: 'month',
                 features: freeFeatures,
                 isPopular: false,
+                provider: 'mock',
+                externalPlanId: 'free_mock',
             }),
             Plan.create({
                 id: 'plano_mensal',
@@ -52,6 +54,8 @@ export class MockPlansRepository implements PlansRepository {
                 interval: 'month',
                 features: memberFeatures,
                 isPopular: true,
+                provider: 'mock',
+                externalPlanId: 'monthly_mock',
             }),
             Plan.create({
                 id: 'plano_anual',
@@ -64,6 +68,8 @@ export class MockPlansRepository implements PlansRepository {
                 features: memberFeatures,
                 isPopular: false,
                 discountMessage: isPt ? 'MELHOR VALOR' : 'BEST VALUE',
+                provider: 'mock',
+                externalPlanId: 'annual_mock',
             }),
         ];
     }

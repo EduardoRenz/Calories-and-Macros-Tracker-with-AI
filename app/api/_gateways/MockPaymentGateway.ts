@@ -70,6 +70,8 @@ export class MockPaymentGateway implements PaymentGateway {
                 interval: 'month',
                 features: freeFeatures,
                 isPopular: false,
+                provider: 'mock',
+                externalPlanId: 'free_mock',
             }),
             Plan.create({
                 id: 'member_monthly',
@@ -80,6 +82,8 @@ export class MockPaymentGateway implements PaymentGateway {
                 interval: 'month',
                 features: memberFeatures,
                 isPopular: false,
+                provider: 'mock',
+                externalPlanId: 'monthly_mock',
             }),
             Plan.create({
                 id: 'member_annual',
@@ -92,6 +96,8 @@ export class MockPaymentGateway implements PaymentGateway {
                 features: memberFeatures,
                 isPopular: true,
                 discountMessage: isPt ? 'MELHOR VALOR' : 'MOST POPULAR',
+                provider: 'mock',
+                externalPlanId: 'annual_mock',
             }),
             // Plan.create({
             //     id: 'ultra_annual',
@@ -108,24 +114,25 @@ export class MockPaymentGateway implements PaymentGateway {
         ];
     }
 
-    async createCheckoutSession(planId: string, userId: string): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async createCheckoutSession(_planId: string, _userId: string): Promise<string> {
         await new Promise((resolve) => setTimeout(resolve, 300));
         return `sess_${Math.random().toString(36).substring(7)}`;
     }
 
-    async processPayment(data: PaymentData): Promise<Transaction> {
+    async processPayment(_data: PaymentData): Promise<Transaction> {
         await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate processing
 
         // Mock success
         return {
             id: `tx_${Math.random().toString(36).substring(7)}`,
-            userId: data.userId,
-            planId: data.planId,
+            userId: _data.userId,
+            planId: _data.planId,
             amount: 0, // In a real app we'd look up the plan price
             currency: Currency.USD(), // Now a Currency Value Object
             status: 'completed',
             date: new Date(),
-            paymentMethod: data.paymentMethod,
+            paymentMethod: _data.paymentMethod,
         };
     }
 }

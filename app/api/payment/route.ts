@@ -14,8 +14,9 @@ export async function POST(request: Request) {
         const transaction = await paymentGateway.processPayment(paymentData);
 
         return NextResponse.json(transaction);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('API Error /payment:', error);
-        return NextResponse.json({ error: error.message || 'Payment processing failed' }, { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : 'Payment processing failed';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
