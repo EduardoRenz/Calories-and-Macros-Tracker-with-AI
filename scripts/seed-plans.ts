@@ -1,5 +1,6 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { createClient } from '@supabase/supabase-js';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
@@ -31,6 +32,8 @@ const plans = [
         id: 'free',
         interval: 'month',
         is_popular: false,
+        provider: 'internal',
+        external_plan_id: 'free_plan',
         locales: {
             pt: {
                 name: 'Plano Gratuito',
@@ -58,6 +61,8 @@ const plans = [
         id: 'plano_mensal',
         interval: 'month',
         is_popular: true,
+        provider: 'abacatepay',
+        external_plan_id: 'prod_monthly_123',
         locales: {
             pt: {
                 name: 'Plano Mensal',
@@ -85,6 +90,8 @@ const plans = [
         id: 'plano_anual',
         interval: 'year',
         is_popular: false,
+        provider: 'abacatepay',
+        external_plan_id: 'prod_yearly_456',
         locales: {
             pt: {
                 name: 'Plano Anual',
@@ -124,7 +131,7 @@ async function seedFirestore() {
         let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
         if (!projectId || !clientEmail || !privateKey) {
-            console.warn('Skipping Firestore: Missing credentials (NEXT_PUBLIC_FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY)');
+            console.warn('Skipping Firestore: Missing credentials (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY)');
             return;
         }
 
@@ -154,6 +161,8 @@ async function seedFirestore() {
             id: plan.id,
             interval: plan.interval,
             isPopular: plan.is_popular,
+            provider: plan.provider,
+            external_plan_id: plan.external_plan_id,
             locales: plan.locales,
             updatedAt: new Date().toISOString()
         };
@@ -166,11 +175,48 @@ async function seedFirestore() {
     console.log('Firestore seeding completed!');
 }
 
+// --- Supabase ---
+
+async function seedSupabase() {
+    console.log('\n--- Seeding Supabase ---');
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+        console.warn('Skipping Supabase: Missing credentials (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)');
+        return;
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    for (const plan of plans) {
+        const { error } = await supabase
+            .from('plans')
+            .upsert({
+                id: plan.id,
+                interval: plan.interval,
+                is_popular: plan.is_popular,
+                payment_provider: plan.provider,
+                external_plan_id: plan.external_plan_id,
+                locales: plan.locales,
+                active: true
+            }, { onConflict: 'id' });
+
+        if (error) {
+            console.error(`Error seeding Supabase plan ${plan.id}:`, error.message);
+        } else {
+            console.log(`Supabase plan ${plan.id} upserted.`);
+        }
+    }
+    console.log('Supabase seeding completed!');
+}
+
 // --- Main ---
 
 async function run() {
     console.log('Starting seed process...');
     await seedFirestore();
+    await seedSupabase();
     console.log('\nSeed process finished!');
 }
 

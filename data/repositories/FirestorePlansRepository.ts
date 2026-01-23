@@ -42,7 +42,9 @@ export class FirestorePlansRepository implements PlansRepository {
                             features: localeData.features || data.features || [],
                             isPopular: data.isPopular ?? data.is_popular ?? false,
                             discountMessage: localeData.discountMessage || data.discountMessage || data.discount_message,
-                            originalPrice: localeData.originalPrice ?? data.originalPrice ?? data.original_price
+                            originalPrice: localeData.originalPrice ?? data.originalPrice ?? data.original_price,
+                            provider: data.provider || 'internal',
+                            externalPlanId: data.external_plan_id || data.externalPlanId || doc.id
                         });
                     });
                 } catch (error) {

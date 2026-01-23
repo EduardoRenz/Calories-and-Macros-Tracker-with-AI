@@ -120,6 +120,8 @@ export class Plan {
     private readonly _isPopular?: boolean;
     private readonly _discountMessage?: string;
     private readonly _originalPrice?: number;
+    private readonly _provider: string;
+    private readonly _externalPlanId: string;
 
     private constructor(props: PlanProps) {
         this._id = props.id;
@@ -132,6 +134,8 @@ export class Plan {
         this._isPopular = props.isPopular;
         this._discountMessage = props.discountMessage;
         this._originalPrice = props.originalPrice;
+        this._provider = props.provider;
+        this._externalPlanId = props.externalPlanId;
     }
 
     public static create(props: PlanProps): Plan {
@@ -176,6 +180,14 @@ export class Plan {
 
     public get originalPrice(): number | undefined {
         return this._originalPrice;
+    }
+
+    public get provider(): string {
+        return this._provider;
+    }
+
+    public get externalPlanId(): string {
+        return this._externalPlanId;
     }
 
     public get formattedPrice(): string {
@@ -242,6 +254,8 @@ export class Plan {
             isPopular: this._isPopular,
             discountMessage: this._discountMessage,
             originalPrice: this._originalPrice,
+            provider: this._provider,
+            externalPlanId: this._externalPlanId,
         };
     }
 }
@@ -257,6 +271,8 @@ export interface PlanProps {
     isPopular?: boolean;
     discountMessage?: string;
     originalPrice?: number;
+    provider: string;
+    externalPlanId: string;
 }
 
 export type PaymentMethodType = 'card' | 'paypal' | 'pix' | 'crypto';

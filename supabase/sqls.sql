@@ -163,19 +163,19 @@ create policy "dashboard_ingredients_delete_own" on public.dashboard_ingredients
 
   -- Enums para garantir consistência de dados
 create type public.subscription_status as enum ('trialing', 'active', 'past_due', 'canceled', 'unpaid', 'inactive');
-create type public.payment_provider as enum ('stripe', 'abacatepay', 'pagarme', 'manual');
+create type public.payment_provider as enum ('stripe', 'abacatepay', 'pagarme', 'manual', 'internal');
 
 -- Tabela de Planos (Sua regra de negócio)
 create table public.plans (
-  id uuid not null default gen_random_uuid() primary key,
-  slug text not null unique,               -- ex: 'pro_monthly'
-  name text not null,                      -- ex: 'Plano Profissional'
-  payment_provider payment_provider not null,
-  limits jsonb default '{}'::jsonb,        -- ex: {"features": ["ai_chat", "export"]}
-  interval text check (interval in ('month', 'year', 'one_time')),
-  provider_mappings jsonb not null default '{}'::jsonb, -- ex: {"stripe": "price_123"}
-  active boolean default true,
-  created_at timestamp with time zone default now()
+    id text primary key,
+    interval text not null check (interval in ('month', 'year')),
+    is_popular boolean default false,
+    payment_provider payment_provider not null,
+    external_plan_id text not null,
+    locales jsonb not null,
+    active boolean default true,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 -- Tabela de Customers (Ponte entre seu Auth e o Gateway)
