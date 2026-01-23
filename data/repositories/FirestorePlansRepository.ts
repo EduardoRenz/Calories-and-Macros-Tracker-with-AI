@@ -1,8 +1,14 @@
+import { collection, getDocs } from 'firebase/firestore';
+import { getDb } from '../firebase';
 import { PlansRepository } from '../../domain/repositories/PlansRepository';
-import { Plan } from '../../domain/entities/payment';
+import { Plan, Currency } from '../../domain/entities/payment';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class FirestorePlansRepository implements PlansRepository {
     private static instance: FirestorePlansRepository | null = null;
+    private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
 
     private constructor() { }
 
@@ -14,9 +20,36 @@ export class FirestorePlansRepository implements PlansRepository {
     }
 
     async getPlans(language: string): Promise<Plan[]> {
-        // TODO: Implementar busca no Firestore/Firebase
-        // Por enquanto, delega para mock ou vazio
-        console.warn('[FirestorePlansRepository] getPlans not implemented yet. Returning empty array.');
-        return [];
+        const cacheKey = `plans:${language}`;
+
+        return this.dataCacheManager.getCached(cacheKey, async () => {
+            return this.concurrencyManager.run(cacheKey, async () => {
+                try {
+                    const plansCollection = collection(getDb(), 'plans');
+                    const plansSnapshot = await getDocs(plansCollection);
+
+                    return plansSnapshot.docs.map(doc => {
+                        const data = doc.data();
+                        const localeData = data.locales?.[language] || data.locales?.['en'] || {};
+
+                        return Plan.create({
+                            id: doc.id,
+                            name: localeData.name || data.name || '',
+                            description: localeData.description || data.description,
+                            price: localeData.price ?? data.price ?? 0,
+                            currency: Currency.create(localeData.currency || data.currency || 'USD'),
+                            interval: data.interval || 'month',
+                            features: localeData.features || data.features || [],
+                            isPopular: data.isPopular ?? data.is_popular ?? false,
+                            discountMessage: localeData.discountMessage || data.discountMessage || data.discount_message,
+                            originalPrice: localeData.originalPrice ?? data.originalPrice ?? data.original_price
+                        });
+                    });
+                } catch (error) {
+                    console.error('[FirestorePlansRepository] Error fetching plans:', error);
+                    return [];
+                }
+            });
+        });
     }
 }
