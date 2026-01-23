@@ -7,9 +7,19 @@ import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestM
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class FirestoreFoodAnalysisRepository implements FoodAnalysisRepository {
+    private static instance: FirestoreFoodAnalysisRepository;
     private auth = getAuth();
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    public static getInstance(): FirestoreFoodAnalysisRepository {
+        if (!FirestoreFoodAnalysisRepository.instance) {
+            FirestoreFoodAnalysisRepository.instance = new FirestoreFoodAnalysisRepository();
+        }
+        return FirestoreFoodAnalysisRepository.instance;
+    }
 
     async getDashboardDataForRange(startDate: string, endDate: string): Promise<DashboardData[]> {
         const key = `getDashboardDataForRange:${startDate}:${endDate}`;

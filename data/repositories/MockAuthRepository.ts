@@ -25,7 +25,17 @@ let currentUser: User | null = null;
 const listeners: ((user: User | null) => void)[] = [];
 
 export class MockAuthRepository implements AuthRepository {
+    private static instance: MockAuthRepository;
     private concurrencyManager = new ConcurrencyRequestManager();
+
+    private constructor() { }
+
+    public static getInstance(): MockAuthRepository {
+        if (!MockAuthRepository.instance) {
+            MockAuthRepository.instance = new MockAuthRepository();
+        }
+        return MockAuthRepository.instance;
+    }
     onAuthStateChanged(callback: (user: User | null) => void): void {
         listeners.push(callback);
 
@@ -39,7 +49,7 @@ export class MockAuthRepository implements AuthRepository {
 
         // Immediately call back with the current state synchronously
         callback(currentUser);
-      
+
     }
 
     private notifyListeners() {

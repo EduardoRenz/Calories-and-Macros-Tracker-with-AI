@@ -30,8 +30,18 @@ const listDates = (startDate: string, endDate: string): string[] => {
 };
 
 export class LocalHistoryRepository implements HistoryRepository {
+  private static instance: LocalHistoryRepository;
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
+
+  private constructor() { }
+
+  public static getInstance(): LocalHistoryRepository {
+    if (!LocalHistoryRepository.instance) {
+      LocalHistoryRepository.instance = new LocalHistoryRepository();
+    }
+    return LocalHistoryRepository.instance;
+  }
   private dailyDataStore = new Map<string, DailyHistoryEntry>();
   private isSeeded = false;
 
@@ -146,10 +156,10 @@ export class LocalHistoryRepository implements HistoryRepository {
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
         await this.seedMockHistory();
-        
+
         const { startDate, endDate } = params;
         const dates = listDates(startDate, endDate);
-        
+
         return dates
           .map(date => this.dailyDataStore.get(date))
           .filter((entry): entry is DailyHistoryEntry => entry !== undefined)
@@ -163,7 +173,7 @@ export class LocalHistoryRepository implements HistoryRepository {
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
         await this.seedMockHistory();
-        
+
         const { startDate, endDate, pageSize, cursor } = params;
         const dates = listDates(startDate, endDate);
         const entries = dates

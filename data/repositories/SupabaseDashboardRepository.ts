@@ -78,8 +78,18 @@ const recalculateTotals = (data: DashboardData): DashboardData => {
 };
 
 export class SupabaseDashboardRepository implements DashboardRepository {
+  private static instance: SupabaseDashboardRepository;
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
   private dataCacheManager: DataCacheManager = new DataCacheManager();
+
+  private constructor() { }
+
+  public static getInstance(): SupabaseDashboardRepository {
+    if (!SupabaseDashboardRepository.instance) {
+      SupabaseDashboardRepository.instance = new SupabaseDashboardRepository();
+    }
+    return SupabaseDashboardRepository.instance;
+  }
 
   private async getUserId(): Promise<string> {
     const supabase = getSupabaseClient();

@@ -35,8 +35,18 @@ import { DataCacheManager } from '../infrastructure/DataCacheManager';
 // ... (existing imports)
 
 export class LocalProfileRepository implements ProfileRepository {
+    private static instance: LocalProfileRepository;
     private concurrencyManager = new ConcurrencyRequestManager();
     private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    public static getInstance(): LocalProfileRepository {
+        if (!LocalProfileRepository.instance) {
+            LocalProfileRepository.instance = new LocalProfileRepository();
+        }
+        return LocalProfileRepository.instance;
+    }
     async getUserId(): Promise<string> {
         return "mock-user-id";
     }

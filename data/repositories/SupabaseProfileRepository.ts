@@ -25,8 +25,18 @@ type WeightHistoryRow = {
 };
 
 export class SupabaseProfileRepository implements ProfileRepository {
+  private static instance: SupabaseProfileRepository;
   private concurrencyManager: ConcurrencyRequestManager = new ConcurrencyRequestManager();
   private dataCacheManager: DataCacheManager = new DataCacheManager();
+
+  private constructor() { }
+
+  public static getInstance(): SupabaseProfileRepository {
+    if (!SupabaseProfileRepository.instance) {
+      SupabaseProfileRepository.instance = new SupabaseProfileRepository();
+    }
+    return SupabaseProfileRepository.instance;
+  }
   private userId: string | undefined;
 
   private getDefaultHealthConditions(): string[] {

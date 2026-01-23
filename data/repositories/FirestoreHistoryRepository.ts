@@ -26,9 +26,19 @@ const calculateTotalFiber = (meals?: MealSummary): number => {
 };
 
 export class FirestoreHistoryRepository implements HistoryRepository {
+  private static instance: FirestoreHistoryRepository;
   private auth = getAuth();
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
+
+  private constructor() { }
+
+  public static getInstance(): FirestoreHistoryRepository {
+    if (!FirestoreHistoryRepository.instance) {
+      FirestoreHistoryRepository.instance = new FirestoreHistoryRepository();
+    }
+    return FirestoreHistoryRepository.instance;
+  }
 
   private async getGoals(userId: string): Promise<{ calories: number; protein: number; carbs: number; fats: number }> {
     const key = `history:goals:${userId}`;

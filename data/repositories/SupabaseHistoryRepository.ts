@@ -21,8 +21,18 @@ type IngredientRow = {
 };
 
 export class SupabaseHistoryRepository implements HistoryRepository {
+  private static instance: SupabaseHistoryRepository;
   private concurrencyManager = new ConcurrencyRequestManager();
   private dataCacheManager = new DataCacheManager();
+
+  private constructor() { }
+
+  public static getInstance(): SupabaseHistoryRepository {
+    if (!SupabaseHistoryRepository.instance) {
+      SupabaseHistoryRepository.instance = new SupabaseHistoryRepository();
+    }
+    return SupabaseHistoryRepository.instance;
+  }
 
   private async loadDays(userId: string, startDate: string, endDate: string): Promise<DashboardDayRow[]> {
     const supabase = getSupabaseClient();
