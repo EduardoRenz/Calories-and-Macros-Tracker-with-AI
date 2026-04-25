@@ -1,0 +1,97 @@
+import { SubscriptionRepository } from '../../domain/repositories/SubscriptionRepository';
+import { Subscription } from '../../domain/entities/subscription';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { getDb, auth } from '../firebase';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
+
+export class FirebaseSubscriptionRepository implements SubscriptionRepository {
+    private static instance: FirebaseSubscriptionRepository | null = null;
+    private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    static getInstance(): FirebaseSubscriptionRepository {
+        if (!FirebaseSubscriptionRepository.instance) {
+            FirebaseSubscriptionRepository.instance = new FirebaseSubscriptionRepository();
+        }
+        return FirebaseSubscriptionRepository.instance;
+    }
+
+    async getUserSubscription(): Promise<Subscription | null> {
+        const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+        // Wait for auth to be ready
+        if (!auth) {
+            console.log('[FirebaseSubscriptionRepository] Auth not initialized, returning free plan');
+            return this.createFreeSubscription('unknown');
+        }
+
+        // Get current user - if null, auth might still be loading
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            console.log('[FirebaseSubscriptionRepository] No current user, returning free plan');
+            return this.createFreeSubscription('unknown');
+        }
+
+        const key = `getUserSubscription:${currentUser.uid}`;
+
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                try {
+                    const db = getDb();
+
+                    const subscriptionsRef = collection(db, 'subscriptions');
+                    const q = query(
+                        subscriptionsRef,
+                        where('userId', '==', currentUser.uid),
+                        where('status', 'in', ['active', 'trialing'])
+                    );
+
+                    const querySnapshot = await getDocs(q);
+
+                    console.log('[FirebaseSubscriptionRepository] Query snapshot empty:', querySnapshot.empty);
+
+                    if (querySnapshot.empty) {
+                        // Return a free subscription if no active subscription found
+                        console.log('[FirebaseSubscriptionRepository] No active subscription found, returning free plan');
+                        return this.createFreeSubscription(currentUser.uid);
+                    }
+
+                    const doc = querySnapshot.docs[0];
+                    const data = doc.data();
+
+                    console.log('[FirebaseSubscriptionRepository] Found subscription:', data);
+
+                    return Subscription.create({
+                        id: doc.id,
+                        userId: data.userId,
+                        planId: data.planId || 'free',
+                        status: data.status,
+                        currentPeriodStart: data.currentPeriodStart?.toDate() || new Date(),
+                        currentPeriodEnd: data.currentPeriodEnd?.toDate() || new Date(),
+                        cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
+                    });
+                } catch (error) {
+                    console.error('[FirebaseSubscriptionRepository] Error fetching subscription:', error);
+                    // Return free subscription on error
+                    return this.createFreeSubscription('unknown');
+                }
+            });
+        }, CACHE_TTL);
+    }
+
+    private createFreeSubscription(userId: string): Subscription {
+        return Subscription.create({
+            id: 'free',
+            userId,
+            planId: 'free',
+            status: 'inactive',
+            currentPeriodStart: new Date(),
+            currentPeriodEnd: new Date(),
+            cancelAtPeriodEnd: false,
+        });
+    }
+}

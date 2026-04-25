@@ -27,10 +27,14 @@ import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfi
 import { LocalModelConfigRepository } from './repositories/LocalModelConfigRepository';
 import { env } from '../env';
 import { PlansRepository } from '../domain/repositories/PlansRepository';
+import { SubscriptionRepository } from '../domain/repositories/SubscriptionRepository';
 
 import { SupabasePlansRepository } from './repositories/SupabasePlansRepository';
 import { FirestorePlansRepository } from './repositories/FirestorePlansRepository';
 import { MockPlansRepository } from './repositories/MockPlansRepository';
+import { SupabaseSubscriptionRepository } from './repositories/SupabaseSubscriptionRepository';
+import { FirebaseSubscriptionRepository } from './repositories/FirebaseSubscriptionRepository';
+import { MockSubscriptionRepository } from './repositories/MockSubscriptionRepository';
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
@@ -43,6 +47,7 @@ interface RepositoryStrategy {
     foodAnalysis: () => FoodAnalysisRepository;
     history: () => HistoryRepository;
     plans: () => PlansRepository;
+    subscription: () => SubscriptionRepository;
     featureFlag: () => FeatureFlagRepository;
     modelConfig: () => ModelConfigRepository;
 }
@@ -55,6 +60,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => FirestoreFoodAnalysisRepository.getInstance(),
         history: () => FirestoreHistoryRepository.getInstance(),
         plans: () => FirestorePlansRepository.getInstance(),
+        subscription: () => FirebaseSubscriptionRepository.getInstance(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
         modelConfig: () => FirebaseModelConfigRepository.getInstance(),
     },
@@ -65,6 +71,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => SupabaseFoodAnalysisRepository.getInstance(),
         history: () => SupabaseHistoryRepository.getInstance(),
         plans: () => SupabasePlansRepository.getInstance(),
+        subscription: () => SupabaseSubscriptionRepository.getInstance(),
         featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
         modelConfig: () => FirebaseModelConfigRepository.getInstance(),
     },
@@ -75,6 +82,7 @@ const strategies: Record<Provider, RepositoryStrategy> = {
         foodAnalysis: () => LocalFoodAnalysisRepository.getInstance(),
         history: () => LocalHistoryRepository.getInstance(),
         plans: () => MockPlansRepository.getInstance(),
+        subscription: () => MockSubscriptionRepository.getInstance(),
         featureFlag: () => LocalFeatureFlagRepository.getInstance(),
         modelConfig: () => LocalModelConfigRepository.getInstance(),
     },
@@ -89,6 +97,7 @@ export class RepositoryFactory {
     private static featureFlagRepository: FeatureFlagRepository | null = null;
     private static modelConfigRepository: ModelConfigRepository | null = null;
     private static plansRepository: PlansRepository | null = null;
+    private static subscriptionRepository: SubscriptionRepository | null = null;
 
     private static getStrategy(): RepositoryStrategy {
         return strategies[BACKEND_PROVIDER ?? 'firebase'] || strategies.firebase;
@@ -148,6 +157,13 @@ export class RepositoryFactory {
             this.plansRepository = this.getStrategy().plans();
         }
         return this.plansRepository;
+    }
+
+    public static getSubscriptionRepository(): SubscriptionRepository {
+        if (!this.subscriptionRepository) {
+            this.subscriptionRepository = this.getStrategy().subscription();
+        }
+        return this.subscriptionRepository;
     }
 }
 
