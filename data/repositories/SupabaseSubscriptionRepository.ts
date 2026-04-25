@@ -64,7 +64,7 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                         .select('*')
                         .eq('user_id', userId)
                         .in('status', ['active', 'trialing'])
-                        .single();
+                        .maybeSingle();
 
                     if (error || !data) {
                         // Return a free subscription if no active subscription found

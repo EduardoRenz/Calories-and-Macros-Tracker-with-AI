@@ -23,7 +23,7 @@ export const env = createEnv({
 
         // Supabase Configuration (Server-side)
         SUPABASE_URL: z.string(),
-        SUPABASE_ANON_KEY: z.string(),
+        SUPABASE_PUBLISHABLE_KEY: z.string(),
 
         // Supabase Service Role Key (for server-side operations and migrations)
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
@@ -55,7 +55,7 @@ export const env = createEnv({
 
         // Supabase Configuration (Public - client-side)
         NEXT_PUBLIC_SUPABASE_URL: z.string(),
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string(),
 
         // Donation Information (Public - available on client side)
         NEXT_PUBLIC_PIX_KEY: z.string().optional(),
@@ -78,7 +78,7 @@ export const env = createEnv({
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
         PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER,
 
         NODE_ENV: process.env.NODE_ENV,
@@ -95,7 +95,7 @@ export const env = createEnv({
         NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
         NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
         NEXT_PUBLIC_PIX_KEY: process.env.NEXT_PUBLIC_PIX_KEY,
         NEXT_PUBLIC_BTC_ADDRESS: process.env.NEXT_PUBLIC_BTC_ADDRESS,
         NEXT_PUBLIC_USDC_ADDRESS: process.env.NEXT_PUBLIC_USDC_ADDRESS,

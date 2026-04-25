@@ -83,7 +83,7 @@ create table if not exists public.dashboard_ingredients (
 create index if not exists idx_dashboard_days_user_date on public.dashboard_days (user_id, date);
 create index if not exists idx_dashboard_ingredients_day on public.dashboard_ingredients (dashboard_day_id);
 create index if not exists idx_weight_history_user_date on public.weight_history (user_id, date);
-```
+
 
 -- 3.2) RLS (Row Level Security) + Policies
 
