@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import SWRegistration from "@/components/SWRegistration";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -37,7 +38,9 @@ export default function RootLayout({
                 <LanguageProvider>
                     <FeatureFlagProvider>
                         <AuthProvider>
-                            {children}
+                            <SubscriptionProvider>
+                                {children}
+                            </SubscriptionProvider>
                         </AuthProvider>
                     </FeatureFlagProvider>
                 </LanguageProvider>
