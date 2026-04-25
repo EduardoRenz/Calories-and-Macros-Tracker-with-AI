@@ -8,16 +8,16 @@
 
 
 1. Install dependencies:
-   `yarn install`
+   `pnpm`
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
-   `yarn dev`
+   `pnpm dev`
 
-For test enviroment without real database, run `yarn dev:mock`
+For test enviroment without real database, run `pnpm dev:mock`
 
 ## Testing
 
-To run tests, run the project with `yarn dev:mock` and then run `yarn cy:run`
+To run tests, run the project with `pnpm dev:mock` and then run `pnpm cy:run`
 
 
 ## Backend Providers
