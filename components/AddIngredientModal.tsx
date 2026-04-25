@@ -17,11 +17,11 @@ interface AddIngredientModalProps {
 const initialFormState = {
   name: '',
   quantity: '',
-  calories: 0,
-  protein: 0,
-  carbs: 0,
-  fats: 0,
-  fiber: 0,
+  calories: '',
+  protein: '',
+  carbs: '',
+  fats: '',
+  fiber: '',
 };
 
 const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose, onSave, mealType }) => {
@@ -30,6 +30,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const [formState, setFormState] = useState(initialFormState);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number; fiber: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { isUserApiKeysRequired } = useFeatureFlags();
 
@@ -39,12 +40,16 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
     if (isOpen) {
       setFormState(initialFormState);
       setMacroRatios(null);
+      setError(null);
     }
   }, [isOpen]);
 
   useEffect(() => {
-    const calories = (formState.protein * 4) + (formState.carbs * 4) + (formState.fats * 9);
-    setFormState(prev => ({ ...prev, calories: Math.round(calories) }));
+    const protein = parseFloat(formState.protein) || 0;
+    const carbs = parseFloat(formState.carbs) || 0;
+    const fats = parseFloat(formState.fats) || 0;
+    const calories = (protein * 4) + (carbs * 4) + (fats * 9);
+    setFormState(prev => ({ ...prev, calories: calories > 0 ? Math.round(calories).toString() : '' }));
   }, [formState.protein, formState.carbs, formState.fats]);
 
   if (!mealType) return null;
@@ -59,10 +64,10 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         setFormState(prev => ({
           ...prev,
           quantity: value,
-          protein: Math.round(quantityNum * macroRatios.protein),
-          carbs: Math.round(quantityNum * macroRatios.carbs),
-          fats: Math.round(quantityNum * macroRatios.fats),
-          fiber: Math.round(quantityNum * macroRatios.fiber),
+          protein: Math.round(quantityNum * macroRatios.protein).toString(),
+          carbs: Math.round(quantityNum * macroRatios.carbs).toString(),
+          fats: Math.round(quantityNum * macroRatios.fats).toString(),
+          fiber: Math.round(quantityNum * macroRatios.fiber).toString(),
         }));
       } else {
         setFormState(prev => ({ ...prev, quantity: value }));
@@ -71,17 +76,17 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
       setFormState(prev => ({ ...prev, name: value }));
     } else if (name !== 'calories') {
       // If macros change manually, update the ratios
-      const numValue = parseFloat(value) || 0;
-      setFormState(prev => ({ ...prev, [name]: numValue }));
+      setFormState(prev => ({ ...prev, [name]: value }));
 
+      const numValue = parseFloat(value) || 0;
       const currentQuantity = parseFloat(formState.quantity);
       if (!isNaN(currentQuantity) && currentQuantity > 0) {
         // We need to calculate ratios based on the NEW value for the changed field, and existing values for others
         const newMacros = {
-          protein: name === 'protein' ? numValue : formState.protein,
-          carbs: name === 'carbs' ? numValue : formState.carbs,
-          fats: name === 'fats' ? numValue : formState.fats,
-          fiber: formState.fiber,
+          protein: name === 'protein' ? numValue : parseFloat(formState.protein) || 0,
+          carbs: name === 'carbs' ? numValue : parseFloat(formState.carbs) || 0,
+          fats: name === 'fats' ? numValue : parseFloat(formState.fats) || 0,
+          fiber: parseFloat(formState.fiber) || 0,
         };
         setMacroRatios({
           protein: newMacros.protein / currentQuantity,
@@ -107,10 +112,10 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         ...prev,
         quantity: `${quantityInGrams}g`,
         // calories is calculated via useEffect
-        protein: Math.round(result.protein),
-        carbs: Math.round(result.carbs),
-        fats: Math.round(result.fats),
-        fiber: Math.round(fiber),
+        protein: Math.round(result.protein).toString(),
+        carbs: Math.round(result.carbs).toString(),
+        fats: Math.round(result.fats).toString(),
+        fiber: Math.round(fiber).toString(),
       }));
 
       // precise calculation of ratios
@@ -129,9 +134,34 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formState.name && formState.calories >= 0) {
-      onSave(formState);
+    setError(null);
+
+    if (!formState.name) {
+      setError(t('add_ingredient_modal.name_required'));
+      return;
     }
+
+    // Check if macros are filled (not empty or NaN)
+    const protein = parseFloat(formState.protein);
+    const carbs = parseFloat(formState.carbs);
+    const fats = parseFloat(formState.fats);
+    const fiber = parseFloat(formState.fiber) || 0;
+    const calories = parseFloat(formState.calories) || 0;
+
+    if (isNaN(protein) || isNaN(carbs) || isNaN(fats)) {
+      setError(t('add_ingredient_modal.macros_required'));
+      return;
+    }
+
+    onSave({
+      name: formState.name,
+      quantity: formState.quantity,
+      calories,
+      protein,
+      carbs,
+      fats,
+      fiber,
+    });
   };
 
   return (
@@ -175,25 +205,27 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.calories')}</label>
-            <input type="number" step="any" min="0" name="calories" value={formState.calories} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-calories-input" />
+            <input type="text" name="calories" value={formState.calories} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-calories-input" />
           </div>
           <div>
             <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fiber')}</label>
-            <input type="number" step="any" min="0" name="fiber" value={formState.fiber} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-fiber-input" />
+            <input type="text" name="fiber" value={formState.fiber} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-fiber-input" />
           </div>
           <div>
             <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.protein')}</label>
-            <input type="number" step="any" min="0" name="protein" value={formState.protein} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-protein-input" />
+            <input type="text" name="protein" value={formState.protein} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-protein-input" placeholder="" />
           </div>
           <div>
             <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.carbs')}</label>
-            <input type="number" step="any" min="0" name="carbs" value={formState.carbs} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-carbs-input" />
+            <input type="text" name="carbs" value={formState.carbs} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-carbs-input" placeholder="" />
           </div>
           <div>
             <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fats')}</label>
-            <input type="number" step="any" min="0" name="fats" value={formState.fats} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-fats-input" />
+            <input type="text" name="fats" value={formState.fats} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-fats-input" placeholder="" />
           </div>
         </div>
+
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <div className="flex justify-end gap-4 pt-4">
           <button type="button" onClick={onClose} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
