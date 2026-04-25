@@ -285,7 +285,9 @@ export default {
     "subscription": {
       "title": "Suscripción",
       "description": "Gestiona tu plan y detalles de facturación",
-      "manage": "Gestionar Suscripción"
+      "manage": "Gestionar Suscripción",
+      "plan_free": "Gratis",
+      "plan_premium": "Premium"
     },
     "tokens": {
       "title": "Tokens de API de IA",

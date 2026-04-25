@@ -290,7 +290,9 @@ export default {
     "subscription": {
       "title": "Subscription",
       "description": "Manage your plan and billing details",
-      "manage": "Manage Subscription"
+      "manage": "Manage Subscription",
+      "plan_free": "Free",
+      "plan_premium": "Premium"
     },
     "tokens": {
       "title": "AI API Tokens",

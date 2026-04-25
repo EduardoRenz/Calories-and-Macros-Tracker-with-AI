@@ -290,7 +290,9 @@ export default {
     "subscription": {
       "title": "Assinatura",
       "description": "Gerencie seu plano e detalhes de cobrança",
-      "manage": "Gerenciar Assinatura"
+      "manage": "Gerenciar Assinatura",
+      "plan_free": "Gratuito",
+      "plan_premium": "Premium"
     },
     "tokens": {
       "title": "Tokens de API de IA",
