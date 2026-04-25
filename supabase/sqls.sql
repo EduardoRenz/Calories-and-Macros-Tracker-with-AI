@@ -1,28 +1,11 @@
 -- Create custom ENUM type for diet types
 CREATE TYPE diet_type AS ENUM ('omnivore', 'vegetarian', 'vegan', 'pescatarian', 'carnivore', 'flexitarian');
 
-ALTER TABLE public.profiles
-ADD COLUMN IF NOT EXISTS health_conditions text[] NOT NULL DEFAULT '{}';
-
--- Create custom ENUM type for diet types
-CREATE TYPE diet_type AS ENUM ('omnivore', 'vegetarian', 'vegan', 'pescatarian', 'carnivore', 'flexitarian');
--- Add diet_type column to profiles table using the custom type
-ALTER TABLE profiles 
-ADD COLUMN diet_type diet_type;
--- Set default value for existing rows
-UPDATE profiles 
-SET diet_type = 'omnivore' 
-WHERE diet_type IS NULL;
--- Optional: Add a comment to the column
-COMMENT ON COLUMN profiles.diet_type IS 'User dietary preference for personalized food recommendations';
-
-
 -- 1) Profiles
 create table if not exists public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   name text,
   email text,
-
   age integer not null default 30,
   height integer not null default 170,
   weight numeric not null default 70,
@@ -32,12 +15,18 @@ create table if not exists public.profiles (
   target_weight numeric not null default 70,
   activity_level text not null default 'lightly',
 
-  health_conditions text[] NOT NULL DEFAULT '{}';
-  diet_type diet_type NOT NULL DEFAULT 'omnivore'
+  health_conditions text[] NOT NULL DEFAULT '{}',
+  diet_type diet_type NOT NULL DEFAULT 'omnivore',
 
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Optional: Add a comment to the column
+COMMENT ON COLUMN profiles.diet_type IS 'User dietary preference for personalized food recommendations';
+
+
+
 
 -- 2) Weight history (equivalente ao weightHistory[] do profile)
 create table if not exists public.weight_history (
@@ -80,10 +69,8 @@ create table if not exists public.dashboard_ingredients (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   dashboard_day_id uuid not null references public.dashboard_days(id) on delete cascade,
-
   meal_type text not null, -- breakfast | lunch | dinner | snacks
   name text not null,
-
   calories integer not null default 0,
   protein integer not null default 0,
   carbs integer not null default 0,
@@ -99,11 +86,11 @@ create index if not exists idx_dashboard_ingredients_day on public.dashboard_ing
 create index if not exists idx_weight_history_user_date on public.weight_history (user_id, date);
 ```
 
-### 3.2) RLS (Row Level Security) + Policies
+-- 3.2) RLS (Row Level Security) + Policies
 
-Ative RLS e crie policies para cada tabela.
+-- Ative RLS e crie policies para cada tabela.
 
-```sql
+
 -- Enable RLS
 alter table public.profiles enable row level security;
 alter table public.weight_history enable row level security;
@@ -191,7 +178,7 @@ create table public.customers (
 create table public.subscriptions (
   id uuid not null default gen_random_uuid() primary key,
   user_id uuid not null references auth.users(id) on delete cascade,
-  plan_id uuid references public.plans(id) on delete set null,
+  plan_id text references public.plans(id) on delete set null,
   
   status public.subscription_status not null default 'inactive',
   provider public.payment_provider not null,
@@ -249,3 +236,6 @@ $$ language plpgsql;
 create trigger set_updated_at
 before update on public.subscriptions
 for each row execute procedure public.handle_updated_at();
+
+ALTER TABLE public.profiles
+ADD COLUMN IF NOT EXISTS health_conditions text[] NOT NULL DEFAULT '{}';
