@@ -44,8 +44,6 @@ create table if not exists public.dashboard_days (
   user_id uuid not null references auth.users(id) on delete cascade,
   date date not null,
 
-  quantity text not null,
-
   calories_current integer not null default 0,
   calories_goal integer not null default 0,
 
@@ -71,6 +69,7 @@ create table if not exists public.dashboard_ingredients (
   dashboard_day_id uuid not null references public.dashboard_days(id) on delete cascade,
   meal_type text not null, -- breakfast | lunch | dinner | snacks
   name text not null,
+  quantity text not null default '1',
   calories integer not null default 0,
   protein integer not null default 0,
   carbs integer not null default 0,
@@ -239,3 +238,28 @@ for each row execute procedure public.handle_updated_at();
 
 ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS health_conditions text[] NOT NULL DEFAULT '{}';
+
+
+grant select on public.profiles to authenticated;
+-- plus as needed:
+grant update on public.profiles to authenticated;
+grant insert on public.profiles to authenticated;
+
+
+grant select on public.dashboard_days to authenticated;
+-- plus as needed:
+grant update on public.dashboard_days to authenticated;
+grant insert on public.dashboard_days to authenticated;
+
+grant select on public.dashboard_ingredients to authenticated;
+-- plus as needed:
+grant update on public.dashboard_ingredients to authenticated;
+grant insert on public.dashboard_ingredients to authenticated;
+
+grant select on public.weight_history to authenticated;
+-- plus as needed:
+grant update on public.weight_history to authenticated;
+grant insert on public.weight_history to authenticated;
+
+
+grant select on public.subscriptions to authenticated;
