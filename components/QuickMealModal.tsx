@@ -5,6 +5,7 @@ import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { SparklesIcon, EditIcon, TrashIcon } from './icons';
 import Modal from './ui/Modal';
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
+import { ImageCompressionService } from '../domain/services/ImageCompressionService';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -39,6 +40,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [imagePrompt, setImagePrompt] = useState<string>('');
 
     const imageRecognitionService: ImageRecognitionService = useMemo(() => ServiceFactory.getImageRecognitionService(), []);
+    const imageCompressionService: ImageCompressionService = useMemo(() => ServiceFactory.getImageCompressionService(), []);
 
     useEffect(() => {
         if (isOpen) {
@@ -52,9 +54,17 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
 
     if (!isOpen) return null;
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
+            let file = e.target.files[0];
+
+            // Compress and resize
+            try {
+                file = await imageCompressionService.compress(file, 0.9, 2048, 2048);
+            } catch (err) {
+                console.error("Compression failed, using original file", err);
+            }
+
             setImage(file);
             setImagePreview(URL.createObjectURL(file));
             setAnalyzedIngredients([]);
@@ -74,9 +84,17 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setImagePrompt('');
     };
 
-    const handleCameraInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCameraInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
+            let file = e.target.files[0];
+
+            // Compress and resize
+            try {
+                file = await imageCompressionService.compress(file, 0.9, 2048, 2048);
+            } catch (err) {
+                console.error("Compression failed, using original file", err);
+            }
+
             setImage(file);
             setImagePreview(URL.createObjectURL(file));
             setAnalyzedIngredients([]);

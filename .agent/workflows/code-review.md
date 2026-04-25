@@ -25,7 +25,7 @@ Some reinforment to check:
 - **SOLID**: Single responsibility, open/closed, Liskov substitution, interface segregation, dependency inversion
 - **Scalability**: Ensure the code is scalable and performant. Are we saving requests to the backend?
 
-## Suggestionts for manual test
+## Suggestions for manual test
 
 1. Suggest me some manual testing.
   - Which pages and flows should be tested manually?

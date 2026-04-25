@@ -27,6 +27,8 @@ import { NextApiFoodAnalysisService } from './services/NextApiFoodAnalysisServic
 import { NextApiNutritionAnalysisService } from './services/NextApiNutritionAnalysisService';
 import { NextApiImageRecognitionService } from './services/NextApiImageRecognitionService';
 import { NextApiChatAssistantService } from './services/NextApiChatAssistantService';
+import { BrowserImageCompressionService } from './services/BrowserImageCompressionService';
+import { ImageCompressionService } from '../domain/services/ImageCompressionService';
 
 import { RepositoryFactory } from './RepositoryFactory';
 import { env } from '../env';
@@ -44,6 +46,7 @@ export class ServiceFactory {
     private static nutritionInstance: import("../domain/services/NutritionAnalysisService").NutritionAnalysisService | null = null;
     private static imageInstance: ImageRecognitionService | null = null;
     private static chatInstance: ChatAssistantService | null = null;
+    private static compressionInstance: ImageCompressionService | null = null;
 
     public static getFoodAnalysisService(): FoodAnalysisService {
         if (this.instance) {
@@ -96,11 +99,20 @@ export class ServiceFactory {
         return this.chatInstance;
     }
 
+    public static getImageCompressionService(): ImageCompressionService {
+        if (this.compressionInstance) {
+            return this.compressionInstance;
+        }
+        this.compressionInstance = BrowserImageCompressionService.getInstance();
+        return this.compressionInstance;
+    }
+
     public static reset(): void {
         this.instance = null;
         this.nutritionInstance = null;
         this.imageInstance = null;
         this.chatInstance = null;
+        this.compressionInstance = null;
     }
 
     private static createServiceChain(): FoodAnalysisService {
