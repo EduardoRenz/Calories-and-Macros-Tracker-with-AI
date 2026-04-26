@@ -60,7 +60,7 @@ export default function CheckoutPage() {
         setError(null);
         try {
             const plansRepository = RepositoryFactory.getPlansRepository();
-            const mapping = await plansRepository.getProviderMapping(plan.id, 'abacatepay');
+            const mapping = await plansRepository.getProviderMapping(plan.id);
 
             if (!mapping) {
                 throw new Error('Payment mapping not found for this plan');
