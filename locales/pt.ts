@@ -86,7 +86,7 @@ export default {
     "fats": "Gorduras (g)",
     "cancel": "Cancelar",
     "save": "Adicionar Ingrediente",
-    "analysis_error": "Não foi possível obter informações nutricionais. Preencha os macros manualmente.",
+    "analysis_error": "Serviço temporariamente indisponível. Por favor, tente novamente em um momento ou preencha os macros manualmente.",
     "analyze_button_aria": "Analisar ingrediente com IA",
     "macros_required": "Por favor, preencha proteína, carboidratos e gorduras",
     "name_required": "Por favor, preencha o nome do ingrediente"

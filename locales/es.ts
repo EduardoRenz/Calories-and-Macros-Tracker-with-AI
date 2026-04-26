@@ -83,8 +83,10 @@ export default {
     "fats": "Grasas (g)",
     "cancel": "Cancelar",
     "save": "Añadir Ingrediente",
-    "analysis_error": "No se pudo obtener la información nutricional. Por favor, complete los macros manualmente.",
-    "analyze_button_aria": "Analizar ingrediente con IA"
+    "analysis_error": "Servicio temporalmente no disponible. Por favor, inténtelo de nuevo en un momento o complete los macros manualmente.",
+    "analyze_button_aria": "Analizar ingrediente con IA",
+    "macros_required": "Por favor, complete proteína, carbohidratos y grasas",
+    "name_required": "Por favor, complete el nombre del ingrediente"
   },
   "quick_meal_modal": {
     "title": "Registrar Comida Rápida con IA",

@@ -100,34 +100,38 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
 
   const handleAnalyze = async () => {
     if (!formState.name || !formState.quantity) {
-      // Maybe add a user-facing message here later
+      setError(t('add_ingredient_modal.name_required'));
       return;
     }
     setIsAnalyzing(true);
-    const result = await nutritionService.getNutritionalInfo(formState.name, formState.quantity, language);
-    if (result) {
-      const quantityInGrams = result.quantityInGrams || 100; // Default to 100 if not provided (shouldn't happen with new prompt)
-      const fiber = typeof result.fiber === 'number' ? result.fiber : 0;
-      setFormState(prev => ({
-        ...prev,
-        quantity: `${quantityInGrams}g`,
-        // calories is calculated via useEffect
-        protein: Math.round(result.protein).toString(),
-        carbs: Math.round(result.carbs).toString(),
-        fats: Math.round(result.fats).toString(),
-        fiber: Math.round(fiber).toString(),
-      }));
+    setError(null);
+    try {
+      const result = await nutritionService.getNutritionalInfo(formState.name, formState.quantity, language);
+      if (result) {
+        const quantityInGrams = result.quantityInGrams || 100; // Default to 100 if not provided (shouldn't happen with new prompt)
+        const fiber = typeof result.fiber === 'number' ? result.fiber : 0;
+        setFormState(prev => ({
+          ...prev,
+          quantity: `${quantityInGrams}g`,
+          // calories is calculated via useEffect
+          protein: Math.round(result.protein).toString(),
+          carbs: Math.round(result.carbs).toString(),
+          fats: Math.round(result.fats).toString(),
+          fiber: Math.round(fiber).toString(),
+        }));
 
-      // precise calculation of ratios
-      setMacroRatios({
-        protein: result.protein / quantityInGrams,
-        carbs: result.carbs / quantityInGrams,
-        fats: result.fats / quantityInGrams,
-        fiber: fiber / quantityInGrams,
-      });
-    } else {
-      // Handle error state, e.g., show a toast notification
-      alert(t('add_ingredient_modal.analysis_error'));
+        // precise calculation of ratios
+        setMacroRatios({
+          protein: result.protein / quantityInGrams,
+          carbs: result.carbs / quantityInGrams,
+          fats: result.fats / quantityInGrams,
+          fiber: fiber / quantityInGrams,
+        });
+      } else {
+        setError(t('add_ingredient_modal.analysis_error'));
+      }
+    } catch {
+      setError(t('add_ingredient_modal.analysis_error'));
     }
     setIsAnalyzing(false);
   };

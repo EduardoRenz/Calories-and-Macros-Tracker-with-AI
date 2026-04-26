@@ -86,7 +86,7 @@ export default {
     "fats": "Fats (g)",
     "cancel": "Cancel",
     "save": "Add Ingredient",
-    "analysis_error": "Could not get nutritional info. Please fill macros manually.",
+    "analysis_error": "Service temporarily unavailable. Please try again in a moment or fill macros manually.",
     "analyze_button_aria": "Analyze ingredient with AI",
     "macros_required": "Please fill in protein, carbs, and fats",
     "name_required": "Please fill in the ingredient name"
