@@ -8,6 +8,15 @@ const SubscriptionCard: React.FC = () => {
     const { t } = useTranslation();
     const { subscription, loading } = useSubscription();
 
+    const getTrialDaysRemaining = (sub: typeof subscription): number => {
+        if (!sub || !sub.currentPeriodEnd) return 0;
+        const now = new Date();
+        const end = new Date(sub.currentPeriodEnd);
+        const diffMs = end.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        return Math.max(0, diffDays);
+    };
+
     if (loading) {
         return (
             <div className="bg-healthpal-panel p-6 rounded-2xl border border-healthpal-border animate-pulse">
@@ -23,9 +32,14 @@ const SubscriptionCard: React.FC = () => {
     }
 
     const isPremium = subscription && !subscription.isFree;
-    const planName = isPremium 
-        ? (subscription.planCode === 'annual' ? t('plans.annual') : t('plans.monthly'))
-        : t('settings.subscription.plan_free');
+    const isTrial = subscription && subscription.isTrial;
+    const trialDaysRemaining = getTrialDaysRemaining(subscription);
+
+    const planName = isTrial
+        ? t('settings.subscription.plan_trial')
+        : isPremium
+            ? (subscription.planCode === 'annual' ? t('plans.annual') : t('plans.monthly'))
+            : t('settings.subscription.plan_free');
 
     return (
         <div className="bg-healthpal-panel p-6 rounded-2xl border border-healthpal-border">
@@ -37,18 +51,21 @@ const SubscriptionCard: React.FC = () => {
                     <div>
                         <div className="flex items-center gap-2">
                             <h3 className="font-semibold text-lg">{t('settings.subscription.title')}</h3>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                                isPremium 
-                                    ? 'bg-healthpal-green/10 text-healthpal-green border-healthpal-green/30' 
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${isTrial
+                                ? 'bg-orange-500/10 text-orange-500 border-orange-500/30'
+                                : isPremium
+                                    ? 'bg-healthpal-green/10 text-healthpal-green border-healthpal-green/30'
                                     : 'bg-gray-800 text-gray-400 border-gray-700'
-                            }`}>
+                                }`}>
                                 {planName}
                             </span>
                         </div>
                         <p className="text-sm text-healthpal-text-secondary">
-                            {isPremium 
-                                ? t('settings.subscription.premium_description') || 'Enjoy full access to all AI features.'
-                                : t('settings.subscription.free_description') || 'Upgrade to unlock advanced AI analysis and more.'}
+                            {isTrial
+                                ? t('settings.subscription.trial_description', { days: trialDaysRemaining }) || `You have full access to all AI features and advanced analysis for free for ${trialDaysRemaining} days.`
+                                : isPremium
+                                    ? t('settings.subscription.premium_description') || 'Enjoy full access to all AI features.'
+                                    : t('settings.subscription.free_description') || 'Upgrade to unlock advanced AI analysis and more.'}
                         </p>
                     </div>
                 </div>
@@ -73,11 +90,11 @@ const SubscriptionCard: React.FC = () => {
                 </div>
             </div>
 
-            {isPremium && subscription?.currentPeriodEnd && (
+            {(isPremium || isTrial) && subscription?.currentPeriodEnd && (
                 <div className="mt-6 pt-6 border-t border-healthpal-border flex items-center gap-2 text-xs text-healthpal-text-secondary">
                     <CalendarIcon className="w-4 h-4" />
                     <span>
-                        {subscription.cancelAtPeriodEnd 
+                        {isTrial || subscription.cancelAtPeriodEnd
                             ? t('settings.subscription.ends_on', { date: subscription.currentPeriodEnd.toLocaleDateString() }) || `Ends on ${subscription.currentPeriodEnd.toLocaleDateString()}`
                             : t('settings.subscription.renews_on', { date: subscription.currentPeriodEnd.toLocaleDateString() }) || `Renews on ${subscription.currentPeriodEnd.toLocaleDateString()}`}
                     </span>
