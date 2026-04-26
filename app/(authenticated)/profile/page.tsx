@@ -23,7 +23,8 @@ const WeightProgressChart: React.FC<{ data: WeightEntry[] }> = ({ data }) => {
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
 
-    const formatTooltipLabel = (label: string) => {
+    const formatTooltipLabel = (label: React.ReactNode) => {
+        if (typeof label !== 'string') return label;
         const [year, month, day] = label.split('-').map(Number);
         const date = new Date(year, month - 1, day);
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
