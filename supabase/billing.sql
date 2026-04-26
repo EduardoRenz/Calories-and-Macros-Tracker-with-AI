@@ -122,7 +122,8 @@ create table if not exists public.billing_subscriptions (
   ended_at timestamptz,
   metadata jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  unique (provider, provider_subscription_id)
 );
 
 create table if not exists public.billing_transactions (
@@ -275,7 +276,7 @@ revoke all on public.billing_inbound_events from anon, authenticated;
 revoke all on public.billing_checkout_sessions from anon, authenticated;
 
 grant select on public.billing_plans to anon, authenticated;
-grant select on public.billing_plan_provider_mappings to authenticated;
+grant select on public.billing_plan_provider_mappings to anon, authenticated;
 grant select on public.billing_customers to authenticated;
 grant select on public.billing_subscriptions to authenticated;
 grant select on public.billing_transactions to authenticated;
