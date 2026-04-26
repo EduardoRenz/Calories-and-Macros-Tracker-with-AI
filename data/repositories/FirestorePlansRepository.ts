@@ -1,6 +1,6 @@
 import { collection, getDocs } from 'firebase/firestore';
 import { getDb } from '../firebase';
-import { PlansRepository } from '../../domain/repositories/PlansRepository';
+import { PlanProviderMapping, PlansRepository } from '../../domain/repositories/PlansRepository';
 import { Plan, Currency } from '../../domain/entities/payment';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
@@ -50,6 +50,41 @@ export class FirestorePlansRepository implements PlansRepository {
                 } catch (error) {
                     console.error('[FirestorePlansRepository] Error fetching plans:', error);
                     return [];
+                }
+            });
+        });
+    }
+
+    async getProviderMapping(planCode: string, provider: string): Promise<PlanProviderMapping | null> {
+        const cacheKey = `plan-provider-mapping:firestore:${planCode}:${provider}`;
+
+        return this.dataCacheManager.getCached(cacheKey, async () => {
+            return this.concurrencyManager.run(cacheKey, async () => {
+                try {
+                    const plansCollection = collection(getDb(), 'plans');
+                    const plansSnapshot = await getDocs(plansCollection);
+                    const planDoc = plansSnapshot.docs.find(doc => doc.id === planCode);
+
+                    if (!planDoc) return null;
+
+                    const data = planDoc.data();
+                    const planProvider = data.provider || data.payment_provider || 'internal';
+
+                    if (planProvider !== provider) return null;
+
+                    return {
+                        planId: planDoc.id,
+                        planCode: planDoc.id,
+                        provider: planProvider,
+                        providerProductId: data.external_plan_id || data.externalPlanId || planDoc.id,
+                        providerProductExternalId: data.provider_product_external_id,
+                        providerPriceAmount: data.provider_price_amount || 0,
+                        currency: data.currency || 'BRL',
+                        providerCycle: data.interval || 'month',
+                    };
+                } catch (error) {
+                    console.error('[FirestorePlansRepository] Error fetching plan provider mapping:', error);
+                    return null;
                 }
             });
         });

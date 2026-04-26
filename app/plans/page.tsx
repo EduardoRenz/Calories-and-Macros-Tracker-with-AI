@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Plan } from '../../domain/entities/payment';
+import { Currency, Plan } from '../../domain/entities/payment';
+import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { PlanCard } from '../../components/payment/PlanCard';
@@ -25,7 +26,24 @@ function PlansContent() {
             try {
                 const plansRepository = RepositoryFactory.getPlansRepository();
                 const allPlans = await plansRepository.getPlans(language);
-                setPlans(allPlans);
+                
+                // Create hardcoded Free Plan
+                const freePlan = Plan.create({
+                    id: 'free',
+                    name: t('settings.subscription.plan_free') || 'Free',
+                    description: t('settings.subscription.free_description') || 'Basic access',
+                    price: 0,
+                    currency: Currency.create(language === 'pt' ? 'BRL' : 'USD'),
+                    interval: 'month',
+                    features: [], // Handled by PlanCard translation logic
+                    isPopular: false,
+                    provider: 'internal',
+                    externalPlanId: 'free',
+                });
+
+                // Filter out any 'free' plan that might come from DB to avoid duplicates
+                const remotePlans = allPlans.filter(p => p.id !== 'free');
+                setPlans([freePlan, ...remotePlans]);
             } catch (error) {
                 console.error('Failed to fetch plans', error);
             } finally {
@@ -34,7 +52,7 @@ function PlansContent() {
         };
 
         fetchPlans();
-    }, [language]);
+    }, [language, t]);
 
     useEffect(() => {
         const cycleFromUrl = searchParams.get('billing') as 'month' | 'year';
@@ -93,7 +111,7 @@ function PlansContent() {
                     >
                         {t('plans.annual') || 'Annual'}
                         <span className="bg-green-100 text-green-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                            -15%
+                            -{BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE}%
                         </span>
                     </button>
                 </div>

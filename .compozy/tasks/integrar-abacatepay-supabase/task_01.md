@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Create Dedicated Billing SQL For Subscriptions"
 type: backend
 complexity: medium
@@ -28,10 +28,10 @@ Create a new Supabase SQL file dedicated to billing and subscriptions so recurri
 </requirements>
 
 ## Subtasks
-- [ ] 1.1 Create a new Supabase billing SQL file dedicated to subscription and billing schema.
-- [ ] 1.2 Define the billing enums, core tables, indexes, and unique constraints required by the billing lifecycle.
-- [ ] 1.3 Add RLS policies and grants for user-visible billing reads while keeping write paths server-controlled.
-- [ ] 1.4 Document migration expectations or coexistence notes for the pre-existing schema draft.
+- [x] 1.1 Create a new Supabase billing SQL file dedicated to subscription and billing schema.
+- [x] 1.2 Define the billing enums, core tables, indexes, and unique constraints required by the billing lifecycle.
+- [x] 1.3 Add RLS policies and grants for user-visible billing reads while keeping write paths server-controlled.
+- [x] 1.4 Document migration expectations or coexistence notes for the pre-existing schema draft.
 
 ## Implementation Details
 Create a new SQL artifact such as `supabase/billing.sql` or `supabase/subscriptions.sql`. Follow the TechSpec "Data Models" and "Webhook Configuration Plan" sections for table scope and access boundaries. Keep the current monolithic SQL file untouched except for optional comments pointing to the new billing-specific script.
@@ -62,15 +62,21 @@ Create a new SQL artifact such as `supabase/billing.sql` or `supabase/subscripti
 
 ## Tests
 - Unit tests:
-  - [ ] Validate the SQL defines nullable provider subscription identifiers for pre-activation subscription rows.
-  - [ ] Validate unique constraints exist for inbound events and provider transaction identifiers.
-  - [ ] Validate the billing tables include constrained status fields required by the TechSpec.
+  - [x] Validate the SQL defines nullable provider subscription identifiers for pre-activation subscription rows.
+  - [x] Validate unique constraints exist for inbound events and provider transaction identifiers.
+  - [x] Validate the billing tables include constrained status fields required by the TechSpec.
 - Integration tests:
   - [ ] Apply the new billing SQL to a clean Supabase database and verify all billing tables are created successfully.
   - [ ] Verify authenticated users can read only their own billing-facing rows through RLS policies.
   - [ ] Verify direct client-side writes to billing state tables are rejected where the design requires server-only mutation.
 - Test coverage target: >=80%
 - All tests must pass
+
+## Validation Evidence
+
+- `yarn test:billing-sql` passes and validates the SQL contract for required tables, nullable pre-activation subscription identifiers, unique idempotency constraints, constrained status fields, RLS enablement, grants, and direct client write prevention.
+- `yarn build` passes after creating the local `.agent` directory required by the repository's tracked `.windsurf -> .agent` symlink.
+- Supabase/Postgres integration tests are not executable in the local workflow because this project has no local Postgres or local Supabase environment. They remain an external deploy-time validation item for a connected Supabase project.
 
 ## Success Criteria
 - All tests passing

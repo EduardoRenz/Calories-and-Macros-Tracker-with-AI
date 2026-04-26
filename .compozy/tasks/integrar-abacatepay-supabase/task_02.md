@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Add Canonical Plan Mapping Read Path"
 type: backend
 complexity: medium
@@ -28,10 +28,10 @@ Update the application’s Supabase-backed plan reads so canonical plans remain 
 </requirements>
 
 ## Subtasks
-- [ ] 2.1 Update the Supabase plan repository to read the new billing plan schema and provider mapping data.
-- [ ] 2.2 Reconcile domain plan fields with the new canonical schema so downstream billing code can resolve external product identifiers safely.
-- [ ] 2.3 Update plan seeding assumptions or supporting helpers to match the new schema contract.
-- [ ] 2.4 Verify that the public plans page can continue to load active localized plans through the repository layer.
+- [x] 2.1 Update the Supabase plan repository to read the new billing plan schema and provider mapping data.
+- [x] 2.2 Reconcile domain plan fields with the new canonical schema so downstream billing code can resolve external product identifiers safely.
+- [x] 2.3 Update plan seeding assumptions or supporting helpers to match the new schema contract.
+- [x] 2.4 Verify that the public plans page can continue to load active localized plans through the repository layer.
 
 ## Implementation Details
 Use the current repository abstraction rather than bypassing it. Reference the TechSpec "Data Models" and "Impact Analysis" sections for the exact mapping boundary. Keep the public plans UI reading normalized domain `Plan` objects while enabling server-side checkout routes to obtain provider-specific mapping data from the same canonical source.
@@ -61,15 +61,22 @@ Use the current repository abstraction rather than bypassing it. Reference the T
 
 ## Tests
 - Unit tests:
-  - [ ] Verify active plans are mapped from the new billing schema into domain `Plan` objects with localized fields intact.
-  - [ ] Verify the repository falls back predictably when a locale is missing and uses canonical defaults.
-  - [ ] Verify provider mapping data for a plan can be resolved without mutating the public `Plan` rendering contract unexpectedly.
+  - [x] Verify active plans are mapped from the new billing schema into domain `Plan` objects with localized fields intact.
+  - [x] Verify the repository falls back predictably when a locale is missing and uses canonical defaults.
+  - [x] Verify provider mapping data for a plan can be resolved without mutating the public `Plan` rendering contract unexpectedly.
 - Integration tests:
   - [ ] Load active plans from Supabase-backed fixtures and verify the plans page can still render monthly and yearly plans.
   - [ ] Verify inactive plans are excluded from the public plan list.
   - [ ] Verify an unmapped billing plan surfaces a deterministic error path for downstream server-side checkout consumers.
 - Test coverage target: >=80%
 - All tests must pass
+
+## Validation Evidence
+
+- `yarn test:plans-repository` passes and validates the canonical `billing_plans` read path, provider mapping lookup contract, locale fallback, canonical `plan_code` UI identity, and updated seed writes.
+- `yarn test:billing-sql` still passes after removing the old billing tables from `supabase/sqls.sql`.
+- `yarn build` passes, including TypeScript checks and the `/plans` static page build path.
+- Supabase-backed fixture/RLS integration tests are not executable locally because this project has no local Postgres or local Supabase environment. They remain external validation for a connected Supabase project.
 
 ## Success Criteria
 - All tests passing

@@ -5,10 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { Plan, PaymentMethodType } from '../../../domain/entities/payment';
+import { Plan } from '../../../domain/entities/payment';
 import { CheckoutSummary } from '../../../components/payment/CheckoutSummary';
-import { PaymentMethodSelector } from '../../../components/payment/PaymentMethodSelector';
-import { CheckoutForm } from '../../../components/payment/CheckoutForm';
+import { ClientGatewayFactory } from '../../../data/ClientGatewayFactory';
 import { RepositoryFactory } from '../../../data/RepositoryFactory';
 
 export default function CheckoutPage() {
@@ -20,9 +19,9 @@ export default function CheckoutPage() {
     const { t } = useTranslation();
 
     const [plan, setPlan] = useState<Plan | null>(null);
-    const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>('card');
     const [isLoading, setIsLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // If not authenticated, the layout ProtectedRoute should handle it, 
@@ -58,28 +57,39 @@ export default function CheckoutPage() {
         if (!plan || !user) return;
 
         setIsProcessing(true);
+        setError(null);
         try {
-            // TODO: Implement payment processing
-            // const paymentGateway = ClientGatewayFactory.getPaymentGateway();
+            const plansRepository = RepositoryFactory.getPlansRepository();
+            const mapping = await plansRepository.getProviderMapping(plan.id, 'abacatepay');
 
-            // const tx = await paymentGateway.processPayment({
-            //     userId: user.uid,
-            //     planId: plan.id,
-            //     paymentMethod: selectedMethod,
-            // });
+            if (!mapping) {
+                throw new Error('Payment mapping not found for this plan');
+            }
 
-            // if (tx.url) {
-            //     window.location.href = tx.url;
-            //     return;
-            // }
+            const paymentGateway = ClientGatewayFactory.getPaymentGateway();
 
-            // // Redirect to success or history
-            // // Ideally show a success modal or page.
-            // // For now, redirect to dashboard with a query param
-            router.push('/dashboard?payment_success=true');
-        } catch (error) {
-            console.error('Payment failed', error);
-            alert(t('checkout.payment_failed'));
+            const baseUrl = window.location.origin;
+            const result = await paymentGateway.createHostedSubscriptionCheckout({
+                userId: user.uid,
+                planCode: plan.id,
+                providerProductId: mapping.providerProductId,
+                providerPriceAmount: mapping.providerPriceAmount,
+                currency: mapping.currency,
+                successUrl: `${baseUrl}/dashboard?payment_success=true`,
+                cancelUrl: `${baseUrl}/plans`,
+                customerEmail: user.email || undefined,
+            });
+
+            if (result.checkoutUrl) {
+                window.location.href = result.checkoutUrl;
+                return;
+            }
+
+            throw new Error('Failed to retrieve checkout URL');
+        } catch (error: unknown) {
+            console.error('Checkout creation failed', error);
+            const message = error instanceof Error ? error.message : String(error);
+            setError(message || t('checkout.redirect_failed') || t('checkout.payment_failed'));
         } finally {
             setIsProcessing(false);
         }
@@ -127,25 +137,41 @@ export default function CheckoutPage() {
                         </div>
                     </div>
 
-                    {/* Payment Method Section */}
+                    {/* Checkout Action Section */}
                     <div className="rounded-2xl border border-gray-800 bg-gray-900/20 p-6">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="h-8 w-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" /></svg>
                             </div>
-                            <h2 className="text-lg font-semibold text-white">{t('checkout.payment_method')}</h2>
+                            <h2 className="text-lg font-semibold text-white">{t('checkout.confirm_purchase')}</h2>
                         </div>
 
-                        <div className="mb-6">
-                            <PaymentMethodSelector selectedMethod={selectedMethod} onSelect={setSelectedMethod} />
-                        </div>
+                        {error && (
+                            <div className="mb-6 rounded-lg border border-red-500/50 bg-red-500/10 p-4 text-red-500">
+                                <div className="flex items-center gap-2 mb-2 font-semibold">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span>{t('common.error') || 'Error'}</span>
+                                </div>
+                                <p className="text-sm">{error}</p>
+                            </div>
+                        )}
 
-                        <form id="checkout-form" onSubmit={handleSubmit}>
-                            {selectedMethod === 'card' && <CheckoutForm />}
-                            {selectedMethod === 'paypal' && <div className="text-center py-8 text-gray-400">{t('checkout.integrations.paypal_mock')}</div>}
-                            {selectedMethod === 'pix' && <div className="text-center py-8 text-gray-400">{t('checkout.integrations.pix_mock')}</div>}
-                            {selectedMethod === 'crypto' && <div className="text-center py-8 text-gray-400">{t('checkout.integrations.crypto_mock')}</div>}
+                        <p className="text-gray-400 mb-8">
+                            {t('checkout.hosted_redirect_notice') || 'You will be redirected to a secure payment page provided by AbacatePay to complete your subscription.'}
+                        </p>
+
+                        <form onSubmit={handleSubmit}>
+                            <button
+                                type="submit"
+                                disabled={isProcessing}
+                                className="w-full rounded-xl bg-healthpal-green py-4 text-center font-bold text-black transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isProcessing ? t('checkout.processing_payment') : (t('checkout.confirm_and_pay') || 'Confirm and Pay →')}
+                            </button>
                         </form>
+                        <p className="mt-4 text-center text-xs text-gray-500">
+                            {t('checkout.secure_payments')}
+                        </p>
                     </div>
                 </div>
 

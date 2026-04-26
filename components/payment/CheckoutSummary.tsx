@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plan } from '../../domain/entities/payment';
 import { useTranslation } from '../../hooks/useTranslation';
+import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 interface OrderSummaryProps {
     plan: Plan;
@@ -8,18 +9,22 @@ interface OrderSummaryProps {
 }
 
 export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0 }) => {
-    const { t } = useTranslation();
+    const { t, to } = useTranslation();
 
     // Use Plan value object methods for calculations
-    let subtotal = plan.price;
     const totalDue = plan.price;
-    let discountAmount = 0;
-
-    // Use the value object's discount calculations
-    if (plan.hasDiscount && plan.originalPrice) {
+    
+    // Calculate subtotal (original price) automatically for annual plans
+    let subtotal = totalDue;
+    if (plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL) {
+        subtotal = totalDue * (1 + (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100));
+    } else if (plan.hasDiscount && plan.originalPrice) {
         subtotal = plan.originalPrice;
-        discountAmount = subtotal - totalDue;
     }
+    
+    const discountAmount = subtotal - totalDue;
+
+    const displayDiscountPercentage = plan.discountPercentage || (subtotal > totalDue ? Math.round(((subtotal - totalDue) / subtotal) * 100) : 0);
 
     return (
         <div className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6">
@@ -34,11 +39,11 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
                     <h3 className="font-semibold text-white">{plan.name}</h3>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-400">
-                            {plan.description?.split('.')[0] || `Billed ${plan.interval}ly`}
+                            {plan.description?.split('.')[0] || `Billed ${plan.interval === 'year' ? 'annually' : 'monthly'}`}
                         </span>
-                        {plan.discountPercentage && (
+                        {displayDiscountPercentage > 0 && (
                             <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-[10px] font-bold text-green-500">
-                                -{plan.discountPercentage}%
+                                -{displayDiscountPercentage}%
                             </span>
                         )}
                     </div>

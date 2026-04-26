@@ -1,4 +1,4 @@
-import { PlansRepository } from '../../domain/repositories/PlansRepository';
+import { PlanProviderMapping, PlansRepository } from '../../domain/repositories/PlansRepository';
 import { Plan, Currency, PlanFeature } from '../../domain/entities/payment';
 
 export class MockPlansRepository implements PlansRepository {
@@ -72,5 +72,40 @@ export class MockPlansRepository implements PlansRepository {
                 externalPlanId: 'annual_mock',
             }),
         ];
+    }
+
+    async getProviderMapping(planCode: string, provider: string): Promise<PlanProviderMapping | null> {
+        const mappings: Record<string, PlanProviderMapping> = {
+            free: {
+                planId: 'free',
+                planCode: 'free',
+                provider: 'mock',
+                providerProductId: 'free_mock',
+                providerPriceAmount: 0,
+                currency: 'BRL',
+                providerCycle: 'month',
+            },
+            plano_mensal: {
+                planId: 'plano_mensal',
+                planCode: 'plano_mensal',
+                provider: 'mock',
+                providerProductId: 'monthly_mock',
+                providerPriceAmount: 2990,
+                currency: 'BRL',
+                providerCycle: 'month',
+            },
+            plano_anual: {
+                planId: 'plano_anual',
+                planCode: 'plano_anual',
+                provider: 'mock',
+                providerProductId: 'annual_mock',
+                providerPriceAmount: 30498,
+                currency: 'BRL',
+                providerCycle: 'year',
+            },
+        };
+
+        const mapping = mappings[planCode];
+        return mapping?.provider === provider ? mapping : null;
     }
 }

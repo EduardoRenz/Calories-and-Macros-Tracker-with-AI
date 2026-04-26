@@ -69,7 +69,9 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
                         id: doc.id,
                         userId: data.userId,
                         planId: data.planId || 'free',
+                        planCode: data.planCode || 'free',
                         status: data.status,
+                        accessStatus: data.accessStatus || (data.status === 'active' ? 'premium' : 'free'),
                         currentPeriodStart: data.currentPeriodStart?.toDate() || new Date(),
                         currentPeriodEnd: data.currentPeriodEnd?.toDate() || new Date(),
                         cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
@@ -83,12 +85,18 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
         }, CACHE_TTL);
     }
 
+    async getBillingHistory(): Promise<any[]> {
+        return [];
+    }
+
     private createFreeSubscription(userId: string): Subscription {
         return Subscription.create({
             id: 'free',
             userId,
             planId: 'free',
+            planCode: 'free',
             status: 'inactive',
+            accessStatus: 'free',
             currentPeriodStart: new Date(),
             currentPeriodEnd: new Date(),
             cancelAtPeriodEnd: false,

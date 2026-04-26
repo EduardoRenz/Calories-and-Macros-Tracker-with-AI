@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Implement Supabase Webhook Function And Event Processing"
 type: infra
 complexity: critical
@@ -29,11 +29,11 @@ Add the public Supabase Edge Function that receives AbacatePay webhook events, v
 </requirements>
 
 ## Subtasks
-- [ ] 4.1 Create the Supabase Edge Function and any shared helper files needed for webhook handling.
-- [ ] 4.2 Configure the function for public invocation with JWT verification disabled only for this endpoint.
-- [ ] 4.3 Implement raw-body signature validation and event persistence for all inbound webhook deliveries.
-- [ ] 4.4 Implement duplicate-event detection and deterministic processing-state updates for received, processed, rejected, and failed events.
-- [ ] 4.5 Document required secrets and deployment expectations for local and hosted environments.
+- [x] 4.1 Create the Supabase Edge Function and any shared helper files needed for webhook handling.
+- [x] 4.2 Configure the function for public invocation with JWT verification disabled only for this endpoint.
+- [x] 4.3 Implement raw-body signature validation and event persistence for all inbound webhook deliveries.
+- [x] 4.4 Implement duplicate-event detection and deterministic processing-state updates for received, processed, rejected, and failed events.
+- [x] 4.5 Document required secrets and deployment expectations for local and hosted environments.
 
 ## Implementation Details
 Follow the TechSpec "System Architecture", "Integration Points", and "Webhook Configuration Plan" sections. Keep this task focused on ingress, authenticity, event recording, and processing-state control. Do not duplicate downstream business-state transition logic that belongs in task 05.
@@ -65,15 +65,23 @@ Follow the TechSpec "System Architecture", "Integration Points", and "Webhook Co
 
 ## Tests
 - Unit tests:
-  - [ ] Verify a valid HMAC signature over the raw payload is accepted.
-  - [ ] Verify an invalid signature is rejected before business mutation occurs.
-  - [ ] Verify duplicate provider event IDs are recognized without reprocessing the event body.
+  - [x] Verify a valid HMAC signature over the raw payload is accepted.
+  - [x] Verify an invalid signature is rejected before business mutation occurs.
+  - [x] Verify duplicate provider event IDs are recognized without reprocessing the event body.
 - Integration tests:
   - [ ] Send a signed webhook request to the function and verify an inbound event row is created with the expected processing state.
   - [ ] Re-send the same provider event and verify the function returns success without creating a duplicate mutation path.
   - [ ] Send a malformed or unsigned webhook payload and verify the function rejects it with the expected status code.
 - Test coverage target: >=80%
 - All tests must pass
+
+## Validation Evidence
+
+- `yarn test:abacatepay-webhook` passes and validates the scoped public Supabase function config, raw-body HMAC contract, supported signature headers, event persistence, rejected/received/processing/processed/failed states, duplicate `23505` handling, and deployment documentation.
+- `yarn test:billing-routes`, `yarn test:plans-repository`, and `yarn test:billing-sql` all pass after adding the webhook function.
+- `./node_modules/.bin/tsc --noEmit` passes with Supabase Deno functions excluded from the Next.js TypeScript project because they are deployed with the Supabase/Deno toolchain.
+- `yarn build` passes after adding the webhook artifacts.
+- Live Supabase Function integration tests are not executable locally because this project has no local Postgres or local Supabase environment. They remain external validation for a connected Supabase project.
 
 ## Success Criteria
 - All tests passing

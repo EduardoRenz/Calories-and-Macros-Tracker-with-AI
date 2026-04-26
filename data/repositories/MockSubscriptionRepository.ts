@@ -28,12 +28,18 @@ export class MockSubscriptionRepository implements SubscriptionRepository {
                     id: 'free',
                     userId: 'mock-user-id',
                     planId: 'free',
+                    planCode: 'free',
                     status: 'inactive',
+                    accessStatus: 'free',
                     currentPeriodStart: new Date(),
                     currentPeriodEnd: new Date(),
                     cancelAtPeriodEnd: false,
                 });
             });
         }, CACHE_TTL);
+    }
+
+    async getBillingHistory(): Promise<any[]> {
+        return [];
     }
 }

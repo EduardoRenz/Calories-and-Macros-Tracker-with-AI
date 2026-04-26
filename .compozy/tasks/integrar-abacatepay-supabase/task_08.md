@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Add Manage Subscription And Financial History Surfaces"
 type: frontend
 complexity: high
@@ -30,10 +30,10 @@ Expose the new billing state inside the authenticated app so users can understan
 </requirements>
 
 ## Subtasks
-- [ ] 8.1 Update settings and profile subscription surfaces to show normalized billing state and manage actions.
-- [ ] 8.2 Add user-visible financial history UI backed by the billing history read path.
-- [ ] 8.3 Update navigation or account entry points to reflect free, premium, and cancelled-at-period-end states.
-- [ ] 8.4 Add localized text for billing states, actions, and history labels across supported languages.
+- [x] 8.1 Update settings and profile subscription surfaces to show normalized billing state and manage actions.
+- [x] 8.2 Add user-visible financial history UI backed by the billing history read path.
+- [x] 8.3 Update navigation or account entry points to reflect free, premium, and cancelled-at-period-end states.
+- [x] 8.4 Add localized text for billing states, actions, and history labels across supported languages.
 
 ## Implementation Details
 Reference the TechSpec "User Experience", "Impact Analysis", and "API Endpoints" sections. Keep terminology product-oriented and aligned to the PRD: users should understand whether they are active, will not renew, or have lost premium because billing became irregular. Use existing design patterns in settings, profile, and navbar rather than introducing a new billing mini-app.
@@ -66,13 +66,13 @@ Reference the TechSpec "User Experience", "Impact Analysis", and "API Endpoints"
 
 ## Tests
 - Unit tests:
-  - [ ] Verify active, free, and cancelled-at-period-end states render the correct badges and action labels.
-  - [ ] Verify financial history rows display normalized event type, amount, and date formatting for user-facing presentation.
-  - [ ] Verify localized billing labels resolve correctly across supported languages.
+  - [x] Verify active, free, and cancelled-at-period-end states render the correct badges and action labels.
+  - [x] Verify financial history rows display normalized event type, amount, and date formatting for user-facing presentation.
+  - [x] Verify localized billing labels resolve correctly across supported languages.
 - Integration tests:
-  - [ ] Load an authenticated user with premium status and verify settings or profile surfaces show the expected manage state.
-  - [ ] Load an authenticated user with billing history and verify paid, failed, and refunded events appear in the UI.
-  - [ ] Load an authenticated user with irregular billing status and verify the UI reflects loss of premium access clearly.
+  - [x] Load an authenticated user with premium status and verify settings or profile surfaces show the expected manage state.
+  - [x] Load an authenticated user with billing history and verify paid, failed, and refunded events appear in the UI.
+  - [x] Load an authenticated user with irregular billing status and verify the UI reflects loss of premium access clearly.
 - Test coverage target: >=80%
 - All tests must pass
 

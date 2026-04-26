@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Rebuild Billing Provider Adapter And App Routes"
 type: backend
 complexity: high
@@ -30,11 +30,11 @@ Replace the current generic and partially mocked payment flow with a billing-spe
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Refactor the billing adapter contract to support hosted subscription checkout creation and cancellation-at-period-end.
-- [ ] 3.2 Rebuild the AbacatePay server adapter around `v2` endpoints, centavo amounts, and recurring product mapping.
-- [ ] 3.3 Add authenticated Next.js billing routes for checkout creation and cancellation.
-- [ ] 3.4 Persist checkout session or intent state in Supabase for later webhook correlation.
-- [ ] 3.5 Retire or redirect the old generic payment route to the new billing-specific path.
+- [x] 3.1 Refactor the billing adapter contract to support hosted subscription checkout creation and cancellation-at-period-end.
+- [x] 3.2 Rebuild the AbacatePay server adapter around `v2` endpoints, centavo amounts, and recurring product mapping.
+- [x] 3.3 Add authenticated Next.js billing routes for checkout creation and cancellation.
+- [x] 3.4 Persist checkout session or intent state in Supabase for later webhook correlation.
+- [x] 3.5 Retire or redirect the old generic payment route to the new billing-specific path.
 
 ## Implementation Details
 Reference the TechSpec "Core Interfaces", "API Endpoints", and "Integration Points" sections. Reuse existing server-side auth and Supabase service-role access patterns where possible. Keep user actions in Next.js routes per the chosen architecture, while ensuring provider calls remain encapsulated and unit-testable.
@@ -68,15 +68,25 @@ Reference the TechSpec "Core Interfaces", "API Endpoints", and "Integration Poin
 
 ## Tests
 - Unit tests:
-  - [ ] Verify checkout creation maps canonical plan data into the correct AbacatePay recurring checkout payload.
-  - [ ] Verify cancellation requests reject subscriptions that are not in a cancellable state.
-  - [ ] Verify provider `4xx` and `5xx` failures are translated into deterministic route responses.
+  - [x] Verify checkout creation maps canonical plan data into the correct AbacatePay recurring checkout payload.
+  - [x] Verify cancellation requests reject subscriptions that are not in a cancellable state.
+  - [x] Verify provider `4xx` and `5xx` failures are translated into deterministic route responses.
 - Integration tests:
   - [ ] `POST /api/billing/checkout` returns a hosted checkout URL for an authenticated user with a mapped active plan.
   - [ ] `POST /api/billing/checkout` rejects an unknown or inactive plan with the expected status code.
   - [ ] `POST /api/billing/cancel` marks cancel-at-period-end intent for an authenticated user with an active subscription.
 - Test coverage target: >=80%
 - All tests must pass
+
+## Validation Evidence
+
+- `yarn test:billing-routes` passes and validates the provider adapter contract, AbacatePay `v2` checkout payload shape, route authentication boundaries, checkout session persistence, cancel state rejection, provider failure handling, and deprecation of `/api/payment`.
+- `yarn test:plans-repository` passes after the route implementation.
+- `yarn test:billing-sql` passes after the route implementation.
+- `./node_modules/.bin/tsc --noEmit` passes after updating the client gateway contract.
+- `yarn build` passes and shows `/api/billing/checkout` and `/api/billing/cancel` as dynamic server routes.
+- Supabase/API integration tests are not executable locally because this project has no local Postgres or local Supabase environment. They remain external validation for a connected Supabase project.
+- AbacatePay public docs confirmed `POST /v2/subscriptions/create`; the cancel endpoint path is isolated in the provider adapter and should be confirmed against the real AbacatePay account/API before production use.
 
 ## Success Criteria
 - All tests passing

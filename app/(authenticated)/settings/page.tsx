@@ -6,6 +6,7 @@ import { useLanguage, Language } from '@/contexts/LanguageContext';
 import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@/components/icons';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import SubscriptionCard from '../../../components/SubscriptionCard';
+import BillingHistory from '@/components/payment/BillingHistory';
 import Modal from '@/components/ui/Modal';
 
 // Types
@@ -297,6 +298,10 @@ export default function SettingsPage() {
 
             <section className="space-y-4">
                 <SubscriptionCard />
+            </section>
+
+            <section className="space-y-4">
+                <BillingHistory />
             </section>
 
             <section className="space-y-4">
