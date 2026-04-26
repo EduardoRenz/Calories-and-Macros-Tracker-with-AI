@@ -329,6 +329,7 @@ export default {
       "upgrade": "Upgrade to Premium",
       "plan_free": "Free",
       "plan_premium": "Premium",
+      "plan_trial": "In Trial",
       "premium_description": "You have full access to all AI features and advanced analysis.",
       "free_description": "Upgrade to unlock AI health analysis and exclusive features.",
       "history_title": "Financial History",

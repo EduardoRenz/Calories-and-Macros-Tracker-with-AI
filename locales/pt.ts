@@ -329,6 +329,7 @@ export default {
       "upgrade": "Upgrade para Premium",
       "plan_free": "Gratuito",
       "plan_premium": "Premium",
+      "plan_trial": "Em Testes",
       "premium_description": "Você tem acesso total a todos os recursos de IA e análises avançadas.",
       "free_description": "Faça o upgrade para desbloquear análise de saúde com IA e recursos exclusivos.",
       "history_title": "Histórico Financeiro",
