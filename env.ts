@@ -14,8 +14,6 @@ export const env = createEnv({
 
         // Payment Configuration
         ABACATE_PAY_API_KEY: z.string().optional(),
-        // Payment Provider (Server-side selection)
-        PAYMENT_PROVIDER: z.enum(['abacatepay', 'mock']),
 
         // Migration, Admin Credentials and backend service keys (server-only)
         FIREBASE_CLIENT_EMAIL: z.string(),
@@ -82,7 +80,6 @@ export const env = createEnv({
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-        PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER,
 
         NODE_ENV: process.env.NODE_ENV,
 

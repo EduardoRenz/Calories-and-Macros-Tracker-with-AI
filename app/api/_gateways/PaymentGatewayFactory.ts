@@ -16,8 +16,8 @@ export class PaymentGatewayFactory {
 
     static getInstance(): PaymentGateway {
         if (!this.instance) {
-            // Use 'mock' when in mock mode, otherwise use PAYMENT_PROVIDER
-            const provider = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock' ? 'mock' : env.PAYMENT_PROVIDER;
+            // Use 'mock' when in mock mode, otherwise use NEXT_PUBLIC_PAYMENT_PROVIDER
+            const provider = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock' ? 'mock' : env.NEXT_PUBLIC_PAYMENT_PROVIDER;
             const strategy = strategies[provider];
             if (!strategy) {
                 throw new Error(`Unknown payment provider: ${provider}`);

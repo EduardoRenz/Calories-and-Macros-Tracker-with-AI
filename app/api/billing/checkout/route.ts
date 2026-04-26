@@ -44,7 +44,8 @@ export async function POST(request: Request) {
         }
 
         const plansRepository = RepositoryFactory.getPlansRepository();
-        const provider = env.PAYMENT_PROVIDER;
+        // Use 'mock' provider in mock mode, otherwise use NEXT_PUBLIC_PAYMENT_PROVIDER
+        const provider = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock' ? 'mock' : env.NEXT_PUBLIC_PAYMENT_PROVIDER;
         const mapping = await plansRepository.getProviderMapping(body.planId, provider);
 
         if (!mapping) {
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
                 .upsert({
                     user_id: user.uid,
                     plan_id: mapping.planId,
-                    provider,
+                    provider: mapping.provider,
                     provider_checkout_id: checkout.externalCheckoutId,
                     checkout_url: checkout.checkoutUrl,
                     status: 'created',
