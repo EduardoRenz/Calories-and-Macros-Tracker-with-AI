@@ -13,7 +13,7 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
 
     // Use Plan value object methods for calculations
     const totalDue = plan.price;
-    
+
     // Calculate subtotal (original price) automatically for annual plans
     let subtotal = totalDue;
     if (plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL) {
@@ -21,10 +21,10 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
     } else if (plan.hasDiscount && plan.originalPrice) {
         subtotal = plan.originalPrice;
     }
-    
+
     const discountAmount = subtotal - totalDue;
 
-    const displayDiscountPercentage = plan.discountPercentage || (subtotal > totalDue ? Math.round(((subtotal - totalDue) / subtotal) * 100) : 0);
+    const displayDiscountPercentage = plan.discountPercentage || (plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL ? BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE : (subtotal > totalDue ? Math.round(((subtotal - totalDue) / subtotal) * 100) : 0));
 
     return (
         <div className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6">
@@ -73,22 +73,6 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
                     <div className="text-right">
                         <div className="text-2xl font-bold text-white">{plan.currency.format(totalDue)}</div>
                         <div className="text-xs text-gray-500 uppercase">{plan.currency.code} / {plan.interval}</div>
-                    </div>
-                </div>
-
-                <div className="mt-8">
-                    <button
-                        className="w-full rounded-lg bg-green-500 py-3 text-sm font-semibold text-black transition-colors hover:bg-green-400"
-                        form="checkout-form" // Triggers submit on the form outside this component
-                        type="submit"
-                    >
-                        {t('checkout.confirm_purchase')}
-                    </button>
-                    <div className="mt-4 flex justify-center gap-2 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                            {t('checkout.secure_payments')}
-                        </span>
                     </div>
                 </div>
             </div>
