@@ -1,5 +1,10 @@
 import { PaymentData, Plan, Transaction, Currency } from '../../../domain/entities/payment';
-import { PaymentGateway } from '../../../domain/gateways/PaymentGateway';
+import {
+    CancelSubscriptionInput,
+    HostedSubscriptionCheckoutInput,
+    HostedSubscriptionCheckoutResult,
+    PaymentGateway,
+} from '../../../domain/gateways/PaymentGateway';
 
 export class MockPaymentGateway implements PaymentGateway {
     private static instance: MockPaymentGateway | null = null;
@@ -134,5 +139,22 @@ export class MockPaymentGateway implements PaymentGateway {
             date: new Date(),
             paymentMethod: _data.paymentMethod,
         };
+    }
+
+    async createHostedSubscriptionCheckout(input: HostedSubscriptionCheckoutInput): Promise<HostedSubscriptionCheckoutResult> {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const checkoutId = `mock_checkout_${input.planCode}_${Date.now()}`;
+
+        return {
+            checkoutUrl: `${input.successUrl}?mockCheckoutId=${checkoutId}`,
+            externalCheckoutId: checkoutId,
+            amount: input.providerPriceAmount,
+            status: 'PENDING',
+        };
+    }
+
+    async cancelSubscriptionAtPeriodEnd(input: CancelSubscriptionInput): Promise<void> {
+        void input;
+        await new Promise((resolve) => setTimeout(resolve, 100));
     }
 }

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Add Billing Observability, Fixtures, And Final Verification Coverage"
 type: backend
 complexity: medium
@@ -34,10 +34,10 @@ Harden the billing integration with structured observability, reusable webhook f
 </requirements>
 
 ## Subtasks
-- [ ] 9.1 Add structured logging fields across billing routes, webhook processing, and transition logic.
-- [ ] 9.2 Create reusable webhook fixtures for the supported AbacatePay event set used by the MVP.
-- [ ] 9.3 Add replay, duplicate-delivery, and failure-mode verification coverage across the billing stack.
-- [ ] 9.4 Run and stabilize final end-to-end verification for checkout, state updates, and history presentation.
+- [x] 9.1 Add structured logging fields across billing routes, webhook processing, and transition logic.
+- [x] 9.2 Create reusable webhook fixtures for the supported AbacatePay event set used by the MVP.
+- [x] 9.3 Add replay, duplicate-delivery, and failure-mode verification coverage across the billing stack.
+- [x] 9.4 Run and stabilize final end-to-end verification for checkout, state updates, and history presentation.
 
 ## Implementation Details
 Reference the TechSpec "Monitoring and Observability", "Testing Approach", and "Known Risks" sections. This task is not a testing-only bucket: it should leave the system with durable fixtures, traceable logs, and final confidence in the full billing flow. Use the event types and fields already normalized by earlier tasks.
@@ -68,13 +68,13 @@ Reference the TechSpec "Monitoring and Observability", "Testing Approach", and "
 
 ## Tests
 - Unit tests:
-  - [ ] Verify billing logs include provider, event ID, and processing-state fields in webhook success and failure cases.
-  - [ ] Verify fixture payload loaders or helpers return deterministic event data for supported webhook types.
-  - [ ] Verify duplicate-delivery handling emits the expected observability markers without double mutation.
+  - [x] Verify billing logs include provider, event ID, and processing-state fields in webhook success and failure cases.
+  - [x] Verify fixture payload loaders or helpers return deterministic event data for supported webhook types.
+  - [x] Verify duplicate-delivery handling emits the expected observability markers without double mutation.
 - Integration tests:
-  - [ ] Execute a checkout creation plus webhook completion flow and verify logs, subscription state, and history output align.
-  - [ ] Replay the same webhook payload twice and verify the final state remains unchanged after the first successful mutation.
-  - [ ] Execute a refund or failure scenario and verify observability output, subscription state, and history UI remain consistent.
+  - [x] Execute a checkout creation plus webhook completion flow and verify logs, subscription state, and history output align.
+  - [x] Replay the same webhook payload twice and verify the final state remains unchanged after the first successful mutation.
+  - [x] Execute a refund or failure scenario and verify observability output, subscription state, and history UI remain consistent.
 - Test coverage target: >=80%
 - All tests must pass
 

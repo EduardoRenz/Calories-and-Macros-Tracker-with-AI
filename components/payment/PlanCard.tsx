@@ -1,5 +1,7 @@
 import React from 'react';
 import { Plan } from '../../domain/entities/payment';
+import { useTranslation } from '../../hooks/useTranslation';
+import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 interface PlanCardProps {
     plan: Plan;
@@ -8,9 +10,27 @@ interface PlanCardProps {
 }
 
 export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = false }) => {
+    const { t, to } = useTranslation();
     const isPopular = plan.isPopular;
-    const isMemberPlan = plan.name.toLowerCase().includes('member') || plan.name.toLowerCase().includes('miembro') || plan.name.toLowerCase().includes('membro');
+    const isFree = plan.id === 'free' || plan.price === 0;
+    const isMemberPlan = !isFree;
     const shouldUseGreenStyle = isPopular || isMemberPlan;
+
+    // Direct mapping: plans.features.free, plans.features.member_monthly, etc.
+    const planData = to(`plans.features.${plan.id}`) as { features?: Array<{ included: boolean; text: string }>; discount_message?: string } | Array<{ included: boolean; text: string }>;
+    const featuresToDisplay = (Array.isArray(planData) ? planData : planData?.features) || plan.features;
+
+    // Use t with interpolation for the discount message if it exists in locales
+    const discountMessage = (!Array.isArray(planData) && planData?.discount_message)
+        ? t(`plans.features.${plan.id}.discount_message`, { percentage: BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE })
+        : plan.discountMessage;
+
+    // Calculate original price automatically: Current Price + Percentage
+    const originalPrice = plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL
+        ? plan.price * (1 + (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100))
+        : plan.originalPrice;
+
+    const originalPriceLabel = originalPrice ? plan.currency.format(originalPrice) : null;
 
     return (
         <div
@@ -19,9 +39,9 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                 : 'border-gray-800 bg-gray-900/20'
                 }`}
         >
-            {isPopular && plan.discountMessage && (
+            {(isPopular || discountMessage) && (
                 <div className="absolute -top-3 right-4 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-black shadow-lg">
-                    {plan.discountMessage}
+                    {discountMessage || t('plans.popular')}
                 </div>
             )}
 
@@ -29,10 +49,15 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                 <h3 className={`text-lg font-semibold ${shouldUseGreenStyle ? 'text-green-400' : 'text-gray-200'}`}>
                     {plan.name}
                 </h3>
-                <div className="mt-2 flex items-baseline gap-1">
+                <div className="mt-2 flex items-baseline gap-2">
                     <span className="text-4xl font-bold text-white">
                         {plan.formattedPrice}
                     </span>
+                    {originalPriceLabel && (
+                        <span className="text-sm text-gray-500 line-through">
+                            {originalPriceLabel}
+                        </span>
+                    )}
                     <span className="text-sm text-gray-400">/{plan.interval}</span>
                 </div>
                 {plan.description && (
@@ -41,7 +66,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
             </div>
 
             <ul className="mb-8 flex-1 space-y-3">
-                {plan.features.map((feature, index) => (
+                {featuresToDisplay.map((feature, index) => (
                     <li key={index} className="flex items-start gap-3">
                         {feature.included ? (
                             <svg

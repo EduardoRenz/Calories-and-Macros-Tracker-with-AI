@@ -226,10 +226,47 @@ export default {
   },
   "plans": {
     "title": "Elige tu plan",
-    "subtitle": "Selecciona el plan que se adapte a tu viaje de fitness. Actualiza en cualquier momento para desbloquear características avanzadas.",
+    "subtitle": "Selecciona el plan que se adapte a tu viaje de fitness. Actualiza en cualquier momento para desbloquear funciones avanzadas.",
     "monthly": "Mensual",
     "annual": "Anual",
-    "loading": "Cargando planes..."
+    "loading": "Cargando planes...",
+    "features": {
+      "free": [
+        { "text": "Registro manual de alimentos", "included": true },
+        { "text": "Soporte para claves de API propias (OpenAI/Gemini)", "included": true },
+        { "text": "Historial básico de 7 dias", "included": true },
+        { "text": "Análisis nutricional por foto", "included": false },
+        { "text": "Informes de salud avanzados", "included": false },
+        { "text": "Asistente HealthPal 24/7", "included": false }
+      ],
+      "member_monthly": [
+        { "text": "IA Integrada (Sin necesidad de claves propias)", "included": true },
+        { "text": "Análisis nutricional completo por foto", "included": true },
+        { "text": "Historial ilimitado y copias de seguridad", "included": true },
+        { "text": "Informes de micronutrientes y salud", "included": true },
+        { "text": "Asistente HealthPal disponible 24/7", "included": true },
+        { "text": "Soporte prioritário", "included": true }
+      ],
+      "member_annual": {
+        "discount_message": "Ahorra {{percentage}}%",
+        "features": [
+          { "text": "IA Integrada (Sin necesidad de claves próprias)", "included": true },
+          { "text": "Análisis nutricional completo por foto", "included": true },
+          { "text": "Historial ilimitado y copias de seguridad", "included": true },
+          { "text": "Informes de micronutrientes y salud", "included": true },
+          { "text": "Asistente HealthPal disponible 24/7", "included": true },
+          { "text": "Soporte prioritário", "included": true }
+        ]
+      },
+      "member_yearly": [
+        { "text": "IA Integrada (Sin necesidad de claves próprias)", "included": true },
+        { "text": "Análisis nutricional completo por foto", "included": true },
+        { "text": "Historial ilimitado y copias de seguridad", "included": true },
+        { "text": "Informes de micronutrientes y salud", "included": true },
+        { "text": "Asistente HealthPal disponible 24/7", "included": true },
+        { "text": "Soporte prioritário", "included": true }
+      ]
+    }
   },
   "checkout": {
     "title": "Checkout",
@@ -251,21 +288,19 @@ export default {
     "annual_discount": "Descuento Anual",
     "tax": "Impuesto",
     "total_due": "Total a Pagar",
-    "confirm_purchase": "Confirmar Compra →",
+    "confirm_purchase": "Confirmar Compra",
+    "confirm_and_pay": "Confirmar y Pagar →",
     "secure_payments": "Los pagos son seguros y están encriptados",
-    "processing_payment": "Procesando Pago...",
-    "processing_message": "Por favor, no cierres esta ventana",
+    "processing_payment": "Procesando Checkout...",
+    "processing_message": "Redirigiendo a la página de pago seguro...",
     "payment_failed": "El pago falló. Por favor, inténtalo de nuevo.",
+    "redirect_failed": "No se pudo iniciar el pago. Por favor, inténtalo de nuevo.",
+    "hosted_redirect_notice": "Serás redirigido a una página de pago segura proporcionada por AbacatePay para completar tu suscripción.",
     "payment_methods": {
       "card": "Tarjeta",
       "paypal": "PayPal",
       "pix": "Pix",
       "crypto": "Cripto"
-    },
-    "integrations": {
-      "paypal_mock": "Integración PayPal simulada",
-      "pix_mock": "Integración Pix simulada (generación de QR Code)",
-      "crypto_mock": "Integración Cripto simulada"
     }
   },
   "settings": {
@@ -286,8 +321,30 @@ export default {
       "title": "Suscripción",
       "description": "Gestiona tu plan y detalles de facturación",
       "manage": "Gestionar Suscripción",
+      "upgrade": "Mejorar a Premium",
       "plan_free": "Gratis",
-      "plan_premium": "Premium"
+      "plan_premium": "Premium",
+      "premium_description": "Tienes acceso total a todas las funciones de IA y análisis avanzados.",
+      "free_description": "Mejora para desbloquear el análisis de salud con IA y funciones exclusivas.",
+      "history_title": "Historial Financiero",
+      "ends_on": "Vence el {{date}}",
+      "renews_on": "Se renueva el {{date}}",
+      "transaction_types": {
+        "subscription.completed": "Suscripción Iniciada",
+        "subscription.renewed": "Suscripción Renovada",
+        "subscription.cancelled": "Suscripción Cancelada",
+        "subscription.refunded": "Reembolso",
+        "subscription.chargeback": "Contracargo",
+        "payment": "Pago"
+      },
+      "transaction_status": {
+        "completed": "Completado",
+        "paid": "Pagado",
+        "failed": "Fallido",
+        "expired": "Expirado",
+        "refunded": "Reembolsado",
+        "pending": "Pendiente"
+      }
     },
     "tokens": {
       "title": "Tokens de API de IA",

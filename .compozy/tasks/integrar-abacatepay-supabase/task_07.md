@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Replace Checkout UI With Hosted Billing Launch Flow"
 type: frontend
 complexity: medium
@@ -29,10 +29,10 @@ Convert the current checkout experience from a mocked payment-method form into a
 </requirements>
 
 ## Subtasks
-- [ ] 7.1 Update the checkout page to call the new hosted billing route instead of the mocked payment flow.
-- [ ] 7.2 Replace payment-method-selection assumptions with UI copy and state aligned to hosted checkout.
-- [ ] 7.3 Preserve plan summary and authenticated contact context while redirecting to the provider-hosted URL.
-- [ ] 7.4 Update loading and error states so users understand when checkout creation fails before redirect.
+- [x] 7.1 Update the checkout page to call the new hosted billing route instead of the mocked payment flow.
+- [x] 7.2 Replace payment-method-selection assumptions with UI copy and state aligned to hosted checkout.
+- [x] 7.3 Preserve plan summary and authenticated contact context while redirecting to the provider-hosted URL.
+- [x] 7.4 Update loading and error states so users understand when checkout creation fails before redirect.
 
 ## Implementation Details
 Reference the TechSpec "API Endpoints", "Impact Analysis", and "User Experience" sections. Keep the UI simple and provider-agnostic where possible: the page should launch billing, not simulate card capture. Use the existing client gateway or a narrowly evolved replacement to call the new server route cleanly.
@@ -63,13 +63,13 @@ Reference the TechSpec "API Endpoints", "Impact Analysis", and "User Experience"
 
 ## Tests
 - Unit tests:
-  - [ ] Verify the checkout page requests a hosted checkout URL when a valid plan is loaded.
-  - [ ] Verify unsupported mock payment method branches are no longer presented for the hosted recurring flow.
-  - [ ] Verify checkout creation failures surface the expected localized error state.
+  - [x] Verify the checkout page requests a hosted checkout URL when a valid plan is loaded.
+  - [x] Verify unsupported mock payment method branches are no longer presented for the hosted recurring flow.
+  - [x] Verify checkout creation failures surface the expected localized error state.
 - Integration tests:
-  - [ ] Load the checkout page with a valid plan and verify the UI redirects to the hosted URL returned by the billing route.
-  - [ ] Load the checkout page with a missing or invalid plan and verify it redirects back to the plans page.
-  - [ ] Simulate a billing route failure and verify the user sees a stable error state without a broken redirect.
+  - [x] Load the checkout page with a valid plan and verify the UI redirects to the hosted URL returned by the billing route.
+  - [x] Load the checkout page with a missing or invalid plan and verify it redirects back to the plans page.
+  - [x] Simulate a billing route failure and verify the user sees a stable error state without a broken redirect.
 - Test coverage target: >=80%
 - All tests must pass
 

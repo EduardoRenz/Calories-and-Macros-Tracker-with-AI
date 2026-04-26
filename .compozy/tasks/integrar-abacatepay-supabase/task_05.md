@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Apply Subscription State Transitions And Transaction Persistence"
 type: backend
 complexity: high
@@ -29,11 +29,11 @@ Turn persisted inbound provider events into consistent product-owned subscriptio
 </requirements>
 
 ## Subtasks
-- [ ] 5.1 Implement the billing event processor that maps provider event types to product-owned subscription transitions.
-- [ ] 5.2 Persist normalized subscription updates and transaction rows for relevant provider lifecycle events.
-- [ ] 5.3 Enforce access-state outcomes that match the PRD for cancellation-at-period-end and irregular billing.
-- [ ] 5.4 Handle duplicate and out-of-order event safety according to the TechSpec transition rules.
-- [ ] 5.5 Expose deterministic processing outcomes back to the webhook layer for logging and auditability.
+- [x] 5.1 Implement the billing event processor that maps provider event types to product-owned subscription transitions.
+- [x] 5.2 Persist normalized subscription updates and transaction rows for relevant provider lifecycle events.
+- [x] 5.3 Enforce access-state outcomes that match the PRD for cancellation-at-period-end and irregular billing.
+- [x] 5.4 Handle duplicate and out-of-order event safety according to the TechSpec transition rules.
+- [x] 5.5 Expose deterministic processing outcomes back to the webhook layer for logging and auditability.
 
 ## Implementation Details
 Use the schema and webhook infrastructure established in tasks 01 and 04. Reference the TechSpec "Data Models", "Testing Approach", and "Known Risks" sections for state semantics. Keep provider-payload normalization separate from application-facing read-model concerns, which are handled later in task 06.
@@ -64,14 +64,14 @@ Use the schema and webhook infrastructure established in tasks 01 and 04. Refere
 
 ## Tests
 - Unit tests:
-  - [ ] Verify `subscription.completed` creates or activates a subscription with premium access.
-  - [ ] Verify `subscription.renewed` advances the billing period and preserves premium access.
-  - [ ] Verify `subscription.cancelled` preserves premium until period end when the provider payload indicates cancellation-at-period-end behavior.
-  - [ ] Verify irregular billing events remove premium access promptly according to the PRD.
+  - [x] Verify `subscription.completed` creates or activates a subscription with premium access.
+  - [x] Verify `subscription.renewed` advances the billing period and preserves premium access.
+  - [x] Verify `subscription.cancelled` preserves premium until period end when the provider payload indicates cancellation-at-period-end behavior.
+  - [x] Verify irregular billing events remove premium access promptly according to the PRD.
 - Integration tests:
-  - [ ] Process a first-time subscription completion event and verify both subscription state and transaction history rows are persisted.
-  - [ ] Process a duplicate renewal event and verify transaction or subscription rows are not duplicated.
-  - [ ] Process an out-of-order cancellation or refund scenario and verify the final persisted state remains deterministic.
+  - [x] Process a first-time subscription completion event and verify both subscription state and transaction history rows are persisted.
+  - [x] Process a duplicate renewal event and verify transaction or subscription rows are not duplicated.
+  - [x] Process an out-of-order cancellation or refund scenario and verify the final persisted state remains deterministic.
 - Test coverage target: >=80%
 - All tests must pass
 

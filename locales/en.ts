@@ -234,7 +234,44 @@ export default {
     "subtitle": "Select the plan that fits your fitness journey. Upgrade anytime to unlock advanced features.",
     "monthly": "Monthly",
     "annual": "Annual",
-    "loading": "Loading plans..."
+    "loading": "Loading plans...",
+    "features": {
+      "free": [
+        { "text": "Manual food logging", "included": true },
+        { "text": "Support for own API keys (OpenAI/Gemini)", "included": true },
+        { "text": "Basic 7-day history", "included": true },
+        { "text": "Photo-based nutrition analysis", "included": false },
+        { "text": "Advanced health reports", "included": false },
+        { "text": "HealthPal Assistant 24/7", "included": false }
+      ],
+      "member_monthly": [
+        { "text": "Integrated AI (No personal keys needed)", "included": true },
+        { "text": "Full photo-based nutrition analysis", "included": true },
+        { "text": "Unlimited history and backups", "included": true },
+        { "text": "Micronutrient and health reports", "included": true },
+        { "text": "HealthPal Assistant available 24/7", "included": true },
+        { "text": "Priority support", "included": true }
+      ],
+      "member_annual": {
+        "discount_message": "Save {{percentage}}%",
+        "features": [
+          { "text": "Integrated AI (No personal keys needed)", "included": true },
+          { "text": "Full photo-based nutrition analysis", "included": true },
+          { "text": "Unlimited history and backups", "included": true },
+          { "text": "Micronutrient and health reports", "included": true },
+          { "text": "HealthPal Assistant available 24/7", "included": true },
+          { "text": "Priority support", "included": true }
+        ]
+      },
+      "member_yearly": [
+        { "text": "Integrated AI (No personal keys needed)", "included": true },
+        { "text": "Full photo-based nutrition analysis", "included": true },
+        { "text": "Unlimited history and backups", "included": true },
+        { "text": "Micronutrient and health reports", "included": true },
+        { "text": "HealthPal Assistant available 24/7", "included": true },
+        { "text": "Priority support", "included": true }
+      ]
+    }
   },
   "checkout": {
     "title": "Checkout",
@@ -256,21 +293,19 @@ export default {
     "annual_discount": "Annual Discount",
     "tax": "Tax",
     "total_due": "Total due",
-    "confirm_purchase": "Confirm Purchase →",
+    "confirm_purchase": "Confirm Purchase",
+    "confirm_and_pay": "Confirm and Pay →",
     "secure_payments": "Payments are secure and encrypted",
-    "processing_payment": "Processing Payment...",
-    "processing_message": "Please do not close this window",
+    "processing_payment": "Processing Checkout...",
+    "processing_message": "Redirecting to secure payment page...",
     "payment_failed": "Payment failed. Please try again.",
+    "redirect_failed": "Could not initiate payment. Please try again.",
+    "hosted_redirect_notice": "You will be redirected to a secure payment page provided by AbacatePay to complete your subscription.",
     "payment_methods": {
       "card": "Card",
       "paypal": "PayPal",
       "pix": "Pix",
       "crypto": "Crypto"
-    },
-    "integrations": {
-      "paypal_mock": "PayPal integration mock",
-      "pix_mock": "Pix integration mock (QR Code generation)",
-      "crypto_mock": "Crypto integration mock"
     }
   },
   "settings": {
@@ -291,8 +326,35 @@ export default {
       "title": "Subscription",
       "description": "Manage your plan and billing details",
       "manage": "Manage Subscription",
+      "upgrade": "Upgrade to Premium",
       "plan_free": "Free",
-      "plan_premium": "Premium"
+      "plan_premium": "Premium",
+      "premium_description": "You have full access to all AI features and advanced analysis.",
+      "free_description": "Upgrade to unlock AI health analysis and exclusive features.",
+      "history_title": "Financial History",
+      "ends_on": "Ends on {{date}}",
+      "renews_on": "Renews on {{date}}",
+      "transaction_types": {
+        "subscription.completed": "Subscription Started",
+        "subscription.renewed": "Subscription Renewed",
+        "subscription.cancelled": "Subscription Cancelled",
+        "subscription.refunded": "Refund",
+        "subscription.chargeback": "Chargeback",
+        "payment": "Payment",
+        "charge": "Charge",
+        "renewal": "Renewal",
+        "refund": "Refund",
+        "dispute": "Dispute",
+        "loss": "Loss"
+      },
+      "transaction_status": {
+        "completed": "Completed",
+        "paid": "Paid",
+        "failed": "Failed",
+        "expired": "Expired",
+        "refunded": "Refunded",
+        "pending": "Pending"
+      }
     },
     "tokens": {
       "title": "AI API Tokens",

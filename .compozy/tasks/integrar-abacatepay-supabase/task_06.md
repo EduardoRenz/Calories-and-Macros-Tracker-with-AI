@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: "Update Subscription Read Model And Billing History Access"
 type: backend
 complexity: medium
@@ -29,10 +29,10 @@ Refactor the app’s subscription read path so it reflects the richer billing li
 </requirements>
 
 ## Subtasks
-- [ ] 6.1 Refactor the Supabase subscription repository to query the new subscription storage model.
-- [ ] 6.2 Normalize repository output so app consumers receive stable product-facing subscription state.
-- [ ] 6.3 Add a billing history query path for authenticated user-visible transaction history.
-- [ ] 6.4 Update the subscription context or related hooks to consume the new repository behavior safely.
+- [x] 6.1 Refactor the Supabase subscription repository to query the new subscription storage model.
+- [x] 6.2 Normalize repository output so app consumers receive stable product-facing subscription state.
+- [x] 6.3 Add a billing history query path for authenticated user-visible transaction history.
+- [x] 6.4 Update the subscription context or related hooks to consume the new repository behavior safely.
 
 ## Implementation Details
 Reference the TechSpec "Subscription Read Model", "Data Models", and "Impact Analysis" sections. Keep this task focused on normalized reads and query surfaces rather than provider writes. Billing history access may live as a new repository or a targeted server route, as long as it follows the existing project structure cleanly.
@@ -63,14 +63,14 @@ Reference the TechSpec "Subscription Read Model", "Data Models", and "Impact Ana
 
 ## Tests
 - Unit tests:
-  - [ ] Verify an active subscription row resolves to premium access in the normalized read model.
-  - [ ] Verify a cancelled-at-period-end subscription remains readable as premium until the period end is reached.
-  - [ ] Verify irregular billing states resolve to non-premium access consistently.
-  - [ ] Verify billing history rows are normalized into user-facing records ordered by occurrence date.
+  - [x] Verify an active subscription row resolves to premium access in the normalized read model.
+  - [x] Verify a cancelled-at-period-end subscription remains readable as premium until the period end is reached.
+  - [x] Verify irregular billing states resolve to non-premium access consistently.
+  - [x] Verify billing history rows are normalized into user-facing records ordered by occurrence date.
 - Integration tests:
-  - [ ] Load an authenticated user with seeded subscription and transaction fixtures and verify the context returns the expected subscription state.
-  - [ ] Verify a user with no active subscription receives the intended free-plan fallback behavior.
-  - [ ] Verify billing history reads return only the authenticated user’s transactions.
+  - [x] Load an authenticated user with seeded subscription and transaction fixtures and verify the context returns the expected subscription state.
+  - [x] Verify a user with no active subscription receives the intended free-plan fallback behavior.
+  - [x] Verify billing history reads return only the authenticated user’s transactions.
 - Test coverage target: >=80%
 - All tests must pass
 

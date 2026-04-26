@@ -3,18 +3,25 @@ import React, { createContext, useState, useContext, ReactNode, useEffect, useMe
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { SubscriptionRepository } from '../domain/repositories/SubscriptionRepository';
 import { Subscription } from '../domain/entities/subscription';
+import { BillingTransaction } from '../domain/entities/BillingTransaction';
 
 interface SubscriptionContextType {
     subscription: Subscription | null;
+    billingHistory: BillingTransaction[];
     loading: boolean;
+    loadingHistory: boolean;
     refreshSubscription: () => Promise<void>;
+    refreshHistory: () => Promise<void>;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export const SubscriptionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [subscription, setSubscription] = useState<Subscription | null>(null);
+    const [billingHistory, setBillingHistory] = useState<BillingTransaction[]>([]);
     const [loading, setLoading] = useState(true);
+    const [loadingHistory, setLoadingHistory] = useState(false);
+    
     const subscriptionRepository: SubscriptionRepository = useMemo(() => RepositoryFactory.getSubscriptionRepository(), []);
 
     const refreshSubscription = useCallback(async () => {
@@ -30,11 +37,31 @@ export const SubscriptionProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     }, [subscriptionRepository]);
 
+    const refreshHistory = useCallback(async () => {
+        setLoadingHistory(true);
+        try {
+            const history = await subscriptionRepository.getBillingHistory();
+            setBillingHistory(history);
+        } catch (error) {
+            console.error('Error fetching billing history:', error);
+            setBillingHistory([]);
+        } finally {
+            setLoadingHistory(false);
+        }
+    }, [subscriptionRepository]);
+
     useEffect(() => {
         refreshSubscription();
     }, [refreshSubscription]);
 
-    const value = { subscription, loading, refreshSubscription };
+    const value = { 
+        subscription, 
+        billingHistory,
+        loading, 
+        loadingHistory,
+        refreshSubscription,
+        refreshHistory
+    };
 
     return (
         <SubscriptionContext.Provider value={value}>

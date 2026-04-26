@@ -1,10 +1,13 @@
-export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'canceled' | 'unpaid' | 'inactive';
+export type SubscriptionStatus = 'pending' | 'trialing' | 'active' | 'past_due' | 'canceled' | 'unpaid' | 'inactive';
+export type BillingAccessStatus = 'free' | 'premium' | 'grace_locked';
 
 export class Subscription {
     private readonly _id: string;
     private readonly _userId: string;
     private readonly _planId: string;
+    private readonly _planCode: string;
     private readonly _status: SubscriptionStatus;
+    private readonly _accessStatus: BillingAccessStatus;
     private readonly _currentPeriodStart: Date;
     private readonly _currentPeriodEnd: Date;
     private readonly _cancelAtPeriodEnd: boolean;
@@ -13,7 +16,9 @@ export class Subscription {
         this._id = props.id;
         this._userId = props.userId;
         this._planId = props.planId;
+        this._planCode = props.planCode;
         this._status = props.status;
+        this._accessStatus = props.accessStatus;
         this._currentPeriodStart = props.currentPeriodStart;
         this._currentPeriodEnd = props.currentPeriodEnd;
         this._cancelAtPeriodEnd = props.cancelAtPeriodEnd;
@@ -35,8 +40,16 @@ export class Subscription {
         return this._planId;
     }
 
+    public get planCode(): string {
+        return this._planCode;
+    }
+
     public get status(): SubscriptionStatus {
         return this._status;
+    }
+
+    public get accessStatus(): BillingAccessStatus {
+        return this._accessStatus;
     }
 
     public get currentPeriodStart(): Date {
@@ -52,11 +65,11 @@ export class Subscription {
     }
 
     public get isActive(): boolean {
-        return this._status === 'active' || this._status === 'trialing';
+        return this._accessStatus === 'premium';
     }
 
     public get isFree(): boolean {
-        return this._planId === 'free' || !this.isActive;
+        return this._accessStatus === 'free';
     }
 
     public equals(other: Subscription): boolean {
@@ -68,7 +81,9 @@ export class Subscription {
             id: this._id,
             userId: this._userId,
             planId: this._planId,
+            planCode: this._planCode,
             status: this._status,
+            accessStatus: this._accessStatus,
             currentPeriodStart: this._currentPeriodStart,
             currentPeriodEnd: this._currentPeriodEnd,
             cancelAtPeriodEnd: this._cancelAtPeriodEnd,
@@ -80,7 +95,9 @@ export interface SubscriptionProps {
     id: string;
     userId: string;
     planId: string;
+    planCode: string;
     status: SubscriptionStatus;
+    accessStatus: BillingAccessStatus;
     currentPeriodStart: Date;
     currentPeriodEnd: Date;
     cancelAtPeriodEnd: boolean;

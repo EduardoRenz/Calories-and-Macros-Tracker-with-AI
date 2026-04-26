@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plan } from '../../domain/entities/payment';
 import { useTranslation } from '../../hooks/useTranslation';
+import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 interface OrderSummaryProps {
     plan: Plan;
@@ -11,15 +12,19 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
     const { t } = useTranslation();
 
     // Use Plan value object methods for calculations
-    let subtotal = plan.price;
     const totalDue = plan.price;
-    let discountAmount = 0;
 
-    // Use the value object's discount calculations
-    if (plan.hasDiscount && plan.originalPrice) {
+    // Calculate subtotal (original price) automatically for annual plans
+    let subtotal = totalDue;
+    if (plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL) {
+        subtotal = totalDue * (1 + (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100));
+    } else if (plan.hasDiscount && plan.originalPrice) {
         subtotal = plan.originalPrice;
-        discountAmount = subtotal - totalDue;
     }
+
+    const discountAmount = subtotal - totalDue;
+
+    const displayDiscountPercentage = plan.discountPercentage || (plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL ? BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE : (subtotal > totalDue ? Math.round(((subtotal - totalDue) / subtotal) * 100) : 0));
 
     return (
         <div className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6">
@@ -34,11 +39,11 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
                     <h3 className="font-semibold text-white">{plan.name}</h3>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-400">
-                            {plan.description?.split('.')[0] || `Billed ${plan.interval}ly`}
+                            {plan.description?.split('.')[0] || `Billed ${plan.interval === 'year' ? 'annually' : 'monthly'}`}
                         </span>
-                        {plan.discountPercentage && (
+                        {displayDiscountPercentage > 0 && (
                             <span className="rounded bg-green-500/10 px-1.5 py-0.5 text-[10px] font-bold text-green-500">
-                                -{plan.discountPercentage}%
+                                -{displayDiscountPercentage}%
                             </span>
                         )}
                     </div>
@@ -68,22 +73,6 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
                     <div className="text-right">
                         <div className="text-2xl font-bold text-white">{plan.currency.format(totalDue)}</div>
                         <div className="text-xs text-gray-500 uppercase">{plan.currency.code} / {plan.interval}</div>
-                    </div>
-                </div>
-
-                <div className="mt-8">
-                    <button
-                        className="w-full rounded-lg bg-green-500 py-3 text-sm font-semibold text-black transition-colors hover:bg-green-400"
-                        form="checkout-form" // Triggers submit on the form outside this component
-                        type="submit"
-                    >
-                        {t('checkout.confirm_purchase')}
-                    </button>
-                    <div className="mt-4 flex justify-center gap-2 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                            {t('checkout.secure_payments')}
-                        </span>
                     </div>
                 </div>
             </div>

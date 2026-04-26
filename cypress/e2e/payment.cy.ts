@@ -79,7 +79,7 @@ describe('Payment Flow (Mock Mode)', () => {
         cy.contains('Total due').should('be.visible');
     });
 
-    it('should complete purchase in checkout', () => {
+    it('should proceed to hosted checkout and show redirect notice', () => {
         // Re-login
         cy.visit('/login');
         cy.contains('Sign in with Google').click();
@@ -88,19 +88,14 @@ describe('Payment Flow (Mock Mode)', () => {
         // Visit checkout directly with a planId
         cy.visit('/checkout?planId=member_annual');
 
-        // Fill form
-        cy.get('input[name="cardName"]').type('John Doe');
-        cy.get('input[name="cardNumber"]').type('4242424242424242');
-        cy.get('input[name="expiryDate"]').type('12/30');
-        cy.get('input[name="cvc"]').type('123');
+        // Check for hosted redirect notice (Issue 002 fix ensures this is visible)
+        cy.contains('You will be redirected to a secure payment page').should('be.visible');
 
-        // Click Confirm
-        cy.contains('Confirm Purchase').click();
+        // Click Confirm and Pay
+        cy.contains('Confirm and Pay').click();
 
-        // Wait for success redirect
-        // The successful payment redirect typically goes to dashboard or shows success message
-        // In MockPaymentGateway simulation, verify what happens.
-        // CheckoutPage.tsx: router.push('/dashboard?payment_success=true');
+        // In Mock Mode, MockPaymentGateway returns the successUrl as the checkoutUrl
+        // So we expect a redirect back to dashboard with success param
         cy.url().should('include', '/dashboard');
         cy.url().should('include', 'payment_success=true');
     });
