@@ -17,6 +17,7 @@ import DashboardWarningBar from '@/components/DashboardWarningBar';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { useToast } from '@/contexts/ToastContext';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 
 const getFormattedDate = (date: Date) => {
@@ -62,6 +63,7 @@ export default function DashboardPage() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMealType, setSelectedMealType] = useState<keyof MealSummary | null>(null);
+    const { showError } = useToast();
 
     const dashboardRepository: DashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
 
@@ -165,8 +167,12 @@ export default function DashboardPage() {
 
     const handleRemoveIngredient = async (mealType: keyof MealSummary, ingredientId: string) => {
         if (!data) return;
-        const updatedData = await dashboardRepository.removeIngredient(data.date, mealType, ingredientId);
-        setData(updatedData);
+        try {
+            const updatedData = await dashboardRepository.removeIngredient(data.date, mealType, ingredientId);
+            setData(updatedData);
+        } catch {
+            showError(t('meals.remove_error'));
+        }
     };
 
     const handleUpdateIngredient = async (mealType: keyof MealSummary, ingredientId: string, updates: Partial<Ingredient>) => {

@@ -169,3 +169,6 @@ grant select on public.weight_history to authenticated;
 -- plus as needed:
 grant update on public.weight_history to authenticated;
 grant insert on public.weight_history to authenticated;
+
+
+GRANT DELETE ON public.dashboard_ingredients TO authenticated;

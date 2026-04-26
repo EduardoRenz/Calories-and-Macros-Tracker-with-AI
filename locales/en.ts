@@ -68,6 +68,7 @@ export default {
     "fiber_short": "Fiber",
     "calories_short": "kcal",
     "no_items_logged": "No items logged",
+    "remove_error": "Failed to remove ingredient. Please try again.",
     "ingredient": "Ingredient",
     "quantity": "Quantity",
     "total_macros": "Total Meal Macros",
