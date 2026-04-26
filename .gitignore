@@ -24,3 +24,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# tests
+cypress/videos
+cypress/screenshots
+
+# next
+cache
+.next
+
+# tsconfig
+tsconfig.tsbuildinfo

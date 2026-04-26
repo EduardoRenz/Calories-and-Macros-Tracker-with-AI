@@ -1,37 +1,135 @@
 import { DashboardRepository } from '../domain/repositories/DashboardRepository';
 import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { AuthRepository } from '../domain/repositories/AuthRepository';
+import { FoodAnalysisRepository } from '../domain/repositories/FoodAnalysisRepository';
+import { HistoryRepository } from '../domain/repositories/HistoryRepository';
+import { FeatureFlagRepository } from '../domain/repositories/FeatureFlagRepository';
+import { ModelConfigRepository } from '../domain/repositories/ModelConfigRepository';
 
 import { LocalDashboardRepository } from './repositories/LocalDashboardRepository';
 import { LocalProfileRepository } from './repositories/LocalProfileRepository';
+import { LocalFoodAnalysisRepository } from './repositories/LocalFoodAnalysisRepository';
+import { LocalHistoryRepository } from './repositories/LocalHistoryRepository';
 import { FirestoreDashboardRepository } from './repositories/FirestoreDashboardRepository';
 import { FirestoreProfileRepository } from './repositories/FirestoreProfileRepository';
+import { FirestoreFoodAnalysisRepository } from './repositories/FirestoreFoodAnalysisRepository';
+import { FirestoreHistoryRepository } from './repositories/FirestoreHistoryRepository';
 import { FirebaseAuthRepository } from './repositories/FirebaseAuthRepository';
 import { MockAuthRepository } from './repositories/MockAuthRepository';
+import { SupabaseDashboardRepository } from './repositories/SupabaseDashboardRepository';
+import { SupabaseProfileRepository } from './repositories/SupabaseProfileRepository';
+import { SupabaseFoodAnalysisRepository } from './repositories/SupabaseFoodAnalysisRepository';
+import { SupabaseHistoryRepository } from './repositories/SupabaseHistoryRepository';
+import { SupabaseAuthRepository } from './repositories/SupabaseAuthRepository';
+import { LocalFeatureFlagRepository } from './repositories/LocalFeatureFlagRepository';
+import { FirebaseFeatureFlagRepository } from './repositories/FirebaseFeatureFlagRepository';
+import { FirebaseModelConfigRepository } from './repositories/FirebaseModelConfigRepository';
+import { LocalModelConfigRepository } from './repositories/LocalModelConfigRepository';
+import { env } from '../env';
 
-// Switch these flags to false to use local data/auth to avoid configuration errors
-const USE_MOCKS = process.env.USE_MOCKS === 'true';
+type Provider = 'firebase' | 'supabase' | 'mock';
 
+const BACKEND_PROVIDER = env.NEXT_PUBLIC_BACKEND_PROVIDER;
+
+interface RepositoryStrategy {
+    dashboard: () => DashboardRepository;
+    profile: () => ProfileRepository;
+    auth: () => AuthRepository;
+    foodAnalysis: () => FoodAnalysisRepository;
+    history: () => HistoryRepository;
+    featureFlag: () => FeatureFlagRepository;
+    modelConfig: () => ModelConfigRepository;
+}
+
+const strategies: Record<Provider, RepositoryStrategy> = {
+    firebase: {
+        dashboard: () => FirestoreDashboardRepository.getInstance(),
+        profile: () => FirestoreProfileRepository.getInstance(),
+        auth: () => FirebaseAuthRepository.getInstance(),
+        foodAnalysis: () => FirestoreFoodAnalysisRepository.getInstance(),
+        history: () => FirestoreHistoryRepository.getInstance(),
+        featureFlag: () => FirebaseFeatureFlagRepository.getInstance(),
+        modelConfig: () => FirebaseModelConfigRepository.getInstance(),
+    },
+    supabase: {
+        dashboard: () => SupabaseDashboardRepository.getInstance(),
+        profile: () => SupabaseProfileRepository.getInstance(),
+        auth: () => SupabaseAuthRepository.getInstance(),
+        foodAnalysis: () => SupabaseFoodAnalysisRepository.getInstance(),
+        history: () => SupabaseHistoryRepository.getInstance(),
+        featureFlag: () => FirebaseFeatureFlagRepository.getInstance(), // Remote Config can still be used with Supabase or we could use another one
+        modelConfig: () => FirebaseModelConfigRepository.getInstance(),
+    },
+    mock: {
+        dashboard: () => LocalDashboardRepository.getInstance(),
+        profile: () => LocalProfileRepository.getInstance(),
+        auth: () => MockAuthRepository.getInstance(),
+        foodAnalysis: () => LocalFoodAnalysisRepository.getInstance(),
+        history: () => LocalHistoryRepository.getInstance(),
+        featureFlag: () => LocalFeatureFlagRepository.getInstance(),
+        modelConfig: () => LocalModelConfigRepository.getInstance(),
+    },
+};
 
 export class RepositoryFactory {
+    private static dashboardRepository: DashboardRepository | null = null;
+    private static profileRepository: ProfileRepository | null = null;
+    private static authRepository: AuthRepository | null = null;
+    private static foodAnalysisRepository: FoodAnalysisRepository | null = null;
+    private static historyRepository: HistoryRepository | null = null;
+    private static featureFlagRepository: FeatureFlagRepository | null = null;
+    private static modelConfigRepository: ModelConfigRepository | null = null;
+
+    private static getStrategy(): RepositoryStrategy {
+        return strategies[BACKEND_PROVIDER ?? 'firebase'] || strategies.firebase;
+    }
+
     public static getDashboardRepository(): DashboardRepository {
-        if (!USE_MOCKS) {
-            return new FirestoreDashboardRepository();
+        if (!this.dashboardRepository) {
+            this.dashboardRepository = this.getStrategy().dashboard();
         }
-        return new LocalDashboardRepository();
+        return this.dashboardRepository;
     }
 
     public static getProfileRepository(): ProfileRepository {
-        if (!USE_MOCKS) {
-            return new FirestoreProfileRepository();
+        if (!this.profileRepository) {
+            this.profileRepository = this.getStrategy().profile();
         }
-        return new LocalProfileRepository();
+        return this.profileRepository;
     }
 
     public static getAuthRepository(): AuthRepository {
-        if (!USE_MOCKS) {
-            return new FirebaseAuthRepository();
+        if (!this.authRepository) {
+            this.authRepository = this.getStrategy().auth();
         }
-        return new MockAuthRepository();
+        return this.authRepository;
+    }
+
+    public static getFoodAnalysisRepository(): FoodAnalysisRepository {
+        if (!this.foodAnalysisRepository) {
+            this.foodAnalysisRepository = this.getStrategy().foodAnalysis();
+        }
+        return this.foodAnalysisRepository;
+    }
+
+    public static getHistoryRepository(): HistoryRepository {
+        if (!this.historyRepository) {
+            this.historyRepository = this.getStrategy().history();
+        }
+        return this.historyRepository;
+    }
+
+    public static getFeatureFlagRepository(): FeatureFlagRepository {
+        if (!this.featureFlagRepository) {
+            this.featureFlagRepository = this.getStrategy().featureFlag();
+        }
+        return this.featureFlagRepository;
+    }
+
+    public static getModelConfigRepository(): ModelConfigRepository {
+        if (!this.modelConfigRepository) {
+            this.modelConfigRepository = this.getStrategy().modelConfig();
+        }
+        return this.modelConfigRepository;
     }
 }

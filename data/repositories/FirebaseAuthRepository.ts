@@ -1,15 +1,40 @@
-import { 
-    GoogleAuthProvider, 
-    signInWithPopup, 
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
     onAuthStateChanged as onFirebaseAuthStateChanged,
     Unsubscribe,
-    User as FirebaseUser
+    User as FirebaseUser,
+    Auth
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { getAuth } from '../auth';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
 import { User } from '../../domain/entities/user';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 export class FirebaseAuthRepository implements AuthRepository {
+    private static instance: FirebaseAuthRepository;
+    private auth: Auth | null;
+    private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
+
+    private constructor() {
+        try {
+            this.auth = getAuth();
+        } catch (e) {
+            console.warn("FirebaseAuthRepository: Authentication not initialized.", e);
+            this.auth = null;
+        }
+    }
+
+    public static getInstance(): FirebaseAuthRepository {
+        if (!FirebaseAuthRepository.instance) {
+            FirebaseAuthRepository.instance = new FirebaseAuthRepository();
+        }
+        return FirebaseAuthRepository.instance;
+    }
+
     private mapFirebaseUserToDomain(firebaseUser: FirebaseUser | null): User | null {
         if (!firebaseUser) {
             return null;
@@ -23,34 +48,59 @@ export class FirebaseAuthRepository implements AuthRepository {
     }
 
     onAuthStateChanged(callback: (user: User | null) => void): Unsubscribe {
-        return onFirebaseAuthStateChanged(auth, (firebaseUser) => {
+        if (!this.auth) {
+            callback(null);
+            return () => { };
+        }
+        return onFirebaseAuthStateChanged(this.auth, (firebaseUser) => {
             const domainUser = this.mapFirebaseUserToDomain(firebaseUser);
             callback(domainUser);
         });
     }
 
     async signIn(email: string, password?: string): Promise<User | null> {
-        // As a fallback for when mock auth is disabled, we call Google Sign-In.
-        // A real email/password flow would be implemented here if needed.
         return this.signInWithGoogle();
     }
 
     async signInWithGoogle(): Promise<User | null> {
-        const provider = new GoogleAuthProvider();
-        try {
-            const result = await signInWithPopup(auth, provider);
-            return this.mapFirebaseUserToDomain(result.user);
-        } catch (error) {
-            console.error("Error during Google sign-in:", error);
-            return null;
-        }
+        const key = 'signInWithGoogle';
+        return this.concurrencyManager.run(key, async () => {
+            if (!this.auth) {
+                console.error("FirebaseAuthRepository: Cannot sign in, auth not initialized.");
+                return null;
+            }
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(this.auth, provider);
+                // Invalidate idToken cache on new sign in
+                this.dataCacheManager.invalidate('getIdToken');
+                return this.mapFirebaseUserToDomain(result.user);
+            } catch (error) {
+                console.error("Error during Google sign-in:", error);
+                return null;
+            }
+        });
     }
 
     async signOut(): Promise<void> {
+        if (!this.auth) return;
         try {
-            await auth.signOut();
+            await this.auth.signOut();
+            // Clear cache on sign out
+            this.dataCacheManager.clear();
         } catch (error) {
             console.error("Error during sign-out:", error);
         }
+    }
+
+    async getIdToken(): Promise<string | null> {
+        const key = 'getIdToken';
+        const TOKEN_TTL = 5 * 60 * 1000; // 5 minutes
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                if (!this.auth || !this.auth.currentUser) return null;
+                return await this.auth.currentUser.getIdToken();
+            });
+        }, TOKEN_TTL);
     }
 }

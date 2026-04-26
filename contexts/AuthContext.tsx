@@ -1,3 +1,4 @@
+'use client';
 import React, { createContext, useState, useContext, ReactNode, useEffect, useMemo } from 'react';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { AuthRepository } from '../domain/repositories/AuthRepository';
@@ -20,12 +21,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = authRepository.onAuthStateChanged((firebaseUser) => {
+    authRepository.onAuthStateChanged((firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
     });
 
-    return () => unsubscribe();
   }, [authRepository]);
 
   const signIn = async (email: string, password?: string) => {
@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // The onAuthStateChanged listener will handle setting the user and loading state.
     return signedInUser;
   };
-  
+
   const signInWithGoogle = async () => {
     setLoading(true);
     const signedInUser = await authRepository.signInWithGoogle();
@@ -44,7 +44,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signOut = async () => {
     setLoading(true);
     await authRepository.signOut();
-    // The onAuthStateChanged listener will handle setting the user and loading state.
+    // Force loading to false after signOut to prevent infinite loading
+    setLoading(false);
+    setUser(null);
   };
 
   const value = { user, loading, signIn, signInWithGoogle, signOut };

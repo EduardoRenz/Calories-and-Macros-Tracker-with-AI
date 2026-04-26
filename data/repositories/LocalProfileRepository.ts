@@ -1,6 +1,7 @@
 
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile, WeightEntry } from '../../domain/entities/profile';
+import { DietType, UserProfile } from '../../domain/entities/profile';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 
 const initialProfile: UserProfile = {
     name: "Jane Doe",
@@ -21,23 +22,49 @@ const initialProfile: UserProfile = {
         { date: "2023-10-08", weight: 64.5 },
         { date: "2023-10-15", weight: 63 },
         { date: "2023-10-22", weight: 62.5 },
-    ]
+    ],
+    healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
 };
 
 // Simulate a local data store
 let userProfileData: UserProfile = JSON.parse(JSON.stringify(initialProfile));
 
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
+
+// ... (existing imports)
+
 export class LocalProfileRepository implements ProfileRepository {
+    private static instance: LocalProfileRepository;
+    private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    public static getInstance(): LocalProfileRepository {
+        if (!LocalProfileRepository.instance) {
+            LocalProfileRepository.instance = new LocalProfileRepository();
+        }
+        return LocalProfileRepository.instance;
+    }
+    async getUserId(): Promise<string> {
+        return "mock-user-id";
+    }
     async getProfile(): Promise<UserProfile> {
-        // Simulate an async API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return JSON.parse(JSON.stringify(userProfileData));
+        const key = 'getProfile';
+        return this.dataCacheManager.getCached(key, async () => {
+            return this.concurrencyManager.run(key, async () => {
+                // Simulate an async API call
+                await new Promise(resolve => setTimeout(resolve, 250));
+                return JSON.parse(JSON.stringify(userProfileData));
+            });
+        });
     }
 
     async updateProfile(profile: UserProfile): Promise<void> {
         // Simulate an async API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise(resolve => setTimeout(resolve, 250));
+
         const newWeight = profile.personalInfo.weight;
         const now = new Date();
         const year = now.getFullYear();
@@ -56,11 +83,13 @@ export class LocalProfileRepository implements ProfileRepository {
             // Add new entry for today
             updatedHistory.push({ date: today, weight: newWeight });
         }
-        
+
         // Ensure history is sorted by date before saving
         updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         userProfileData = { ...profile, weightHistory: updatedHistory };
+        // Invalidate cache
+        this.dataCacheManager.invalidate('getProfile');
         return;
     }
 }

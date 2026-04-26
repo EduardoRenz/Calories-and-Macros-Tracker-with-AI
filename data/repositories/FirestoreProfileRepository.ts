@@ -1,8 +1,10 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { UserProfile } from '../../domain/entities/profile';
-import { db } from '../firebase';
+import { DietType, UserProfile } from '../../domain/entities/profile';
+import { getDb } from '../firebase';
 import { getAuth } from '../auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 // This is the default profile structure for a new user.
 const initialProfileData = {
@@ -18,44 +20,76 @@ const initialProfileData = {
         activityLevel: 'lightly' as 'sedentary' | 'lightly' | 'moderately' | 'very',
     },
     weightHistory: [],
+    healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
 };
 
 export class FirestoreProfileRepository implements ProfileRepository {
+    private static instance: FirestoreProfileRepository;
     private auth = getAuth();
-    
+    private concurrencyManager = new ConcurrencyRequestManager();
+    private dataCacheManager = new DataCacheManager();
+
+    private constructor() { }
+
+    public static getInstance(): FirestoreProfileRepository {
+        if (!FirestoreProfileRepository.instance) {
+            FirestoreProfileRepository.instance = new FirestoreProfileRepository();
+        }
+        return FirestoreProfileRepository.instance;
+    }
+
     private getProfileDocRef() {
         const user = this.auth.currentUser;
         if (!user) {
             throw new Error("No authenticated user found for profile operations.");
         }
-        return doc(db, 'profiles', user.uid);
+        return doc(getDb(), 'profiles', user.uid);
+    }
+
+    async getUserId(): Promise<string> {
+        const user = this.auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found.");
+        }
+        return user.uid;
     }
 
     async getProfile(): Promise<UserProfile> {
-        const user = this.auth.currentUser;
-        if (!user) {
-            throw new Error("User not authenticated. Cannot fetch profile.");
-        }
-        
-        const docRef = this.getProfileDocRef();
-        const docSnap = await getDoc(docRef);
+        return this.concurrencyManager.run('getProfile', async () => {
+            const user = this.auth.currentUser;
+            if (!user) {
+                throw new Error("User not authenticated. Cannot fetch profile.");
+            }
+            const key = `profile:${user.uid}`;
+            return this.dataCacheManager.getCached(key, async () => {
 
-        if (!docSnap.exists()) {
-            const newProfile: UserProfile = {
-                ...initialProfileData,
-                name: user.displayName || "New User",
-                email: user.email || "",
-            };
-            await setDoc(this.getProfileDocRef(), newProfile);
-            return newProfile;
-        }
+                const docRef = this.getProfileDocRef();
+                const docSnap = await getDoc(docRef);
 
-        return docSnap.data() as UserProfile;
+                if (!docSnap.exists()) {
+                    const newProfile: UserProfile = {
+                        ...initialProfileData,
+                        name: user.displayName || "New User",
+                        email: user.email || "",
+                    };
+                    await setDoc(this.getProfileDocRef(), newProfile);
+                    return newProfile;
+                }
+
+                const loaded = docSnap.data() as UserProfile;
+                return {
+                    ...loaded,
+                    healthConditions: loaded.healthConditions ?? { selected: [] },
+                    dietType: loaded.dietType ?? 'omnivore',
+                };
+            });
+        });
     }
 
     async updateProfile(profile: UserProfile): Promise<void> {
         const currentProfile = await this.getProfile();
-        
+
         const newWeight = profile.personalInfo.weight;
         const now = new Date();
         const year = now.getFullYear();
@@ -67,15 +101,23 @@ export class FirestoreProfileRepository implements ProfileRepository {
         const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
 
         if (entryForTodayIndex !== -1) {
-            updatedHistory[entryForTodayIndex].weight = newWeight;
+            updatedHistory[entryForTodayIndex] = {
+                ...updatedHistory[entryForTodayIndex],
+                weight: newWeight
+            };
         } else {
             updatedHistory.push({ date: today, weight: newWeight });
         }
-        
+
         updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        
+
         const profileToSave: UserProfile = { ...profile, weightHistory: updatedHistory };
 
         await setDoc(this.getProfileDocRef(), profileToSave);
+
+        // Invalidate cache
+        if (this.auth.currentUser) {
+            this.dataCacheManager.invalidate(`profile:${this.auth.currentUser.uid}`);
+        }
     }
 }

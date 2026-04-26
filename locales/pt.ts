@@ -2,11 +2,37 @@
 export default {
   "navbar": {
     "dashboard": "Painel",
+    "history": "Historico",
     "food_diary": "Diário Alimentar",
+    "food_analysis": "Análise da Alimentação",
     "reports": "Relatórios",
     "profile": "Perfil",
     "settings": "Configurações",
+    "logout": "Sair",
     "quick_meal": "Refeição Rápida"
+  },
+  "history": {
+    "title": "Historico",
+    "subtitle": "Seu resumo dia a dia.",
+    "loading": "Carregando historico...",
+    "table_title": "Últimos 30 dias",
+    "filter_start": "Data inicial",
+    "filter_end": "Data final",
+    "apply": "Aplicar",
+    "prev_page": "Anterior",
+    "next_page": "Próximo",
+    "columns": {
+      "date": "Data",
+      "protein": "Proteínas",
+      "carbs": "Carboidratos",
+      "fats": "Gorduras",
+      "fiber": "Fibras",
+      "calories": "Calorias"
+    },
+    "calendar_prev": "Mês anterior",
+    "calendar_next": "Próximo mês",
+    "averages_title": "Médias",
+    "averages_subtitle": "Dias com registros:"
   },
   "dashboard": {
     "title": "Painel",
@@ -21,7 +47,10 @@ export default {
     "calories_over": "Calorias Excedidas",
     "limit_exceeded": "Você excedeu seu limite.",
     "doing_great": "Você está indo ótimo!",
-    "macro_split": "Divisão de Macros"
+    "macro_split": "Divisão de Macros",
+    "api_keys_required_title": "Chaves de API Necessárias",
+    "api_keys_required_desc": "Para continuar usando os recursos de IA, configure suas próprias chaves de API nas configurações.",
+    "go_to_settings": "Ir para Configurações"
   },
   "meals": {
     "summary_title": "Resumo das Refeições",
@@ -35,12 +64,14 @@ export default {
     "carbs_short": "Carbs",
     "fats": "Gorduras",
     "fats_short": "Gord.",
+    "fiber_short": "Fibras",
     "calories_short": "kcal",
     "no_items_logged": "Nenhum item registrado",
     "ingredient": "Ingrediente",
     "quantity": "Quantidade",
     "total_macros": "Macros Totais",
-    "add_ingredient": "Adicionar Ingrediente"
+    "add_ingredient": "Adicionar Ingrediente",
+    "edit_quantity": "Clique para editar quantidade"
   },
   "add_ingredient_modal": {
     "title": "Adicionar Ingrediente para",
@@ -48,13 +79,16 @@ export default {
     "quantity": "Quantidade",
     "quantity_placeholder": "ex: 1 xícara, 100g",
     "calories": "Calorias (kcal)",
+    "fiber": "Fibras (g)",
     "protein": "Proteína (g)",
     "carbs": "Carboidratos (g)",
     "fats": "Gorduras (g)",
     "cancel": "Cancelar",
     "save": "Adicionar Ingrediente",
     "analysis_error": "Não foi possível obter informações nutricionais. Preencha os macros manualmente.",
-    "analyze_button_aria": "Analisar ingrediente com IA"
+    "analyze_button_aria": "Analisar ingrediente com IA",
+    "macros_required": "Por favor, preencha proteína, carboidratos e gorduras",
+    "name_required": "Por favor, preencha o nome do ingrediente"
   },
   "quick_meal_modal": {
     "title": "Registrar Refeição Rápida com IA",
@@ -67,17 +101,22 @@ export default {
     "camera_error": "Acesso à câmera negado ou não disponível",
     "change_image_button": "Alterar Imagem",
     "analyzing_button": "Analisando...",
+    "analyze_image": "Analisar Imagem",
     "add_to_diary_button": "Adicionar ao Diário",
     "analysis_error": "Desculpe, não consegui analisar essa imagem. Por favor, tente outra.",
     "add_error": "Falha ao adicionar os itens. Por favor, tente novamente.",
     "gemini_results": "Análise do Gemini",
-    "review_prompt": "Revise os ingredientes abaixo antes de adicioná-los ao seu diário."
+    "review_prompt": "Revise os ingredientes abaixo antes de adicioná-los ao seu diário.",
+    "prompt_label": "Contexto adicional",
+    "prompt_optional": "opcional",
+    "prompt_placeholder": "ex: 'Este é um almoço vegetariano com quinoa e vegetais grelhados' ou 'Foque em identificar o método de cozimento e os tamanhos das porções'"
   },
   "profile": {
     "title": "Meu Perfil",
     "tabs": {
       "settings": "Configurações do Perfil",
-      "progress": "Progresso"
+      "progress": "Progresso",
+      "food_analysis": "Análise da Alimentação"
     },
     "upload_picture": "Carregar nova foto",
     "personal_info": {
@@ -88,7 +127,16 @@ export default {
       "gender": "Gênero",
       "female": "Feminino",
       "male": "Masculino",
-      "other": "Outro"
+      "other": "Outro",
+      "diet_type": "Tipo de Dieta",
+      "diet_types": {
+        "omnivore": "Onívoro",
+        "vegetarian": "Vegetariano",
+        "vegan": "Vegano",
+        "pescatarian": "Pescetariano",
+        "carnivore": "Carnívoro",
+        "flexitarian": "Flexitariano"
+      }
     },
     "fitness_goals": {
       "title": "Metas de Fitness",
@@ -103,9 +151,27 @@ export default {
       "moderately_active": "Moderadamente Ativo",
       "very_active": "Muito Ativo"
     },
+    "health_conditions": {
+      "title": "Condições de Saúde",
+      "subtitle": "Marque as condições que se aplicam para receber recomendações alimentares mais seguras.",
+      "importance": "Essa informação é importante: a Análise da Alimentação vai usar essas condições para evitar sugestões potencialmente perigosas e priorizar alternativas mais seguras.",
+      "options": {
+        "diabetes": "Diabetes",
+        "lactose_intolerance": "Intolerância à lactose",
+        "gluten_intolerance": "Intolerância ao glúten",
+        "celiac_disease": "Doença celíaca",
+        "hypertension": "Hipertensão",
+        "high_cholesterol": "Colesterol alto",
+        "kidney_disease": "Doença renal",
+        "gout": "Gota",
+        "ibs": "Síndrome do intestino irritável (SII)",
+        "gerd": "Refluxo / Azia"
+      }
+    },
     "update_profile": "Atualizar Perfil",
     "saving": "Salvando...",
     "update_success": "Perfil atualizado com sucesso!",
+    "cancel": "Cancelar",
     "loading": "Carregando perfil...",
     "load_error": "Não foi possível carregar os dados do perfil.",
     "progress_summary": {
@@ -117,6 +183,50 @@ export default {
     "weight_progress": "Progresso de Peso",
     "goal_progress": "Progresso da Meta",
     "complete": "Completo"
+  },
+  "food_analysis": {
+    "title": "Análise da Alimentação",
+    "subtitle": "Relatórios e insights abrangentes sobre sua dieta e saúde.",
+    "back_to_profile": "Voltar ao Perfil",
+    "last_7_days": "Últimos 7 Dias",
+    "this_month": "Este Mês",
+    "last_3_months": "Últimos 3 Meses",
+    "generate_prompt": "Clique abaixo para gerar uma análise completa dos seus hábitos alimentares.",
+    "generate_button": "Gerar Relatório",
+    "generating": "Gerando seu relatório personalizado...",
+    "error_generating": "Ocorreu um erro ao gerar o relatório. Tentando novamente...",
+    "retry": "Tentar novamente",
+    "regenerate": "Limpar cache e regenerar relatório",
+    "common_foods": {
+      "title": "Alimentos Mais Comuns",
+      "subtitle": "Um resumo do que você come com mais frequência em diferentes momentos do dia.",
+      "consistency": "Consistência"
+    },
+    "vitamins": {
+      "title": "Visão Geral de Vitaminas",
+      "subtitle": "Análise de micronutrientes chave com base nos seus registros.",
+      "sufficient_moderate": "Suficiente & Moderado",
+      "deficient_action": "Deficiente - Precisa de Ação",
+      "recommendations": "Recomendações",
+      "positive_reason": "Por que você está indo bem",
+      "status": {
+        "good": "Bom",
+        "low": "Médio",
+        "deficient": "Baixo"
+      }
+    },
+    "attention": {
+      "title": "Pontos de Atenção",
+      "subtitle": "Áreas onde você pode ajustar sua ingestão para melhores resultados.",
+      "no_issues": "Nenhum ponto de atenção detectado. Continue assim!"
+    },
+    "suggestions": {
+      "title": "Sugestões",
+      "subtitle": "Passos práticos para atingir suas metas de macros.",
+      "goal": "Meta",
+      "recommended": "Adições Recomendadas",
+      "adjustments_required": "Ajustes Necessários"
+    }
   },
   "settings": {
     "title": "Configurações do App e Gerenciamento de API",
@@ -137,6 +247,30 @@ export default {
       "add_token": "Adicionar Token de API",
       "remove": "Remover",
       "no_tokens": "Você ainda não adicionou nenhum token de API de IA."
+    }
+  },
+  "assistant": {
+    "title": "Assistant",
+    "status_online": "ONLINE",
+    "close": "Fechar chat",
+    "input_placeholder": "Pergunte ao HealthPal...",
+    "send": "Enviar",
+    "confirm_action": "Ação pendente de confirmação",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "thinking": "Pensando...",
+    "action_success": "Ação executada com sucesso!",
+    "action_error": "Falha ao executar a ação. Por favor, tente novamente.",
+    "action_cancelled": "Ação cancelada.",
+    "prepared_action": "Preparei a ação para você.",
+    "errors": {
+      "api_key": "Estou tendo problemas de autenticação. Por favor, verifique minha configuração.",
+      "quota_exceeded": "Atingi meu limite de uso. Por favor, tente novamente em um momento.",
+      "model_error": "Estou tendo problemas com meu modelo de IA. Por favor, tente novamente mais tarde.",
+      "network_error": "Estou tendo problemas de conexão. Por favor, verifique sua internet e tente novamente.",
+      "safety_error": "Não consegui processar essa solicitação devido às diretrizes de segurança.",
+      "invalid_request": "Recebi um formato de solicitação inválido. Por favor, tente novamente.",
+      "unknown_error": "Desculpe, estou tendo problemas para me conectar ao meu cérebro agora. Por favor, tente novamente mais tarde."
     }
   }
 }

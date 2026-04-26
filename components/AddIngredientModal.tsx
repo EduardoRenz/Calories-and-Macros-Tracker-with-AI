@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
-import { GeminiNutritionAnalysisService } from '../data/services/GeminiNutritionAnalysisService';
+import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 import { SparklesIcon, SpinnerIcon } from './icons';
+import Modal from './ui/Modal';
 
 interface AddIngredientModalProps {
   isOpen: boolean;
@@ -15,10 +17,11 @@ interface AddIngredientModalProps {
 const initialFormState = {
   name: '',
   quantity: '',
-  calories: 0,
-  protein: 0,
-  carbs: 0,
-  fats: 0,
+  calories: '',
+  protein: '',
+  carbs: '',
+  fats: '',
+  fiber: '',
 };
 
 const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose, onSave, mealType }) => {
@@ -26,109 +29,214 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const { language } = useLanguage();
   const [formState, setFormState] = useState(initialFormState);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  
-  const nutritionService = useMemo(() => new GeminiNutritionAnalysisService(), []);
+  const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number; fiber: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const { isUserApiKeysRequired } = useFeatureFlags();
+
+  const nutritionService = useMemo(() => ServiceFactory.getNutritionAnalysisService(), []);
 
   useEffect(() => {
     if (isOpen) {
       setFormState(initialFormState);
+      setMacroRatios(null);
+      setError(null);
     }
   }, [isOpen]);
 
-  if (!isOpen || !mealType) return null;
+  useEffect(() => {
+    const protein = parseFloat(formState.protein) || 0;
+    const carbs = parseFloat(formState.carbs) || 0;
+    const fats = parseFloat(formState.fats) || 0;
+    const calories = (protein * 4) + (carbs * 4) + (fats * 9);
+    setFormState(prev => ({ ...prev, calories: calories > 0 ? Math.round(calories).toString() : '' }));
+  }, [formState.protein, formState.carbs, formState.fats]);
+
+  if (!mealType) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormState(prev => ({ ...prev, [name]: (name === 'name' || name === 'quantity') ? value : parseFloat(value) || 0 }));
+
+    if (name === 'quantity') {
+      // Proportional updates if quantity changes
+      const quantityNum = parseFloat(value);
+      if (!isNaN(quantityNum) && macroRatios) {
+        setFormState(prev => ({
+          ...prev,
+          quantity: value,
+          protein: Math.round(quantityNum * macroRatios.protein).toString(),
+          carbs: Math.round(quantityNum * macroRatios.carbs).toString(),
+          fats: Math.round(quantityNum * macroRatios.fats).toString(),
+          fiber: Math.round(quantityNum * macroRatios.fiber).toString(),
+        }));
+      } else {
+        setFormState(prev => ({ ...prev, quantity: value }));
+      }
+    } else if (name === 'name') {
+      setFormState(prev => ({ ...prev, name: value }));
+    } else if (name !== 'calories') {
+      // If macros change manually, update the ratios
+      setFormState(prev => ({ ...prev, [name]: value }));
+
+      const numValue = parseFloat(value) || 0;
+      const currentQuantity = parseFloat(formState.quantity);
+      if (!isNaN(currentQuantity) && currentQuantity > 0) {
+        // We need to calculate ratios based on the NEW value for the changed field, and existing values for others
+        const newMacros = {
+          protein: name === 'protein' ? numValue : parseFloat(formState.protein) || 0,
+          carbs: name === 'carbs' ? numValue : parseFloat(formState.carbs) || 0,
+          fats: name === 'fats' ? numValue : parseFloat(formState.fats) || 0,
+          fiber: parseFloat(formState.fiber) || 0,
+        };
+        setMacroRatios({
+          protein: newMacros.protein / currentQuantity,
+          carbs: newMacros.carbs / currentQuantity,
+          fats: newMacros.fats / currentQuantity,
+          fiber: newMacros.fiber / currentQuantity,
+        });
+      }
+    }
   };
-  
+
   const handleAnalyze = async () => {
     if (!formState.name || !formState.quantity) {
-        // Maybe add a user-facing message here later
-        return;
+      // Maybe add a user-facing message here later
+      return;
     }
     setIsAnalyzing(true);
     const result = await nutritionService.getNutritionalInfo(formState.name, formState.quantity, language);
     if (result) {
-        setFormState(prev => ({
-            ...prev,
-            calories: Math.round(result.calories),
-            protein: Math.round(result.protein),
-            carbs: Math.round(result.carbs),
-            fats: Math.round(result.fats),
-        }));
+      const quantityInGrams = result.quantityInGrams || 100; // Default to 100 if not provided (shouldn't happen with new prompt)
+      const fiber = typeof result.fiber === 'number' ? result.fiber : 0;
+      setFormState(prev => ({
+        ...prev,
+        quantity: `${quantityInGrams}g`,
+        // calories is calculated via useEffect
+        protein: Math.round(result.protein).toString(),
+        carbs: Math.round(result.carbs).toString(),
+        fats: Math.round(result.fats).toString(),
+        fiber: Math.round(fiber).toString(),
+      }));
+
+      // precise calculation of ratios
+      setMacroRatios({
+        protein: result.protein / quantityInGrams,
+        carbs: result.carbs / quantityInGrams,
+        fats: result.fats / quantityInGrams,
+        fiber: fiber / quantityInGrams,
+      });
     } else {
-        // Handle error state, e.g., show a toast notification
-        alert(t('add_ingredient_modal.analysis_error'));
+      // Handle error state, e.g., show a toast notification
+      alert(t('add_ingredient_modal.analysis_error'));
     }
     setIsAnalyzing(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formState.name && formState.calories >= 0) {
-      onSave(formState);
+    setError(null);
+
+    if (!formState.name) {
+      setError(t('add_ingredient_modal.name_required'));
+      return;
     }
+
+    // Check if macros are filled (not empty or NaN)
+    const protein = parseFloat(formState.protein);
+    const carbs = parseFloat(formState.carbs);
+    const fats = parseFloat(formState.fats);
+    const fiber = parseFloat(formState.fiber) || 0;
+    const calories = parseFloat(formState.calories) || 0;
+
+    if (isNaN(protein) || isNaN(carbs) || isNaN(fats)) {
+      setError(t('add_ingredient_modal.macros_required'));
+      return;
+    }
+
+    onSave({
+      name: formState.name,
+      quantity: formState.quantity,
+      calories,
+      protein,
+      carbs,
+      fats,
+      fiber,
+    });
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={onClose}>
-      <div className="bg-healthpal-panel w-full max-w-md p-8 rounded-2xl border border-healthpal-border shadow-2xl" onClick={e => e.stopPropagation()}>
-        <h2 className="text-2xl font-bold mb-6">{t('add_ingredient_modal.title')} {t(`meals.${mealType}`)}</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-end gap-3">
-             <button
-              type="button"
-              onClick={handleAnalyze}
-              disabled={isAnalyzing || !formState.name || !formState.quantity}
-              className="p-3 bg-healthpal-green text-black rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label={t('add_ingredient_modal.analyze_button_aria')}
-            >
-              {isAnalyzing ? <SpinnerIcon className="w-6 h-6" /> : <SparklesIcon className="w-6 h-6" />}
-            </button>
-            <div className="flex-grow grid grid-cols-2 gap-4">
-                <div>
-                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.name')}</label>
-                <input type="text" name="name" value={formState.name} onChange={handleChange} required className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" />
-                </div>
-                <div>
-                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.quantity')}</label>
-                <input type="text" name="quantity" value={formState.quantity} onChange={handleChange} placeholder={t('add_ingredient_modal.quantity_placeholder')} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" />
-                </div>
+    <Modal
+      showCloseButton
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`${t('add_ingredient_modal.title')} ${t(`meals.${mealType}`)}`}
+      size="xl"
+      dataTestId="add-ingredient-modal"
+      bodyClassName="p-8"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex items-end gap-3">
+          <button
+            type="button"
+            onClick={isUserApiKeysRequired ? undefined : handleAnalyze}
+            disabled={isAnalyzing || !formState.name || !formState.quantity || isUserApiKeysRequired}
+            className={`p-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${isUserApiKeysRequired
+              ? 'bg-healthpal-card text-healthpal-text-secondary'
+              : 'bg-healthpal-green text-black hover:brightness-110'
+              }`}
+            aria-label={t('add_ingredient_modal.analyze_button_aria')}
+            title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
+            data-testid="analyze-button"
+          >
+            {isAnalyzing ? <SpinnerIcon className="w-6 h-6" /> : <SparklesIcon className="w-6 h-6" />}
+          </button>
+          <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.name')}</label>
+              <input type="text" name="name" value={formState.name} onChange={handleChange} required className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-name-input" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.quantity')}</label>
+              <input type="text" name="quantity" value={formState.quantity} onChange={handleChange} placeholder={t('add_ingredient_modal.quantity_placeholder')} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-quantity-input" />
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.calories')}</label>
-              <input type="number" step="any" min="0" name="calories" value={formState.calories} onChange={handleChange} required className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.protein')}</label>
-              <input type="number" step="any" min="0" name="protein" value={formState.protein} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.carbs')}</label>
-              <input type="number" step="any" min="0" name="carbs" value={formState.carbs} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fats')}</label>
-              <input type="number" step="any" min="0" name="fats" value={formState.fats} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" />
-            </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.calories')}</label>
+            <input type="text" name="calories" value={formState.calories} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-calories-input" />
           </div>
-          
-          <div className="flex justify-end gap-4 pt-4">
-            <button type="button" onClick={onClose} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
-              {t('add_ingredient_modal.cancel')}
-            </button>
-            <button type="submit" className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all">
-              {t('add_ingredient_modal.save')}
-            </button>
+          <div>
+            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fiber')}</label>
+            <input type="text" name="fiber" value={formState.fiber} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-fiber-input" />
           </div>
-        </form>
-      </div>
-    </div>
+          <div>
+            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.protein')}</label>
+            <input type="text" name="protein" value={formState.protein} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-protein-input" placeholder="" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.carbs')}</label>
+            <input type="text" name="carbs" value={formState.carbs} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-carbs-input" placeholder="" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fats')}</label>
+            <input type="text" name="fats" value={formState.fats} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-fats-input" placeholder="" />
+          </div>
+        </div>
+
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+
+        <div className="flex justify-end gap-4 pt-4">
+          <button type="button" onClick={onClose} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
+            {t('add_ingredient_modal.cancel')}
+          </button>
+          <button type="submit" className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all" data-testid="save-ingredient-button">
+            {t('add_ingredient_modal.save')}
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 };
 

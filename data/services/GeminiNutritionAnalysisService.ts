@@ -1,14 +1,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
+import { env } from '../../env';
 
 export class GeminiNutritionAnalysisService implements NutritionAnalysisService {
     private ai: GoogleGenAI;
 
-    constructor() {
-        if (!process.env.GEMINI_API_KEY) {
-            throw new Error("GEMINI_API_KEY environment variable not set");
+    constructor(apiKey?: string) {
+        const key = apiKey || env.GEMINI_API_KEY;
+        if (!key) {
+            throw new Error("GEMINI_API_KEY not set (neither in constructor nor environment).");
         }
-        this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        this.ai = new GoogleGenAI({ apiKey: key });
     }
 
     async getNutritionalInfo(ingredientName: string, quantity: string, language: string): Promise<NutritionalInfo | null> {
@@ -20,10 +22,10 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
             };
             const languageName = languageMap[language] || 'English';
 
-            const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats) for the following food item: "${quantity} of ${ingredientName}". Respond ONLY with a JSON object matching the provided schema. If you cannot determine the nutritional information, return an object with zero for all values.`;
+            const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats, fiber) for the following food item: "${quantity} of ${ingredientName}". Respond ONLY with a JSON object matching the provided schema. If you cannot determine the nutritional information, return an object with zero for all values. Important: estimate based on a plate size, if you don't know how to estimate the size and amount of an ingredient, estimate based on an average per serving. Also provide the estimated quantity in grams for the given amount.`;
 
             const response = await this.ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",
@@ -34,19 +36,22 @@ export class GeminiNutritionAnalysisService implements NutritionAnalysisService 
                             protein: { type: Type.NUMBER, description: "Estimated protein (g)." },
                             carbs: { type: Type.NUMBER, description: "Estimated carbohydrates (g)." },
                             fats: { type: Type.NUMBER, description: "Estimated fats (g)." },
+                            fiber: { type: Type.NUMBER, description: "Estimated fiber (g)." },
+                            quantityInGrams: { type: Type.NUMBER, description: "Estimated quantity of the food item in grams." },
                         },
-                        required: ["calories", "protein", "carbs", "fats"]
+                        required: ["calories", "protein", "carbs", "fats", "fiber", "quantityInGrams"]
                     }
                 }
             });
-            
+
             const jsonString = response.text;
+            if (!jsonString) throw new Error("Empty response from Gemini");
             const result = JSON.parse(jsonString);
-            
+
             if (result && typeof result.calories === 'number') {
                 return result as NutritionalInfo;
             }
-            
+
             return null;
         } catch (err) {
             console.error("Gemini API Error in GeminiNutritionAnalysisService:", err);

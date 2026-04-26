@@ -1,76 +1,179 @@
-import React from 'react';
-import { HealthPalLogo, SparklesIcon, SettingsIcon } from './icons';
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon, UserIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
+import { useFeatureFlags } from '../contexts/FeatureFlagContext';
+import { Avatar } from './ui/Avatar';
 
 interface NavbarProps {
-    currentPage: string;
-    setCurrentPage: (page: string) => void;
     onQuickMealClick: () => void;
 }
 
-const NavLink: React.FC<{ pageName: string; currentPage: string; onClick: () => void; children: React.ReactNode }> = ({ pageName, currentPage, onClick, children }) => {
-    const isActive = currentPage === pageName.toLowerCase();
-    return (
-        <button
-            onClick={onClick}
-            className={`py-1 text-md font-medium transition-colors ${
-                isActive ? 'text-healthpal-green border-b-2 border-healthpal-green' : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
-            }`}
-        >
-            {children}
-        </button>
-    );
-};
-
-const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage, onQuickMealClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
-    const { user } = useAuth();
-    const navItems = ['Dashboard', 'Profile', 'Settings'];
+    const { user, signOut } = useAuth();
+    const { isUserApiKeysRequired } = useFeatureFlags();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+    const avatarMenuRef = useRef<HTMLDivElement>(null);
+    const pathname = usePathname();
 
-    const getInitials = (name: string | null | undefined) => {
-        if (!name) return '';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase();
-    }
+    // Close avatar menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (avatarMenuRef.current && !avatarMenuRef.current.contains(event.target as Node)) {
+                setIsAvatarMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const navItems = [
+        { path: '/dashboard', label: 'dashboard' },
+        { path: '/historico', label: 'history' },
+        { path: '/food-analysis', label: 'food_analysis' },
+        { path: '/profile', label: 'profile' },
+        { path: '/settings', label: 'settings' }
+    ];
 
     return (
-        <header className="flex justify-between items-center px-6 lg:px-8 pt-6 lg:pt-8 border-b border-healthpal-border pb-4">
+        <header className="relative flex justify-between items-center px-6 lg:px-8 pt-6 lg:pt-8 border-b border-healthpal-border pb-4">
             <div className="flex items-center gap-8">
                 <div className="flex items-center gap-3">
                     <HealthPalLogo className="h-8 w-8 text-healthpal-green" />
                     <h1 className="text-2xl font-bold">CalorieApp</h1>
                 </div>
-                <nav className="hidden md:flex items-center gap-6">
+                <nav className="hidden md:flex items-center gap-6" data-testid="desktop-nav">
                     {navItems.map(item => (
-                        <NavLink key={item} pageName={item} currentPage={currentPage} onClick={() => setCurrentPage(item.toLowerCase())}>
-                            {t(`navbar.${item.toLowerCase().replace(' ', '_')}`)}
-                        </NavLink>
+                        <Link
+                            key={item.path}
+                            href={item.path}
+                            className={`py-1 text-md font-medium transition-colors ${pathname === item.path
+                                ? 'text-healthpal-green border-b-2 border-healthpal-green'
+                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                }`}
+                        >
+                            {t(`navbar.${item.label}`)}
+                        </Link>
                     ))}
                 </nav>
             </div>
             <div className="flex items-center gap-4">
-                <button 
-                    onClick={onQuickMealClick}
-                    className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm hidden md:flex items-center gap-2"
+                <button
+                    onClick={isUserApiKeysRequired ? undefined : onQuickMealClick}
+                    className={`font-bold py-2 px-4 rounded-lg transition-all text-sm hidden md:flex items-center gap-2 ${isUserApiKeysRequired
+                        ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
+                        : 'bg-healthpal-green text-black hover:brightness-110'
+                        }`}
+                    title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
                 >
-                    <SparklesIcon className="w-5 h-5"/>
+                    <SparklesIcon className="w-5 h-5" />
                     <span>{t('navbar.quick_meal')}</span>
                 </button>
-                <button 
-                    onClick={() => setCurrentPage('settings')}
+
+                {/* Mobile menu button */}
+                <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="md:hidden p-2 rounded-full text-healthpal-text-secondary hover:bg-healthpal-card"
+                    aria-label="Toggle menu"
+                >
+                    {isMobileMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+                </button>
+
+                <Link
+                    href="/settings"
                     className="p-2 rounded-full md:hidden text-healthpal-text-secondary hover:bg-healthpal-card"
                     aria-label={t('navbar.settings')}
                 >
-                    <SettingsIcon className="w-6 h-6"/>
-                </button>
-                <div className="w-10 h-10 bg-healthpal-card rounded-full flex items-center justify-center border-2 border-healthpal-border overflow-hidden">
-                   {user?.photoURL ? (
-                        <img src={user.photoURL} alt="User" className="w-full h-full object-cover" />
-                   ) : (
-                        <span className="font-bold text-healthpal-text-secondary">{getInitials(user?.displayName)}</span>
-                   )}
+                    <SettingsIcon className="w-6 h-6" />
+                </Link>
+                <div className="relative" ref={avatarMenuRef}>
+                    <button
+                        onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
+                        className="hover:border-healthpal-green transition-colors"
+                        aria-label="User menu"
+                        data-testid="user-menu-button"
+                    >
+                        <Avatar
+                            name={user?.displayName || 'User'}
+                            size={40}
+                            className="border-2 border-healthpal-border"
+                            photoURL={user?.photoURL}
+                        />
+                    </button>
+
+                    {/* Avatar dropdown menu */}
+                    {isAvatarMenuOpen && (
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-healthpal-panel border border-healthpal-border rounded-lg shadow-lg z-50">
+                            <div className="p-3 border-b border-healthpal-border">
+                                <p className="font-medium text-healthpal-text-primary truncate">{user?.displayName || 'User'}</p>
+                                <p className="text-sm text-healthpal-text-secondary truncate">{user?.email}</p>
+                            </div>
+                            <Link
+                                href="/profile"
+                                onClick={() => setIsAvatarMenuOpen(false)}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-healthpal-text-secondary hover:text-healthpal-text-primary hover:bg-healthpal-card transition-colors"
+                                data-testid="profile-link"
+                            >
+                                <UserIcon className="w-5 h-5" />
+                                <span>{t('navbar.profile')}</span>
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    signOut();
+                                    setIsAvatarMenuOpen(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-healthpal-text-secondary hover:text-healthpal-text-primary hover:bg-healthpal-card transition-colors rounded-b-lg"
+                            >
+                                <LogoutIcon className="w-5 h-5" />
+                                <span>{t('navbar.logout')}</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
+
+            {/* Mobile menu */}
+            {isMobileMenuOpen && (
+                <div className="absolute top-full left-0 right-0 bg-healthpal-panel border border-healthpal-border md:hidden z-50 shadow-lg">
+                    <nav className="flex flex-col p-4 space-y-2" data-testid="mobile-nav">
+                        {navItems.map(item => (
+                            <Link
+                                key={item.path}
+                                href={item.path}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className={`py-3 px-4 text-md font-medium transition-colors rounded-lg ${pathname === item.path
+                                    ? 'text-healthpal-green bg-healthpal-card'
+                                    : 'text-healthpal-text-secondary hover:text-healthpal-text-primary hover:bg-healthpal-card'
+                                    }`}
+                            >
+                                {t(`navbar.${item.label}`)}
+                            </Link>
+                        ))}
+                        <button
+                            onClick={() => {
+                                if (isUserApiKeysRequired) return;
+                                onQuickMealClick();
+                                setIsMobileMenuOpen(false);
+                            }}
+                            className={`font-bold py-3 px-4 rounded-lg transition-all text-sm flex items-center gap-2 mt-2 ${isUserApiKeysRequired
+                                ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
+                                : 'bg-healthpal-green text-black hover:brightness-110'
+                                }`}
+                            title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
+                        >
+                            <SparklesIcon className="w-5 h-5" />
+                            <span>{t('navbar.quick_meal')}</span>
+                        </button>
+                    </nav>
+                </div>
+            )}
         </header>
     );
 };

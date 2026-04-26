@@ -1,3 +1,5 @@
+export type DietType = 'omnivore' | 'vegetarian' | 'vegan' | 'pescatarian' | 'carnivore' | 'flexitarian';
+
 export interface PersonalInfo {
     age: number;
     height: number;
@@ -16,10 +18,29 @@ export interface WeightEntry {
     weight: number;
 }
 
+export type HealthConditionKey =
+    | 'diabetes'
+    | 'lactoseIntolerance'
+    | 'glutenIntolerance'
+    | 'celiacDisease'
+    | 'hypertension'
+    | 'highCholesterol'
+    | 'kidneyDisease'
+    | 'gout'
+    | 'ibs'
+    | 'gerd';
+
+export interface HealthConditions {
+    selected: HealthConditionKey[];
+    notes?: string;
+}
+
 export interface UserProfile {
     name: string;
     email: string;
     personalInfo: PersonalInfo;
     fitnessGoals: FitnessGoals;
     weightHistory: WeightEntry[];
+    healthConditions: HealthConditions;
+    dietType?: DietType;
 }

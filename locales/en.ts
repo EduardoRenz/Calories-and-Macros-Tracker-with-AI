@@ -2,11 +2,37 @@
 export default {
   "navbar": {
     "dashboard": "Dashboard",
+    "history": "History",
     "food_diary": "Food Diary",
+    "food_analysis": "Food Analysis",
     "reports": "Reports",
     "profile": "Profile",
     "settings": "Settings",
+    "logout": "Logout",
     "quick_meal": "Quick Meal"
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "Your day-by-day summary.",
+    "loading": "Loading history...",
+    "table_title": "Last 30 Days",
+    "filter_start": "Start date",
+    "filter_end": "End date",
+    "apply": "Apply",
+    "prev_page": "Previous",
+    "next_page": "Next",
+    "columns": {
+      "date": "Date",
+      "protein": "Proteins",
+      "carbs": "Carbs",
+      "fats": "Fats",
+      "fiber": "Fiber",
+      "calories": "Calories"
+    },
+    "calendar_prev": "Previous month",
+    "calendar_next": "Next month",
+    "averages_title": "Averages",
+    "averages_subtitle": "Days with entries:"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -21,7 +47,10 @@ export default {
     "calories_over": "Calories Over",
     "limit_exceeded": "You've exceeded your limit.",
     "doing_great": "You're doing great!",
-    "macro_split": "Macro Split"
+    "macro_split": "Macro Split",
+    "api_keys_required_title": "API Keys Required",
+    "api_keys_required_desc": "To continue using AI features, please configure your own API keys in settings.",
+    "go_to_settings": "Go to Settings"
   },
   "meals": {
     "summary_title": "Meal Summary",
@@ -35,12 +64,14 @@ export default {
     "carbs_short": "Carbs",
     "fats": "Fats",
     "fats_short": "Fats",
+    "fiber_short": "Fiber",
     "calories_short": "kcal",
     "no_items_logged": "No items logged",
     "ingredient": "Ingredient",
     "quantity": "Quantity",
     "total_macros": "Total Meal Macros",
-    "add_ingredient": "Add Ingredient"
+    "add_ingredient": "Add Ingredient",
+    "edit_quantity": "Click to edit quantity"
   },
   "add_ingredient_modal": {
     "title": "Add Ingredient to",
@@ -48,13 +79,16 @@ export default {
     "quantity": "Quantity",
     "quantity_placeholder": "e.g., 1 cup, 100g",
     "calories": "Calories (kcal)",
+    "fiber": "Fiber (g)",
     "protein": "Protein (g)",
     "carbs": "Carbs (g)",
     "fats": "Fats (g)",
     "cancel": "Cancel",
     "save": "Add Ingredient",
     "analysis_error": "Could not get nutritional info. Please fill macros manually.",
-    "analyze_button_aria": "Analyze ingredient with AI"
+    "analyze_button_aria": "Analyze ingredient with AI",
+    "macros_required": "Please fill in protein, carbs, and fats",
+    "name_required": "Please fill in the ingredient name"
   },
   "quick_meal_modal": {
     "title": "Log a Quick Meal with AI",
@@ -67,17 +101,39 @@ export default {
     "camera_error": "Camera access denied or not available",
     "change_image_button": "Change Image",
     "analyzing_button": "Analyzing...",
+    "analyze_image": "Analyze Image",
     "add_to_diary_button": "Add to Diary",
     "analysis_error": "Sorry, I couldn't analyze that image. Please try another one.",
     "add_error": "Failed to add items. Please try again.",
     "gemini_results": "Gemini's Analysis",
-    "review_prompt": "Review the ingredients below before adding them to your diary."
+    "review_prompt": "Review the ingredients below before adding them to your diary.",
+    "prompt_label": "Additional context",
+    "prompt_optional": "optional",
+    "prompt_placeholder": "e.g., 'This is a vegetarian lunch with quinoa and grilled vegetables' or 'Focus on identifying the cooking method and portion sizes'"
   },
   "profile": {
     "title": "My Profile",
     "tabs": {
       "settings": "Profile Settings",
-      "progress": "Progress"
+      "progress": "Progress",
+    },
+    "food_analysis": "Food Analysis",
+    "health_conditions": {
+      "title": "Health Conditions",
+      "subtitle": "Select any conditions that apply so we can tailor safe dietary recommendations.",
+      "importance": "This information is important: your Food Analysis will use these conditions to avoid unsafe suggestions and prioritize safer alternatives.",
+      "options": {
+        "diabetes": "Diabetes",
+        "lactose_intolerance": "Lactose intolerance",
+        "gluten_intolerance": "Gluten intolerance",
+        "celiac_disease": "Celiac disease",
+        "hypertension": "Hypertension (high blood pressure)",
+        "high_cholesterol": "High cholesterol",
+        "kidney_disease": "Kidney disease",
+        "gout": "Gout",
+        "ibs": "Irritable bowel syndrome (IBS)",
+        "gerd": "GERD / Acid reflux"
+      }
     },
     "upload_picture": "Upload new picture",
     "personal_info": {
@@ -88,7 +144,16 @@ export default {
       "gender": "Gender",
       "female": "Female",
       "male": "Male",
-      "other": "Other"
+      "other": "Other",
+      "diet_type": "Diet Type",
+      "diet_types": {
+        "omnivore": "Omnivore",
+        "vegetarian": "Vegetarian",
+        "vegan": "Vegan",
+        "pescatarian": "Pescatarian",
+        "carnivore": "Carnivore",
+        "flexitarian": "Flexitarian"
+      }
     },
     "fitness_goals": {
       "title": "Fitness Goals",
@@ -106,6 +171,7 @@ export default {
     "update_profile": "Update Profile",
     "saving": "Saving...",
     "update_success": "Profile updated successfully!",
+    "cancel": "Cancel",
     "loading": "Loading profile...",
     "load_error": "Could not load profile data.",
     "progress_summary": {
@@ -117,6 +183,50 @@ export default {
     "weight_progress": "Weight Progress",
     "goal_progress": "Goal Progress",
     "complete": "Complete"
+  },
+  "food_analysis": {
+    "title": "Food Analysis",
+    "subtitle": "Comprehensive reports and insights into your diet and health.",
+    "back_to_profile": "Back to Profile",
+    "last_7_days": "Last 7 Days",
+    "this_month": "This Month",
+    "last_3_months": "Last 3 Months",
+    "generate_prompt": "Click below to generate a comprehensive analysis of your eating habits.",
+    "generate_button": "Generate Report",
+    "generating": "Generating your personalized report...",
+    "error_generating": "An error occurred while generating the report. Retrying...",
+    "retry": "Try again",
+    "regenerate": "Clear cache and regenerate report",
+    "common_foods": {
+      "title": "Most Common Foods",
+      "subtitle": "A summary of what you eat most frequently during different times of the day.",
+      "consistency": "Consistency"
+    },
+    "vitamins": {
+      "title": "Vitamin Overview",
+      "subtitle": "Key micronutrients analysis based on your logged intake.",
+      "sufficient_moderate": "Sufficient & Moderate",
+      "deficient_action": "Deficient - Needs Action",
+      "recommendations": "Recommendations",
+      "positive_reason": "Why you're doing well",
+      "status": {
+        "good": "Good",
+        "low": "Avg",
+        "deficient": "Low"
+      }
+    },
+    "attention": {
+      "title": "Attention Points",
+      "subtitle": "Areas where you might want to adjust your intake for better results.",
+      "no_issues": "No attention points detected. Keep up the good work!"
+    },
+    "suggestions": {
+      "title": "Suggestions",
+      "subtitle": "Actionable steps to hit your macro goals.",
+      "goal": "Goal",
+      "recommended": "Recommended Additions",
+      "adjustments_required": "Adjustments Required"
+    }
   },
   "settings": {
     "title": "App Settings and API Management",
@@ -137,6 +247,30 @@ export default {
       "add_token": "Add API Token",
       "remove": "Remove",
       "no_tokens": "You haven't added any AI API tokens yet."
+    }
+  },
+  "assistant": {
+    "title": "Assistant",
+    "status_online": "ONLINE",
+    "close": "Close chat",
+    "input_placeholder": "Ask Assistant...",
+    "send": "Send",
+    "confirm_action": "Action pending confirmation",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "thinking": "Thinking...",
+    "action_success": "Action executed successfully!",
+    "action_error": "Failed to execute action. Please try again.",
+    "action_cancelled": "Action cancelled.",
+    "prepared_action": "I have prepared the action for you.",
+    "errors": {
+      "api_key": "I'm having authentication issues. Please check my configuration.",
+      "quota_exceeded": "I've reached my usage limit. Please try again in a moment.",
+      "model_error": "I'm having trouble with my AI model. Please try again later.",
+      "network_error": "I'm having connection issues. Please check your internet and try again.",
+      "safety_error": "I couldn't process that request due to safety guidelines.",
+      "invalid_request": "I received an invalid request format. Please try again.",
+      "unknown_error": "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later."
     }
   }
 }
