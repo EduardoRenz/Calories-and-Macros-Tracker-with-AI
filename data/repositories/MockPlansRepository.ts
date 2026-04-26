@@ -74,7 +74,8 @@ export class MockPlansRepository implements PlansRepository {
         ];
     }
 
-    async getProviderMapping(planCode: string, provider: string): Promise<PlanProviderMapping | null> {
+    async getProviderMapping(planCode: string, _provider?: string): Promise<PlanProviderMapping | null> {
+        // MockPlansRepository always returns mock mappings regardless of provider parameter
         const mappings: Record<string, PlanProviderMapping> = {
             free: {
                 planId: 'free',
@@ -105,7 +106,6 @@ export class MockPlansRepository implements PlansRepository {
             },
         };
 
-        const mapping = mappings[planCode];
-        return mapping?.provider === provider ? mapping : null;
+        return mappings[planCode] || null;
     }
 }

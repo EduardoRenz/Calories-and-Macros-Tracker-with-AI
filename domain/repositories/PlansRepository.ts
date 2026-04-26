@@ -21,6 +21,7 @@ export interface PlansRepository {
     /**
      * Resolves provider-specific billing data for server-side checkout flows
      * without making public plan rendering depend on provider-owned identity.
+     * Provider is auto-detected from environment if not provided.
      */
-    getProviderMapping(planCode: string, provider: string): Promise<PlanProviderMapping | null>;
+    getProviderMapping(planCode: string, provider?: string): Promise<PlanProviderMapping | null>;
 }

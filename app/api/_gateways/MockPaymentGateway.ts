@@ -5,6 +5,7 @@ import {
     HostedSubscriptionCheckoutResult,
     PaymentGateway,
 } from '../../../domain/gateways/PaymentGateway';
+import { MockSubscriptionRepository } from '../../../data/repositories/MockSubscriptionRepository';
 
 export class MockPaymentGateway implements PaymentGateway {
     private static instance: MockPaymentGateway | null = null;
@@ -144,6 +145,10 @@ export class MockPaymentGateway implements PaymentGateway {
     async createHostedSubscriptionCheckout(input: HostedSubscriptionCheckoutInput): Promise<HostedSubscriptionCheckoutResult> {
         await new Promise((resolve) => setTimeout(resolve, 100));
         const checkoutId = `mock_checkout_${input.planCode}_${Date.now()}`;
+
+        // Upgrade the subscription to premium when checkout is created (mock flow)
+        const mockSubscriptionRepo = MockSubscriptionRepository.getInstance();
+        mockSubscriptionRepo.upgradeSubscription(input.planCode);
 
         return {
             checkoutUrl: `${input.successUrl}?mockCheckoutId=${checkoutId}`,
