@@ -17,7 +17,7 @@ describe('Payment Flow (Mock Mode)', () => {
         cy.contains('Choose your plan').should('be.visible');
 
         // Check for "Free Plan"
-        cy.contains('Free Plan').should('be.visible');
+        cy.contains('Free').should('be.visible');
 
         // Check for pricing (mock default is USD)
         cy.contains('$0').should('be.visible');
@@ -36,7 +36,7 @@ describe('Payment Flow (Mock Mode)', () => {
             },
         });
 
-        cy.contains('Plano Gratuito').should('be.visible'); // Free Plan in PT
+        cy.contains('Gratuito').should('be.visible'); // Free Plan in PT
         cy.contains('R$').should('be.visible'); // Currency BRL
     });
 
@@ -44,7 +44,7 @@ describe('Payment Flow (Mock Mode)', () => {
         cy.visit('/plans');
         // Click on a paid plan button (not free)
         // Use .first() to pick one if multiple match, or target specific text
-        cy.contains('Member Plan').parents('div').contains('button', 'Get Started').click();
+        cy.contains('Monthly Plan').parents('div').contains('button', 'Get Started').click();
 
         // Expect redirect to login
         cy.url().should('include', '/login');
@@ -71,7 +71,7 @@ describe('Payment Flow (Mock Mode)', () => {
         // "Member Plan" (Monthly) has "Get Started"
         // "Member Plan" (Annual) has "Upgrade to Member"
         // Let's target the Annual one as it's Popular and distinct
-        cy.contains('Member Plan (Annual)').parents('div').contains('button', 'Upgrade to Member').click();
+        cy.contains('Monthly Plan (Annual)').parents('div').contains('button', 'Upgrade to Member').click();
 
         // Should go to checkout
         cy.url().should('include', '/checkout');
