@@ -40,6 +40,9 @@ export const env = createEnv({
         // Backend Provider (Client-side selection)
         NEXT_PUBLIC_BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']),
 
+        // Payment Provider (Client-side - for checkout provider selection)
+        NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'mock']).default('abacatepay'),
+
         // Gemini Models (Public - client-side)
         NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
         NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
@@ -85,6 +88,7 @@ export const env = createEnv({
 
         // Client variables
         NEXT_PUBLIC_BACKEND_PROVIDER: process.env.NEXT_PUBLIC_BACKEND_PROVIDER,
+        NEXT_PUBLIC_PAYMENT_PROVIDER: process.env.NEXT_PUBLIC_PAYMENT_PROVIDER,
         NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL,
         NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL,
         NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

@@ -9,6 +9,7 @@ import { Plan } from '../../../domain/entities/payment';
 import { CheckoutSummary } from '../../../components/payment/CheckoutSummary';
 import { ClientGatewayFactory } from '../../../data/ClientGatewayFactory';
 import { RepositoryFactory } from '../../../data/RepositoryFactory';
+import { env } from '../../../env';
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -60,7 +61,9 @@ export default function CheckoutPage() {
         setError(null);
         try {
             const plansRepository = RepositoryFactory.getPlansRepository();
-            const mapping = await plansRepository.getProviderMapping(plan.id);
+            // Use 'mock' provider in mock mode, otherwise use NEXT_PUBLIC_PAYMENT_PROVIDER
+            const provider = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock' ? 'mock' : env.NEXT_PUBLIC_PAYMENT_PROVIDER;
+            const mapping = await plansRepository.getProviderMapping(plan.id, provider);
 
             if (!mapping) {
                 throw new Error('Payment mapping not found for this plan');
