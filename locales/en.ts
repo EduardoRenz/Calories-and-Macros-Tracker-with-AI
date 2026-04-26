@@ -240,6 +240,7 @@ export default {
         { "text": "Manual food logging", "included": true },
         { "text": "Support for own API keys (OpenAI/Gemini)", "included": true },
         { "text": "Basic 7-day history", "included": true },
+        { "text": "7-day free trial with premium features", "included": true },
         { "text": "Photo-based nutrition analysis", "included": false },
         { "text": "Advanced health reports", "included": false },
         { "text": "HealthPal Assistant 24/7", "included": false }

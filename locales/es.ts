@@ -235,6 +235,7 @@ export default {
         { "text": "Registro manual de alimentos", "included": true },
         { "text": "Soporte para claves de API propias (OpenAI/Gemini)", "included": true },
         { "text": "Historial básico de 7 dias", "included": true },
+        { "text": "7 días de prueba gratis con funciones premium", "included": true },
         { "text": "Análisis nutricional por foto", "included": false },
         { "text": "Informes de salud avanzados", "included": false },
         { "text": "Asistente HealthPal 24/7", "included": false }
