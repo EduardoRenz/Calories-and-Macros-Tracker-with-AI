@@ -31,6 +31,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number; fiber: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { isUserApiKeysRequired } = useFeatureFlags();
 
@@ -136,8 +137,10 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
     setIsAnalyzing(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setError(null);
 
     if (!formState.name) {
@@ -157,15 +160,20 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
       return;
     }
 
-    onSave({
-      name: formState.name,
-      quantity: formState.quantity,
-      calories,
-      protein,
-      carbs,
-      fats,
-      fiber,
-    });
+    setIsSubmitting(true);
+    try {
+      await onSave({
+        name: formState.name,
+        quantity: formState.quantity,
+        calories,
+        protein,
+        carbs,
+        fats,
+        fiber,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -232,10 +240,11 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <div className="flex justify-end gap-4 pt-4">
-          <button type="button" onClick={onClose} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all">
+          <button type="button" onClick={onClose} disabled={isSubmitting} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all disabled:opacity-50 disabled:cursor-not-allowed">
             {t('add_ingredient_modal.cancel')}
           </button>
-          <button type="submit" className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all" data-testid="save-ingredient-button">
+          <button type="submit" disabled={isSubmitting} className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" data-testid="save-ingredient-button">
+            {isSubmitting ? <SpinnerIcon className="w-5 h-5" /> : null}
             {t('add_ingredient_modal.save')}
           </button>
         </div>
