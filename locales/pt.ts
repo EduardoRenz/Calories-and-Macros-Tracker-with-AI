@@ -340,7 +340,12 @@ export default {
         "subscription.cancelled": "Assinatura Cancelada",
         "subscription.refunded": "Reembolso",
         "subscription.chargeback": "Contestação",
-        "payment": "Pagamento"
+        "payment": "Pagamento",
+        "charge": "Cobrança",
+        "renewal": "Renovação",
+        "refund": "Reembolso",
+        "dispute": "Disputa",
+        "loss": "Perda"
       },
       "transaction_status": {
         "completed": "Concluído",

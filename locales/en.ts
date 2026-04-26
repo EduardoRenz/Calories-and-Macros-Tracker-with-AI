@@ -340,7 +340,12 @@ export default {
         "subscription.cancelled": "Subscription Cancelled",
         "subscription.refunded": "Refund",
         "subscription.chargeback": "Chargeback",
-        "payment": "Payment"
+        "payment": "Payment",
+        "charge": "Charge",
+        "renewal": "Renewal",
+        "refund": "Refund",
+        "dispute": "Dispute",
+        "loss": "Loss"
       },
       "transaction_status": {
         "completed": "Completed",
