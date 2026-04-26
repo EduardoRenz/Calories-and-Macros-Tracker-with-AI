@@ -4,6 +4,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getDb, auth } from '../firebase';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
+import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 export class FirebaseSubscriptionRepository implements SubscriptionRepository {
     private static instance: FirebaseSubscriptionRepository | null = null;
@@ -17,6 +18,30 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
             FirebaseSubscriptionRepository.instance = new FirebaseSubscriptionRepository();
         }
         return FirebaseSubscriptionRepository.instance;
+    }
+
+    private async isUserInTrialPeriod(userId: string): Promise<{ isTrial: boolean; trialEndDate: Date | null }> {
+        try {
+            if (!auth || !auth.currentUser) {
+                return { isTrial: false, trialEndDate: null };
+            }
+
+            const currentUser = auth.currentUser;
+            if (!currentUser.metadata?.creationTime) {
+                return { isTrial: false, trialEndDate: null };
+            }
+
+            const createdAt = new Date(currentUser.metadata.creationTime);
+            const now = new Date();
+            const daysSinceCreation = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+            const isTrial = daysSinceCreation < BILLING_CONSTANTS.TRIAL_DAYS;
+            const trialEndDate = isTrial ? new Date(createdAt.getTime() + BILLING_CONSTANTS.TRIAL_DAYS * 24 * 60 * 60 * 1000) : null;
+
+            return { isTrial, trialEndDate };
+        } catch (error) {
+            console.error('[FirebaseSubscriptionRepository] Error checking trial period:', error);
+            return { isTrial: false, trialEndDate: null };
+        }
     }
 
     async getUserSubscription(): Promise<Subscription | null> {
@@ -47,14 +72,31 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
                     const q = query(
                         subscriptionsRef,
                         where('userId', '==', currentUser.uid),
-                        where('status', 'in', ['active', 'trialing'])
+                        where('status', 'in', ['active', 'trialing', 'pending'])
                     );
 
                     const querySnapshot = await getDocs(q);
 
                     console.log('[FirebaseSubscriptionRepository] Query snapshot empty:', querySnapshot.empty);
 
+                    const { isTrial, trialEndDate } = await this.isUserInTrialPeriod(currentUser.uid);
+
                     if (querySnapshot.empty) {
+                        if (isTrial && trialEndDate) {
+                            return Subscription.create({
+                                id: 'trial',
+                                userId: currentUser.uid,
+                                planId: 'trial',
+                                planCode: 'trial',
+                                status: 'trialing',
+                                accessStatus: 'premium',
+                                currentPeriodStart: new Date(),
+                                currentPeriodEnd: trialEndDate,
+                                cancelAtPeriodEnd: false,
+                                isTrial: true,
+                            });
+                        }
+
                         // Return a free subscription if no active subscription found
                         console.log('[FirebaseSubscriptionRepository] No active subscription found, returning free plan');
                         return this.createFreeSubscription(currentUser.uid);
@@ -75,6 +117,7 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
                         currentPeriodStart: data.currentPeriodStart?.toDate() || new Date(),
                         currentPeriodEnd: data.currentPeriodEnd?.toDate() || new Date(),
                         cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
+                        isTrial: isTrial && data.accessStatus !== 'premium',
                     });
                 } catch (error) {
                     console.error('[FirebaseSubscriptionRepository] Error fetching subscription:', error);

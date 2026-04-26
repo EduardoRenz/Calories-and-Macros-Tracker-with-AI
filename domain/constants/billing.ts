@@ -13,6 +13,11 @@ export const BILLING_CONSTANTS = {
     DEFAULT_CURRENCY: 'BRL',
 
     /**
+     * Trial period duration in days for new users
+     */
+    TRIAL_DAYS: 7,
+
+    /**
      * Plan codes used throughout the application
      */
     PLAN_CODES: {

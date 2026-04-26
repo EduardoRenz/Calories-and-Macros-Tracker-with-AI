@@ -11,6 +11,7 @@ export class Subscription {
     private readonly _currentPeriodStart: Date;
     private readonly _currentPeriodEnd: Date;
     private readonly _cancelAtPeriodEnd: boolean;
+    private readonly _isTrial: boolean;
 
     private constructor(props: SubscriptionProps) {
         this._id = props.id;
@@ -22,6 +23,7 @@ export class Subscription {
         this._currentPeriodStart = props.currentPeriodStart;
         this._currentPeriodEnd = props.currentPeriodEnd;
         this._cancelAtPeriodEnd = props.cancelAtPeriodEnd;
+        this._isTrial = props.isTrial || false;
     }
 
     public static create(props: SubscriptionProps): Subscription {
@@ -64,6 +66,10 @@ export class Subscription {
         return this._cancelAtPeriodEnd;
     }
 
+    public get isTrial(): boolean {
+        return this._isTrial;
+    }
+
     public get isActive(): boolean {
         return this._accessStatus === 'premium';
     }
@@ -87,6 +93,7 @@ export class Subscription {
             currentPeriodStart: this._currentPeriodStart,
             currentPeriodEnd: this._currentPeriodEnd,
             cancelAtPeriodEnd: this._cancelAtPeriodEnd,
+            isTrial: this._isTrial,
         };
     }
 }
@@ -101,4 +108,5 @@ export interface SubscriptionProps {
     currentPeriodStart: Date;
     currentPeriodEnd: Date;
     cancelAtPeriodEnd: boolean;
+    isTrial?: boolean;
 }
