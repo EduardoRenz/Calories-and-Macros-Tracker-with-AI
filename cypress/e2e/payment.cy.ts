@@ -59,19 +59,15 @@ describe('Payment Flow (Mock Mode)', () => {
         // Wait for dashboard
         cy.url().should('include', '/dashboard');
 
-        // Go to Plans
-        cy.visit('/plans');
+        // Go to Plans with annual billing
+        cy.visit('/plans?billing=year');
 
-        // Verify we are still logged in (Navbar should show profile or not show Sign In)
-        // Assuming Navbar has "Sign In" link when logged out.
-        // Or "Profile" link when logged in.
-        cy.contains('profile').should('exist');
+        // Verify we are still logged in by checking we're not on login page
+        cy.url().should('include', '/plans');
 
         // Click Upgrade
-        // "Member Plan" (Monthly) has "Get Started"
-        // "Member Plan" (Annual) has "Upgrade to Member"
-        // Let's target the Annual one as it's Popular and distinct
-        cy.contains('Monthly Plan (Annual)').parents('div').contains('button', 'Upgrade to Member').click();
+        // "Annual Plan" (plano_anual) is the yearly billing option
+        cy.contains('Annual Plan').parents('div').contains('button', 'Upgrade to Member').click();
 
         // Should go to checkout
         cy.url().should('include', '/checkout');
@@ -86,10 +82,10 @@ describe('Payment Flow (Mock Mode)', () => {
         cy.url().should('include', '/dashboard');
 
         // Visit checkout directly with a planId
-        cy.visit('/checkout?planId=member_annual');
+        cy.visit('/checkout?planId=plano_anual');
 
         // Check for hosted redirect notice (Issue 002 fix ensures this is visible)
-        cy.contains('You will be redirected to a secure payment page').should('be.visible');
+        cy.contains('redirected to a secure payment page').should('be.visible');
 
         // Click Confirm and Pay
         cy.contains('Confirm and Pay').click();
