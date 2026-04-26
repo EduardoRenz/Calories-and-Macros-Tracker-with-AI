@@ -11,7 +11,7 @@ export interface InboundEvent {
 }
 
 export class BillingEventProcessor {
-  constructor(private supabase: SupabaseClient) {}
+  constructor(private supabase: SupabaseClient) { }
 
   async process(event: InboundEvent): Promise<void> {
     const { event_type, payload } = event;
@@ -88,7 +88,7 @@ export class BillingEventProcessor {
           email: customer.email,
           tax_id: customer.taxId,
         }, { onConflict: 'user_id,provider' });
-      
+
       if (custError) console.error('[BillingEventProcessor] Customer upsert failed:', custError);
     }
 
@@ -173,18 +173,29 @@ export class BillingEventProcessor {
   }
 
   private async handleSubscriptionCancelled(data: any): Promise<void> {
+    // AbacatePay v2 structure: data.subscription, data.customer, data.checkout
+    const subscription = data.subscription;
+    const subscriptionId = subscription?.id || data.id;
+
+    console.log(`[BillingEventProcessor] handleSubscriptionCancelled: subscriptionId=${subscriptionId}`);
+
+    if (!subscriptionId) {
+      console.error('[BillingEventProcessor] Missing subscription ID in cancellation payload:', JSON.stringify(data));
+      throw new Error('Missing subscription ID in cancellation payload');
+    }
+
     const { data: sub, error: subError } = await this.supabase
       .from('billing_subscriptions')
       .select('id, current_period_end')
-      .eq('provider_subscription_id', data.id)
+      .eq('provider_subscription_id', subscriptionId)
       .single();
 
     if (subError || !sub) {
-      throw new Error(`Subscription not found for cancellation: ${data.id}`);
+      throw new Error(`Subscription not found for cancellation: ${subscriptionId}`);
     }
 
     const isAtPeriodEnd = data.metadata?.cancelPolicy === 'END_OF_PERIOD' || data.cancelPolicy === 'END_OF_PERIOD';
-    
+
     // If it's cancelled but we want to keep access until end of period
     const accessStatus = isAtPeriodEnd ? 'premium' : 'free';
     const status = isAtPeriodEnd ? 'canceled' : 'inactive';
