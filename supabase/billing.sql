@@ -73,7 +73,6 @@ create table if not exists public.billing_plans (
   display_order integer not null default 0,
   billing_interval public.billing_interval not null,
   active boolean not null default true,
-  locales jsonb not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

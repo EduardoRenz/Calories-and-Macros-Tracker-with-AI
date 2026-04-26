@@ -234,7 +234,33 @@ export default {
     "subtitle": "Selecione o plano que se encaixa na sua jornada de fitness. Atualize a qualquer momento para desbloquear recursos avançados.",
     "monthly": "Mensal",
     "annual": "Anual",
-    "loading": "Carregando planos..."
+    "loading": "Carregando planos...",
+    "features": {
+      "free": [
+        { "text": "Registro manual de alimentos", "included": true },
+        { "text": "Suporte a chaves de API próprias (OpenAI/Gemini)", "included": true },
+        { "text": "Histórico básico de 7 dias", "included": true },
+        { "text": "Análise nutricional por foto", "included": false },
+        { "text": "Relatórios de saúde avançados", "included": false },
+        { "text": "Assistente HealthPal 24/7", "included": false }
+      ],
+      "member_monthly": [
+        { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
+        { "text": "Análise nutricional completa por foto", "included": true },
+        { "text": "Histórico ilimitado e backups", "included": true },
+        { "text": "Relatórios de micronutrientes e saúde", "included": true },
+        { "text": "Assistente HealthPal disponível 24/7", "included": true },
+        { "text": "Suporte prioritário", "included": true }
+      ],
+      "member_yearly": [
+        { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
+        { "text": "Análise nutricional completa por foto", "included": true },
+        { "text": "Histórico ilimitado e backups", "included": true },
+        { "text": "Relatórios de micronutrientes e saúde", "included": true },
+        { "text": "Assistente HealthPal disponível 24/7", "included": true },
+        { "text": "Suporte prioritário", "included": true }
+      ]
+    }
   },
   "checkout": {
     "title": "Checkout",
@@ -256,21 +282,19 @@ export default {
     "annual_discount": "Desconto Anual",
     "tax": "Imposto",
     "total_due": "Total a Pagar",
-    "confirm_purchase": "Confirmar Compra →",
+    "confirm_purchase": "Confirmar Compra",
+    "confirm_and_pay": "Confirmar e Pagar →",
     "secure_payments": "Os pagamentos são seguros e criptografados",
-    "processing_payment": "Processando Pagamento...",
-    "processing_message": "Por favor, não feche esta janela",
+    "processing_payment": "Processando Checkout...",
+    "processing_message": "Redirecionando para o pagamento seguro...",
     "payment_failed": "O pagamento falhou. Por favor, tente novamente.",
+    "redirect_failed": "Não foi possível iniciar o pagamento. Por favor, tente novamente.",
+    "hosted_redirect_notice": "Você será redirecionado para uma página de pagamento segura fornecida pelo AbacatePay para completar sua assinatura.",
     "payment_methods": {
       "card": "Cartão",
       "paypal": "PayPal",
       "pix": "Pix",
       "crypto": "Cripto"
-    },
-    "integrations": {
-      "paypal_mock": "Integração PayPal simulada",
-      "pix_mock": "Integração Pix simulada (geração de QR Code)",
-      "crypto_mock": "Integração Cripto simulada"
     }
   },
   "settings": {
@@ -291,8 +315,30 @@ export default {
       "title": "Assinatura",
       "description": "Gerencie seu plano e detalhes de cobrança",
       "manage": "Gerenciar Assinatura",
+      "upgrade": "Upgrade para Premium",
       "plan_free": "Gratuito",
-      "plan_premium": "Premium"
+      "plan_premium": "Premium",
+      "premium_description": "Você tem acesso total a todos os recursos de IA e análises avançadas.",
+      "free_description": "Faça o upgrade para desbloquear análise de saúde com IA e recursos exclusivos.",
+      "history_title": "Histórico Financeiro",
+      "ends_on": "Expira em {{date}}",
+      "renews_on": "Renova em {{date}}",
+      "transaction_types": {
+        "subscription.completed": "Assinatura Iniciada",
+        "subscription.renewed": "Assinatura Renovada",
+        "subscription.cancelled": "Assinatura Cancelada",
+        "subscription.refunded": "Reembolso",
+        "subscription.chargeback": "Contestação",
+        "payment": "Pagamento"
+      },
+      "transaction_status": {
+        "completed": "Concluído",
+        "paid": "Pago",
+        "failed": "Falha",
+        "expired": "Expirado",
+        "refunded": "Reembolsado",
+        "pending": "Pendente"
+      }
     },
     "tokens": {
       "title": "Tokens de API de IA",
