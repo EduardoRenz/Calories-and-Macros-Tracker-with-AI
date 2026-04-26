@@ -9,7 +9,7 @@ interface OrderSummaryProps {
 }
 
 export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0 }) => {
-    const { t, to } = useTranslation();
+    const { t } = useTranslation();
 
     // Use Plan value object methods for calculations
     const totalDue = plan.price;

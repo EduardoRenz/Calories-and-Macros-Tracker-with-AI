@@ -17,14 +17,14 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
     const shouldUseGreenStyle = isPopular || isMemberPlan;
 
     // Direct mapping: plans.features.free, plans.features.member_monthly, etc.
-    const planData = to<any>(`plans.features.${plan.id}`);
+    const planData = to(`plans.features.${plan.id}`) as { features?: Array<{ included: boolean; text: string }>; discount_message?: string } | Array<{ included: boolean; text: string }>;
     const featuresToDisplay = (Array.isArray(planData) ? planData : planData?.features) || plan.features;
-    
+
     // Use t with interpolation for the discount message if it exists in locales
-    const discountMessage = planData?.discount_message 
+    const discountMessage = (!Array.isArray(planData) && planData?.discount_message)
         ? t(`plans.features.${plan.id}.discount_message`, { percentage: BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE })
         : plan.discountMessage;
-        
+
     // Calculate original price automatically: Current Price + Percentage
     const originalPrice = plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL
         ? plan.price * (1 + (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100))
