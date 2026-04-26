@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/app/api/auth-middleware';
 import { checkAiAccess } from '@/app/api/feature-flag-check';
+import { checkPremiumAccess } from '@/app/api/subscription-check';
 import { ServiceFactory } from '@/data/ServiceFactory';
 
 export async function POST(req: NextRequest) {
@@ -9,6 +10,9 @@ export async function POST(req: NextRequest) {
 
         const accessCheck = await checkAiAccess();
         if (accessCheck) return accessCheck;
+
+        const premiumCheck = await checkPremiumAccess(req.headers.get('Authorization'));
+        if (premiumCheck) return premiumCheck;
 
         const { messages, context } = await req.json();
 

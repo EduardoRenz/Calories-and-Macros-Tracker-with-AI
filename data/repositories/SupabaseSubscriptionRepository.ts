@@ -5,6 +5,7 @@ import { Currency } from '../../domain/entities/payment';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
+import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 export class SupabaseSubscriptionRepository implements SubscriptionRepository {
     private static instance: SupabaseSubscriptionRepository | null = null;
@@ -18,6 +19,28 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
             SupabaseSubscriptionRepository.instance = new SupabaseSubscriptionRepository();
         }
         return SupabaseSubscriptionRepository.instance;
+    }
+
+    private async isUserInTrialPeriod(userId: string): Promise<{ isTrial: boolean; trialEndDate: Date | null }> {
+        try {
+            const supabase = getSupabaseClient();
+            const { data: { user }, error } = await supabase.auth.getUser();
+
+            if (error || !user || !user.created_at) {
+                return { isTrial: false, trialEndDate: null };
+            }
+
+            const createdAt = new Date(user.created_at);
+            const now = new Date();
+            const daysSinceCreation = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+            const isTrial = daysSinceCreation < BILLING_CONSTANTS.TRIAL_DAYS;
+            const trialEndDate = isTrial ? new Date(createdAt.getTime() + BILLING_CONSTANTS.TRIAL_DAYS * 24 * 60 * 60 * 1000) : null;
+
+            return { isTrial, trialEndDate };
+        } catch (error) {
+            console.error('[SupabaseSubscriptionRepository] Error checking trial period:', error);
+            return { isTrial: false, trialEndDate: null };
+        }
     }
 
     async getUserSubscription(): Promise<Subscription | null> {
@@ -69,11 +92,31 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                         .from('billing_subscriptions')
                         .select('*, billing_plans(plan_code)')
                         .eq('user_id', userId)
+                        .in('status', ['active', 'trialing', 'pending'])
                         .order('created_at', { ascending: false })
                         .limit(1)
                         .maybeSingle();
 
+                    const { isTrial, trialEndDate } = await this.isUserInTrialPeriod(userId);
+
                     if (error || !data) {
+                        if (isTrial && trialEndDate) {
+                            // Invalidate cache to ensure fresh trial data
+                            this.dataCacheManager.invalidate(key);
+                            return Subscription.create({
+                                id: 'trial',
+                                userId,
+                                planId: 'trial',
+                                planCode: 'trial',
+                                status: 'trialing',
+                                accessStatus: 'premium',
+                                currentPeriodStart: new Date(),
+                                currentPeriodEnd: trialEndDate,
+                                cancelAtPeriodEnd: false,
+                                isTrial: true,
+                            });
+                        }
+
                         return Subscription.create({
                             id: 'free',
                             userId,
@@ -97,6 +140,7 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                         currentPeriodStart: new Date(data.current_period_start),
                         currentPeriodEnd: new Date(data.current_period_end),
                         cancelAtPeriodEnd: data.cancel_at_period_end,
+                        isTrial: isTrial && data.access_status !== 'premium',
                     });
                 } catch (error) {
                     console.error('[SupabaseSubscriptionRepository] Error fetching subscription:', error);

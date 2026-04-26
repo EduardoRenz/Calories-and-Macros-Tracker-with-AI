@@ -25,17 +25,12 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const pathname = usePathname();
 
     const getTrialDaysRemaining = (sub: typeof subscription): number => {
-        if (!sub || !sub.currentPeriodEnd) {
-            console.log('[Navbar] No subscription or currentPeriodEnd', { sub, currentPeriodEnd: sub?.currentPeriodEnd });
-            return 0;
-        }
+        if (!sub || !sub.currentPeriodEnd) return 0;
         const now = new Date();
         const end = new Date(sub.currentPeriodEnd);
         const diffMs = end.getTime() - now.getTime();
         const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        const result = Math.max(0, diffDays);
-        console.log('[Navbar] Trial days calculation', { now, end, diffMs, diffDays, result });
-        return result;
+        return Math.max(0, diffDays);
     };
 
     // Close avatar menu when clicking outside
