@@ -7,10 +7,10 @@ begin
   update public.billing_subscriptions
   set
     access_status = 'free',
-    status = case 
+    status = (case 
       when cancel_at_period_end then 'canceled'
       else 'unpaid'
-    end,
+    end)::subscription_status,
     ended_at = coalesce(current_period_end, now()),
     updated_at = now()
   where
