@@ -107,17 +107,26 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
 
                     console.log('[FirebaseSubscriptionRepository] Found subscription:', data);
 
+                    // Validate if subscription period has expired (fallback protection)
+                    const now = new Date();
+                    const periodEnd = data.currentPeriodEnd?.toDate() || new Date();
+                    const isPeriodValid = now <= periodEnd;
+
+                    const effectiveAccessStatus = (data.accessStatus === 'premium' && !isPeriodValid)
+                        ? 'free'
+                        : (data.accessStatus || (data.status === 'active' ? 'premium' : 'free'));
+
                     return Subscription.create({
                         id: doc.id,
                         userId: data.userId,
                         planId: data.planId || 'free',
                         planCode: data.planCode || 'free',
-                        status: data.status,
-                        accessStatus: data.accessStatus || (data.status === 'active' ? 'premium' : 'free'),
+                        status: isPeriodValid ? data.status : 'unpaid',
+                        accessStatus: effectiveAccessStatus,
                         currentPeriodStart: data.currentPeriodStart?.toDate() || new Date(),
-                        currentPeriodEnd: data.currentPeriodEnd?.toDate() || new Date(),
+                        currentPeriodEnd: periodEnd,
                         cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
-                        isTrial: isTrial && data.accessStatus !== 'premium',
+                        isTrial: isTrial && effectiveAccessStatus !== 'premium',
                     });
                 } catch (error) {
                     console.error('[FirebaseSubscriptionRepository] Error fetching subscription:', error);

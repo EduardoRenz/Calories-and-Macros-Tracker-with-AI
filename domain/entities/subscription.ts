@@ -71,7 +71,12 @@ export class Subscription {
     }
 
     public get isActive(): boolean {
-        return this._accessStatus === 'premium';
+        // Check both access status AND that the period hasn't expired
+        if (this._accessStatus !== 'premium') {
+            return false;
+        }
+        const now = new Date();
+        return now <= this._currentPeriodEnd;
     }
 
     public get isFree(): boolean {

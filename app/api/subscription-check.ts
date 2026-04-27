@@ -34,8 +34,18 @@ export async function checkPremiumAccess(authHeader: string | null): Promise<Nex
         .maybeSingle()
 
       if (!error && subscription && subscription.access_status === "premium") {
-        console.log("[SubscriptionCheck] User has active premium subscription")
-        return null
+        // Fallback: check if subscription period has expired
+        const now = new Date()
+        const periodEndStr = subscription.current_period_end
+        const periodEnd = periodEndStr ? new Date(periodEndStr) : new Date(0)
+
+        if (!isNaN(periodEnd.getTime()) && now <= periodEnd) {
+          console.log("[SubscriptionCheck] User has active premium subscription")
+          return null
+        }
+
+        console.warn(`[SubscriptionCheck] Subscription period expired: ${subscription.id}`)
+        // Continue to deny access
       }
 
       // Check if user is in trial period

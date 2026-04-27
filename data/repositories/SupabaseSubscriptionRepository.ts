@@ -101,8 +101,6 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
 
                     if (error || !data) {
                         if (isTrial && trialEndDate) {
-                            // Invalidate cache to ensure fresh trial data
-                            this.dataCacheManager.invalidate(key);
                             return Subscription.create({
                                 id: 'trial',
                                 userId,
@@ -130,17 +128,28 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                         });
                     }
 
+                    // Validate if subscription period has expired (fallback protection)
+                    const now = new Date();
+                    const periodEndStr = data.current_period_end;
+                    const periodEnd = periodEndStr ? new Date(periodEndStr) : new Date(0);
+                    const isPeriodValid = !isNaN(periodEnd.getTime()) && now <= periodEnd;
+
+                    // If period expired but access_status is still premium, force downgrade
+                    const effectiveAccessStatus = (data.access_status === 'premium' && !isPeriodValid)
+                        ? 'free'
+                        : data.access_status;
+
                     return Subscription.create({
                         id: data.id,
                         userId: data.user_id,
                         planId: data.plan_id,
                         planCode: (data.billing_plans as any)?.plan_code || 'free',
-                        status: data.status,
-                        accessStatus: data.access_status,
+                        status: isPeriodValid ? data.status : 'unpaid',
+                        accessStatus: effectiveAccessStatus,
                         currentPeriodStart: new Date(data.current_period_start),
-                        currentPeriodEnd: new Date(data.current_period_end),
+                        currentPeriodEnd: periodEnd,
                         cancelAtPeriodEnd: data.cancel_at_period_end,
-                        isTrial: isTrial && data.access_status !== 'premium',
+                        isTrial: isTrial && effectiveAccessStatus !== 'premium',
                     });
                 } catch (error) {
                     console.error('[SupabaseSubscriptionRepository] Error fetching subscription:', error);
