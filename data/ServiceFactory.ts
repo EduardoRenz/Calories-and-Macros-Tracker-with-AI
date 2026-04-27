@@ -3,6 +3,7 @@ import { GeminiFoodAnalysisService } from './services/GeminiFoodAnalysisService'
 import { MockFoodAnalysisService } from './services/MockFoodAnalysisService';
 import { OpenAIFoodAnalysisService } from './services/OpenAIFoodAnalysisService';
 import { DeepSeekFoodAnalysisService } from './services/DeepSeekFoodAnalysisService';
+import { OpenRouterFoodAnalysisService } from './services/OpenRouterFoodAnalysisService';
 import { FallbackFoodAnalysisService } from './services/FallbackFoodAnalysisService';
 import { MockNutritionAnalysisService } from './services/MockNutritionAnalysisService';
 import { MockImageRecognitionService } from './services/MockImageRecognitionService';
@@ -11,16 +12,19 @@ import { MockChatAssistantService } from './services/MockChatAssistantService';
 import { GeminiChatAssistantService } from './services/GeminiChatAssistantService';
 import { OpenAIChatAssistantService } from './services/OpenAIChatAssistantService';
 import { DeepSeekChatAssistantService } from './services/DeepSeekChatAssistantService';
+import { OpenRouterChatAssistantService } from './services/OpenRouterChatAssistantService';
 
 import { GeminiNutritionAnalysisService } from './services/GeminiNutritionAnalysisService';
 import { OpenAINutritionAnalysisService } from './services/OpenAINutritionAnalysisService';
 import { DeepSeekNutritionAnalysisService } from './services/DeepSeekNutritionAnalysisService';
+import { OpenRouterNutritionAnalysisService } from './services/OpenRouterNutritionAnalysisService';
 import { FallbackNutritionAnalysisService } from './services/FallbackNutritionAnalysisService';
 
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
 import { GeminiImageRecognitionService } from './services/GeminiImageRecognitionService';
 import { OpenAIImageRecognitionService } from './services/OpenAIImageRecognitionService';
 import { DeepSeekImageRecognitionService } from './services/DeepSeekImageRecognitionService';
+import { OpenRouterImageRecognitionService } from './services/OpenRouterImageRecognitionService';
 import { FallbackImageRecognitionService } from './services/FallbackImageRecognitionService';
 
 import { NextApiFoodAnalysisService } from './services/NextApiFoodAnalysisService';
@@ -36,7 +40,7 @@ import { env } from '../env';
 const USE_MOCKS = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock';
 
 interface ApiKey {
-    provider: 'gemini' | 'openai' | 'deepseek';
+    provider: 'gemini' | 'openai' | 'deepseek' | 'openrouter';
     key: string;
     addedAt: number;
 }
@@ -131,6 +135,9 @@ export class ServiceFactory {
                     case 'deepseek':
                         services.push(new DeepSeekFoodAnalysisService(keyConfig.key));
                         break;
+                    case 'openrouter':
+                        services.push(new OpenRouterFoodAnalysisService(keyConfig.key));
+                        break;
                 }
             } catch (e) {
                 console.error(`Failed to instantiate service for ${keyConfig.provider}`, e);
@@ -164,6 +171,9 @@ export class ServiceFactory {
                     case 'deepseek':
                         services.push(new DeepSeekNutritionAnalysisService(keyConfig.key));
                         break;
+                    case 'openrouter':
+                        services.push(new OpenRouterNutritionAnalysisService(keyConfig.key));
+                        break;
                 }
             } catch (e) {
                 console.error(`Failed to instantiate nutrition service for ${keyConfig.provider}`, e);
@@ -195,6 +205,9 @@ export class ServiceFactory {
                     case 'deepseek':
                         services.push(new DeepSeekImageRecognitionService(keyConfig.key));
                         break;
+                    case 'openrouter':
+                        services.push(new OpenRouterImageRecognitionService(keyConfig.key));
+                        break;
                 }
             } catch (e) {
                 console.error(`Failed to instantiate image service for ${keyConfig.provider}`, e);
@@ -222,6 +235,8 @@ export class ServiceFactory {
                         return new DeepSeekChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
                     case 'openai':
                         return new OpenAIChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                    case 'openrouter':
+                        return new OpenRouterChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
                 }
             } catch (e) {
                 console.error(`Failed to instantiate chat service for ${keyConfig.provider}`, e);
