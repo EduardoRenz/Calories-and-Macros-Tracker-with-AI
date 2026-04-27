@@ -10,6 +10,31 @@ export interface InboundEvent {
   payload: any;
 }
 
+function calculatePeriodEnd(startDate: string | Date, frequency: string): Date {
+  const endDate = new Date(startDate);
+
+  switch (frequency.toUpperCase()) {
+    case 'WEEKLY':
+      endDate.setDate(endDate.getDate() + 7);
+      break;
+    case 'MONTHLY':
+      endDate.setMonth(endDate.getMonth() + 1);
+      break;
+    case 'QUARTERLY':
+      endDate.setMonth(endDate.getMonth() + 3);
+      break;
+    case 'YEARLY':
+    case 'ANNUAL':
+      endDate.setFullYear(endDate.getFullYear() + 1);
+      break;
+    default:
+      // Default to monthly if unknown
+      endDate.setMonth(endDate.getMonth() + 1);
+  }
+
+  return endDate;
+}
+
 export class BillingEventProcessor {
   constructor(private supabase: SupabaseClient) { }
 
@@ -92,7 +117,10 @@ export class BillingEventProcessor {
       if (custError) console.error('[BillingEventProcessor] Customer upsert failed:', custError);
     }
 
-    // 3. Upsert subscription
+    // 3. Calculate period dates based on frequency
+    const currentPeriodStart = subscription.createdAt || new Date().toISOString();
+    const currentPeriodEnd = calculatePeriodEnd(currentPeriodStart, subscription.frequency || 'MONTHLY');
+
     console.log(`[BillingEventProcessor] Upserting subscription for user: ${userId}`);
     const { error: subError } = await this.supabase
       .from('billing_subscriptions')
@@ -104,8 +132,8 @@ export class BillingEventProcessor {
         provider_checkout_id: checkout.id,
         status: 'active',
         access_status: 'premium',
-        current_period_start: subscription.createdAt || new Date().toISOString(),
-        current_period_end: subscription.nextBilling || null,
+        current_period_start: currentPeriodStart,
+        current_period_end: currentPeriodEnd.toISOString(),
         updated_at: new Date().toISOString(),
       }, { onConflict: 'provider,provider_subscription_id' });
 
@@ -149,13 +177,18 @@ export class BillingEventProcessor {
       throw new Error(`Subscription not found for renewal: ${data.id}`);
     }
 
+    // Calculate new period dates based on frequency
+    const currentPeriodStart = new Date().toISOString();
+    const currentPeriodEnd = calculatePeriodEnd(currentPeriodStart, data.frequency || 'MONTHLY');
+
     await this.supabase
       .from('billing_subscriptions')
       .update({
         status: 'active',
         access_status: 'premium',
-        current_period_start: new Date().toISOString(), // Use current for renewal start
-        current_period_end: data.nextBilling || null,
+        current_period_start: currentPeriodStart,
+        current_period_end: currentPeriodEnd.toISOString(),
+        cancel_at_period_end: false, // Reset cancellation flag on renewal
         updated_at: new Date().toISOString(),
       })
       .eq('id', sub.id);
@@ -194,21 +227,27 @@ export class BillingEventProcessor {
       throw new Error(`Subscription not found for cancellation: ${subscriptionId}`);
     }
 
-    const isAtPeriodEnd = data.metadata?.cancelPolicy === 'END_OF_PERIOD' || data.cancelPolicy === 'END_OF_PERIOD';
+    // Check if we're still within the paid period
+    const now = new Date();
+    const periodEnd = new Date(sub.current_period_end);
+    const isWithinPaidPeriod = now < periodEnd;
 
-    // If it's cancelled but we want to keep access until end of period
-    const accessStatus = isAtPeriodEnd ? 'premium' : 'free';
-    const status = isAtPeriodEnd ? 'canceled' : 'inactive';
+    // User keeps premium access until the end of the current period
+    const accessStatus = isWithinPaidPeriod ? 'premium' : 'free';
+    const status = 'canceled';
+    const endedAt = isWithinPaidPeriod ? sub.current_period_end : now.toISOString();
+
+    console.log(`[BillingEventProcessor] Cancelling subscription: isWithinPaidPeriod=${isWithinPaidPeriod}, accessStatus=${accessStatus}, endedAt=${endedAt}`);
 
     await this.supabase
       .from('billing_subscriptions')
       .update({
         status,
         access_status: accessStatus,
-        cancel_at_period_end: isAtPeriodEnd,
-        canceled_at: new Date().toISOString(),
-        ended_at: isAtPeriodEnd ? sub.current_period_end : new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        cancel_at_period_end: true,
+        canceled_at: now.toISOString(),
+        ended_at: endedAt,
+        updated_at: now.toISOString(),
       })
       .eq('id', sub.id);
   }
