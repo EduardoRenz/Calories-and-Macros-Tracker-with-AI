@@ -329,6 +329,7 @@ export default {
       "description": "Manage your plan and billing details",
       "manage": "Manage Subscription",
       "upgrade": "Upgrade to Premium",
+      "cancel": "Cancel Subscription",
       "plan_free": "Free",
       "plan_premium": "Premium",
       "plan_trial": "Trial Period",
@@ -338,6 +339,14 @@ export default {
       "history_title": "Financial History",
       "ends_on": "Ends on {{date}}",
       "renews_on": "Renews on {{date}}",
+      "cancel_modal": {
+        "title": "Cancel Subscription",
+        "warning": "Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.",
+        "keep": "Keep Subscription",
+        "confirm": "Yes, Cancel",
+        "cancelling": "Cancelling...",
+        "error": "Failed to cancel subscription. Please try again."
+      },
       "transaction_types": {
         "subscription.completed": "Subscription Started",
         "subscription.renewed": "Subscription Renewed",

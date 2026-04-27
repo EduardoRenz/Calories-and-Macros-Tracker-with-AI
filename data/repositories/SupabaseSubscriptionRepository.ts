@@ -4,13 +4,11 @@ import { BillingTransaction } from '../../domain/entities/BillingTransaction';
 import { Currency } from '../../domain/entities/payment';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
-import { DataCacheManager } from '../infrastructure/DataCacheManager';
 import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 export class SupabaseSubscriptionRepository implements SubscriptionRepository {
     private static instance: SupabaseSubscriptionRepository | null = null;
     private concurrencyManager = new ConcurrencyRequestManager();
-    private dataCacheManager = new DataCacheManager();
 
     private constructor() { }
 
@@ -44,8 +42,6 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
     }
 
     async getUserSubscription(): Promise<Subscription | null> {
-        const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
         let userId: string;
         try {
             const supabase = getSupabaseClient();
@@ -84,75 +80,36 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
 
         const key = `getUserSubscription:${userId}`;
 
-        return this.dataCacheManager.getCached(key, async () => {
-            return this.concurrencyManager.run(key, async () => {
-                try {
-                    const supabase = getSupabaseClient();
-                    const { data, error } = await supabase
-                        .from('billing_subscriptions')
-                        .select('*, billing_plans(plan_code)')
-                        .eq('user_id', userId)
-                        .in('status', ['active', 'trialing', 'pending'])
-                        .order('created_at', { ascending: false })
-                        .limit(1)
-                        .maybeSingle();
+        return this.concurrencyManager.run(key, async () => {
+            try {
+                const supabase = getSupabaseClient();
+                const { data, error } = await supabase
+                    .from('billing_subscriptions')
+                    .select('*, billing_plans(plan_code)')
+                    .eq('user_id', userId)
+                    .in('status', ['active', 'trialing', 'pending'])
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
 
-                    const { isTrial, trialEndDate } = await this.isUserInTrialPeriod(userId);
+                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod(userId);
 
-                    if (error || !data) {
-                        if (isTrial && trialEndDate) {
-                            return Subscription.create({
-                                id: 'trial',
-                                userId,
-                                planId: 'trial',
-                                planCode: 'trial',
-                                status: 'trialing',
-                                accessStatus: 'premium',
-                                currentPeriodStart: new Date(),
-                                currentPeriodEnd: trialEndDate,
-                                cancelAtPeriodEnd: false,
-                                isTrial: true,
-                            });
-                        }
-
+                if (error || !data) {
+                    if (isTrial && trialEndDate) {
                         return Subscription.create({
-                            id: 'free',
+                            id: 'trial',
                             userId,
-                            planId: 'free',
-                            planCode: 'free',
-                            status: 'inactive',
-                            accessStatus: 'free',
+                            planId: 'trial',
+                            planCode: 'trial',
+                            status: 'trialing',
+                            accessStatus: 'premium',
                             currentPeriodStart: new Date(),
-                            currentPeriodEnd: new Date(),
+                            currentPeriodEnd: trialEndDate,
                             cancelAtPeriodEnd: false,
+                            isTrial: true,
                         });
                     }
 
-                    // Validate if subscription period has expired (fallback protection)
-                    const now = new Date();
-                    const periodEndStr = data.current_period_end;
-                    const periodEnd = periodEndStr ? new Date(periodEndStr) : new Date(0);
-                    const isPeriodValid = !isNaN(periodEnd.getTime()) && now <= periodEnd;
-
-                    // If period expired but access_status is still premium, force downgrade
-                    const effectiveAccessStatus = (data.access_status === 'premium' && !isPeriodValid)
-                        ? 'free'
-                        : data.access_status;
-
-                    return Subscription.create({
-                        id: data.id,
-                        userId: data.user_id,
-                        planId: data.plan_id,
-                        planCode: (data.billing_plans as any)?.plan_code || 'free',
-                        status: isPeriodValid ? data.status : 'unpaid',
-                        accessStatus: effectiveAccessStatus,
-                        currentPeriodStart: new Date(data.current_period_start),
-                        currentPeriodEnd: periodEnd,
-                        cancelAtPeriodEnd: data.cancel_at_period_end,
-                        isTrial: isTrial && effectiveAccessStatus !== 'premium',
-                    });
-                } catch (error) {
-                    console.error('[SupabaseSubscriptionRepository] Error fetching subscription:', error);
                     return Subscription.create({
                         id: 'free',
                         userId,
@@ -165,13 +122,48 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                         cancelAtPeriodEnd: false,
                     });
                 }
-            });
-        }, CACHE_TTL);
+
+                // Validate if subscription period has expired (fallback protection)
+                const now = new Date();
+                const periodEndStr = data.current_period_end;
+                const periodEnd = periodEndStr ? new Date(periodEndStr) : new Date(0);
+                const isPeriodValid = !isNaN(periodEnd.getTime()) && now <= periodEnd;
+
+                // If period expired but access_status is still premium, force downgrade
+                const effectiveAccessStatus = (data.access_status === 'premium' && !isPeriodValid)
+                    ? 'free'
+                    : data.access_status;
+
+                return Subscription.create({
+                    id: data.id,
+                    userId: data.user_id,
+                    planId: data.plan_id,
+                    planCode: (data.billing_plans as any)?.plan_code || 'free',
+                    status: isPeriodValid ? data.status : 'unpaid',
+                    accessStatus: effectiveAccessStatus,
+                    currentPeriodStart: new Date(data.current_period_start),
+                    currentPeriodEnd: periodEnd,
+                    cancelAtPeriodEnd: data.cancel_at_period_end,
+                    isTrial: isTrial && effectiveAccessStatus !== 'premium',
+                });
+            } catch (error) {
+                console.error('[SupabaseSubscriptionRepository] Error fetching subscription:', error);
+                return Subscription.create({
+                    id: 'free',
+                    userId,
+                    planId: 'free',
+                    planCode: 'free',
+                    status: 'inactive',
+                    accessStatus: 'free',
+                    currentPeriodStart: new Date(),
+                    currentPeriodEnd: new Date(),
+                    cancelAtPeriodEnd: false,
+                });
+            }
+        });
     }
 
     async getBillingHistory(): Promise<BillingTransaction[]> {
-        const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
-
         const supabase = getSupabaseClient();
         const { data: { user } } = await supabase.auth.getUser();
 
@@ -180,37 +172,35 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
         const userId = user.id;
         const key = `getBillingHistory:${userId}`;
 
-        return this.dataCacheManager.getCached(key, async () => {
-            return this.concurrencyManager.run(key, async () => {
-                try {
-                    const { data, error } = await supabase
-                        .from('billing_transactions')
-                        .select('*')
-                        .eq('user_id', userId)
-                        .order('occurred_at', { ascending: false });
+        return this.concurrencyManager.run(key, async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('billing_transactions')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('occurred_at', { ascending: false });
 
-                    if (error || !data) return [];
+                if (error || !data) return [];
 
-                    return data.map(item => BillingTransaction.create({
-                        id: item.id,
-                        userId: item.user_id,
-                        subscriptionId: item.subscription_id,
-                        provider: item.provider,
-                        providerTransactionId: item.provider_transaction_id,
-                        providerCheckoutId: item.provider_checkout_id,
-                        type: item.transaction_type,
-                        status: item.status,
-                        amountCents: item.amount_cents,
-                        currency: Currency.create(item.currency),
-                        occurredAt: new Date(item.occurred_at),
-                        receiptUrl: item.receipt_url,
-                        metadata: item.metadata,
-                    }));
-                } catch (error) {
-                    console.error('[SupabaseSubscriptionRepository] Error fetching billing history:', error);
-                    return [];
-                }
-            });
-        }, CACHE_TTL);
+                return data.map(item => BillingTransaction.create({
+                    id: item.id,
+                    userId: item.user_id,
+                    subscriptionId: item.subscription_id,
+                    provider: item.provider,
+                    providerTransactionId: item.provider_transaction_id,
+                    providerCheckoutId: item.provider_checkout_id,
+                    type: item.transaction_type,
+                    status: item.status,
+                    amountCents: item.amount_cents,
+                    currency: Currency.create(item.currency),
+                    occurredAt: new Date(item.occurred_at),
+                    receiptUrl: item.receipt_url,
+                    metadata: item.metadata,
+                }));
+            } catch (error) {
+                console.error('[SupabaseSubscriptionRepository] Error fetching billing history:', error);
+                return [];
+            }
+        });
     }
 }

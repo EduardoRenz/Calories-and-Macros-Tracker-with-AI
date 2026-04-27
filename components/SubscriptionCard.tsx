@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { SparklesIcon, CalendarIcon } from './icons';
+import { SparklesIcon, CalendarIcon, AlertIcon } from './icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { getSupabaseClient } from '@/data/supabaseClient';
+import Modal from './ui/Modal';
 
 const SubscriptionCard: React.FC = () => {
     const { t } = useTranslation();
-    const { subscription, loading } = useSubscription();
+    const { subscription, loading, refreshSubscription } = useSubscription();
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [isCancelling, setIsCancelling] = useState(false);
+    const [cancelError, setCancelError] = useState<string | null>(null);
 
     const getTrialDaysRemaining = (sub: typeof subscription): number => {
         if (!sub || !sub.currentPeriodEnd) return 0;
@@ -34,6 +39,8 @@ const SubscriptionCard: React.FC = () => {
     const isPremium = subscription && !subscription.isFree;
     const isTrial = subscription && subscription.isTrial;
     const trialDaysRemaining = getTrialDaysRemaining(subscription);
+    const isFreePlan = !subscription || subscription.isFree;
+    const canCancel = isPremium && !subscription.cancelAtPeriodEnd && !isTrial;
 
     const planName = isTrial
         ? t('settings.subscription.plan_trial')
@@ -71,20 +78,29 @@ const SubscriptionCard: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {isPremium ? (
-                        <Link
-                            href="/plans"
-                            className="px-4 py-2 rounded-lg bg-healthpal-card text-healthpal-text-primary border border-healthpal-border font-bold text-sm hover:bg-healthpal-border transition-all"
+                    {canCancel ? (
+                        <button
+                            onClick={() => setIsCancelModalOpen(true)}
+                            className="px-4 py-2 rounded-lg border border-red-500 text-red-500 font-bold text-sm hover:bg-red-500/10 transition-all flex items-center gap-2"
+                            data-testid="cancel-subscription-button"
                         >
-                            {t('settings.subscription.manage') || 'Manage'}
-                        </Link>
-                    ) : (
+                            <AlertIcon className="w-4 h-4" />
+                            {t('settings.subscription.cancel') || 'Cancel Subscription'}
+                        </button>
+                    ) : isFreePlan ? (
                         <Link
                             href="/plans"
                             className="px-4 py-2 rounded-lg bg-healthpal-green text-black font-bold text-sm hover:brightness-110 transition-all flex items-center gap-2"
                         >
                             <SparklesIcon className="w-4 h-4" />
                             {t('settings.subscription.upgrade') || 'Upgrade Now'}
+                        </Link>
+                    ) : (
+                        <Link
+                            href="/plans"
+                            className="px-4 py-2 rounded-lg bg-healthpal-card text-healthpal-text-primary border border-healthpal-border font-bold text-sm hover:bg-healthpal-border transition-all"
+                        >
+                            {t('settings.subscription.manage') || 'Manage'}
                         </Link>
                     )}
                 </div>
@@ -100,8 +116,99 @@ const SubscriptionCard: React.FC = () => {
                     </span>
                 </div>
             )}
+
+            {/* Cancel Subscription Modal */}
+            <Modal
+                isOpen={isCancelModalOpen}
+                onClose={() => {
+                    setIsCancelModalOpen(false);
+                    setCancelError(null);
+                }}
+                title={t('settings.subscription.cancel_modal.title') || 'Cancel Subscription'}
+                size="md"
+                showCloseButton
+                dataTestId="cancel-subscription-modal"
+            >
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+                        <AlertIcon className="w-6 h-6 text-red-500 flex-shrink-0" />
+                        <p className="text-sm text-healthpal-text-primary">
+                            {t('settings.subscription.cancel_modal.warning') || 'Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.'}
+                        </p>
+                    </div>
+
+                    {cancelError && (
+                        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-500">
+                            {cancelError}
+                        </div>
+                    )}
+
+                    <div className="flex gap-3 pt-2">
+                        <button
+                            onClick={() => {
+                                setIsCancelModalOpen(false);
+                                setCancelError(null);
+                            }}
+                            disabled={isCancelling}
+                            className="flex-1 px-4 py-3 rounded-xl font-semibold text-healthpal-text-primary hover:bg-healthpal-card transition-colors disabled:opacity-50"
+                        >
+                            {t('settings.subscription.cancel_modal.keep') || 'Keep Subscription'}
+                        </button>
+                        <button
+                            onClick={handleCancelSubscription}
+                            disabled={isCancelling}
+                            className="flex-1 px-4 py-3 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 transition-colors"
+                            data-testid="confirm-cancel-button"
+                        >
+                            {isCancelling
+                                ? (t('settings.subscription.cancel_modal.cancelling') || 'Cancelling...')
+                                : (t('settings.subscription.cancel_modal.confirm') || 'Yes, Cancel')
+                            }
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
+
+    async function handleCancelSubscription() {
+        if (!subscription) return;
+
+        setIsCancelling(true);
+        setCancelError(null);
+
+        try {
+            // Get auth token from Supabase session
+            const { data: { session } } = await getSupabaseClient().auth.getSession();
+            const token = session?.access_token;
+
+            const response = await fetch('/api/billing/cancel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ subscriptionId: subscription.id }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed to cancel subscription');
+            }
+
+            await refreshSubscription();
+            setIsCancelModalOpen(false);
+        } catch (error) {
+            console.error('Error cancelling subscription:', error);
+            setCancelError(
+                error instanceof Error
+                    ? error.message
+                    : (t('settings.subscription.cancel_modal.error') || 'Failed to cancel subscription. Please try again.')
+            );
+        } finally {
+            setIsCancelling(false);
+        }
+    }
 };
 
 export default SubscriptionCard;

@@ -326,6 +326,7 @@ export default {
       "description": "Gestiona tu plan y detalles de facturación",
       "manage": "Gestionar Suscripción",
       "upgrade": "Mejorar a Premium",
+      "cancel": "Cancelar Suscripción",
       "plan_free": "Gratis",
       "plan_premium": "Premium",
       "plan_trial": "Período de prueba",
@@ -335,6 +336,14 @@ export default {
       "history_title": "Historial Financiero",
       "ends_on": "Vence el {{date}}",
       "renews_on": "Se renueva el {{date}}",
+      "cancel_modal": {
+        "title": "Cancelar Suscripción",
+        "warning": "¿Estás seguro de que deseas cancelar tu suscripción? Continuarás teniendo acceso hasta el final de tu período de facturación actual.",
+        "keep": "Mantener Suscripción",
+        "confirm": "Sí, Cancelar",
+        "cancelling": "Cancelando...",
+        "error": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
+      },
       "transaction_types": {
         "subscription.completed": "Suscripción Iniciada",
         "subscription.renewed": "Suscripción Renovada",

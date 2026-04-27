@@ -21,7 +21,7 @@ export const SubscriptionProvider: React.FC<{ children: ReactNode }> = ({ childr
     const [billingHistory, setBillingHistory] = useState<BillingTransaction[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingHistory, setLoadingHistory] = useState(false);
-    
+
     const subscriptionRepository: SubscriptionRepository = useMemo(() => RepositoryFactory.getSubscriptionRepository(), []);
 
     const refreshSubscription = useCallback(async () => {
@@ -54,10 +54,10 @@ export const SubscriptionProvider: React.FC<{ children: ReactNode }> = ({ childr
         refreshSubscription();
     }, [refreshSubscription]);
 
-    const value = { 
-        subscription, 
+    const value = {
+        subscription,
         billingHistory,
-        loading, 
+        loading,
         loadingHistory,
         refreshSubscription,
         refreshHistory

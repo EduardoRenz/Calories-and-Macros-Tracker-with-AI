@@ -7,9 +7,10 @@ interface PlanCardProps {
     plan: Plan;
     onSelect: (plan: Plan) => void;
     isLoading?: boolean;
+    isCurrentPlan?: boolean;
 }
 
-export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = false }) => {
+export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = false, isCurrentPlan = false }) => {
     const { t, to } = useTranslation();
     const isPopular = plan.isPopular;
     const isFree = plan.id === 'free' || plan.price === 0;
@@ -98,17 +99,18 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
 
             <button
                 onClick={() => onSelect(plan)}
-                disabled={isLoading}
+                disabled={isLoading || isCurrentPlan}
                 className={`w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors ${shouldUseGreenStyle
                     ? 'bg-green-500 text-black hover:bg-green-400'
                     : 'bg-gray-800 text-white hover:bg-gray-700'
-                    } disabled:opacity-50`}
+                    } disabled:opacity-50 disabled:cursor-not-allowed ${isCurrentPlan ? 'bg-gray-700 text-gray-400 hover:bg-gray-700' : ''}`}
             >
-                {shouldUseGreenStyle ? (
-                    plan.currency.code === 'BRL' ? 'Atualizar para Membro' : 'Upgrade to Member'
-                ) : (
-                    plan.currency.code === 'BRL' ? 'Começar' : 'Get Started'
-                )}
+                {isCurrentPlan
+                    ? (plan.currency.code === 'BRL' ? 'Plano Atual' : 'Current Plan')
+                    : shouldUseGreenStyle
+                        ? (plan.currency.code === 'BRL' ? 'Atualizar para Membro' : 'Upgrade to Member')
+                        : (plan.currency.code === 'BRL' ? 'Começar' : 'Get Started')
+                }
             </button>
         </div>
     );

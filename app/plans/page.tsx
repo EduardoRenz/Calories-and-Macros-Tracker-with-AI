@@ -13,6 +13,7 @@ import { RepositoryFactory } from '../../data/RepositoryFactory';
 import { useFeatureFlags } from '../../contexts/FeatureFlagContext';
 import { FeatureFlags } from '../../domain/repositories/FeatureFlagRepository';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 
 function PlansContent() {
     const router = useRouter();
@@ -21,9 +22,13 @@ function PlansContent() {
     const { language } = useLanguage();
     const { isFeatureEnabled, loading: flagsLoading } = useFeatureFlags();
     const { user } = useAuth();
+    const { subscription, loading: subscriptionLoading } = useSubscription();
     const [plans, setPlans] = useState<Plan[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month');
+
+    // Get current plan ID from subscription
+    const currentPlanId = subscription?.planId || 'free';
 
     useEffect(() => {
         // Only check feature flag after flags are loaded
@@ -134,7 +139,7 @@ function PlansContent() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
-                    {isLoading ? (
+                    {isLoading || subscriptionLoading ? (
                         <div className="col-span-2 text-center text-gray-400">{t('plans.loading') || 'Loading plans...'}</div>
                     ) : (
                         displayedPlans.map(plan => (
@@ -143,6 +148,7 @@ function PlansContent() {
                                 plan={plan}
                                 onSelect={handleSelectPlan}
                                 isLoading={isLoading}
+                                isCurrentPlan={plan.id === currentPlanId}
                             />
                         ))
                     )}

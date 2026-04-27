@@ -3,13 +3,11 @@ import { Subscription } from '../../domain/entities/subscription';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getDb, auth } from '../firebase';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
-import { DataCacheManager } from '../infrastructure/DataCacheManager';
 import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 export class FirebaseSubscriptionRepository implements SubscriptionRepository {
     private static instance: FirebaseSubscriptionRepository | null = null;
     private concurrencyManager = new ConcurrencyRequestManager();
-    private dataCacheManager = new DataCacheManager();
 
     private constructor() { }
 
@@ -45,8 +43,6 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
     }
 
     async getUserSubscription(): Promise<Subscription | null> {
-        const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
         // Wait for auth to be ready
         if (!auth) {
             console.log('[FirebaseSubscriptionRepository] Auth not initialized, returning free plan');
@@ -63,78 +59,76 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
 
         const key = `getUserSubscription:${currentUser.uid}`;
 
-        return this.dataCacheManager.getCached(key, async () => {
-            return this.concurrencyManager.run(key, async () => {
-                try {
-                    const db = getDb();
+        return this.concurrencyManager.run(key, async () => {
+            try {
+                const db = getDb();
 
-                    const subscriptionsRef = collection(db, 'subscriptions');
-                    const q = query(
-                        subscriptionsRef,
-                        where('userId', '==', currentUser.uid),
-                        where('status', 'in', ['active', 'trialing', 'pending'])
-                    );
+                const subscriptionsRef = collection(db, 'subscriptions');
+                const q = query(
+                    subscriptionsRef,
+                    where('userId', '==', currentUser.uid),
+                    where('status', 'in', ['active', 'trialing', 'pending'])
+                );
 
-                    const querySnapshot = await getDocs(q);
+                const querySnapshot = await getDocs(q);
 
-                    console.log('[FirebaseSubscriptionRepository] Query snapshot empty:', querySnapshot.empty);
+                console.log('[FirebaseSubscriptionRepository] Query snapshot empty:', querySnapshot.empty);
 
-                    const { isTrial, trialEndDate } = await this.isUserInTrialPeriod(currentUser.uid);
+                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod(currentUser.uid);
 
-                    if (querySnapshot.empty) {
-                        if (isTrial && trialEndDate) {
-                            return Subscription.create({
-                                id: 'trial',
-                                userId: currentUser.uid,
-                                planId: 'trial',
-                                planCode: 'trial',
-                                status: 'trialing',
-                                accessStatus: 'premium',
-                                currentPeriodStart: new Date(),
-                                currentPeriodEnd: trialEndDate,
-                                cancelAtPeriodEnd: false,
-                                isTrial: true,
-                            });
-                        }
-
-                        // Return a free subscription if no active subscription found
-                        console.log('[FirebaseSubscriptionRepository] No active subscription found, returning free plan');
-                        return this.createFreeSubscription(currentUser.uid);
+                if (querySnapshot.empty) {
+                    if (isTrial && trialEndDate) {
+                        return Subscription.create({
+                            id: 'trial',
+                            userId: currentUser.uid,
+                            planId: 'trial',
+                            planCode: 'trial',
+                            status: 'trialing',
+                            accessStatus: 'premium',
+                            currentPeriodStart: new Date(),
+                            currentPeriodEnd: trialEndDate,
+                            cancelAtPeriodEnd: false,
+                            isTrial: true,
+                        });
                     }
 
-                    const doc = querySnapshot.docs[0];
-                    const data = doc.data();
-
-                    console.log('[FirebaseSubscriptionRepository] Found subscription:', data);
-
-                    // Validate if subscription period has expired (fallback protection)
-                    const now = new Date();
-                    const periodEnd = data.currentPeriodEnd?.toDate() || new Date();
-                    const isPeriodValid = now <= periodEnd;
-
-                    const effectiveAccessStatus = (data.accessStatus === 'premium' && !isPeriodValid)
-                        ? 'free'
-                        : (data.accessStatus || (data.status === 'active' ? 'premium' : 'free'));
-
-                    return Subscription.create({
-                        id: doc.id,
-                        userId: data.userId,
-                        planId: data.planId || 'free',
-                        planCode: data.planCode || 'free',
-                        status: isPeriodValid ? data.status : 'unpaid',
-                        accessStatus: effectiveAccessStatus,
-                        currentPeriodStart: data.currentPeriodStart?.toDate() || new Date(),
-                        currentPeriodEnd: periodEnd,
-                        cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
-                        isTrial: isTrial && effectiveAccessStatus !== 'premium',
-                    });
-                } catch (error) {
-                    console.error('[FirebaseSubscriptionRepository] Error fetching subscription:', error);
-                    // Return free subscription on error
-                    return this.createFreeSubscription('unknown');
+                    // Return a free subscription if no active subscription found
+                    console.log('[FirebaseSubscriptionRepository] No active subscription found, returning free plan');
+                    return this.createFreeSubscription(currentUser.uid);
                 }
-            });
-        }, CACHE_TTL);
+
+                const doc = querySnapshot.docs[0];
+                const data = doc.data();
+
+                console.log('[FirebaseSubscriptionRepository] Found subscription:', data);
+
+                // Validate if subscription period has expired (fallback protection)
+                const now = new Date();
+                const periodEnd = data.currentPeriodEnd?.toDate() || new Date();
+                const isPeriodValid = now <= periodEnd;
+
+                const effectiveAccessStatus = (data.accessStatus === 'premium' && !isPeriodValid)
+                    ? 'free'
+                    : (data.accessStatus || (data.status === 'active' ? 'premium' : 'free'));
+
+                return Subscription.create({
+                    id: doc.id,
+                    userId: data.userId,
+                    planId: data.planId || 'free',
+                    planCode: data.planCode || 'free',
+                    status: isPeriodValid ? data.status : 'unpaid',
+                    accessStatus: effectiveAccessStatus,
+                    currentPeriodStart: data.currentPeriodStart?.toDate() || new Date(),
+                    currentPeriodEnd: periodEnd,
+                    cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
+                    isTrial: isTrial && effectiveAccessStatus !== 'premium',
+                });
+            } catch (error) {
+                console.error('[FirebaseSubscriptionRepository] Error fetching subscription:', error);
+                // Return free subscription on error
+                return this.createFreeSubscription('unknown');
+            }
+        });
     }
 
     async getBillingHistory(): Promise<any[]> {

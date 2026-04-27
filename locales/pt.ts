@@ -329,6 +329,7 @@ export default {
       "description": "Gerencie seu plano e detalhes de cobrança",
       "manage": "Gerenciar Assinatura",
       "upgrade": "Upgrade para Premium",
+      "cancel": "Cancelar Assinatura",
       "plan_free": "Gratuito",
       "plan_premium": "Premium",
       "plan_trial": "Período de testes",
@@ -338,6 +339,14 @@ export default {
       "history_title": "Histórico Financeiro",
       "ends_on": "Expira em {{date}}",
       "renews_on": "Renova em {{date}}",
+      "cancel_modal": {
+        "title": "Cancelar Assinatura",
+        "warning": "Tem certeza de que deseja cancelar sua assinatura? Você continuará tendo acesso até o final do seu período de cobrança atual.",
+        "keep": "Manter Assinatura",
+        "confirm": "Sim, Cancelar",
+        "cancelling": "Cancelando...",
+        "error": "Falha ao cancelar assinatura. Por favor, tente novamente."
+      },
       "transaction_types": {
         "subscription.completed": "Assinatura Iniciada",
         "subscription.renewed": "Assinatura Renovada",
