@@ -10,15 +10,32 @@ import { PlanCard } from '../../components/payment/PlanCard';
 import PublicNavbar from '../../components/PublicNavbar';
 import { Footer } from '../../components/Footer';
 import { RepositoryFactory } from '../../data/RepositoryFactory';
+import { useFeatureFlags } from '../../contexts/FeatureFlagContext';
+import { FeatureFlags } from '../../domain/repositories/FeatureFlagRepository';
+import { useAuth } from '../../contexts/AuthContext';
 
 function PlansContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { t } = useTranslation();
     const { language } = useLanguage();
+    const { isFeatureEnabled, loading: flagsLoading } = useFeatureFlags();
+    const { user } = useAuth();
     const [plans, setPlans] = useState<Plan[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month');
+
+    useEffect(() => {
+        // Only check feature flag after flags are loaded
+        if (!flagsLoading && !isFeatureEnabled(FeatureFlags.ENABLE_PLANS)) {
+            // Redirect authenticated users to dashboard, unauthenticated to home
+            if (user) {
+                router.push('/dashboard');
+            } else {
+                router.push('/');
+            }
+        }
+    }, [isFeatureEnabled, router, user, flagsLoading]);
 
     useEffect(() => {
         const fetchPlans = async () => {
@@ -26,7 +43,7 @@ function PlansContent() {
             try {
                 const plansRepository = RepositoryFactory.getPlansRepository();
                 const allPlans = await plansRepository.getPlans(language);
-                
+
                 // Create hardcoded Free Plan
                 const freePlan = Plan.create({
                     id: 'free',

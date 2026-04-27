@@ -6,6 +6,7 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
     private flags: Record<string, boolean> = {
         [FeatureFlags.ENABLE_CHATBOT]: true,
         [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
+        [FeatureFlags.ENABLE_PLANS]: true,
     };
 
     private constructor() { }
@@ -20,6 +21,15 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
     async isEnabled(flagName: string): Promise<boolean> {
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Allow test overrides via localStorage
+        if (typeof window !== 'undefined') {
+            const override = localStorage.getItem(`feature_flag_${flagName}`);
+            if (override !== null) {
+                return override === 'true';
+            }
+        }
+
         return this.flags[flagName] ?? false;
     }
 

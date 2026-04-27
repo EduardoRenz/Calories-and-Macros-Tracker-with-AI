@@ -10,6 +10,8 @@ import { CheckoutSummary } from '../../../components/payment/CheckoutSummary';
 import { ClientGatewayFactory } from '../../../data/ClientGatewayFactory';
 import { RepositoryFactory } from '../../../data/RepositoryFactory';
 import { env } from '../../../env';
+import { useFeatureFlags } from '../../../contexts/FeatureFlagContext';
+import { FeatureFlags } from '../../../domain/repositories/FeatureFlagRepository';
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -18,6 +20,7 @@ export default function CheckoutPage() {
     const { user, loading: authLoading } = useAuth();
     const { language } = useLanguage();
     const { t } = useTranslation();
+    const { isFeatureEnabled, loading: flagsLoading } = useFeatureFlags();
 
     const [plan, setPlan] = useState<Plan | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +28,17 @@ export default function CheckoutPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Only check feature flag after flags are loaded
+        if (!flagsLoading && !isFeatureEnabled(FeatureFlags.ENABLE_PLANS)) {
+            router.push('/dashboard');
+            return;
+        }
+
+        // If feature flag is disabled or still loading, don't fetch plan
+        if (flagsLoading || !isFeatureEnabled(FeatureFlags.ENABLE_PLANS)) {
+            return;
+        }
+
         // If not authenticated, the layout ProtectedRoute should handle it, 
         // but just in case or for better UX we might want to ensure we have a planId
         if (!planId) {
@@ -51,7 +65,7 @@ export default function CheckoutPage() {
         };
 
         fetchPlan();
-    }, [planId, language, router]);
+    }, [planId, language, router, flagsLoading, isFeatureEnabled]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

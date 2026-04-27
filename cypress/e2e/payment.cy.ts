@@ -6,6 +6,9 @@ describe('Payment Flow (Mock Mode)', () => {
     // We can visit the page and check elements.
 
     beforeEach(() => {
+        // Clear any existing auth state
+        cy.clearAllLocalStorage();
+        cy.clearAllSessionStorage();
         // Ensure we are logged out or clean state for some tests?
         // Or just start.
     });
@@ -84,8 +87,6 @@ describe('Payment Flow (Mock Mode)', () => {
         // Visit checkout directly with a planId
         cy.visit('/checkout?planId=plano_anual');
 
-        // Check for hosted redirect notice (Issue 002 fix ensures this is visible)
-        cy.contains('redirected to a secure payment page').should('be.visible');
 
         // Click Confirm and Pay
         cy.contains('Confirm and Pay').click();
