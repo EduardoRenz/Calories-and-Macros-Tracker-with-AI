@@ -4,10 +4,10 @@ import { OpenAIChatAssistantService } from './OpenAIChatAssistantService';
 export class OpenRouterChatAssistantService extends OpenAIChatAssistantService {
     constructor(apiKey: string, dashboardRepo?: DashboardRepository) {
         // OpenRouter is OpenAI compatible
-        super(apiKey, dashboardRepo, 'https://openrouter.ai/api/v1', 'google/gemini-2.0-flash-001');
+        super(apiKey, dashboardRepo, 'https://openrouter.ai/api/v1', 'openrouter/auto');
     }
 
     protected getDefaultModel(): string {
-        return 'google/gemini-2.0-flash-001';
+        return 'openrouter/auto';
     }
 }
