@@ -19,6 +19,5 @@ export async function verifyAuth(authHeader: string | null): Promise<Authenticat
     }
 
     const token = authHeader.split('Bearer ')[1];
-    const verifier = getAuthVerifier();
     return await verifier.verifyToken(token);
 }
