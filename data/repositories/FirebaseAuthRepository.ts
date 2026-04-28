@@ -47,7 +47,7 @@ export class FirebaseAuthRepository implements AuthRepository {
         };
     }
 
-    onAuthStateChanged(callback: (user: User | null) => void): Unsubscribe {
+    onAuthStateChanged(callback: (user: User | null) => void): () => void {
         if (!this.auth) {
             callback(null);
             return () => { };

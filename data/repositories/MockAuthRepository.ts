@@ -36,7 +36,7 @@ export class MockAuthRepository implements AuthRepository {
         }
         return MockAuthRepository.instance;
     }
-    onAuthStateChanged(callback: (user: User | null) => void): void {
+    onAuthStateChanged(callback: (user: User | null) => void): () => void {
         listeners.push(callback);
 
         // Load initial state on first listener if in browser
@@ -50,6 +50,12 @@ export class MockAuthRepository implements AuthRepository {
         // Immediately call back with the current state synchronously
         callback(currentUser);
 
+        return () => {
+            const index = listeners.indexOf(callback);
+            if (index > -1) {
+                listeners.splice(index, 1);
+            }
+        };
     }
 
     private notifyListeners() {
