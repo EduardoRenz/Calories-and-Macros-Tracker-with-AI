@@ -87,7 +87,7 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                     .from('billing_subscriptions')
                     .select('*, billing_plans(plan_code)')
                     .eq('user_id', userId)
-                    .in('status', ['active', 'trialing', 'pending'])
+                    .in('status', ['active', 'trialing', 'pending', 'canceled'])
                     .order('created_at', { ascending: false })
                     .limit(1)
                     .maybeSingle();

@@ -67,7 +67,7 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
                 const q = query(
                     subscriptionsRef,
                     where('userId', '==', currentUser.uid),
-                    where('status', 'in', ['active', 'trialing', 'pending'])
+                    where('status', 'in', ['active', 'trialing', 'pending', 'canceled'])
                 );
 
                 const querySnapshot = await getDocs(q);
