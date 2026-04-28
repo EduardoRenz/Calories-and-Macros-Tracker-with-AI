@@ -44,17 +44,17 @@ create table if not exists public.dashboard_days (
   user_id uuid not null references auth.users(id) on delete cascade,
   date date not null,
 
-  calories_current integer not null default 0,
-  calories_goal integer not null default 0,
+  calories_current numeric not null default 0,
+  calories_goal numeric not null default 0,
 
-  protein_current integer not null default 0,
-  protein_goal integer not null default 0,
+  protein_current numeric not null default 0,
+  protein_goal numeric not null default 0,
 
-  carbs_current integer not null default 0,
-  carbs_goal integer not null default 0,
+  carbs_current numeric not null default 0,
+  carbs_goal numeric not null default 0,
 
-  fats_current integer not null default 0,
-  fats_goal integer not null default 0,
+  fats_current numeric not null default 0,
+  fats_goal numeric not null default 0,
 
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -70,11 +70,11 @@ create table if not exists public.dashboard_ingredients (
   meal_type text not null, -- breakfast | lunch | dinner | snacks
   name text not null,
   quantity text not null default '1',
-  calories integer not null default 0,
-  protein integer not null default 0,
-  carbs integer not null default 0,
-  fats integer not null default 0,
-  fiber integer not null default 0,
+  calories numeric not null default 0,
+  protein numeric not null default 0,
+  carbs numeric not null default 0,
+  fats numeric not null default 0,
+  fiber numeric not null default 0,
 
   created_at timestamptz not null default now()
 );
