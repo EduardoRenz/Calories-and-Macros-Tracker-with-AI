@@ -9,7 +9,8 @@ export default {
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
-    "quick_meal": "Quick Meal"
+    "quick_meal": "Quick Meal",
+    "back_to_home": "Back to Home"
   },
   "history": {
     "title": "History",
@@ -67,6 +68,7 @@ export default {
     "fiber_short": "Fiber",
     "calories_short": "kcal",
     "no_items_logged": "No items logged",
+    "remove_error": "Failed to remove ingredient. Please try again.",
     "ingredient": "Ingredient",
     "quantity": "Quantity",
     "total_macros": "Total Meal Macros",
@@ -85,7 +87,7 @@ export default {
     "fats": "Fats (g)",
     "cancel": "Cancel",
     "save": "Add Ingredient",
-    "analysis_error": "Could not get nutritional info. Please fill macros manually.",
+    "analysis_error": "Service temporarily unavailable. Please try again in a moment or fill macros manually.",
     "analyze_button_aria": "Analyze ingredient with AI",
     "macros_required": "Please fill in protein, carbs, and fats",
     "name_required": "Please fill in the ingredient name"
@@ -228,6 +230,86 @@ export default {
       "adjustments_required": "Adjustments Required"
     }
   },
+  "plans": {
+    "title": "Choose your plan",
+    "subtitle": "Select the plan that fits your fitness journey. Upgrade anytime to unlock advanced features.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "loading": "Loading plans...",
+    "features": {
+      "free": [
+        { "text": "Manual food logging", "included": true },
+        { "text": "Support for own API keys (OpenAI/Gemini)", "included": true },
+        { "text": "Basic 7-day history", "included": true },
+        { "text": "7-day free trial with premium features", "included": true },
+        { "text": "Photo-based nutrition analysis", "included": false },
+        { "text": "Advanced health reports", "included": false },
+        { "text": "HealthPal Assistant 24/7", "included": false }
+      ],
+      "member_monthly": [
+        { "text": "Integrated AI (No personal keys needed)", "included": true },
+        { "text": "Full photo-based nutrition analysis", "included": true },
+        { "text": "Unlimited history and backups", "included": true },
+        { "text": "Micronutrient and health reports", "included": true },
+        { "text": "HealthPal Assistant available 24/7", "included": true },
+        { "text": "Priority support", "included": true }
+      ],
+      "member_annual": {
+        "discount_message": "Save {{percentage}}%",
+        "features": [
+          { "text": "Integrated AI (No personal keys needed)", "included": true },
+          { "text": "Full photo-based nutrition analysis", "included": true },
+          { "text": "Unlimited history and backups", "included": true },
+          { "text": "Micronutrient and health reports", "included": true },
+          { "text": "HealthPal Assistant available 24/7", "included": true },
+          { "text": "Priority support", "included": true }
+        ]
+      },
+      "member_yearly": [
+        { "text": "Integrated AI (No personal keys needed)", "included": true },
+        { "text": "Full photo-based nutrition analysis", "included": true },
+        { "text": "Unlimited history and backups", "included": true },
+        { "text": "Micronutrient and health reports", "included": true },
+        { "text": "HealthPal Assistant available 24/7", "included": true },
+        { "text": "Priority support", "included": true }
+      ]
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete your secure payment to upgrade",
+    "back": "Back",
+    "contact_information": "Contact Information",
+    "email_address": "Email address",
+    "payment_method": "Payment Method",
+    "order_summary": "Order Summary",
+    "cardholder_name": "Cardholder Name",
+    "cardholder_name_placeholder": "Name as on card",
+    "card_number": "Card Number",
+    "card_number_placeholder": "0000 0000 0000 0000",
+    "expiry_date": "Expiry Date",
+    "expiry_date_placeholder": "MM / YY",
+    "cvc": "CVC",
+    "cvc_placeholder": "123",
+    "subtotal": "Subtotal",
+    "annual_discount": "Annual Discount",
+    "tax": "Tax",
+    "total_due": "Total due",
+    "confirm_purchase": "Confirm Purchase",
+    "confirm_and_pay": "Confirm and Pay →",
+    "secure_payments": "Payments are secure and encrypted",
+    "processing_payment": "Processing Checkout...",
+    "processing_message": "Redirecting to secure payment page...",
+    "payment_failed": "Payment failed. Please try again.",
+    "redirect_failed": "Could not initiate payment. Please try again.",
+    "hosted_redirect_notice": "You will be redirected to a secure payment page provided by AbacatePay to complete your subscription.",
+    "payment_methods": {
+      "card": "Card",
+      "paypal": "PayPal",
+      "pix": "Pix",
+      "crypto": "Crypto"
+    }
+  },
   "settings": {
     "title": "App Settings and API Management",
     "subtitle": "Manage your application preferences and AI service integrations.",
@@ -241,6 +323,51 @@ export default {
     "general": {
       "title": "General Settings",
       "language": "Language"
+    },
+    "subscription": {
+      "title": "Subscription",
+      "description": "Manage your plan and billing details",
+      "manage": "Manage Subscription",
+      "upgrade": "Upgrade to Premium",
+      "cancel": "Cancel Subscription",
+      "plan_free": "Free",
+      "plan_premium": "Premium",
+      "plan_trial": "Trial Period",
+      "premium_description": "You have full access to all AI features and advanced analysis.",
+      "trial_description": "You have full access to all AI features and advanced analysis for free for {{days}} days.",
+      "free_description": "Upgrade to unlock AI health analysis and exclusive features.",
+      "history_title": "Financial History",
+      "ends_on": "Ends on {{date}}",
+      "renews_on": "Renews on {{date}}",
+      "cancel_modal": {
+        "title": "Cancel Subscription",
+        "warning": "Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.",
+        "keep": "Keep Subscription",
+        "confirm": "Yes, Cancel",
+        "cancelling": "Cancelling...",
+        "error": "Failed to cancel subscription. Please try again."
+      },
+      "transaction_types": {
+        "subscription.completed": "Subscription Started",
+        "subscription.renewed": "Subscription Renewed",
+        "subscription.cancelled": "Subscription Cancelled",
+        "subscription.refunded": "Refund",
+        "subscription.chargeback": "Chargeback",
+        "payment": "Payment",
+        "charge": "Charge",
+        "renewal": "Renewal",
+        "refund": "Refund",
+        "dispute": "Dispute",
+        "loss": "Loss"
+      },
+      "transaction_status": {
+        "completed": "Completed",
+        "paid": "Paid",
+        "failed": "Failed",
+        "expired": "Expired",
+        "refunded": "Refunded",
+        "pending": "Pending"
+      }
     },
     "tokens": {
       "title": "AI API Tokens",
@@ -273,4 +400,4 @@ export default {
       "unknown_error": "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later."
     }
   }
-}
+};

@@ -16,6 +16,7 @@ export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
         this.remoteConfig.defaultConfig = {
             [FeatureFlags.ENABLE_CHATBOT]: true,
             [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
+            [FeatureFlags.ENABLE_PLANS]: true,
             'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
         };
 

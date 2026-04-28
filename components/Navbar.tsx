@@ -7,6 +7,7 @@ import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutI
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { useFeatureFlags } from '../contexts/FeatureFlagContext';
+import { useSubscription } from '../contexts/SubscriptionContext';
 import { Avatar } from './ui/Avatar';
 
 interface NavbarProps {
@@ -17,10 +18,20 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
     const { user, signOut } = useAuth();
     const { isUserApiKeysRequired } = useFeatureFlags();
+    const { subscription, loading: subscriptionLoading } = useSubscription();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+
+    const getTrialDaysRemaining = (sub: typeof subscription): number => {
+        if (!sub || !sub.currentPeriodEnd) return 0;
+        const now = new Date();
+        const end = new Date(sub.currentPeriodEnd);
+        const diffMs = end.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        return Math.max(0, diffDays);
+    };
 
     // Close avatar menu when clicking outside
     useEffect(() => {
@@ -114,6 +125,22 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                             <div className="p-3 border-b border-healthpal-border">
                                 <p className="font-medium text-healthpal-text-primary truncate">{user?.displayName || 'User'}</p>
                                 <p className="text-sm text-healthpal-text-secondary truncate">{user?.email}</p>
+                                {!subscriptionLoading && subscription && (
+                                    <div className="mt-2">
+                                        {subscription.isTrial ? (
+                                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-600 text-white">
+                                                {t('settings.subscription.plan_trial')} ({getTrialDaysRemaining(subscription)}d)
+                                            </span>
+                                        ) : (
+                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${subscription.isFree
+                                                ? 'bg-gray-700 text-gray-300'
+                                                : 'bg-healthpal-green text-black'
+                                                }`}>
+                                                {subscription.isFree ? t('settings.subscription.plan_free') : t('settings.subscription.plan_premium')}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                             <Link
                                 href="/profile"

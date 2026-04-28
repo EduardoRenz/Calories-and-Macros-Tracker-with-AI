@@ -5,7 +5,11 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguage, Language } from '@/contexts/LanguageContext';
 import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@/components/icons';
 import { ServiceFactory } from '@/data/ServiceFactory';
+import SubscriptionCard from '../../../components/SubscriptionCard';
+import BillingHistory from '@/components/payment/BillingHistory';
 import Modal from '@/components/ui/Modal';
+import { useFeatureFlags } from '../../../contexts/FeatureFlagContext';
+import { FeatureFlags } from '../../../domain/repositories/FeatureFlagRepository';
 
 // Types
 type ProviderId = 'gemini' | 'openai' | 'deepseek';
@@ -282,6 +286,8 @@ const AddApiKeyModal: React.FC<{ onClose: () => void, onSave: (key: ApiKey) => v
 
 export default function SettingsPage() {
     const { t } = useTranslation();
+    const { isFeatureEnabled } = useFeatureFlags();
+    const plansEnabled = isFeatureEnabled(FeatureFlags.ENABLE_PLANS);
 
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
@@ -293,6 +299,18 @@ export default function SettingsPage() {
             <section className="space-y-4">
                 <LanguageSelector />
             </section>
+
+            {plansEnabled && (
+                <>
+                    <section className="space-y-4">
+                        <SubscriptionCard />
+                    </section>
+
+                    <section className="space-y-4">
+                        <BillingHistory />
+                    </section>
+                </>
+            )}
 
             <section className="space-y-4">
                 <ApiTokenManager />

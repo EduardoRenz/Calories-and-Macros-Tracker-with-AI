@@ -23,16 +23,18 @@ export const FeatureFlagProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const repo = RepositoryFactory.getFeatureFlagRepository();
 
         // Pre-fetch known flags
-        const [enableChatbot, mandatoryUserApiKeys] = await Promise.all([
+        const [enableChatbot, mandatoryUserApiKeys, enablePlans] = await Promise.all([
             repo.isEnabled(FeatureFlags.ENABLE_CHATBOT),
-            repo.isEnabled(FeatureFlags.MANDATORY_USER_API_KEYS)
+            repo.isEnabled(FeatureFlags.MANDATORY_USER_API_KEYS),
+            repo.isEnabled(FeatureFlags.ENABLE_PLANS)
         ]);
 
-        console.log('Flags loaded:', { enableChatbot, mandatoryUserApiKeys }, ` From ${repo.constructor.name}`);
+        console.log('Flags loaded:', { enableChatbot, mandatoryUserApiKeys, enablePlans }, ` From ${repo.constructor.name}`);
 
         setFlags({
             [FeatureFlags.ENABLE_CHATBOT]: enableChatbot,
             [FeatureFlags.MANDATORY_USER_API_KEYS]: mandatoryUserApiKeys,
+            [FeatureFlags.ENABLE_PLANS]: enablePlans,
         });
         setLoading(false);
     };

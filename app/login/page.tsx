@@ -4,12 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { HealthPalLogo, GoogleIcon } from '@/components/icons';
-import { DonationPanel } from '@/components/DonationPanel';
+import LoginPlansCard from '@/components/LoginPlansCard';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { FeatureFlags } from '@/domain/repositories/FeatureFlagRepository';
+// import { DonationPanel } from '@/components/DonationPanel';
 
 export default function LoginPage() {
     const { user, signInWithGoogle, loading } = useAuth();
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const { isFeatureEnabled, loading: flagsLoading } = useFeatureFlags();
+    const plansEnabled = !flagsLoading && isFeatureEnabled(FeatureFlags.ENABLE_PLANS);
 
     useEffect(() => {
         if (user && !loading) {
@@ -73,7 +78,7 @@ export default function LoginPage() {
                             </>
                         )}
                     </button>
-
+                    {plansEnabled && <LoginPlansCard />}
                     <p className="text-xs text-healthpal-text-secondary mt-4 text-center">
                         Ao usar esta ferramenta, você concorda com nossas{' '}
                         <a
@@ -86,10 +91,10 @@ export default function LoginPage() {
                         </a>
                     </p>
                 </div>
-
+                {/* 
                 <div className="mt-8">
                     <DonationPanel variant="compact" />
-                </div>
+                </div> */}
             </div>
         </div>
     );
