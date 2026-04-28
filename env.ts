@@ -12,13 +12,16 @@ export const env = createEnv({
         GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
         GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
 
+        // Payment Configuration
+        ABACATE_PAY_API_KEY: z.string().optional(),
+
         // Migration, Admin Credentials and backend service keys (server-only)
         FIREBASE_CLIENT_EMAIL: z.string(),
         FIREBASE_PRIVATE_KEY: z.string(),
 
         // Supabase Configuration (Server-side)
         SUPABASE_URL: z.string(),
-        SUPABASE_ANON_KEY: z.string(),
+        SUPABASE_PUBLISHABLE_KEY: z.string(),
 
         // Supabase Service Role Key (for server-side operations and migrations)
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
@@ -35,6 +38,9 @@ export const env = createEnv({
         // Backend Provider (Client-side selection)
         NEXT_PUBLIC_BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']),
 
+        // Payment Provider (Client-side - for checkout provider selection)
+        NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'mock']).default('abacatepay'),
+
         // Gemini Models (Public - client-side)
         NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
         NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
@@ -50,7 +56,7 @@ export const env = createEnv({
 
         // Supabase Configuration (Public - client-side)
         NEXT_PUBLIC_SUPABASE_URL: z.string(),
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string(),
 
         // Donation Information (Public - available on client side)
         NEXT_PUBLIC_PIX_KEY: z.string().optional(),
@@ -67,17 +73,19 @@ export const env = createEnv({
         // Server variables
         GEMINI_API_KEY: process.env.GEMINI_API_KEY,
         GEMINI_FAST_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL,
+        ABACATE_PAY_API_KEY: process.env.ABACATE_PAY_API_KEY,
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 
         NODE_ENV: process.env.NODE_ENV,
 
         // Client variables
         NEXT_PUBLIC_BACKEND_PROVIDER: process.env.NEXT_PUBLIC_BACKEND_PROVIDER,
+        NEXT_PUBLIC_PAYMENT_PROVIDER: process.env.NEXT_PUBLIC_PAYMENT_PROVIDER,
         NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL,
         NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL,
         NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -88,7 +96,7 @@ export const env = createEnv({
         NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
         NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
         NEXT_PUBLIC_PIX_KEY: process.env.NEXT_PUBLIC_PIX_KEY,
         NEXT_PUBLIC_BTC_ADDRESS: process.env.NEXT_PUBLIC_BTC_ADDRESS,
         NEXT_PUBLIC_USDC_ADDRESS: process.env.NEXT_PUBLIC_USDC_ADDRESS,

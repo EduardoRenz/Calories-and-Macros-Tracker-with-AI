@@ -1,33 +1,40 @@
+import { useCallback, useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import en from '../locales/en';
 import es from '../locales/es';
 import pt from '../locales/pt';
 
-// FIX: Changed type to `Record<string, any>` to correctly handle nested translation objects
-// and resolve the TypeScript error in the `reduce` function below.
+// ... (translations mapping remains same)
 const translations: Record<string, any> = { en, es, pt };
 
-// Helper to access nested keys like 'profile.personal_info.title'
-function getNestedTranslation(language: string, key: string): string | undefined {
-  const result = key.split('.').reduce((obj, k) => {
+function getNestedValue(language: string, key: string): any {
+  return key.split('.').reduce((obj, k) => {
     return obj && typeof obj === 'object' ? obj[k] : undefined;
   }, translations[language]);
-
-  if (typeof result === 'string') {
-    return result;
-  }
-
-  return undefined;
 }
-
 
 export const useTranslation = () => {
   const { language } = useLanguage();
 
-  const t = (key: string): string => {
-    const translation = getNestedTranslation(language, key);
-    return translation || key;
-  };
+  const t = useCallback((key: string, data?: Record<string, string | number>): string => {
+    const value = getNestedValue(language, key);
+    let translation = typeof value === 'string' ? value : key;
 
-  return { t };
+    if (data && typeof translation === 'string') {
+      Object.entries(data).forEach(([k, v]) => {
+        translation = translation.replace(`{{${k}}}`, String(v));
+      });
+    }
+
+    return translation;
+  }, [language]);
+
+  /**
+   * Translates to an object or array
+   */
+  const to = useCallback(<T = any>(key: string): T | undefined => {
+    return getNestedValue(language, key);
+  }, [language]);
+
+  return useMemo(() => ({ t, to }), [t, to]);
 };

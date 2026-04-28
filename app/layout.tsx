@@ -4,6 +4,8 @@ import "@/styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 import SWRegistration from "@/components/SWRegistration";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -37,7 +39,11 @@ export default function RootLayout({
                 <LanguageProvider>
                     <FeatureFlagProvider>
                         <AuthProvider>
-                            {children}
+                            <SubscriptionProvider>
+                                <ToastProvider>
+                                    {children}
+                                </ToastProvider>
+                            </SubscriptionProvider>
                         </AuthProvider>
                     </FeatureFlagProvider>
                 </LanguageProvider>

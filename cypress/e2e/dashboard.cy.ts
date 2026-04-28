@@ -46,7 +46,7 @@ describe('Dashboard Meal Management', () => {
     cy.get('input[name="name"]').type(ingredientName);
     cy.get('input[name="quantity"]').type(quantity);
     cy.get('input[name="fiber"]').should('have.attr', 'readonly');
-    cy.get('input[name="fiber"]').should('have.value', '0');
+    cy.get('input[name="fiber"]').should('have.value', '');
     // Calories is read-only now, so we don't type it.
     // cy.get('input[name="calories"]').type(calories.toString());
     cy.get('input[name="protein"]').type(protein.toString());
@@ -85,7 +85,7 @@ describe('Dashboard Meal Management', () => {
   it('should never show zero goals when profile is available', () => {
     // Wait for profile to load and goals to be calculated
     cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
-    
+
     // Check that calorie goal is not zero by checking the macro progress cards
     cy.contains('h3', 'Calories').parent().within(() => {
       cy.get('[data-testid="macro-goal-calories"]').invoke('text').then((text) => {

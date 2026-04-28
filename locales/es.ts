@@ -9,7 +9,8 @@ export default {
     "profile": "Perfil",
     "settings": "Ajustes",
     "logout": "Cerrar Sesión",
-    "quick_meal": "Comida Rápida"
+    "quick_meal": "Comida Rápida",
+    "back_to_home": "Volver al Inicio"
   },
   "history": {
     "title": "Historial",
@@ -64,6 +65,7 @@ export default {
     "fiber_short": "Fibra",
     "calories_short": "kcal",
     "no_items_logged": "No hay alimentos registrados",
+    "remove_error": "Error al eliminar el ingrediente. Por favor, inténtelo de nuevo.",
     "ingredient": "Ingrediente",
     "quantity": "Cantidad",
     "total_macros": "Macros Totales",
@@ -82,8 +84,10 @@ export default {
     "fats": "Grasas (g)",
     "cancel": "Cancelar",
     "save": "Añadir Ingrediente",
-    "analysis_error": "No se pudo obtener la información nutricional. Por favor, complete los macros manualmente.",
-    "analyze_button_aria": "Analizar ingrediente con IA"
+    "analysis_error": "Servicio temporalmente no disponible. Por favor, inténtelo de nuevo en un momento o complete los macros manualmente.",
+    "analyze_button_aria": "Analizar ingrediente con IA",
+    "macros_required": "Por favor, complete proteína, carbohidratos y grasas",
+    "name_required": "Por favor, complete el nombre del ingrediente"
   },
   "quick_meal_modal": {
     "title": "Registrar Comida Rápida con IA",
@@ -223,6 +227,86 @@ export default {
       "adjustments_required": "Ajustes Requeridos"
     }
   },
+  "plans": {
+    "title": "Elige tu plan",
+    "subtitle": "Selecciona el plan que se adapte a tu viaje de fitness. Actualiza en cualquier momento para desbloquear funciones avanzadas.",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "loading": "Cargando planes...",
+    "features": {
+      "free": [
+        { "text": "Registro manual de alimentos", "included": true },
+        { "text": "Soporte para claves de API propias (OpenAI/Gemini)", "included": true },
+        { "text": "Historial básico de 7 dias", "included": true },
+        { "text": "7 días de prueba gratis con funciones premium", "included": true },
+        { "text": "Análisis nutricional por foto", "included": false },
+        { "text": "Informes de salud avanzados", "included": false },
+        { "text": "Asistente HealthPal 24/7", "included": false }
+      ],
+      "member_monthly": [
+        { "text": "IA Integrada (Sin necesidad de claves propias)", "included": true },
+        { "text": "Análisis nutricional completo por foto", "included": true },
+        { "text": "Historial ilimitado y copias de seguridad", "included": true },
+        { "text": "Informes de micronutrientes y salud", "included": true },
+        { "text": "Asistente HealthPal disponible 24/7", "included": true },
+        { "text": "Soporte prioritário", "included": true }
+      ],
+      "member_annual": {
+        "discount_message": "Ahorra {{percentage}}%",
+        "features": [
+          { "text": "IA Integrada (Sin necesidad de claves próprias)", "included": true },
+          { "text": "Análisis nutricional completo por foto", "included": true },
+          { "text": "Historial ilimitado y copias de seguridad", "included": true },
+          { "text": "Informes de micronutrientes y salud", "included": true },
+          { "text": "Asistente HealthPal disponible 24/7", "included": true },
+          { "text": "Soporte prioritário", "included": true }
+        ]
+      },
+      "member_yearly": [
+        { "text": "IA Integrada (Sin necesidad de claves próprias)", "included": true },
+        { "text": "Análisis nutricional completo por foto", "included": true },
+        { "text": "Historial ilimitado y copias de seguridad", "included": true },
+        { "text": "Informes de micronutrientes y salud", "included": true },
+        { "text": "Asistente HealthPal disponible 24/7", "included": true },
+        { "text": "Soporte prioritário", "included": true }
+      ]
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Completa tu pago seguro para actualizar",
+    "back": "Volver",
+    "contact_information": "Información de Contacto",
+    "email_address": "Dirección de correo",
+    "payment_method": "Método de Pago",
+    "order_summary": "Resumen del Pedido",
+    "cardholder_name": "Nombre del Titular",
+    "cardholder_name_placeholder": "Nombre como en la tarjeta",
+    "card_number": "Número de Tarjeta",
+    "card_number_placeholder": "0000 0000 0000 0000",
+    "expiry_date": "Fecha de Vencimiento",
+    "expiry_date_placeholder": "MM / AA",
+    "cvc": "CVC",
+    "cvc_placeholder": "123",
+    "subtotal": "Subtotal",
+    "annual_discount": "Descuento Anual",
+    "tax": "Impuesto",
+    "total_due": "Total a Pagar",
+    "confirm_purchase": "Confirmar Compra",
+    "confirm_and_pay": "Confirmar y Pagar →",
+    "secure_payments": "Los pagos son seguros y están encriptados",
+    "processing_payment": "Procesando Checkout...",
+    "processing_message": "Redirigiendo a la página de pago seguro...",
+    "payment_failed": "El pago falló. Por favor, inténtalo de nuevo.",
+    "redirect_failed": "No se pudo iniciar el pago. Por favor, inténtalo de nuevo.",
+    "hosted_redirect_notice": "Serás redirigido a una página de pago segura proporcionada por AbacatePay para completar tu suscripción.",
+    "payment_methods": {
+      "card": "Tarjeta",
+      "paypal": "PayPal",
+      "pix": "Pix",
+      "crypto": "Cripto"
+    }
+  },
   "settings": {
     "title": "Ajustes de App y Gestión de API",
     "subtitle": "Gestiona las preferencias de tu aplicación y las integraciones de servicios de IA.",
@@ -236,6 +320,46 @@ export default {
     "general": {
       "title": "Ajustes Generales",
       "language": "Idioma"
+    },
+    "subscription": {
+      "title": "Suscripción",
+      "description": "Gestiona tu plan y detalles de facturación",
+      "manage": "Gestionar Suscripción",
+      "upgrade": "Mejorar a Premium",
+      "cancel": "Cancelar Suscripción",
+      "plan_free": "Gratis",
+      "plan_premium": "Premium",
+      "plan_trial": "Período de prueba",
+      "premium_description": "Tienes acceso total a todas las funciones de IA y análisis avanzados.",
+      "trial_description": "Tienes acceso total a todas las funciones de IA y análisis avanzados gratis por {{days}} días.",
+      "free_description": "Mejora para desbloquear el análisis de salud con IA y funciones exclusivas.",
+      "history_title": "Historial Financiero",
+      "ends_on": "Vence el {{date}}",
+      "renews_on": "Se renueva el {{date}}",
+      "cancel_modal": {
+        "title": "Cancelar Suscripción",
+        "warning": "¿Estás seguro de que deseas cancelar tu suscripción? Continuarás teniendo acceso hasta el final de tu período de facturación actual.",
+        "keep": "Mantener Suscripción",
+        "confirm": "Sí, Cancelar",
+        "cancelling": "Cancelando...",
+        "error": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
+      },
+      "transaction_types": {
+        "subscription.completed": "Suscripción Iniciada",
+        "subscription.renewed": "Suscripción Renovada",
+        "subscription.cancelled": "Suscripción Cancelada",
+        "subscription.refunded": "Reembolso",
+        "subscription.chargeback": "Contracargo",
+        "payment": "Pago"
+      },
+      "transaction_status": {
+        "completed": "Completado",
+        "paid": "Pagado",
+        "failed": "Fallido",
+        "expired": "Expirado",
+        "refunded": "Reembolsado",
+        "pending": "Pendiente"
+      }
     },
     "tokens": {
       "title": "Tokens de API de IA",

@@ -22,6 +22,13 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [language, setLanguage] = useState<Language>('en');
 
   useEffect(() => {
+    const stored = getStoredLanguage();
+    if (stored !== 'en') {
+      setLanguage(stored);
+    }
+  }, []);
+
+  useEffect(() => {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
     if (saved) {
       setLanguage(saved as Language);
