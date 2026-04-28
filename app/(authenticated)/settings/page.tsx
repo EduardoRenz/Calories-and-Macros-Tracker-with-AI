@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguage, Language } from '@/contexts/LanguageContext';
-import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon } from '@/components/icons';
+import { RkIcon, GlobeIcon, PlusIcon, GoogleIcon, SparklesIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon, OpenRouterIcon } from '@/components/icons';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import SubscriptionCard from '../../../components/SubscriptionCard';
 import BillingHistory from '@/components/payment/BillingHistory';
@@ -12,7 +12,7 @@ import { useFeatureFlags } from '../../../contexts/FeatureFlagContext';
 import { FeatureFlags } from '../../../domain/repositories/FeatureFlagRepository';
 
 // Types
-type ProviderId = 'gemini' | 'openai' | 'deepseek';
+type ProviderId = 'gemini' | 'openai' | 'deepseek' | 'openrouter';
 
 interface ApiKey {
     provider: ProviderId;
@@ -24,6 +24,7 @@ const PROVIDERS: { id: ProviderId; name: string; icon: React.ReactNode }[] = [
     { id: 'gemini', name: 'Google Gemini', icon: <GoogleIcon className="w-6 h-6" /> },
     { id: 'openai', name: 'OpenAI', icon: <SparklesIcon className="w-6 h-6" /> },
     { id: 'deepseek', name: 'DeepSeek (Text only)', icon: <RkIcon className="w-6 h-6" /> },
+    { id: 'openrouter', name: 'OpenRouter', icon: <OpenRouterIcon className="w-6 h-6" /> },
 ];
 
 const LanguageSelector: React.FC = () => {
