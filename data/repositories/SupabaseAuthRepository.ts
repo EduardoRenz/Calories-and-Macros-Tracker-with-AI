@@ -72,7 +72,7 @@ export class SupabaseAuthRepository implements AuthRepository {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined,
+          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback?next=/dashboard` : undefined,
         },
       });
 
@@ -86,6 +86,13 @@ export class SupabaseAuthRepository implements AuthRepository {
 
       return null;
     });
+  }
+
+  async handleAuthCallback(code: string): Promise<User | null> {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) throw error;
+    return data.user ? this.mapUser(data.user) : null;
   }
 
   async signOut(): Promise<void> {

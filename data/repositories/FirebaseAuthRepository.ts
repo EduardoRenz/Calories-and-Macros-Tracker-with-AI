@@ -62,6 +62,13 @@ export class FirebaseAuthRepository implements AuthRepository {
         return this.signInWithGoogle();
     }
 
+    async handleAuthCallback(code: string): Promise<User | null> {
+        // Firebase handles its own callbacks via popups/redirects mostly automatically
+        // when using signInWithPopup/signInWithRedirect.
+        // If we were using a custom redirect flow with code, we would implement it here.
+        return null;
+    }
+
     async signInWithGoogle(): Promise<User | null> {
         const key = 'signInWithGoogle';
         return this.concurrencyManager.run(key, async () => {

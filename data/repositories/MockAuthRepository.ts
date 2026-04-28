@@ -96,6 +96,10 @@ export class MockAuthRepository implements AuthRepository {
         });
     }
 
+    async handleAuthCallback(code: string): Promise<User | null> {
+        return this.signInWithGoogle();
+    }
+
     async signOut(): Promise<void> {
         currentUser = null;
         setMockUser(null);

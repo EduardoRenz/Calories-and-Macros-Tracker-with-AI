@@ -9,6 +9,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password?: string) => Promise<User | null>;
   signInWithGoogle: () => Promise<User | null>;
+  handleAuthCallback: (code: string) => Promise<User | null>;
   signOut: () => Promise<void>;
 }
 
@@ -41,6 +42,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return signedInUser;
   }
 
+  const handleAuthCallback = async (code: string) => {
+    setLoading(true);
+    try {
+      const signedInUser = await authRepository.handleAuthCallback(code);
+      return signedInUser;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const signOut = async () => {
     setLoading(true);
     await authRepository.signOut();
@@ -49,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
   };
 
-  const value = { user, loading, signIn, signInWithGoogle, signOut };
+  const value = { user, loading, signIn, signInWithGoogle, handleAuthCallback, signOut };
 
   return (
     <AuthContext.Provider value={value}>
