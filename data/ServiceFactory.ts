@@ -13,6 +13,7 @@ import { GeminiChatAssistantService } from './services/GeminiChatAssistantServic
 import { OpenAIChatAssistantService } from './services/OpenAIChatAssistantService';
 import { DeepSeekChatAssistantService } from './services/DeepSeekChatAssistantService';
 import { OpenRouterChatAssistantService } from './services/OpenRouterChatAssistantService';
+import { FallbackChatAssistantService } from './services/FallbackChatAssistantService';
 
 import { GeminiNutritionAnalysisService } from './services/GeminiNutritionAnalysisService';
 import { OpenAINutritionAnalysisService } from './services/OpenAINutritionAnalysisService';
@@ -146,7 +147,23 @@ export class ServiceFactory {
 
         console.log(`[ServiceFactory] Loaded ${services.length} services from user settings:`, savedKeys.map(k => k.provider));
 
-        if (typeof window !== 'undefined') {
+        if (typeof window === 'undefined') {
+            // Server-side: OpenRouter first, then Gemini as fallback
+            if (env.OPENROUTER_API_KEY) {
+                try {
+                    services.push(new OpenRouterFoodAnalysisService(env.OPENROUTER_API_KEY));
+                } catch (e) {
+                    console.error('Failed to instantiate OpenRouterFoodAnalysisService', e);
+                }
+            }
+            if (env.GEMINI_API_KEY) {
+                try {
+                    services.push(new GeminiFoodAnalysisService(env.GEMINI_API_KEY));
+                } catch (e) {
+                    console.error('Failed to instantiate GeminiFoodAnalysisService', e);
+                }
+            }
+        } else {
             const authRepo = RepositoryFactory.getAuthRepository();
             services.push(new NextApiFoodAnalysisService(authRepo));
         }
@@ -180,7 +197,23 @@ export class ServiceFactory {
             }
         }
 
-        if (typeof window !== 'undefined') {
+        if (typeof window === 'undefined') {
+            // Server-side: OpenRouter first, then Gemini as fallback
+            if (env.OPENROUTER_API_KEY) {
+                try {
+                    services.push(new OpenRouterNutritionAnalysisService(env.OPENROUTER_API_KEY));
+                } catch (e) {
+                    console.error('Failed to instantiate OpenRouterNutritionAnalysisService', e);
+                }
+            }
+            if (env.GEMINI_API_KEY) {
+                try {
+                    services.push(new GeminiNutritionAnalysisService(env.GEMINI_API_KEY));
+                } catch (e) {
+                    console.error('Failed to instantiate GeminiNutritionAnalysisService', e);
+                }
+            }
+        } else {
             const authRepo = RepositoryFactory.getAuthRepository();
             services.push(new NextApiNutritionAnalysisService(authRepo));
         }
@@ -214,7 +247,23 @@ export class ServiceFactory {
             }
         }
 
-        if (typeof window !== 'undefined') {
+        if (typeof window === 'undefined') {
+            // Server-side: OpenRouter first, then Gemini as fallback
+            if (env.OPENROUTER_API_KEY) {
+                try {
+                    services.push(new OpenRouterImageRecognitionService(env.OPENROUTER_API_KEY));
+                } catch (e) {
+                    console.error('Failed to instantiate OpenRouterImageRecognitionService', e);
+                }
+            }
+            if (env.GEMINI_API_KEY) {
+                try {
+                    services.push(new GeminiImageRecognitionService(env.GEMINI_API_KEY));
+                } catch (e) {
+                    console.error('Failed to instantiate GeminiImageRecognitionService', e);
+                }
+            }
+        } else {
             const authRepo = RepositoryFactory.getAuthRepository();
             services.push(new NextApiImageRecognitionService(authRepo));
         }
@@ -244,11 +293,25 @@ export class ServiceFactory {
         }
 
         if (typeof window === 'undefined') {
-            if (env.GEMINI_API_KEY) {
-                return new GeminiChatAssistantService(env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository());
+            // Server-side: OpenRouter first, then Gemini as fallback
+            const services: ChatAssistantService[] = [];
+            if (env.OPENROUTER_API_KEY) {
+                try {
+                    services.push(new OpenRouterChatAssistantService(env.OPENROUTER_API_KEY, RepositoryFactory.getDashboardRepository()));
+                } catch (e) {
+                    console.error('Failed to instantiate OpenRouterChatAssistantService', e);
+                }
             }
-            // Note: OPENAI_API_KEY and DEEPSEEK_API_KEY are not in env schema
-            // These would need to be added if you want to use them server-side
+            if (env.GEMINI_API_KEY) {
+                try {
+                    services.push(new GeminiChatAssistantService(env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository()));
+                } catch (e) {
+                    console.error('Failed to instantiate GeminiChatAssistantService', e);
+                }
+            }
+            if (services.length > 0) {
+                return new FallbackChatAssistantService(services);
+            }
             return new MockChatAssistantService();
         }
 

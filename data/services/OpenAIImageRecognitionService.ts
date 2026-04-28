@@ -1,19 +1,26 @@
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { Ingredient } from '../../domain/entities/dashboard';
 
-const blobToBase64 = (blob: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-                resolve(reader.result.split(',')[1]);
-            } else {
-                reject(new Error('Failed to convert blob to base64'));
-            }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
+const blobToBase64 = async (blob: Blob): Promise<string> => {
+    // Check if we are in a browser environment
+    if (typeof window !== 'undefined' && typeof FileReader !== 'undefined') {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                    resolve(reader.result.split(',')[1]);
+                } else {
+                    reject(new Error('Failed to convert blob to base64'));
+                }
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } else {
+        // Node.js / Server environment
+        const buffer = Buffer.from(await blob.arrayBuffer());
+        return buffer.toString('base64');
+    }
 };
 
 export class OpenAIImageRecognitionService implements ImageRecognitionService {
