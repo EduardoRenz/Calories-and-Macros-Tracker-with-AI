@@ -3,8 +3,8 @@ import { User } from '../../domain/entities/user';
 import { getSupabaseClient } from '../supabaseClient';
 import type { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
-
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
+import { getAuthRedirectUrl } from '../utils/getAuthRedirectUrl';
 
 export class SupabaseAuthRepository implements AuthRepository {
   private static instance: SupabaseAuthRepository;
@@ -72,7 +72,7 @@ export class SupabaseAuthRepository implements AuthRepository {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback?next=/dashboard` : undefined,
+          redirectTo: getAuthRedirectUrl(),
         },
       });
 

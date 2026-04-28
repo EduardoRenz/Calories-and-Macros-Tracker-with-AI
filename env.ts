@@ -54,6 +54,9 @@ export const env = createEnv({
         NEXT_PUBLIC_SUPABASE_URL: z.string(),
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string(),
 
+        // App base URL for auth redirects (optional - falls back to window.location.origin)
+        NEXT_PUBLIC_APP_URL: z.string().optional(),
+
         // Donation Information (Public - available on client side)
         NEXT_PUBLIC_PIX_KEY: z.string().optional(),
         NEXT_PUBLIC_BTC_ADDRESS: z.string().optional(),
@@ -91,6 +94,7 @@ export const env = createEnv({
         NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+        NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
         NEXT_PUBLIC_PIX_KEY: process.env.NEXT_PUBLIC_PIX_KEY,
         NEXT_PUBLIC_BTC_ADDRESS: process.env.NEXT_PUBLIC_BTC_ADDRESS,
         NEXT_PUBLIC_USDC_ADDRESS: process.env.NEXT_PUBLIC_USDC_ADDRESS,
