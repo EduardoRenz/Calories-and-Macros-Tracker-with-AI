@@ -29,7 +29,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     };
   }
 
-  onAuthStateChanged(callback: (user: User | null) => void): void {
+  onAuthStateChanged(callback: (user: User | null) => void): () => void {
     const supabase = getSupabaseClient();
 
     supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
@@ -40,9 +40,9 @@ export class SupabaseAuthRepository implements AuthRepository {
       callback(session?.user ? this.mapUser(session.user) : null);
     });
 
-
-    data.subscription.unsubscribe();
-
+    return () => {
+      data.subscription.unsubscribe();
+    };
   }
 
   async signIn(email: string, password?: string): Promise<User | null> {
