@@ -79,7 +79,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                 </button>
             </div>
             <p className="text-xs text-center text-healthpal-text-tertiary mt-2">
-                HealthPal Assistant may provide inaccurate info.
+                {t('assistant.disclaimer')}
             </p>
         </div>
     );

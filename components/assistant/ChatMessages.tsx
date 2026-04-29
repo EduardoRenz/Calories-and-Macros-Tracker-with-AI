@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { ChatMessage as IChatMessage } from '../../domain/entities/ChatMessage';
 import ChatMessage from './ChatMessage';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface ChatMessagesProps {
     messages: IChatMessage[];
@@ -15,6 +16,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     onCancelAction,
     isThinking
 }) => {
+    const { t } = useTranslation();
     const bottomRef = useRef<HTMLDivElement>(null);
 
     // Scroll to bottom on new messages
@@ -32,7 +34,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                         <span className="text-3xl">👋</span>
                     </div>
                     <p className="text-healthpal-text-secondary text-sm">
-                        Say hello to your personal health assistant!
+                        {t('assistant.welcome_message')}
                     </p>
                 </div>
             )}
