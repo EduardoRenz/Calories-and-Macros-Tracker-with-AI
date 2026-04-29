@@ -12,9 +12,7 @@ export const env = createEnv({
         GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
         GEMINI_PRO_DEFAULT_MODEL: z.string().default('gemini-3-pro-preview'),
 
-        // OpenRouter API Configuration
         OPENROUTER_API_KEY: z.string().optional(),
-        OPENROUTER_DEFAULT_MODEL: z.string().default('openrouter/auto'),
 
         // Payment Configuration
         ABACATE_PAY_API_KEY: z.string().optional(),
@@ -40,6 +38,9 @@ export const env = createEnv({
 
         // Payment Provider (Client-side - for checkout provider selection)
         NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'mock']).default('abacatepay'),
+
+        // OpenRouter Models (Public - client-side)
+        NEXT_PUBLIC_OPENROUTER_DEFAULT_MODEL: z.string().default('openrouter/auto'),
 
         // Gemini Models (Public - client-side)
         NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL: z.string().default('gemini-3-flash-preview'),
@@ -78,7 +79,6 @@ export const env = createEnv({
         GEMINI_FAST_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL,
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
         OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
-        OPENROUTER_DEFAULT_MODEL: process.env.OPENROUTER_DEFAULT_MODEL,
         ABACATE_PAY_API_KEY: process.env.ABACATE_PAY_API_KEY,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
@@ -104,6 +104,7 @@ export const env = createEnv({
         NEXT_PUBLIC_PIX_KEY: process.env.NEXT_PUBLIC_PIX_KEY,
         NEXT_PUBLIC_BTC_ADDRESS: process.env.NEXT_PUBLIC_BTC_ADDRESS,
         NEXT_PUBLIC_USDC_ADDRESS: process.env.NEXT_PUBLIC_USDC_ADDRESS,
+        NEXT_PUBLIC_OPENROUTER_DEFAULT_MODEL: process.env.NEXT_PUBLIC_OPENROUTER_DEFAULT_MODEL || process.env.OPENROUTER_DEFAULT_MODEL,
         NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
     },
 

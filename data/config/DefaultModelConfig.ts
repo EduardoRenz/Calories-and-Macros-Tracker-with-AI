@@ -6,10 +6,10 @@ export const DEFAULT_MODEL_CONFIG = {
         "image": "gemini-3.1-flash"
     },
     "openai": {
-        "chat": "gpt-4o",
-        "food": "gpt-4o",
-        "nutrition": "gpt-4o",
-        "image": "gpt-4o"
+        "chat": "gpt-5.4-nano-2026-03-17",
+        "food": "gpt-5.4-nano-2026-03-17",
+        "nutrition": "gpt-5.4-nano-2026-03-17",
+        "image": "gpt-5-mini-2025-08-07"
     },
     "deepseek": {
         "chat": "deepseek-v4-flash",

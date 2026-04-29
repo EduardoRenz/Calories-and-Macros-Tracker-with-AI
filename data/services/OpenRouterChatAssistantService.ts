@@ -9,6 +9,6 @@ export class OpenRouterChatAssistantService extends OpenAIChatAssistantService {
     }
 
     protected getDefaultModel(): string {
-        return env.OPENROUTER_DEFAULT_MODEL;
+        return env.NEXT_PUBLIC_OPENROUTER_DEFAULT_MODEL;
     }
 }

@@ -80,7 +80,7 @@ export class ServiceFactory {
         return this.nutritionInstance;
     }
 
-    public static getImageRecognitionService(): ImageRecognitionService {
+    public static async getImageRecognitionService(): Promise<ImageRecognitionService> {
         if (this.imageInstance) {
             return this.imageInstance;
         }
@@ -88,7 +88,7 @@ export class ServiceFactory {
             this.imageInstance = new MockImageRecognitionService();
             return this.imageInstance;
         }
-        this.imageInstance = this.createImageServiceChain();
+        this.imageInstance = await this.createImageServiceChain();
         return this.imageInstance;
     }
 
@@ -222,24 +222,26 @@ export class ServiceFactory {
         return new FallbackNutritionAnalysisService(services);
     }
 
-    private static createImageServiceChain(): ImageRecognitionService {
+    private static async createImageServiceChain(): Promise<ImageRecognitionService> {
         const services: ImageRecognitionService[] = [];
         const savedKeys = this.loadKeys();
+        const modelRepo = RepositoryFactory.getModelConfigRepository();
 
         for (const keyConfig of savedKeys) {
             try {
+                const model = await modelRepo.getModelVersion(keyConfig.provider, 'image');
                 switch (keyConfig.provider) {
                     case 'gemini':
-                        services.push(new GeminiImageRecognitionService(keyConfig.key));
+                        services.push(new GeminiImageRecognitionService(keyConfig.key, model));
                         break;
                     case 'openai':
-                        services.push(new OpenAIImageRecognitionService(keyConfig.key));
+                        services.push(new OpenAIImageRecognitionService(keyConfig.key, undefined, model));
                         break;
                     case 'deepseek':
-                        services.push(new DeepSeekImageRecognitionService(keyConfig.key));
+                        services.push(new DeepSeekImageRecognitionService(keyConfig.key, model));
                         break;
                     case 'openrouter':
-                        services.push(new OpenRouterImageRecognitionService(keyConfig.key));
+                        services.push(new OpenRouterImageRecognitionService(keyConfig.key, model));
                         break;
                 }
             } catch (e) {
@@ -251,14 +253,16 @@ export class ServiceFactory {
             // Server-side: OpenRouter first, then Gemini as fallback
             if (env.OPENROUTER_API_KEY) {
                 try {
-                    services.push(new OpenRouterImageRecognitionService(env.OPENROUTER_API_KEY));
+                    const model = await modelRepo.getModelVersion('openrouter', 'image');
+                    services.push(new OpenRouterImageRecognitionService(env.OPENROUTER_API_KEY, model));
                 } catch (e) {
                     console.error('Failed to instantiate OpenRouterImageRecognitionService', e);
                 }
             }
             if (env.GEMINI_API_KEY) {
                 try {
-                    services.push(new GeminiImageRecognitionService(env.GEMINI_API_KEY));
+                    const model = await modelRepo.getModelVersion('gemini', 'image');
+                    services.push(new GeminiImageRecognitionService(env.GEMINI_API_KEY, model));
                 } catch (e) {
                     console.error('Failed to instantiate GeminiImageRecognitionService', e);
                 }

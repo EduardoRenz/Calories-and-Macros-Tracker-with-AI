@@ -1,28 +1,6 @@
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { Ingredient } from '../../domain/entities/dashboard';
 
-const blobToBase64 = async (blob: Blob): Promise<string> => {
-    // Check if we are in a browser environment
-    if (typeof window !== 'undefined' && typeof FileReader !== 'undefined') {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                if (typeof reader.result === 'string') {
-                    resolve(reader.result.split(',')[1]);
-                } else {
-                    reject(new Error('Failed to convert blob to base64'));
-                }
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
-    } else {
-        // Node.js / Server environment
-        const buffer = Buffer.from(await blob.arrayBuffer());
-        return buffer.toString('base64');
-    }
-};
-
 export class OpenAIImageRecognitionService implements ImageRecognitionService {
     private apiKey: string;
     private baseUrl: string;
@@ -35,19 +13,11 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
     }
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
-        const base64Image = await blobToBase64(image);
-
-        const languageMap: { [key: string]: string } = {
-            'en': 'English',
-            'es': 'Spanish',
-            'pt': 'Portuguese'
-        };
-        const languageName = languageMap[language] || 'English';
-
-        let promptText = `Analyze the food items in this image. 
+        const base64Image = await this.blobToBase64(image);
+        const defaultPrompt = `Analyze the food items in this image. 
         Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), 
         and nutritional information (calories, protein, carbs, fats, fiber) per serving. 
-        Name the ingredients in ${languageName}. 
+        Name the ingredients in ${language === 'pt' ? 'Portuguese' : language}. 
         
         Respond ONLY with a valid JSON object matching this schema:
         {
@@ -66,10 +36,6 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
         
         If an item is unrecognizable, omit it.`;
 
-        if (prompt && prompt.trim()) {
-            promptText = `${prompt}\n\n${promptText}`;
-        }
-
         try {
             const response = await fetch(`${this.baseUrl}/chat/completions`, {
                 method: 'POST',
@@ -81,16 +47,16 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
                     model: this.model,
                     messages: [
                         {
-                            role: "user",
+                            role: 'user',
                             content: [
                                 {
-                                    type: "text",
-                                    text: promptText
+                                    type: 'text',
+                                    text: prompt || defaultPrompt
                                 },
                                 {
-                                    type: "image_url",
+                                    type: 'image_url',
                                     image_url: {
-                                        url: `data:${image.type};base64,${base64Image}`
+                                        url: `data:image/jpeg;base64,${base64Image}`
                                     }
                                 }
                             ]
@@ -111,15 +77,24 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
             if (!content) throw new Error("Empty response from OpenAI");
 
             const result = JSON.parse(content);
-
-            if (result.ingredients && Array.isArray(result.ingredients)) {
-                return result.ingredients;
-            }
-
-            return [];
+            return result.ingredients;
         } catch (error) {
             console.error("OpenAI Image Recognition Error:", error);
             throw error;
         }
+    }
+
+    private async blobToBase64(blob: Blob): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                // Remove potential metadata prefix (data:image/jpeg;base64,)
+                const base64Data = base64String.split(',')[1] || base64String;
+                resolve(base64Data);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
     }
 }

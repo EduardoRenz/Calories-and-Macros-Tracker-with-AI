@@ -39,8 +39,16 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const [originalEditForm, setOriginalEditForm] = useState<Omit<Ingredient, 'id'> | null>(null);
     const [imagePrompt, setImagePrompt] = useState<string>('');
 
-    const imageRecognitionService: ImageRecognitionService = useMemo(() => ServiceFactory.getImageRecognitionService(), []);
+    const [imageRecognitionService, setImageRecognitionService] = useState<ImageRecognitionService | null>(null);
     const imageCompressionService: ImageCompressionService = useMemo(() => ServiceFactory.getImageCompressionService(), []);
+
+    useEffect(() => {
+        const initService = async () => {
+            const service = await ServiceFactory.getImageRecognitionService();
+            setImageRecognitionService(service);
+        };
+        initService();
+    }, []);
 
     useEffect(() => {
         if (isOpen) {
@@ -103,7 +111,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     };
 
     const handleAnalyzeMeal = async () => {
-        if (!image) return;
+        if (!image || !imageRecognitionService) return;
 
         setIsLoading(true);
         setError(null);

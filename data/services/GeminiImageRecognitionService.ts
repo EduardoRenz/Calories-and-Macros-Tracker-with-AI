@@ -27,13 +27,12 @@ const blobToBase64 = async (blob: Blob): Promise<string> => {
 
 export class GeminiImageRecognitionService implements ImageRecognitionService {
     private ai: GoogleGenAI;
+    private model: string;
 
-    constructor(apiKey?: string) {
-        const key = apiKey || env.GEMINI_API_KEY;
-        if (!key) {
-            throw new Error("GEMINI_API_KEY not set (neither in constructor nor environment).");
-        }
-        this.ai = new GoogleGenAI({ apiKey: key });
+    constructor(apiKey?: string, model?: string) {
+        const key = apiKey || (typeof window === 'undefined' ? env.GEMINI_API_KEY : '');
+        this.ai = new GoogleGenAI({ apiKey: key || '' });
+        this.model = model || env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.0-flash';
     }
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
@@ -54,7 +53,7 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
             }
 
             const response = await this.ai.models.generateContent({
-                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.5-flash',
+                model: this.model,
                 contents: {
                     parts: [
                         { text: promptText },

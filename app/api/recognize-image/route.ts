@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'No image provided' }, { status: 400 });
         }
 
-        const service = ServiceFactory.getImageRecognitionService();
+        const service = await ServiceFactory.getImageRecognitionService();
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });
