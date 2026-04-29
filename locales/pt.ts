@@ -377,7 +377,7 @@ export default {
     }
   },
   "assistant": {
-    "title": "Assistant",
+    "title": "Assistente",
     "status_online": "ONLINE",
     "close": "Fechar chat",
     "input_placeholder": "Pergunte ao HealthPal...",
@@ -390,6 +390,16 @@ export default {
     "action_error": "Falha ao executar a ação. Por favor, tente novamente.",
     "action_cancelled": "Ação cancelada.",
     "prepared_action": "Preparei a ação para você.",
+    "welcome_message": "Diga olá para o seu assistente de saúde pessoal!",
+    "disclaimer": "O Assistente HealthPal pode fornecer informações imprecisas.",
+    "open_assistant": "Abrir Assistente",
+    "action_undone_warning": "Esta ação não pode ser desfeita facilmente.",
+    "protein": "Proteína",
+    "carbs": "Carboidratos",
+    "fats": "Gorduras",
+    "fiber": "Fibras",
+    "calories": "Calorias",
+    "new_quantity": "Nova Quantidade",
     "errors": {
       "api_key": "Estou tendo problemas de autenticação. Por favor, verifique minha configuração.",
       "quota_exceeded": "Atingi meu limite de uso. Por favor, tente novamente em um momento.",

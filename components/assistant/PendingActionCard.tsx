@@ -27,24 +27,24 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                     <div className="bg-healthpal-panel rounded-lg p-3 my-2 text-sm border border-healthpal-border">
                         <div className="grid grid-cols-2 gap-2 text-center my-2">
                             <div>
-                                <p id='pending-action-protein' className="text-healthpal-text-secondary text-xs">Protein</p>
+                                <p id='pending-action-protein' className="text-healthpal-text-secondary text-xs">{t('assistant.protein')}</p>
                                 <p className="font-bold text-green-400">{ing.protein}g</p>
                             </div>
                             <div>
-                                <p id='pending-action-carbs' className="text-healthpal-text-secondary text-xs">Carbs</p>
+                                <p id='pending-action-carbs' className="text-healthpal-text-secondary text-xs">{t('assistant.carbs')}</p>
                                 <p className="font-bold text-yellow-500">{ing.carbs}g</p>
                             </div>
                             <div>
-                                <p className="text-healthpal-text-secondary text-xs">Fats</p>
+                                <p className="text-healthpal-text-secondary text-xs">{t('assistant.fats')}</p>
                                 <p className="font-bold text-orange-400">{ing.fats}g</p>
                             </div>
                             <div>
-                                <p className="text-healthpal-text-secondary text-xs">Fiber</p>
+                                <p className="text-healthpal-text-secondary text-xs">{t('assistant.fiber')}</p>
                                 <p className="font-bold text-blue-400">{ing.fiber || 0}g</p>
                             </div>
                         </div>
                         <div className="text-center border-t border-healthpal-border pt-2 mt-2">
-                            <p className="text-healthpal-text-secondary text-xs">Total Calories</p>
+                            <p className="text-healthpal-text-secondary text-xs">{t('assistant.calories')}</p>
                             <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
                         </div>
                     </div>
@@ -61,38 +61,38 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                         <div className="grid grid-cols-2 gap-2 text-center my-2">
                             {ing.protein !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Protein</p>
+                                    <p className="text-healthpal-text-secondary text-xs">{t('assistant.protein')}</p>
                                     <p className="font-bold text-green-400">{ing.protein}g</p>
                                 </div>
                             )}
                             {ing.carbs !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Carbs</p>
+                                    <p className="text-healthpal-text-secondary text-xs">{t('assistant.carbs')}</p>
                                     <p className="font-bold text-yellow-500">{ing.carbs}g</p>
                                 </div>
                             )}
                             {ing.fats !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Fats</p>
+                                    <p className="text-healthpal-text-secondary text-xs">{t('assistant.fats')}</p>
                                     <p className="font-bold text-orange-400">{ing.fats}g</p>
                                 </div>
                             )}
                             {ing.fiber !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Fiber</p>
+                                    <p className="text-healthpal-text-secondary text-xs">{t('assistant.fiber')}</p>
                                     <p className="font-bold text-blue-400">{ing.fiber}g</p>
                                 </div>
                             )}
                         </div>
                         {ing.calories !== undefined && (
                             <div className="text-center border-t border-healthpal-border pt-2 mt-2">
-                                <p className="text-healthpal-text-secondary text-xs">Total Calories</p>
+                                <p className="text-healthpal-text-secondary text-xs">{t('assistant.calories')}</p>
                                 <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
                             </div>
                         )}
                         {ing.quantity !== undefined && (
                             <div className="text-center mt-1">
-                                <p className="text-healthpal-text-secondary text-xs">New Quantity</p>
+                                <p className="text-healthpal-text-secondary text-xs">{t('assistant.new_quantity')}</p>
                                 <p className="font-bold text-white">{ing.quantity}</p>
                             </div>
                         )}
@@ -104,7 +104,7 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                 return (
                     <div className="bg-red-500/10 rounded-lg p-3 my-2 text-sm border border-red-500/30 text-center">
                         <p className="text-red-300">
-                            This action cannot be easily undone.
+                            {t('assistant.action_undone_warning')}
                         </p>
                     </div>
                 );
