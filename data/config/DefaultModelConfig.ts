@@ -2,8 +2,8 @@ export const DEFAULT_MODEL_CONFIG = {
     "gemini": {
         "chat": "gemini-3.1-flash-lite-preview",
         "food": "gemini-3.1-flash-lite-preview",
-        "nutrition": "gemini-3.1-flash",
-        "image": "gemini-3.1-flash"
+        "nutrition": "gemini-3.1-flash-lite-preview",
+        "image": "gemini-3.1-flash-lite-preview"
     },
     "openai": {
         "chat": "gpt-5.4-nano-2026-03-17",
