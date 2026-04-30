@@ -47,7 +47,7 @@ describe('Payment Flow (Mock Mode)', () => {
         cy.visit('/plans');
         // Click on a paid plan button (not free)
         // Use .first() to pick one if multiple match, or target specific text
-        cy.contains('Monthly Plan').parents('div').contains('button', 'Get Started').click();
+        cy.contains('Monthly Plan').parents('div').contains('button', 'Upgrade to Member').click();
 
         // Expect redirect to login
         cy.url().should('include', '/login');
