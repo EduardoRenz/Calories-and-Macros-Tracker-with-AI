@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { HealthPalLogo, SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon, UserIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { Avatar } from './ui/Avatar';
+import { useApiKeys } from '../hooks/useApiKeys';
+import { ModelImageWarningModal } from './ModelImageWarningModal';
 
 interface NavbarProps {
     onQuickMealClick: () => void;
@@ -19,10 +21,13 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const { user, signOut } = useAuth();
     const { isUserApiKeysRequired } = useFeatureFlags();
     const { subscription, loading: subscriptionLoading } = useSubscription();
+    const { isDeepSeekOnly, nonVisionProvider } = useApiKeys();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+    const [showWarningModal, setShowWarningModal] = useState(false);
     const avatarMenuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
+    const router = useRouter();
 
     const getTrialDaysRemaining = (sub: typeof subscription): number => {
         if (!sub || !sub.currentPeriodEnd) return 0;
@@ -77,12 +82,19 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
             </div>
             <div className="flex items-center gap-4">
                 <button
-                    onClick={isUserApiKeysRequired ? undefined : onQuickMealClick}
-                    className={`font-bold py-2 px-4 rounded-lg transition-all text-sm hidden md:flex items-center gap-2 ${isUserApiKeysRequired
+                    onClick={() => {
+                        if (isUserApiKeysRequired) return;
+                        if (isDeepSeekOnly) {
+                            setShowWarningModal(true);
+                            return;
+                        }
+                        onQuickMealClick();
+                    }}
+                    className={`font-bold py-2 px-4 rounded-lg transition-all text-sm hidden md:flex items-center gap-2 ${isUserApiKeysRequired || isDeepSeekOnly
                         ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
                         : 'bg-healthpal-green text-black hover:brightness-110'
                         }`}
-                    title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
+                    title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}
                 >
                     <SparklesIcon className="w-5 h-5" />
                     <span>{t('navbar.quick_meal')}</span>
@@ -186,14 +198,18 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         <button
                             onClick={() => {
                                 if (isUserApiKeysRequired) return;
+                                if (isDeepSeekOnly) {
+                                    setShowWarningModal(true);
+                                    return;
+                                }
                                 onQuickMealClick();
                                 setIsMobileMenuOpen(false);
                             }}
-                            className={`font-bold py-3 px-4 rounded-lg transition-all text-sm flex items-center gap-2 mt-2 ${isUserApiKeysRequired
+                            className={`font-bold py-3 px-4 rounded-lg transition-all text-sm flex items-center gap-2 mt-2 ${isUserApiKeysRequired || isDeepSeekOnly
                                 ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
                                 : 'bg-healthpal-green text-black hover:brightness-110'
                                 }`}
-                            title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
+                            title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}
                         >
                             <SparklesIcon className="w-5 h-5" />
                             <span>{t('navbar.quick_meal')}</span>
@@ -201,6 +217,16 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                     </nav>
                 </div>
             )}
+
+            <ModelImageWarningModal
+                isOpen={showWarningModal}
+                onClose={() => setShowWarningModal(false)}
+                onGoToSettings={() => {
+                    setShowWarningModal(false);
+                    router.push('/settings');
+                }}
+                modelName={nonVisionProvider || 'DeepSeek'}
+            />
         </header>
     );
 };

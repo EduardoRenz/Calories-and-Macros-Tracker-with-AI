@@ -10,20 +10,12 @@ import BillingHistory from '@/components/payment/BillingHistory';
 import Modal from '@/components/ui/Modal';
 import { useFeatureFlags } from '../../../contexts/FeatureFlagContext';
 import { FeatureFlags } from '../../../domain/repositories/FeatureFlagRepository';
-
-// Types
-type ProviderId = 'gemini' | 'openai' | 'deepseek' | 'openrouter';
-
-interface ApiKey {
-    provider: ProviderId;
-    key: string;
-    addedAt: number;
-}
+import { ProviderId, ApiKey } from '@/hooks/useApiKeys';
 
 const PROVIDERS: { id: ProviderId; name: string; icon: React.ReactNode }[] = [
     { id: 'gemini', name: 'Google Gemini', icon: <GoogleIcon className="w-6 h-6" /> },
     { id: 'openai', name: 'OpenAI', icon: <SparklesIcon className="w-6 h-6" /> },
-    { id: 'deepseek', name: 'DeepSeek (Text only)', icon: <RkIcon className="w-6 h-6" /> },
+    { id: 'deepseek', name: 'DeepSeek', icon: <RkIcon className="w-6 h-6" /> },
     { id: 'openrouter', name: 'OpenRouter', icon: <OpenRouterIcon className="w-6 h-6" /> },
 ];
 

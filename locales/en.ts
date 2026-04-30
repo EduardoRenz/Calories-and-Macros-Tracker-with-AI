@@ -409,5 +409,11 @@ export default {
       "invalid_request": "I received an invalid request format. Please try again.",
       "unknown_error": "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later."
     }
+  },
+  "model_image_warning": {
+    "title": "{{model}} doesn't support images",
+    "message": "The {{model}} model doesn't support image analysis. Please configure another AI provider (OpenAI, Gemini, or OpenRouter) in Settings to use this feature.",
+    "go_to_settings": "Go to Settings",
+    "close": "Close"
   }
 };

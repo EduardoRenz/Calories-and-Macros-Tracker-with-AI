@@ -409,5 +409,11 @@ export default {
       "invalid_request": "Recebi um formato de solicitação inválido. Por favor, tente novamente.",
       "unknown_error": "Desculpe, estou tendo problemas para me conectar ao meu cérebro agora. Por favor, tente novamente mais tarde."
     }
+  },
+  "model_image_warning": {
+    "title": "{{model}} não suporta imagens",
+    "message": "O modelo {{model}} não suporta análise de imagens. Por favor, configure outro provedor de IA (OpenAI, Gemini ou OpenRouter) nas Configurações para usar este recurso.",
+    "go_to_settings": "Ir para Configurações",
+    "close": "Fechar"
   }
 }
