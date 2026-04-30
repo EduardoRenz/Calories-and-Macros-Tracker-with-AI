@@ -67,11 +67,3 @@ If OpenRouter fails for any reason, the request automatically falls back to Gemi
 ### Client-Side (Browser)
 
 Users can add their own API keys (Gemini, OpenAI, DeepSeek, OpenRouter) in the app settings. These take priority over server-side keys. If no user keys are set, requests are routed through the server API.
-
-
-## Roadmap
-
-- [ ] Add payment methods
-
-
-
