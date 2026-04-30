@@ -19,7 +19,6 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onClick, isOpen
             id="floating-chat-button"
         >
             <ChatBubbleLeftRightIcon className="w-8 h-8" />
-            <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full animate-pulse border-2 border-healthpal-background"></div>
         </button>
     );
 };

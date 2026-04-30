@@ -379,6 +379,7 @@ export default {
   "assistant": {
     "title": "Assistente",
     "status_online": "ONLINE",
+    "status_absent": "AUSENTE",
     "close": "Fechar chat",
     "input_placeholder": "Pergunte ao HealthPal...",
     "send": "Enviar",
@@ -402,6 +403,7 @@ export default {
     "new_quantity": "Nova Quantidade",
     "errors": {
       "api_key": "Estou tendo problemas de autenticação. Por favor, verifique minha configuração.",
+      "api_error": "Sinto muito, estou com dificuldades para fornecer uma resposta agora.",
       "quota_exceeded": "Atingi meu limite de uso. Por favor, tente novamente em um momento.",
       "model_error": "Estou tendo problemas com meu modelo de IA. Por favor, tente novamente mais tarde.",
       "network_error": "Estou tendo problemas de conexão. Por favor, verifique sua internet e tente novamente.",

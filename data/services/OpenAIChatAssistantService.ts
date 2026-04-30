@@ -4,6 +4,7 @@ import { ChatMessage, PendingAction } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
 import { RepositoryFactory } from '../RepositoryFactory';
+import { ChatAssistantApiException, ChatAssistantAuthException } from '../../domain/exceptions/ChatAssistantException';
 
 export class OpenAIChatAssistantService extends BaseChatAssistantService {
     protected apiKey: string;
@@ -154,7 +155,11 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
 
                 if (!response.ok) {
                     const errText = await response.text();
-                    throw new Error(`OpenAI API Error: ${response.status} - ${errText}`);
+                    // Determine exception type based on HTTP status code
+                    if (response.status === 401 || response.status === 403) {
+                        throw new ChatAssistantAuthException(`Authentication failed: ${response.status} - ${errText}`);
+                    }
+                    throw new ChatAssistantApiException(`API Error: ${response.status} - ${errText}`);
                 }
 
                 const data = await response.json();
@@ -213,12 +218,14 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
             }
         } catch (error) {
             console.error("OpenAI/DeepSeek Chat Error:", error);
-            return {
-                id: `err-${Date.now()}`,
-                role: 'assistant',
-                content: "I'm sorry, I'm having trouble providing a response right now.",
-                timestamp: new Date()
-            };
+
+            // Re-throw if already a ChatAssistantException (from HTTP status check)
+            if (error instanceof ChatAssistantApiException || error instanceof ChatAssistantAuthException) {
+                throw error;
+            }
+
+            // For other errors (network, parsing, etc.), throw as API exception
+            throw new ChatAssistantApiException('Failed to get response from AI service', error);
         }
     }
 }

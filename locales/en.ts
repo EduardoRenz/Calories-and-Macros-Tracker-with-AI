@@ -379,6 +379,7 @@ export default {
   "assistant": {
     "title": "Assistant",
     "status_online": "ONLINE",
+    "status_absent": "ABSENT",
     "close": "Close chat",
     "input_placeholder": "Ask Assistant...",
     "send": "Send",
@@ -402,6 +403,7 @@ export default {
     "new_quantity": "New Quantity",
     "errors": {
       "api_key": "I'm having authentication issues. Please check my configuration.",
+      "api_error": "I'm sorry, I'm having trouble providing a response right now.",
       "quota_exceeded": "I've reached my usage limit. Please try again in a moment.",
       "model_error": "I'm having trouble with my AI model. Please try again later.",
       "network_error": "I'm having connection issues. Please check your internet and try again.",

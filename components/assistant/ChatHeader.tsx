@@ -1,6 +1,7 @@
 import React from 'react';
 import { XMarkIcon } from '../icons';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useChatAssistant } from '../../contexts/ChatAssistantContext';
 
 interface ChatHeaderProps {
     onClose: () => void;
@@ -8,6 +9,7 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ onClose }) => {
     const { t } = useTranslation();
+    const { isOnline } = useChatAssistant();
 
     return (
         <div id='chat-header' className="flex items-center justify-between p-4 bg-healthpal-panel rounded-t-2xl border-b border-healthpal-border">
@@ -16,15 +18,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onClose }) => {
                     <div className="w-10 h-10 rounded-full bg-healthpal-green flex items-center justify-center text-black">
                         <span className="text-xl">🤖</span>
                     </div>
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-healthpal-panel"></div>
+                    <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-healthpal-panel ${isOnline ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                 </div>
                 <div>
                     <h3 className="font-bold text-healthpal-text-primary text-sm sm:text-base">
                         {t('assistant.title')}
                     </h3>
                     <p className="text-xs text-healthpal-text-secondary flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
-                        {t('assistant.status_online')}
+                        <span className={`w-1.5 h-1.5 rounded-full inline-block ${isOnline ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+                        {isOnline ? t('assistant.status_online') : t('assistant.status_absent')}
                     </p>
                 </div>
             </div>

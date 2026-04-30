@@ -8,6 +8,8 @@ import { useFeatureFlags } from './FeatureFlagContext';
 import { useTranslation } from '../hooks/useTranslation';
 import FloatingChatButton from '../components/assistant/FloatingChatButton';
 import ChatWindow from '../components/assistant/ChatWindow';
+import { CookieManager } from '../utils/CookieManager';
+import { ChatAssistantException } from '../domain/exceptions/ChatAssistantException';
 
 interface ChatAssistantContextType {
     isOpen: boolean;
@@ -18,6 +20,7 @@ interface ChatAssistantContextType {
     confirmAction: (actionId: string) => Promise<void>;
     cancelAction: (actionId: string) => Promise<void>;
     isSending: boolean;
+    isOnline: boolean;
 }
 
 const ChatAssistantContext = createContext<ChatAssistantContextType | undefined>(undefined);
@@ -26,12 +29,31 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isSending, setIsSending] = useState(false);
+    const [isOnline, setIsOnline] = useState(true);
     const { t } = useTranslation();
     const { profile } = useProfile();
     const { language } = useLanguage();
     const { isFeatureEnabled, isUserApiKeysRequired } = useFeatureFlags();
+    const cookieManager = CookieManager.getInstance();
 
     const isChatEnabled = isFeatureEnabled('enable_chatbot') && !isUserApiKeysRequired;
+
+    // Check initial status from cookie
+    useEffect(() => {
+        const status = cookieManager.getCookie('healthpal_assistant_status');
+        setIsOnline(status !== 'absent');
+    }, []);
+
+    // Periodic check for cookie expiration (every minute)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const status = cookieManager.getCookie('healthpal_assistant_status');
+            const shouldBeOnline = status !== 'absent';
+            setIsOnline(shouldBeOnline);
+        }, 60000); // Check every minute
+
+        return () => clearInterval(interval);
+    }, []);
 
     // Initial message
     useEffect(() => {
@@ -178,15 +200,40 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             });
             setMessages(prev => [...prev, response]);
+
+            // Clear status cookie on success - assistant is back online
+            cookieManager.deleteCookie('healthpal_assistant_status');
+            setIsOnline(true);
         } catch (error) {
             console.error('Failed to send message:', error);
-            // Add error message
-            setMessages(prev => [...prev, {
-                id: Date.now().toString(),
-                role: 'system',
-                content: t('assistant.action_error'),
-                timestamp: new Date(),
-            }]);
+
+            // Set status cookie to absent with different durations based on error type
+            if (error instanceof ChatAssistantException) {
+                // 1 hour for auth errors, 5 minutes for API errors
+                const cooldownHours = error.code === 'AUTH_ERROR' ? 1 : 5 / 60; // 5 minutes = 5/60 hours
+                cookieManager.setCookie('healthpal_assistant_status', 'absent', cooldownHours);
+                setIsOnline(false);
+
+                // Get translated error message based on exception type
+                let errorMessage = t('assistant.errors.api_error');
+                if (error.code === 'AUTH_ERROR') {
+                    errorMessage = t('assistant.errors.api_key');
+                }
+
+                setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    role: 'system',
+                    content: errorMessage,
+                    timestamp: new Date(),
+                }]);
+            } else {
+                setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    role: 'system',
+                    content: t('assistant.action_error'),
+                    timestamp: new Date(),
+                }]);
+            }
         } finally {
             setIsSending(false);
         }
@@ -315,7 +362,8 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             sendMessage,
             confirmAction,
             cancelAction,
-            isSending
+            isSending,
+            isOnline
         }}>
             {children}
             {isChatEnabled && (
