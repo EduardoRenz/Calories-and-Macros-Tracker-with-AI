@@ -66,7 +66,7 @@
     --brand-protein: #ef4444;
     --brand-carbs: #FF8C42;
     --brand-fats: #FFC107;
-    --brand-fiber: #deeb6d;
+    --brand-fiber: #b5be63;
 
     /* Legacy Map (So old classes adopt the light theme immediately) */
     --neutral-dark: var(--background);

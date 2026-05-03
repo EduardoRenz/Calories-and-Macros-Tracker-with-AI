@@ -79,7 +79,7 @@ export function HistoryCalendar({
                     className="p-2 rounded-md hover:bg-neutral-border transition-colors"
                     aria-label={t('history.calendar_prev')}
                 >
-                    <ChevronLeftIcon className="h-5 w-5 text-white" />
+                    <ChevronLeftIcon className="h-5 w-5 text-primary" />
                 </button>
                 <h3 className="font-bold">{monthLabel}</h3>
                 <button
@@ -87,7 +87,7 @@ export function HistoryCalendar({
                     className="p-2 rounded-md hover:bg-neutral-border transition-colors"
                     aria-label={t('history.calendar_next')}
                 >
-                    <ChevronRightIcon className="h-5 w-5 text-white" />
+                    <ChevronRightIcon className="h-5 w-5 text-primary" />
                 </button>
             </div>
 

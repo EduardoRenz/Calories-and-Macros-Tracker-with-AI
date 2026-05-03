@@ -61,22 +61,22 @@ export function HistoryTableMobile({ entries, onDateClick }: HistoryTableMobileP
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-2 mt-3">
-                            <div className="bg-neutral-card border border-neutral-border rounded-lg p-2">
-                                <p className={`text-[10px] uppercase tracking-wider ${proteinMet ? 'text-brand-protein' : 'text-neutral-text-secondary'}`}>{t('history.columns.protein')}</p>
-                                <p className={`text-sm font-semibold ${proteinMet ? 'text-brand-protein' : 'text-neutral-text-primary'}`}>{formatNumber(e.protein)}g</p>
+                        <div className="grid grid-cols-4 gap-1.5 mt-3">
+                            <div className="bg-neutral-panel border border-neutral-border rounded-lg p-1.5 text-center">
+                                <p className="text-[9px] uppercase text-brand-protein font-medium opacity-80 truncate">{t('history.columns.protein')}</p>
+                                <p className="text-xs font-bold text-brand-protein">{formatNumber(e.protein)}g</p>
                             </div>
-                            <div className="bg-neutral-card border border-neutral-border rounded-lg p-2">
-                                <p className={`text-[10px] uppercase tracking-wider ${carbsMet ? 'text-brand-carbs' : 'text-neutral-text-secondary'}`}>{t('history.columns.carbs')}</p>
-                                <p className={`text-sm font-semibold ${carbsMet ? 'text-brand-carbs' : 'text-neutral-text-primary'}`}>{formatNumber(e.carbs)}g</p>
+                            <div className="bg-neutral-panel border border-neutral-border rounded-lg p-1.5 text-center">
+                                <p className="text-[9px] uppercase text-brand-carbs font-medium opacity-80 truncate">{t('history.columns.carbs')}</p>
+                                <p className="text-xs font-bold text-brand-carbs">{formatNumber(e.carbs)}g</p>
                             </div>
-                            <div className="bg-neutral-card border border-neutral-border rounded-lg p-2">
-                                <p className={`text-[10px] uppercase tracking-wider ${fatsMet ? 'text-brand-fats' : 'text-neutral-text-secondary'}`}>{t('history.columns.fats')}</p>
-                                <p className={`text-sm font-semibold ${fatsMet ? 'text-brand-fats' : 'text-neutral-text-primary'}`}>{formatNumber(e.fats)}g</p>
+                            <div className="bg-neutral-panel border border-neutral-border rounded-lg p-1.5 text-center">
+                                <p className="text-[9px] uppercase text-brand-fats font-medium opacity-80 truncate">{t('history.columns.fats')}</p>
+                                <p className="text-xs font-bold text-brand-fats">{formatNumber(e.fats)}g</p>
                             </div>
-                            <div className="bg-neutral-card border border-neutral-border rounded-lg p-2">
-                                <p className={`text-[10px] uppercase tracking-wider ${fiberMet ? 'text-brand-fiber' : 'text-neutral-text-secondary'}`}>{t('history.columns.fiber')}</p>
-                                <p className={`text-sm font-semibold ${fiberMet ? 'text-brand-fiber' : 'text-neutral-text-primary'}`}>{formatNumber(e.fiber)}g</p>
+                            <div className="bg-neutral-panel border border-neutral-border rounded-lg p-1.5 text-center">
+                                <p className="text-[9px] uppercase text-brand-fiber font-medium opacity-80 truncate">{t('history.columns.fiber')}</p>
+                                <p className="text-xs font-bold text-brand-fiber">{formatNumber(e.fiber)}g</p>
                             </div>
                         </div>
                     </button>
