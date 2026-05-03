@@ -4,7 +4,7 @@ trigger: always_on
 
 ### Overall Rules
 
-- This project uses `yarn`
+- This project uses `pnpm`
 - When implementing repositories and service, use the tool ConcurrencyRequestManager to avoid multiple api calls
 - Always make Small and Readable Components in pages to be easier to maintain and read
 - Don´t use any, always define types
@@ -28,7 +28,7 @@ trigger: always_on
 ### Testing
 
 - This project uses `Cypress`
-- When testing the application, in the browser or cypress, use the `yarn dev:mock` wich you infer that is already running. To run test, use the command `yarn cy:run`
+- When testing the application, in the browser or cypress, use the `pnpm dev:mock` wich you infer that is already running. To run test, use the command `pnpm cy:run`
 - Always create tests for new features pages and components.
 - When a bug is found and fixed, also create a test to avoid regressions
 

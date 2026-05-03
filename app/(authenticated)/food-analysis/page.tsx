@@ -69,6 +69,15 @@ const MealIcon: React.FC<{ meal: string }> = ({ meal }) => {
     return <span className="text-3xl">{icons[meal.toLowerCase()] || '🍽️'}</span>;
 };
 
+const getMacroColor = (macro: string) => {
+    const lower = macro.toLowerCase();
+    if (lower.includes('protein') || lower.includes('proteína')) return 'brand-protein';
+    if (lower.includes('carb') || lower.includes('carboidrato')) return 'brand-carbs';
+    if (lower.includes('fat') || lower.includes('gordura')) return 'brand-fats';
+    if (lower.includes('fiber') || lower.includes('fibra')) return 'brand-fiber';
+    return 'brand-green';
+};
+
 export default function FoodAnalysisPage() {
     const { t } = useTranslation();
     const { language } = useLanguage();
@@ -483,7 +492,7 @@ export default function FoodAnalysisPage() {
                                                         <span className="text-red-400 text-xl">🔴</span>
                                                     )}
                                                 </div>
-                                                <span className={`font-bold ${isExceeded ? 'text-red-400' : 'text-brand-green'}`}>
+                                                <span className={`font-bold ${isExceeded ? 'text-red-400' : `text-${getMacroColor(suggestion.macro)}`}`}>
                                                     {suggestion.current}g / {suggestion.goal}g
                                                 </span>
                                             </div>
@@ -491,7 +500,7 @@ export default function FoodAnalysisPage() {
                                             {/* Progress bar */}
                                             <div className="w-full bg-neutral-panel rounded-full h-2 mb-4">
                                                 <div
-                                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : 'bg-brand-green'}`}
+                                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : `bg-${getMacroColor(suggestion.macro)}`}`}
                                                     style={{
                                                         width: `${Math.min(100, percentage)}%`
                                                     }}
@@ -529,7 +538,7 @@ export default function FoodAnalysisPage() {
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        <span className={`text-sm font-medium ${isExceeded ? 'text-neutral-text-secondary' : 'text-brand-green'}`}>
+                                                        <span className={`text-sm font-medium ${isExceeded ? 'text-neutral-text-secondary' : `text-${getMacroColor(suggestion.macro)}`}`}>
                                                             {rec.benefit}
                                                         </span>
                                                     </div>

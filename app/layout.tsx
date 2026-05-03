@@ -8,6 +8,7 @@ import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import SWRegistration from "@/components/SWRegistration";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-body" });
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-label" });
@@ -66,10 +67,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body className={`${montserrat.variable} ${poppins.variable} ${nearo.variable} font-body bg-background text-on-surface`}>
-                <SWRegistration />
-                <LanguageProvider>
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    <SWRegistration />
+                    <LanguageProvider>
                     <FeatureFlagProvider>
                         <AuthProvider>
                             <SubscriptionProvider>
@@ -80,6 +82,7 @@ export default function RootLayout({
                         </AuthProvider>
                     </FeatureFlagProvider>
                 </LanguageProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

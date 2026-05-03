@@ -63,7 +63,7 @@
     --outline-variant: #bec9c7;
 
     /* Custom Macros (DO NOT TOUCH) */
-    --brand-protein: #4CAF50;
+    --brand-protein: #ef4444;
     --brand-carbs: #FF8C42;
     --brand-fats: #FFC107;
     --brand-fiber: #deeb6d;
@@ -85,17 +85,64 @@
 
 /* Dark mode fallback (to be expanded later) */
 .dark {
-    /* Setting dark backgrounds so if dark mode is toggled, it doesn't flash white */
-    --background: #191c1d;
-    --surface: #191c1d;
-    --surface-container-lowest: #0e1111;
-    --surface-container: #1d2020;
+    /* Surface */
+    --surface: #111414;
+    --surface-dim: #111414;
+    --surface-bright: #363a3a;
+    --surface-container-lowest: #0b0f0f;
+    --surface-container-low: #191c1d;
+    --surface-container: #1d2021;
+    --surface-container-high: #272b2b;
+    --surface-container-highest: #323536;
     --on-surface: #e1e3e3;
     --on-surface-variant: #bec9c7;
+    --inverse-surface: #e1e3e3;
+    --inverse-on-surface: #2e3131;
+    --surface-tint: #86d4d1;
+    --surface-variant: #323536;
+    --background: #111414;
+    --on-background: #e1e3e3;
+
+    /* Primary */
     --primary: #86d4d1;
     --on-primary: #003736;
-    --primary-container: #00504e;
-    --on-primary-container: #a2f0ed;
+    --primary-container: #006664;
+    --on-primary-container: #93e1de;
+    --inverse-primary: #096967;
+    --primary-fixed: #a2f0ed;
+    --primary-fixed-dim: #86d4d1;
+    --on-primary-fixed: #00201f;
+    --on-primary-fixed-variant: #00504e;
+
+    /* Secondary */
+    --secondary: #47df9a;
+    --on-secondary: #003822;
+    --secondary-container: #00bd7b;
+    --on-secondary-container: #00452a;
+    --secondary-fixed: #69fdb4;
+    --secondary-fixed-dim: #47df9a;
+    --on-secondary-fixed: #002112;
+    --on-secondary-fixed-variant: #005233;
+
+    /* Tertiary */
+    --tertiary: #98da00;
+    --on-tertiary: #233600;
+    --tertiary-container: #446400;
+    --on-tertiary-container: #a2e700;
+    --tertiary-fixed: #b0f820;
+    --tertiary-fixed-dim: #98da00;
+    --on-tertiary-fixed: #131f00;
+    --on-tertiary-fixed-variant: #344e00;
+
+    /* Error */
+    --error: #ffb4ab;
+    --on-error: #690005;
+    --error-container: #93000a;
+    --on-error-container: #ffdad6;
+
+    /* Outline */
+    --outline: #889392;
+    --outline-variant: #3e4948;
 }
 
 @layer base {

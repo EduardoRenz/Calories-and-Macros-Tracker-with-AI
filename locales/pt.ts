@@ -337,6 +337,7 @@ export default {
       "title": "Configurações Gerais",
       "language": "Idioma"
     },
+    "theme": "Tema",
     "subscription": {
       "title": "Assinatura",
       "description": "Gerencie seu plano e detalhes de cobrança",

@@ -337,6 +337,7 @@ export default {
       "title": "General Settings",
       "language": "Language"
     },
+    "theme": "Theme",
     "subscription": {
       "title": "Subscription",
       "description": "Manage your plan and billing details",

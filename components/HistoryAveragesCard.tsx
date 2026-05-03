@@ -24,15 +24,15 @@ export function HistoryAveragesCard({ averages, daysWithEntries }: { averages: H
                 </div>
                 <div className="flex justify-between">
                     <span className="text-neutral-text-secondary">{t('history.columns.protein')}</span>
-                    <span className="font-bold text-neutral-text-primary">{formatNumber(averages.protein)} g</span>
+                    <span className="font-bold text-brand-protein">{formatNumber(averages.protein)} g</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="text-neutral-text-secondary">{t('history.columns.carbs')}</span>
-                    <span className="font-bold text-neutral-text-primary">{formatNumber(averages.carbs)} g</span>
+                    <span className="font-bold text-brand-carbs">{formatNumber(averages.carbs)} g</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="text-neutral-text-secondary">{t('history.columns.fats')}</span>
-                    <span className="font-bold text-neutral-text-primary">{formatNumber(averages.fats)} g</span>
+                    <span className="font-bold text-brand-fats">{formatNumber(averages.fats)} g</span>
                 </div>
             </div>
         </div>

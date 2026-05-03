@@ -11,6 +11,7 @@ import { useSubscription } from '../contexts/SubscriptionContext';
 import { Avatar } from './ui/Avatar';
 import { useApiKeys } from '../hooks/useApiKeys';
 import { ModelImageWarningModal } from './ModelImageWarningModal';
+import ThemeSwitcher from './ThemeSwitcher';
 
 interface NavbarProps {
     onQuickMealClick: () => void;
@@ -153,6 +154,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                                     </div>
                                 )}
                             </div>
+                            <ThemeSwitcher />
                             <Link
                                 href="/profile"
                                 onClick={() => setIsAvatarMenuOpen(false)}

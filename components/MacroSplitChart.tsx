@@ -7,9 +7,9 @@ interface MacroSplitChartProps {
 }
 
 const COLORS = {
-  protein: '#A076F9',
-  carbs: '#F4A261',
-  fats: '#E9C46A',
+  protein: 'var(--brand-protein)',
+  carbs: 'var(--brand-carbs)',
+  fats: 'var(--brand-fats)',
 };
 
 const MacroSplitChart: React.FC<MacroSplitChartProps> = ({ data }) => {

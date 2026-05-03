@@ -337,6 +337,7 @@ export default {
       "title": "Ajustes Generales",
       "language": "Idioma"
     },
+    "theme": "Tema",
     "subscription": {
       "title": "Suscripción",
       "description": "Gestiona tu plan y detalles de facturación",

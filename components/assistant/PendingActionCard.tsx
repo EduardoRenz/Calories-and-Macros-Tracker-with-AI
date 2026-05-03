@@ -28,19 +28,19 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                         <div className="grid grid-cols-2 gap-2 text-center my-2">
                             <div>
                                 <p id='pending-action-protein' className="text-neutral-text-secondary text-xs">{t('assistant.protein')}</p>
-                                <p className="font-bold text-green-400">{ing.protein}g</p>
+                                <p className="font-bold text-brand-protein">{ing.protein}g</p>
                             </div>
                             <div>
                                 <p id='pending-action-carbs' className="text-neutral-text-secondary text-xs">{t('assistant.carbs')}</p>
-                                <p className="font-bold text-yellow-500">{ing.carbs}g</p>
+                                <p className="font-bold text-brand-carbs">{ing.carbs}g</p>
                             </div>
                             <div>
                                 <p className="text-neutral-text-secondary text-xs">{t('assistant.fats')}</p>
-                                <p className="font-bold text-orange-400">{ing.fats}g</p>
+                                <p className="font-bold text-brand-fats">{ing.fats}g</p>
                             </div>
                             <div>
                                 <p className="text-neutral-text-secondary text-xs">{t('assistant.fiber')}</p>
-                                <p className="font-bold text-blue-400">{ing.fiber || 0}g</p>
+                                <p className="font-bold text-brand-fiber">{ing.fiber || 0}g</p>
                             </div>
                         </div>
                         <div className="text-center border-t border-neutral-border pt-2 mt-2">
@@ -62,25 +62,25 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                             {ing.protein !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.protein')}</p>
-                                    <p className="font-bold text-green-400">{ing.protein}g</p>
+                                    <p className="font-bold text-brand-protein">{ing.protein}g</p>
                                 </div>
                             )}
                             {ing.carbs !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.carbs')}</p>
-                                    <p className="font-bold text-yellow-500">{ing.carbs}g</p>
+                                    <p className="font-bold text-brand-carbs">{ing.carbs}g</p>
                                 </div>
                             )}
                             {ing.fats !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.fats')}</p>
-                                    <p className="font-bold text-orange-400">{ing.fats}g</p>
+                                    <p className="font-bold text-brand-fats">{ing.fats}g</p>
                                 </div>
                             )}
                             {ing.fiber !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.fiber')}</p>
-                                    <p className="font-bold text-blue-400">{ing.fiber}g</p>
+                                    <p className="font-bold text-brand-fiber">{ing.fiber}g</p>
                                 </div>
                             )}
                         </div>
