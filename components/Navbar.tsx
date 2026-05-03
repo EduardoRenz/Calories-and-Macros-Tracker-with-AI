@@ -89,9 +89,9 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                         }
                         onQuickMealClick();
                     }}
-                    className={`font-bold py-2 px-4 rounded-lg transition-all text-sm hidden md:flex items-center gap-2 ${isUserApiKeysRequired || isDeepSeekOnly
-                        ? 'bg-neutral-card text-neutral-text-secondary cursor-not-allowed'
-                        : 'bg-brand-green text-black hover:brightness-110'
+                    className={`font-bold py-2 px-4 rounded-full shadow-ambient transition-all text-sm hidden md:flex items-center gap-2 ${isUserApiKeysRequired || isDeepSeekOnly
+                        ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
+                        : 'bg-secondary text-on-secondary hover:brightness-110 active:scale-95'
                         }`}
                     title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}
                 >
@@ -204,9 +204,9 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                                 onQuickMealClick();
                                 setIsMobileMenuOpen(false);
                             }}
-                            className={`font-bold py-3 px-4 rounded-lg transition-all text-sm flex items-center gap-2 mt-2 ${isUserApiKeysRequired || isDeepSeekOnly
-                                ? 'bg-neutral-card text-neutral-text-secondary cursor-not-allowed'
-                                : 'bg-brand-green text-black hover:brightness-110'
+                            className={`font-bold py-3 px-4 rounded-full shadow-ambient transition-all text-sm flex items-center gap-2 mt-2 ${isUserApiKeysRequired || isDeepSeekOnly
+                                ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
+                                : 'bg-secondary text-on-secondary hover:brightness-110 active:scale-95'
                                 }`}
                             title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}
                         >

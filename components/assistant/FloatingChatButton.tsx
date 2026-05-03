@@ -14,7 +14,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onClick, isOpen
     return (
         <button
             onClick={onClick}
-            className="hidden md:flex fixed bottom-6 right-6 p-4 bg-brand-primary text-black rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 z-50 group items-center justify-center"
+            className="hidden md:flex fixed bottom-6 right-6 p-4 bg-secondary text-on-secondary rounded-full shadow-ambient hover:shadow-xl hover:scale-110 transition-all duration-300 z-50 group items-center justify-center"
             aria-label={t('assistant.open_assistant')}
             id="floating-chat-button"
         >

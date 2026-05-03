@@ -89,9 +89,9 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                         }
                         onQuickMealClick();
                     }}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center text-black shadow-lg shadow-black/30 transition-all ${isUserApiKeysRequired || isDeepSeekOnly
-                        ? 'bg-neutral-card text-neutral-text-secondary cursor-not-allowed grayscale'
-                        : 'bg-brand-green hover:brightness-110'
+                    className={`w-16 h-16 rounded-full flex items-center justify-center shadow-ambient transition-all ${isUserApiKeysRequired || isDeepSeekOnly
+                        ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed grayscale'
+                        : 'bg-secondary text-on-secondary hover:brightness-110 active:scale-95'
                         }`}
                     aria-label={t('navbar.quick_meal')}
                     title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}

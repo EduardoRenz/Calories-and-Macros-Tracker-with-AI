@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat, Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -8,19 +9,51 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import SWRegistration from "@/components/SWRegistration";
 
-const inter = Inter({ subsets: ["latin"] });
+const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-body" });
+const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-label" });
+const nearo = localFont({
+    src: [
+        {
+            path: "../public/fonts/nearo/Nearo-Light.ttf",
+            weight: "300",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/nearo/Nearo-Regular.ttf",
+            weight: "400",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/nearo/Nearo-Medium.ttf",
+            weight: "500",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/nearo/Nearo-SemiBold.ttf",
+            weight: "600",
+            style: "normal",
+        },
+        {
+            path: "../public/fonts/nearo/Nearo-Bold.ttf",
+            weight: "700",
+            style: "normal",
+        },
+    ],
+    variable: "--font-headline",
+});
 
 export const metadata: Metadata = {
     title: "LeveMente",
     description: "Acompanhe suas refeições e alcance seus objetivos de forma saudável.",
     manifest: "/manifest.webmanifest",
     icons: {
+        icon: "/Icon.svg",
         apple: "/pwa-192x192.png",
     },
 };
 
 export const viewport: Viewport = {
-    themeColor: "#101614",
+    themeColor: "#f8fafa",
     width: "device-width",
     initialScale: 1,
     maximumScale: 1,
@@ -34,7 +67,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={inter.className}>
+            <body className={`${montserrat.variable} ${poppins.variable} ${nearo.variable} font-body bg-background text-on-surface`}>
                 <SWRegistration />
                 <LanguageProvider>
                     <FeatureFlagProvider>

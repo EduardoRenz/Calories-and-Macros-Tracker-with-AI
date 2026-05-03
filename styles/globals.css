@@ -3,38 +3,107 @@
 @tailwind utilities;
 
 :root {
-    /* Base */
-    --neutral-dark: #121212;
-    --neutral-panel: #1C1C1C;
-    --neutral-card: #262626;
-    --neutral-border: #333333;
+    /* Surface */
+    --surface: #f8fafa;
+    --surface-dim: #d8dada;
+    --surface-bright: #f8fafa;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f2f4f4;
+    --surface-container: #eceeee;
+    --surface-container-high: #e6e8e8;
+    --surface-container-highest: #e1e3e3;
+    --on-surface: #191c1d;
+    --on-surface-variant: #3e4948;
+    --inverse-surface: #2e3131;
+    --inverse-on-surface: #eff1f1;
+    --surface-tint: #096967;
+    --surface-variant: #e1e3e3;
+    --background: #f8fafa;
+    --on-background: #191c1d;
 
-    /* Cores principais (energético) */
-    --brand-green: #2ECC71;
-    /* saúde / sucesso */
-    --brand-orange: #FF8C42;
-    /* ação / motivação */
+    /* Primary */
+    --primary: #006664;
+    --on-primary: #ffffff;
+    --primary-container: #006664;
+    --on-primary-container: #93e1de;
+    --inverse-primary: #86d4d1;
+    --primary-fixed: #a2f0ed;
+    --primary-fixed-dim: #86d4d1;
+    --on-primary-fixed: #00201f;
+    --on-primary-fixed-variant: #00504e;
 
-    /* Macros */
+    /* Secondary */
+    --secondary: #03BE7C;
+    --on-secondary: #ffffff;
+    --secondary-container: #69fdb4;
+    --on-secondary-container: #007349;
+    --secondary-fixed: #69fdb4;
+    --secondary-fixed-dim: #47df9a;
+    --on-secondary-fixed: #002112;
+    --on-secondary-fixed-variant: #005233;
+
+    /* Tertiary */
+    --tertiary: #324a00;
+    --on-tertiary: #ffffff;
+    --tertiary-container: #446400;
+    --on-tertiary-container: #a2e700;
+    --tertiary-fixed: #b0f820;
+    --tertiary-fixed-dim: #98da00;
+    --on-tertiary-fixed: #131f00;
+    --on-tertiary-fixed-variant: #344e00;
+
+    /* Error */
+    --error: #ba1a1a;
+    --on-error: #ffffff;
+    --error-container: #ffdad6;
+    --on-error-container: #93000a;
+
+    /* Outline */
+    --outline: #6f7978;
+    --outline-variant: #bec9c7;
+
+    /* Custom Macros (DO NOT TOUCH) */
     --brand-protein: #4CAF50;
     --brand-carbs: #FF8C42;
     --brand-fats: #FFC107;
     --brand-fiber: #deeb6d;
 
-    /* Destaques */
-    --brand-yellow: #FFD54F;
+    /* Legacy Map (So old classes adopt the light theme immediately) */
+    --neutral-dark: var(--background);
+    --neutral-panel: var(--surface-container);
+    --neutral-card: var(--surface-container-lowest);
+    --neutral-border: var(--outline-variant);
+    --neutral-text-primary: var(--on-surface);
+    --neutral-text-secondary: var(--on-surface-variant);
+    --brand-green: var(--primary);
+    --brand-orange: var(--secondary);
+    --brand-yellow: var(--tertiary);
 
-    /* Texto */
-    --neutral-text-primary: #F5F5F5;
-    --neutral-text-secondary: #B0B0B0;
+    /* Fonts */
+    --font-headline: 'Nara', sans-serif;
+}
+
+/* Dark mode fallback (to be expanded later) */
+.dark {
+    /* Setting dark backgrounds so if dark mode is toggled, it doesn't flash white */
+    --background: #191c1d;
+    --surface: #191c1d;
+    --surface-container-lowest: #0e1111;
+    --surface-container: #1d2020;
+    --on-surface: #e1e3e3;
+    --on-surface-variant: #bec9c7;
+    --primary: #86d4d1;
+    --on-primary: #003736;
+    --primary-container: #00504e;
+    --on-primary-container: #a2f0ed;
 }
 
 @layer base {
     body {
-        @apply bg-neutral-dark text-neutral-text-primary;
+        @apply bg-background text-on-surface font-body;
         touch-action: manipulation;
     }
-    
+
     * {
         -webkit-tap-highlight-color: transparent;
     }
@@ -46,14 +115,14 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--neutral-dark);
+    background: var(--surface-container);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--brand-orange);
+    background: var(--outline-variant);
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #FF7A24;
+    background: var(--outline);
 }
