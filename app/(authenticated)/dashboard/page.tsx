@@ -213,7 +213,7 @@ export default function DashboardPage() {
 
     // Show loading state while profile is loading
     if (profileLoading) {
-        return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
+        return <div className="flex justify-center items-center h-96 text-neutral-text-secondary">{t('dashboard.loading')}</div>;
     }
 
     // Show first-time setup for incomplete profiles or when goals cannot be calculated
@@ -229,7 +229,7 @@ export default function DashboardPage() {
     }
 
     if (isLoading || !data) {
-        return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
+        return <div className="flex justify-center items-center h-96 text-neutral-text-secondary">{t('dashboard.loading')}</div>;
     }
 
     const caloriesRemaining = ((macrosWithGoals?.calories.goal ?? 0) - data.macros.calories.current);
@@ -267,7 +267,7 @@ export default function DashboardPage() {
                             unit="kcal"
                             current={data.macros.calories.current}
                             goal={macrosWithGoals?.calories.goal ?? 0}
-                            color="bg-healthpal-green"
+                            color="bg-brand-green"
                         />
                     </div>
                     <div className="hidden md:block">
@@ -276,7 +276,7 @@ export default function DashboardPage() {
                             unit="g"
                             current={data.macros.protein.current}
                             goal={macrosWithGoals?.protein.goal ?? 0}
-                            color="bg-healthpal-protein"
+                            color="bg-brand-protein"
                         />
                     </div>
                     <div className="hidden md:block">
@@ -285,7 +285,7 @@ export default function DashboardPage() {
                             unit="g"
                             current={data.macros.carbs.current}
                             goal={macrosWithGoals?.carbs.goal ?? 0}
-                            color="bg-healthpal-carbs"
+                            color="bg-brand-carbs"
                         />
                     </div>
                     <div className="hidden md:block">
@@ -294,7 +294,7 @@ export default function DashboardPage() {
                             unit="g"
                             current={data.macros.fats.current}
                             goal={macrosWithGoals?.fats.goal ?? 0}
-                            color="bg-healthpal-fats"
+                            color="bg-brand-fats"
                         />
                     </div>
                     <div className="md:col-span-2">
@@ -308,7 +308,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="lg:col-span-1 grid grid-cols-1 gap-6 order-first lg:order-last">
-                    <div className="hidden lg:flex bg-healthpal-card p-6 rounded-2xl h-full flex-col order-first lg:order-last">
+                    <div className="hidden lg:flex bg-neutral-card p-6 rounded-2xl h-full flex-col order-first lg:order-last">
                         <h3 className="text-xl font-bold mb-4">{t('dashboard.macro_split')}</h3>
                         <div className="flex-grow">
                             <MacroSplitChart data={data} />

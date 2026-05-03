@@ -29,7 +29,7 @@ export function HistorySidebar({
     return (
         <div className="lg:col-span-1 grid grid-cols-1 gap-6">
             {calendar.loading ? (
-                <div className="bg-healthpal-card p-6 rounded-2xl flex justify-center items-center h-64 text-healthpal-text-secondary">{calendar.loadingLabel}</div>
+                <div className="bg-neutral-card p-6 rounded-2xl flex justify-center items-center h-64 text-neutral-text-secondary">{calendar.loadingLabel}</div>
             ) : (
                 <HistoryCalendar
                     entries={calendar.entries}
@@ -40,7 +40,7 @@ export function HistorySidebar({
             )}
 
             {averages.loading ? (
-                <div className="bg-healthpal-card p-6 rounded-2xl flex justify-center items-center h-40 text-healthpal-text-secondary">{averages.loadingLabel}</div>
+                <div className="bg-neutral-card p-6 rounded-2xl flex justify-center items-center h-40 text-neutral-text-secondary">{averages.loadingLabel}</div>
             ) : (
                 <HistoryAveragesCard averages={averages.data} daysWithEntries={averages.daysWithEntries} />
             )}

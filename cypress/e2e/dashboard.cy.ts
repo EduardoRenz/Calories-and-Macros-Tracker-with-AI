@@ -82,7 +82,7 @@ describe('Dashboard Meal Management', () => {
         // Should be positive (under goal)
         expect(remainingCalories).to.be.greaterThan(0);
         // Should be green (under limit) - check parent paragraph element
-        cy.get('[data-testid="calorie-goal"]').parent().should('have.class', 'text-healthpal-green');
+        cy.get('[data-testid="calorie-goal"]').parent().should('have.class', 'text-brand-green');
       });
     });
   });

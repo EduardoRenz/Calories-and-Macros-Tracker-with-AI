@@ -48,9 +48,9 @@ export default function AuthenticatedLayout({
         <ProtectedRoute>
             <ProfileProvider>
                 <ChatAssistantProvider>
-                    <div className="bg-healthpal-dark min-h-screen text-healthpal-text-primary font-sans flex flex-col">
+                    <div className="bg-neutral-dark min-h-screen text-neutral-text-primary font-sans flex flex-col">
                         <div className="flex justify-center flex-1">
-                            <div className="w-full max-w-screen-2xl bg-healthpal-dark flex flex-col min-h-screen">
+                            <div className="w-full max-w-screen-2xl bg-neutral-dark flex flex-col min-h-screen">
                                 {showNavbar && (
                                     <Navbar onQuickMealClick={() => setIsQuickMealOpen(true)} />
                                 )}

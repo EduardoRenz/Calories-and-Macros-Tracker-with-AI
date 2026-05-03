@@ -10,7 +10,7 @@ describe('First Time Profile Setup', () => {
         cy.contains('Sign in with Google').click();
 
         // Should show first-time setup instead of dashboard
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
         cy.contains('To calculate your personalized calorie and macro goals').should('be.visible');
 
         // Should show Personal Info and Fitness Goals forms
@@ -40,7 +40,7 @@ describe('First Time Profile Setup', () => {
         cy.contains('Sign in with Google').click();
 
         // Should show first-time setup (profile incomplete)
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Verify partial data is pre-filled
         cy.get('input[name="age"]').should('have.value', '28');
@@ -100,7 +100,7 @@ describe('First Time Profile Setup', () => {
         cy.contains('Sign in with Google').click();
 
         // Wait for first-time setup screen
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Fill Personal Info
         cy.get('input[name="age"]').type('30');
@@ -131,7 +131,7 @@ describe('First Time Profile Setup', () => {
         cy.contains('Sign in with Google').click();
 
         // Wait for first-time setup screen
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Verify save button is enabled but shows error with missing fields when clicked
         cy.contains('button', 'Save and Continue').should('not.be.disabled');
@@ -150,7 +150,7 @@ describe('First Time Profile Setup', () => {
         cy.contains('Sign in with Google').click();
 
         // Wait for first-time setup screen
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Click on link to profile settings
         cy.contains('Go to Profile Settings').click();

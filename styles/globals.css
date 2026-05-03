@@ -4,34 +4,34 @@
 
 :root {
     /* Base */
-    --healthpal-dark: #121212;
-    --healthpal-panel: #1C1C1C;
-    --healthpal-card: #262626;
-    --healthpal-border: #333333;
+    --neutral-dark: #121212;
+    --neutral-panel: #1C1C1C;
+    --neutral-card: #262626;
+    --neutral-border: #333333;
 
     /* Cores principais (energético) */
-    --healthpal-green: #2ECC71;
+    --brand-green: #2ECC71;
     /* saúde / sucesso */
-    --healthpal-orange: #FF8C42;
+    --brand-orange: #FF8C42;
     /* ação / motivação */
 
     /* Macros */
-    --healthpal-protein: #4CAF50;
-    --healthpal-carbs: #FF8C42;
-    --healthpal-fats: #FFC107;
-    --healthpal-fiber: #deeb6d;
+    --brand-protein: #4CAF50;
+    --brand-carbs: #FF8C42;
+    --brand-fats: #FFC107;
+    --brand-fiber: #deeb6d;
 
     /* Destaques */
-    --healthpal-yellow: #FFD54F;
+    --brand-yellow: #FFD54F;
 
     /* Texto */
-    --healthpal-text-primary: #F5F5F5;
-    --healthpal-text-secondary: #B0B0B0;
+    --neutral-text-primary: #F5F5F5;
+    --neutral-text-secondary: #B0B0B0;
 }
 
 @layer base {
     body {
-        @apply bg-healthpal-dark text-healthpal-text-primary;
+        @apply bg-neutral-dark text-neutral-text-primary;
         touch-action: manipulation;
     }
     
@@ -46,11 +46,11 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--healthpal-dark);
+    background: var(--neutral-dark);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--healthpal-orange);
+    background: var(--brand-orange);
     border-radius: 10px;
 }
 

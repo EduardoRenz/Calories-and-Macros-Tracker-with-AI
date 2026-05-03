@@ -53,7 +53,7 @@ export default {
     "api_keys_required_desc": "Para continuar usando os recursos de IA, configure suas próprias chaves de API nas configurações.",
     "go_to_settings": "Ir para Configurações",
     "first_time": {
-      "title": "Bem-vindo ao HealthPal!",
+      "title": "Bem-vindo ao LeveMente!",
       "description": "Para calcular suas metas personalizadas de calorias e macros, precisamos saber um pouco sobre você. Por favor, preencha suas informações pessoais e objetivos de fitness abaixo.",
       "dietary_restrictions_title": "Restrições Alimentares (Opcional)",
       "dietary_restrictions_desc": "Se você tem alguma condição de saúde ou preferência alimentar, pode adicioná-las posteriormente nas configurações do seu perfil para receber recomendações personalizadas.",
@@ -257,14 +257,14 @@ export default {
         { "text": "7 dias de teste grátis com recursos premium", "included": true },
         { "text": "Análise nutricional por foto", "included": false },
         { "text": "Relatórios de saúde avançados", "included": false },
-        { "text": "Assistente HealthPal 24/7", "included": false }
+        { "text": "Assistente LeveMente 24/7", "included": false }
       ],
       "member_monthly": [
         { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
         { "text": "Análise nutricional completa por foto", "included": true },
         { "text": "Histórico ilimitado e backups", "included": true },
         { "text": "Relatórios de micronutrientes e saúde", "included": true },
-        { "text": "Assistente HealthPal disponível 24/7", "included": true },
+        { "text": "Assistente LeveMente disponível 24/7", "included": true },
         { "text": "Suporte prioritário", "included": true }
       ],
       "member_annual": {
@@ -274,7 +274,7 @@ export default {
           { "text": "Análise nutricional completa por foto", "included": true },
           { "text": "Histórico ilimitado e backups", "included": true },
           { "text": "Relatórios de micronutrientes e saúde", "included": true },
-          { "text": "Assistente HealthPal disponível 24/7", "included": true },
+          { "text": "Assistente LeveMente disponível 24/7", "included": true },
           { "text": "Suporte prioritário", "included": true }
         ]
       },
@@ -283,7 +283,7 @@ export default {
         { "text": "Análise nutricional completa por foto", "included": true },
         { "text": "Histórico ilimitado e backups", "included": true },
         { "text": "Relatórios de micronutrientes e saúde", "included": true },
-        { "text": "Assistente HealthPal disponível 24/7", "included": true },
+        { "text": "Assistente LeveMente disponível 24/7", "included": true },
         { "text": "Suporte prioritário", "included": true }
       ]
     }
@@ -394,7 +394,7 @@ export default {
     "status_online": "ONLINE",
     "status_absent": "AUSENTE",
     "close": "Fechar chat",
-    "input_placeholder": "Pergunte ao HealthPal...",
+    "input_placeholder": "Pergunte ao LeveMente...",
     "send": "Enviar",
     "confirm_action": "Ação pendente de confirmação",
     "confirm": "Confirmar",
@@ -405,7 +405,7 @@ export default {
     "action_cancelled": "Ação cancelada.",
     "prepared_action": "Preparei a ação para você.",
     "welcome_message": "Diga olá para o seu assistente de saúde pessoal!",
-    "disclaimer": "O Assistente HealthPal pode fornecer informações imprecisas.",
+    "disclaimer": "O Assistente LeveMente pode fornecer informações imprecisas.",
     "open_assistant": "Abrir Assistente",
     "action_undone_warning": "Esta ação não pode ser desfeita facilmente.",
     "protein": "Proteína",

@@ -53,10 +53,10 @@ function AuthCallbackContent() {
   }, [router, searchParams]);
 
   return (
-    <div className="bg-healthpal-dark min-h-screen flex items-center justify-center">
+    <div className="bg-neutral-dark min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-healthpal-green mx-auto mb-4"></div>
-        <p className="text-healthpal-text-secondary">Autenticando...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-green mx-auto mb-4"></div>
+        <p className="text-neutral-text-secondary">Autenticando...</p>
       </div>
     </div>
   );
@@ -65,8 +65,8 @@ function AuthCallbackContent() {
 export default function AuthCallback() {
   return (
     <Suspense fallback={
-      <div className="bg-healthpal-dark min-h-screen flex items-center justify-center">
-        <p className="text-healthpal-text-secondary">Carregando...</p>
+      <div className="bg-neutral-dark min-h-screen flex items-center justify-center">
+        <p className="text-neutral-text-secondary">Carregando...</p>
       </div>
     }>
       <AuthCallbackContent />

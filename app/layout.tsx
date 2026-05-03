@@ -11,8 +11,8 @@ import SWRegistration from "@/components/SWRegistration";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Calorie Counter & Macro Tracker",
-    description: "Track your calories and macros with ease.",
+    title: "LeveMente",
+    description: "Acompanhe suas refeições e alcance seus objetivos de forma saudável.",
     manifest: "/manifest.webmanifest",
     icons: {
         apple: "/pwa-192x192.png",

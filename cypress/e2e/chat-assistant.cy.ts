@@ -24,7 +24,7 @@ describe('Chat Assistant', () => {
         // Mock service responds with "I am a mock assistant..." or similar default
         // In our MockChatAssistantService, if content is "Hello", it might differ.
         // But let's just check for ANY response from assistant
-        cy.get('.text-healthpal-text-primary').should('have.length.at.least', 1);
+        cy.get('.text-neutral-text-primary').should('have.length.at.least', 1);
     });
 
     it('should prevent body scroll when chat is open on mobile', () => {

@@ -89,7 +89,7 @@ export default function FirstTimeSetup({ profile, onSave }: FirstTimeSetupProps)
             {/* Header */}
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold mb-4">{t('dashboard.first_time.title')}</h1>
-                <p className="text-healthpal-text-secondary text-lg">
+                <p className="text-neutral-text-secondary text-lg">
                     {t('dashboard.first_time.description')}
                 </p>
             </div>
@@ -111,14 +111,14 @@ export default function FirstTimeSetup({ profile, onSave }: FirstTimeSetupProps)
                 />
 
                 {/* Dietary Restrictions Note */}
-                <div className="bg-healthpal-card p-6 rounded-2xl border border-healthpal-border">
+                <div className="bg-neutral-card p-6 rounded-2xl border border-neutral-border">
                     <h3 className="text-lg font-bold mb-2">{t('dashboard.first_time.dietary_restrictions_title')}</h3>
-                    <p className="text-healthpal-text-secondary text-sm mb-4">
+                    <p className="text-neutral-text-secondary text-sm mb-4">
                         {t('dashboard.first_time.dietary_restrictions_desc')}
                     </p>
                     <Link
                         href="/profile"
-                        className="text-healthpal-green hover:underline text-sm"
+                        className="text-brand-green hover:underline text-sm"
                     >
                         {t('dashboard.first_time.go_to_profile')}
                     </Link>
@@ -136,7 +136,7 @@ export default function FirstTimeSetup({ profile, onSave }: FirstTimeSetupProps)
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="bg-healthpal-green text-black font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50"
+                        className="bg-brand-green text-black font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50"
                     >
                         {isSaving ? t('dashboard.first_time.saving') : t('dashboard.first_time.save_and_continue')}
                     </button>

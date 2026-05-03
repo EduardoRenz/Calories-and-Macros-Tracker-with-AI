@@ -26,14 +26,14 @@ export default function DashboardNavigation({
             <div className="flex md:hidden items-center justify-between gap-2">
                 <button
                     onClick={() => onDateChange(-1)}
-                    className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors"
+                    className="p-2 bg-neutral-card rounded-md hover:bg-neutral-border transition-colors"
                 >
                     <ChevronLeftIcon className="h-5 w-5" />
                 </button>
-                <p className="text-healthpal-text-secondary flex-1 text-center">{displayDate}</p>
+                <p className="text-neutral-text-secondary flex-1 text-center">{displayDate}</p>
                 <button
                     onClick={() => onDateChange(1)}
-                    className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors"
+                    className="p-2 bg-neutral-card rounded-md hover:bg-neutral-border transition-colors"
                 >
                     <ChevronRightIcon className="h-5 w-5" />
                 </button>
@@ -41,25 +41,25 @@ export default function DashboardNavigation({
 
             {/* Desktop layout: date on left, arrows on right */}
             <div className="hidden md:flex justify-between items-center">
-                <p className="text-healthpal-text-secondary">{displayDate}</p>
+                <p className="text-neutral-text-secondary">{displayDate}</p>
                 <div className="flex items-center gap-2">
                     {!isToday && (
                         <button
                             onClick={onGoToToday}
-                            className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all"
+                            className="bg-neutral-card text-neutral-text-primary font-bold py-2 px-4 rounded-lg hover:bg-neutral-border transition-all"
                         >
                             {todayLabel}
                         </button>
                     )}
                     <button
                         onClick={() => onDateChange(-1)}
-                        className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors"
+                        className="p-2 bg-neutral-card rounded-md hover:bg-neutral-border transition-colors"
                     >
                         <ChevronLeftIcon className="h-5 w-5" />
                     </button>
                     <button
                         onClick={() => onDateChange(1)}
-                        className="p-2 bg-healthpal-card rounded-md hover:bg-healthpal-border transition-colors"
+                        className="p-2 bg-neutral-card rounded-md hover:bg-neutral-border transition-colors"
                     >
                         <ChevronRightIcon className="h-5 w-5" />
                     </button>
@@ -70,7 +70,7 @@ export default function DashboardNavigation({
             {!isToday && (
                 <button
                     onClick={onGoToToday}
-                    className="md:hidden bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all w-full"
+                    className="md:hidden bg-neutral-card text-neutral-text-primary font-bold py-2 px-4 rounded-lg hover:bg-neutral-border transition-all w-full"
                 >
                     {todayLabel}
                 </button>

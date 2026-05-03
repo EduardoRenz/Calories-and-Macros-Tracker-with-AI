@@ -25,7 +25,7 @@ export const MealItem: React.FC<MealItemProps> = ({
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     return (
-        <div className="py-4 border-b border-healthpal-border last:border-none" data-testid={testId}>
+        <div className="py-4 border-b border-neutral-border last:border-none" data-testid={testId}>
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="flex justify-between items-center w-full"

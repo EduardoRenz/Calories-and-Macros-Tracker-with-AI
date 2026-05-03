@@ -88,7 +88,7 @@ describe('History Page', () => {
 
     cy.get(`[data-testid="history-calories-${underDay}"]`, { timeout: 15000 })
       .should('have.attr', 'class')
-      .and('include', 'text-healthpal-green');
+      .and('include', 'text-brand-green');
   });
 
   it('should filter by date range only after clicking Apply', () => {

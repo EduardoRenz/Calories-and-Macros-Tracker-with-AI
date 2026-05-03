@@ -39,12 +39,12 @@ export const MealDetails: React.FC<MealDetailsProps> = ({
                     ))}
                 </ul>
             ) : (
-                <p className="text-sm text-healthpal-text-secondary italic text-center py-4">
+                <p className="text-sm text-neutral-text-secondary italic text-center py-4">
                     {t('meals.no_items_logged')}
                 </p>
             )}
 
-            <div className="border-t border-healthpal-border pt-4 mt-4 space-y-4">
+            <div className="border-t border-neutral-border pt-4 mt-4 space-y-4">
                 <MealTotalsRow meal={meal} />
                 <AddIngredientButton onClick={onAddIngredient} mealType={mealType} />
             </div>
