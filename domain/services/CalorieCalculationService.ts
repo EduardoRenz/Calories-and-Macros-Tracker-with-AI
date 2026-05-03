@@ -41,10 +41,22 @@ const CALORIE_ADJUSTMENT: Record<PrimaryGoal, number> = {
 };
 
 export class CalorieCalculationService {
-    public static calculateGoals(profile: UserProfile) {
+    public static calculateGoals(profile: UserProfile): { calories: number; protein: number; carbs: number; fats: number } | null {
         const { personalInfo, fitnessGoals } = profile;
         const { weight, height, age, gender } = personalInfo;
         const { activityLevel, primaryGoal } = fitnessGoals;
+
+        // Return null if any required field is missing
+        if (
+            weight === null ||
+            height === null ||
+            age === null ||
+            gender === null ||
+            activityLevel === null ||
+            primaryGoal === null
+        ) {
+            return null;
+        }
 
         let bmr: number;
         if (gender === 'male') {

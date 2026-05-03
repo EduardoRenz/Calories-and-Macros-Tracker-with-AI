@@ -8,13 +8,13 @@ type ProfilesRow = {
   user_id: string;
   name: string | null;
   email: string | null;
-  age: number;
-  height: number;
-  weight: number;
-  gender: 'female' | 'male' | 'other';
-  primary_goal: 'lose' | 'maintain' | 'gain';
-  target_weight: number;
-  activity_level: 'sedentary' | 'lightly' | 'moderately' | 'very';
+  age: number | null;
+  height: number | null;
+  weight: number | null;
+  gender: 'female' | 'male' | 'other' | null;
+  primary_goal: 'lose' | 'maintain' | 'gain' | null;
+  target_weight: number | null;
+  activity_level: 'sedentary' | 'lightly' | 'moderately' | 'very' | null;
   health_conditions: string[] | null;
   diet_type: DietType | null;
 };
@@ -60,15 +60,15 @@ export class SupabaseProfileRepository implements ProfileRepository {
       name: profile.name ?? 'New User',
       email: profile.email ?? '',
       personalInfo: {
-        age: profile.age,
-        height: profile.height,
-        weight: Number(profile.weight),
-        gender: profile.gender,
+        age: profile.age ?? null,
+        height: profile.height ?? null,
+        weight: profile.weight !== null ? Number(profile.weight) : null,
+        gender: profile.gender ?? null,
       },
       fitnessGoals: {
-        primaryGoal: profile.primary_goal,
-        targetWeight: Number(profile.target_weight),
-        activityLevel: profile.activity_level,
+        primaryGoal: profile.primary_goal ?? null,
+        targetWeight: profile.target_weight !== null ? Number(profile.target_weight) : null,
+        activityLevel: profile.activity_level ?? null,
       },
       weightHistory: weightHistory
         .map(w => ({ date: w.date, weight: Number(w.weight) }))
@@ -109,13 +109,13 @@ export class SupabaseProfileRepository implements ProfileRepository {
             user_id: userId,
             name: (user.user_metadata?.full_name ?? user.user_metadata?.name ?? 'New User') as string,
             email: user.email ?? '',
-            age: 30,
-            height: 170,
-            weight: 70,
-            gender: 'other',
-            primary_goal: 'maintain',
-            target_weight: 70,
-            activity_level: 'lightly',
+            age: null,
+            height: null,
+            weight: null,
+            gender: null,
+            primary_goal: null,
+            target_weight: null,
+            activity_level: null,
             health_conditions: this.getDefaultHealthConditions(),
             diet_type: 'omnivore',
           };
@@ -170,17 +170,20 @@ export class SupabaseProfileRepository implements ProfileRepository {
 
     if (upError) throw upError;
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const today = `${year}-${month}-${day}`;
+    // Only update weight history if weight is provided
+    if (profile.personalInfo.weight !== null && profile.personalInfo.weight > 0) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const today = `${year}-${month}-${day}`;
 
-    const { error: whError } = await supabase
-      .from('weight_history')
-      .upsert({ user_id: userId, date: today, weight: profile.personalInfo.weight }, { onConflict: 'user_id,date' });
+      const { error: whError } = await supabase
+        .from('weight_history')
+        .upsert({ user_id: userId, date: today, weight: profile.personalInfo.weight }, { onConflict: 'user_id,date' });
 
-    if (whError) throw whError;
+      if (whError) throw whError;
+    }
 
     // Invalidate cache
     this.dataCacheManager.invalidate(`profile:${userId}`);

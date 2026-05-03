@@ -8,6 +8,11 @@ describe('Dashboard Meal Management', () => {
   };
 
   beforeEach(() => {
+    // Ensure complete profile is used (not first-time setup)
+    cy.window().then((win) => {
+      win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
+    });
+
     // Login and navigate to dashboard
     cy.visit('/');
     cy.contains('Sign in with Google').click();

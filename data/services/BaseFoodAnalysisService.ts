@@ -1,6 +1,7 @@
 import { FoodAnalysisReport, VitaminStatus } from '../../domain/entities/analysis';
 import { FoodAnalysisInput, FoodAnalysisService } from '../../domain/services/FoodAnalysisService';
 import { DashboardData, Ingredient } from '../../domain/entities/dashboard';
+import { isProfileComplete } from '../../domain/entities/profile';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 
 export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
@@ -28,7 +29,8 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
     }
 
     protected getMacroGoals(profile: FoodAnalysisInput['profile']): { calories: number; protein: number; carbs: number; fats: number } {
-        return CalorieCalculationService.calculateGoals(profile);
+        const goals = CalorieCalculationService.calculateGoals(profile);
+        return goals ?? { calories: 0, protein: 0, carbs: 0, fats: 0 };
     }
 
     protected calculateMacroAverages(dashboardData: DashboardData[]): { calories: number; protein: number; carbs: number; fats: number } {
@@ -71,6 +73,11 @@ export abstract class BaseFoodAnalysisService implements FoodAnalysisService {
 
     protected buildPrompt(input: FoodAnalysisInput): string {
         const { dashboardData, profile, language } = input;
+
+        // Check if profile is complete before building prompt
+        if (!isProfileComplete(profile)) {
+            throw new Error('Cannot generate analysis: User profile is incomplete. Please complete your profile first.');
+        }
 
         const languageMap: { [key: string]: string } = {
             'en': 'English',

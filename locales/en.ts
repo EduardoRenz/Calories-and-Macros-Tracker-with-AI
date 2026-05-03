@@ -51,7 +51,18 @@ export default {
     "macro_split": "Macro Split",
     "api_keys_required_title": "API Keys Required",
     "api_keys_required_desc": "To continue using AI features, please configure your own API keys in settings.",
-    "go_to_settings": "Go to Settings"
+    "go_to_settings": "Go to Settings",
+    "first_time": {
+      "title": "Welcome to HealthPal!",
+      "description": "To calculate your personalized calorie and macro goals, we need to know a bit about you. Please fill in your personal information and fitness goals below.",
+      "dietary_restrictions_title": "Dietary Restrictions (Optional)",
+      "dietary_restrictions_desc": "If you have any health conditions or dietary preferences, you can add them later in your profile settings for personalized recommendations.",
+      "go_to_profile": "Go to Profile Settings →",
+      "save_and_continue": "Save and Continue",
+      "saving": "Saving...",
+      "error_incomplete": "Please fill in all required fields to continue.",
+      "error_saving": "Failed to save profile. Please try again."
+    }
   },
   "meals": {
     "summary_title": "Meal Summary",
@@ -147,6 +158,7 @@ export default {
       "female": "Female",
       "male": "Male",
       "other": "Other",
+      "select_gender": "Select gender",
       "diet_type": "Diet Type",
       "diet_types": {
         "omnivore": "Omnivore",
@@ -168,7 +180,8 @@ export default {
       "sedentary": "Sedentary",
       "lightly_active": "Lightly Active",
       "moderately_active": "Moderately Active",
-      "very_active": "Very Active"
+      "very_active": "Very Active",
+      "select_activity": "Select activity level"
     },
     "update_profile": "Update Profile",
     "saving": "Saving...",

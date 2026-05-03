@@ -51,7 +51,18 @@ export default {
     "macro_split": "Divisão de Macros",
     "api_keys_required_title": "Chaves de API Necessárias",
     "api_keys_required_desc": "Para continuar usando os recursos de IA, configure suas próprias chaves de API nas configurações.",
-    "go_to_settings": "Ir para Configurações"
+    "go_to_settings": "Ir para Configurações",
+    "first_time": {
+      "title": "Bem-vindo ao HealthPal!",
+      "description": "Para calcular suas metas personalizadas de calorias e macros, precisamos saber um pouco sobre você. Por favor, preencha suas informações pessoais e objetivos de fitness abaixo.",
+      "dietary_restrictions_title": "Restrições Alimentares (Opcional)",
+      "dietary_restrictions_desc": "Se você tem alguma condição de saúde ou preferência alimentar, pode adicioná-las posteriormente nas configurações do seu perfil para receber recomendações personalizadas.",
+      "go_to_profile": "Ir para Configurações do Perfil →",
+      "save_and_continue": "Salvar e Continuar",
+      "saving": "Salvando...",
+      "error_incomplete": "Por favor, preencha todos os campos obrigatórios para continuar.",
+      "error_saving": "Falha ao salvar perfil. Por favor, tente novamente."
+    }
   },
   "meals": {
     "summary_title": "Resumo das Refeições",
@@ -130,6 +141,7 @@ export default {
       "female": "Feminino",
       "male": "Masculino",
       "other": "Outro",
+      "select_gender": "Selecione o gênero",
       "diet_type": "Tipo de Dieta",
       "diet_types": {
         "omnivore": "Onívoro",
@@ -151,7 +163,8 @@ export default {
       "sedentary": "Sedentário",
       "lightly_active": "Levemente Ativo",
       "moderately_active": "Moderadamente Ativo",
-      "very_active": "Muito Ativo"
+      "very_active": "Muito Ativo",
+      "select_activity": "Selecione o nível de atividade"
     },
     "health_conditions": {
       "title": "Condições de Saúde",

@@ -111,14 +111,15 @@ export default function ProfilePage() {
 
     const calorieGoal = useMemo(() => {
         if (!profile) return 0;
-        return CalorieCalculationService.calculateGoals(profile).calories;
+        const goals = CalorieCalculationService.calculateGoals(profile);
+        return goals?.calories ?? 0;
     }, [profile]);
 
     const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (!profile) return;
         const { name, value } = e.target;
         editProfile({
-            personalInfo: { ...profile.personalInfo, [name]: name === 'gender' ? value : parseFloat(value) || 0 }
+            personalInfo: { ...profile.personalInfo, [name]: name === 'gender' ? value : (parseFloat(value) || null) }
         });
     };
 
@@ -126,7 +127,7 @@ export default function ProfilePage() {
         if (!profile) return;
         const { name, value } = e.target;
         editProfile({
-            fitnessGoals: { ...profile.fitnessGoals, [name]: name === 'activityLevel' ? value : parseFloat(value) || 0 }
+            fitnessGoals: { ...profile.fitnessGoals, [name]: name === 'activityLevel' ? value : (parseFloat(value) || null) }
         });
     };
 
@@ -179,8 +180,10 @@ export default function ProfilePage() {
         if (!profile || profile.weightHistory.length === 0) return 0;
         const startWeight = profile.weightHistory[0]?.weight;
 
-        const { targetWeight } = profile.fitnessGoals;
+        const targetWeight = profile.fitnessGoals.targetWeight;
         const currentWeight = profile.personalInfo.weight;
+
+        if (targetWeight === null || currentWeight === null) return 0;
 
         const totalWeightToChange = Math.abs(startWeight - targetWeight);
         if (totalWeightToChange === 0) return profile.fitnessGoals.primaryGoal === 'maintain' ? 100 : 0;
@@ -193,6 +196,14 @@ export default function ProfilePage() {
         return Math.max(0, Math.min(percentage, 100));
     }, [profile]);
 
+    const weightToGo = useMemo(() => {
+        if (!profile) return 0;
+        const currentWeight = profile.personalInfo.weight;
+        const targetWeight = profile.fitnessGoals.targetWeight;
+        if (currentWeight === null || targetWeight === null) return 0;
+        return Math.abs(currentWeight - targetWeight);
+    }, [profile]);
+
     if (loading) {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('profile.loading')}</div>;
     }
@@ -200,8 +211,6 @@ export default function ProfilePage() {
     if (!profile) {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('profile.load_error')}</div>;
     }
-
-    const weightToGo = Math.abs(profile.personalInfo.weight - profile.fitnessGoals.targetWeight);
 
     return (
         <div className="text-healthpal-text-primary">
@@ -242,19 +251,19 @@ export default function ProfilePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.age')}</label>
-                                <input type="number" name="age" value={profile.personalInfo.age} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <input type="number" name="age" value={profile.personalInfo.age ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.height')}</label>
-                                <input type="number" name="height" value={profile.personalInfo.height} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <input type="number" name="height" value={profile.personalInfo.height ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.weight')}</label>
-                                <input type="number" name="weight" value={profile.personalInfo.weight} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <input type="number" name="weight" value={profile.personalInfo.weight ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.gender')}</label>
-                                <select name="gender" value={profile.personalInfo.gender} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
+                                <select name="gender" value={profile.personalInfo.gender ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
                                     <option value="female">{t('profile.personal_info.female')}</option>
                                     <option value="male">{t('profile.personal_info.male')}</option>
                                     <option value="other">{t('profile.personal_info.other')}</option>
@@ -288,11 +297,11 @@ export default function ProfilePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.fitness_goals.target_weight')}</label>
-                                <input type="number" name="targetWeight" value={profile.fitnessGoals.targetWeight} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <input type="number" name="targetWeight" value={profile.fitnessGoals.targetWeight ?? ''} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.fitness_goals.activity_level')}</label>
-                                <select name="activityLevel" value={profile.fitnessGoals.activityLevel} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
+                                <select name="activityLevel" value={profile.fitnessGoals.activityLevel ?? ''} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
                                     <option value="sedentary">{t('profile.fitness_goals.sedentary')}</option>
                                     <option value="lightly">{t('profile.fitness_goals.lightly_active')}</option>
                                     <option value="moderately">{t('profile.fitness_goals.moderately_active')}</option>

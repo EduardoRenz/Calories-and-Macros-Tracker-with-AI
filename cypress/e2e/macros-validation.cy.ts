@@ -6,6 +6,11 @@ describe('Macros Validation', () => {
   };
 
   beforeEach(() => {
+    // Ensure complete profile is used (not first-time setup)
+    cy.window().then((win) => {
+      win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
+    });
+
     // Login and navigate to dashboard
     login();
     cy.visit('/dashboard');

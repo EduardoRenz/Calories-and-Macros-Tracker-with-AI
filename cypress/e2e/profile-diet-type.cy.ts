@@ -1,5 +1,10 @@
 describe('Profile Diet Type Selection', () => {
     beforeEach(() => {
+        // Ensure complete profile is used (not first-time setup)
+        cy.window().then((win) => {
+            win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
+        });
+
         // Login and navigate
         cy.visit('/');
         cy.contains('Sign in with Google').click();

@@ -48,7 +48,21 @@ export default {
     "calories_over": "Calorías Excedidas",
     "limit_exceeded": "Has superado tu límite.",
     "doing_great": "¡Lo estás haciendo genial!",
-    "macro_split": "División de Macros"
+    "macro_split": "División de Macros",
+    "api_keys_required_title": "Claves de API Requeridas",
+    "api_keys_required_desc": "Para continuar usando las funciones de IA, configure sus propias claves de API en la configuración.",
+    "go_to_settings": "Ir a Configuración",
+    "first_time": {
+      "title": "¡Bienvenido a HealthPal!",
+      "description": "Para calcular tus objetivos personalizados de calorías y macros, necesitamos saber un poco sobre ti. Por favor, completa tu información personal y objetivos de fitness a continuación.",
+      "dietary_restrictions_title": "Restricciones Alimentarias (Opcional)",
+      "dietary_restrictions_desc": "Si tienes alguna condición de salud o preferencia alimentaria, puedes agregarlas más tarde en la configuración de tu perfil para obtener recomendaciones personalizadas.",
+      "go_to_profile": "Ir a Configuración del Perfil →",
+      "save_and_continue": "Guardar y Continuar",
+      "saving": "Guardando...",
+      "error_incomplete": "Por favor, completa todos los campos requeridos para continuar.",
+      "error_saving": "Error al guardar el perfil. Por favor, inténtalo de nuevo."
+    }
   },
   "meals": {
     "summary_title": "Resumen de Comidas",
@@ -144,6 +158,7 @@ export default {
       "female": "Femenino",
       "male": "Masculino",
       "other": "Otro",
+      "select_gender": "Selecciona género",
       "diet_type": "Tipo de Dieta",
       "diet_types": {
         "omnivore": "Omnívoro",
@@ -165,7 +180,8 @@ export default {
       "sedentary": "Sedentario",
       "lightly_active": "Ligeramente Activo",
       "moderately_active": "Moderadamente Activo",
-      "very_active": "Muy Activo"
+      "very_active": "Muy Activo",
+      "select_activity": "Selecciona nivel de actividad"
     },
     "update_profile": "Actualizar Perfil",
     "saving": "Guardando...",

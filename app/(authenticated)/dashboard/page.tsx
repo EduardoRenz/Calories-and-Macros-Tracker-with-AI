@@ -14,11 +14,13 @@ import { DashboardRepository } from '@/domain/repositories/DashboardRepository';
 import AddIngredientModal from '@/components/AddIngredientModal';
 import DashboardNavigation from '@/components/DashboardNavigation';
 import DashboardWarningBar from '@/components/DashboardWarningBar';
+import FirstTimeSetup from '@/components/profile/FirstTimeSetup';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { useToast } from '@/contexts/ToastContext';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
+import { isProfileComplete, UserProfile } from '@/domain/entities/profile';
 
 const getFormattedDate = (date: Date) => {
     const year = date.getFullYear();
@@ -37,7 +39,7 @@ export default function DashboardPage() {
 
     const { isUserApiKeysRequired } = useFeatureFlags();
 
-    const { profile, goalsManagementService } = useProfile();
+    const { profile, goalsManagementService, updateProfile, loading: profileLoading } = useProfile();
     const computedGoals = useMemo(() => {
         if (profile) return CalorieCalculationService.calculateGoals(profile);
         return null;
@@ -200,6 +202,30 @@ export default function DashboardPage() {
             day: 'numeric',
         }).format(currentDate);
     }, [currentDate, hasMounted]);
+
+    // Show first-time setup if profile is not complete
+    const profileComplete = useMemo(() => isProfileComplete(profile), [profile]);
+
+    const handleFirstTimeSave = async (updatedProfile: UserProfile) => {
+        await updateProfile(updatedProfile);
+    };
+
+    // Show loading state while profile is loading
+    if (profileLoading) {
+        return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
+    }
+
+    // Show first-time setup for incomplete profiles
+    if (!profileComplete && profile) {
+        return (
+            <div className="py-8">
+                <FirstTimeSetup
+                    profile={profile}
+                    onSave={handleFirstTimeSave}
+                />
+            </div>
+        );
+    }
 
     if (isLoading || !data) {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
