@@ -9,7 +9,6 @@ import { CalorieCalculationService } from '@/domain/services/CalorieCalculationS
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
-import { EditIcon } from '@/components/icons';
 import ProfileNavigation from '@/components/ProfileNavigation';
 import HealthConditionsSection, { type HealthConditionOption } from '@/components/HealthConditionsSection';
 import { Button } from '@/components/ui/Button';
@@ -236,9 +235,6 @@ export default function ProfilePage() {
                                 className="border border-neutral-border"
                                 photoURL={user?.photoURL}
                             />
-                            <button className="absolute bottom-0 right-0 w-8 h-8 bg-brand-green rounded-full flex items-center justify-center text-black hover:brightness-110">
-                                <EditIcon className="w-5 h-5" />
-                            </button>
                         </div>
                         <div>
                             <h3 className="text-2xl font-bold">{user?.displayName}</h3>
