@@ -110,7 +110,7 @@ const ApiTokenManager: React.FC = () => {
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-brand-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm"
+                    className="flex items-center gap-2 bg-secondary text-on-secondary font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm"
                 >
                     <PlusIcon className="w-5 h-5" />
                     <span>{t('settings.tokens.add_token')}</span>
@@ -267,7 +267,7 @@ const AddApiKeyModal: React.FC<{ onClose: () => void, onSave: (key: ApiKey) => v
                     <button
                         type="submit"
                         disabled={!key.trim()}
-                        className="flex-1 px-4 py-3 rounded-xl font-bold bg-brand-green text-black hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-brand-green/20"
+                        className="flex-1 px-4 py-3 rounded-xl font-bold bg-secondary text-on-secondary hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-brand-green/20"
                     >
                         Save Configuration
                     </button>

@@ -259,7 +259,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                         <button onClick={handleReset} className="w-full bg-neutral-card text-neutral-text-primary font-bold py-3 rounded-lg hover:bg-neutral-border transition-all">
                             {t('quick_meal_modal.change_image_button')}
                         </button>
-                        <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-brand-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" data-testid="analyze-meal-button">
+                        <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-secondary text-on-secondary font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" data-testid="analyze-meal-button">
                             {isLoading ? t('quick_meal_modal.analyzing_button') : t('quick_meal_modal.analyze_image')}
                         </button>
                     </div>
@@ -349,7 +349,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                             </div>
                         ))}
                     </div>
-                    <button onClick={handleAddToDiary} disabled={isLoading} className="w-full mt-4 bg-brand-green text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all disabled:opacity-50" data-testid="add-to-diary-button">
+                    <button onClick={handleAddToDiary} disabled={isLoading} className="w-full mt-4 bg-secondary text-on-secondary font-bold py-3 rounded-lg hover:brightness-110 transition-all disabled:opacity-50" data-testid="add-to-diary-button">
                         {t('quick_meal_modal.add_to_diary_button')}
                     </button>
                 </div>

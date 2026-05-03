@@ -33,10 +33,10 @@
     --on-primary-fixed-variant: #00504e;
 
     /* Secondary */
-    --secondary: #03BE7C;
-    --on-secondary: #ffffff;
-    --secondary-container: #69fdb4;
-    --on-secondary-container: #007349;
+    --secondary: #47df9a;
+    --on-secondary: #003822;
+    --secondary-container: #00bd7b;
+    --on-secondary-container: #ffffff;
     --secondary-fixed: #69fdb4;
     --secondary-fixed-dim: #47df9a;
     --on-secondary-fixed: #002112;
@@ -143,6 +143,17 @@
     /* Outline */
     --outline: #889392;
     --outline-variant: #3e4948;
+
+    /* Legacy Map for Dark Mode */
+    --neutral-dark: var(--background);
+    --neutral-panel: var(--surface-container);
+    --neutral-card: var(--surface-container-lowest);
+    --neutral-border: var(--outline-variant);
+    --neutral-text-primary: var(--on-surface);
+    --neutral-text-secondary: var(--on-surface-variant);
+    --brand-green: var(--primary);
+    --brand-orange: var(--secondary);
+    --brand-yellow: var(--tertiary);
 }
 
 @layer base {

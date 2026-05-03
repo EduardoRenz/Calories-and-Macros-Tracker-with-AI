@@ -136,7 +136,7 @@ export default function FirstTimeSetup({ profile, onSave }: FirstTimeSetupProps)
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="bg-brand-green text-black font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50"
+                        className="bg-secondary text-on-secondary font-bold py-3 px-8 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50"
                     >
                         {isSaving ? t('dashboard.first_time.saving') : t('dashboard.first_time.save_and_continue')}
                     </button>

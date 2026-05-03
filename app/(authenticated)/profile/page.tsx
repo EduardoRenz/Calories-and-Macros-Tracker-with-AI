@@ -12,6 +12,7 @@ import { useProfile } from '@/contexts/ProfileContext';
 import { EditIcon } from '@/components/icons';
 import ProfileNavigation from '@/components/ProfileNavigation';
 import HealthConditionsSection, { type HealthConditionOption } from '@/components/HealthConditionsSection';
+import { Button } from '@/components/ui/Button';
 
 // --- Reusable Chart Components ---
 const WeightProgressChart: React.FC<{ data: WeightEntry[] }> = ({ data }) => {
@@ -289,9 +290,9 @@ export default function ProfilePage() {
                         <div>
                             <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.fitness_goals.primary_goal')}</label>
                             <div className="grid grid-cols-3 gap-2 border border-neutral-border rounded-lg p-1 mb-6">
-                                <button onClick={() => handlePrimaryGoalClick('lose')} className={`py-2 rounded-md font-semibold text-sm transition-colors ${profile.fitnessGoals.primaryGoal === 'lose' ? 'bg-brand-green text-black' : 'hover:bg-neutral-border'}`}>{t('profile.fitness_goals.lose_weight')}</button>
-                                <button onClick={() => handlePrimaryGoalClick('maintain')} className={`py-2 rounded-md font-semibold text-sm transition-colors ${profile.fitnessGoals.primaryGoal === 'maintain' ? 'bg-brand-green text-black' : 'hover:bg-neutral-border'}`}>{t('profile.fitness_goals.maintain_weight')}</button>
-                                <button onClick={() => handlePrimaryGoalClick('gain')} className={`py-2 rounded-md font-semibold text-sm transition-colors ${profile.fitnessGoals.primaryGoal === 'gain' ? 'bg-brand-green text-black' : 'hover:bg-neutral-border'}`}>{t('profile.fitness_goals.gain_muscle')}</button>
+                                <Button variant={profile.fitnessGoals.primaryGoal === 'lose' ? 'secondary' : 'ghost'} size="sm" onClick={() => handlePrimaryGoalClick('lose')} className="py-2">{t('profile.fitness_goals.lose_weight')}</Button>
+                                <Button variant={profile.fitnessGoals.primaryGoal === 'maintain' ? 'secondary' : 'ghost'} size="sm" onClick={() => handlePrimaryGoalClick('maintain')} className="py-2">{t('profile.fitness_goals.maintain_weight')}</Button>
+                                <Button variant={profile.fitnessGoals.primaryGoal === 'gain' ? 'secondary' : 'ghost'} size="sm" onClick={() => handlePrimaryGoalClick('gain')} className="py-2">{t('profile.fitness_goals.gain_muscle')}</Button>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -329,13 +330,15 @@ export default function ProfilePage() {
                                 {t('profile.cancel')}
                             </button>
                         )}
-                        <button
+                        <Button
                             onClick={handleUpdateProfile}
                             disabled={isSaving || !hasChanges}
-                            className="bg-brand-green text-black font-bold py-3 px-6 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50 disabled:cursor-not-allowed"
+                            isLoading={isSaving}
+                            variant="secondary"
+                            size="md"
                         >
                             {isSaving ? t('profile.saving') : t('profile.update_profile')}
-                        </button>
+                        </Button>
                     </div>
                 </div>
 

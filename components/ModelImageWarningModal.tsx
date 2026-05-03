@@ -50,7 +50,7 @@ export const ModelImageWarningModal: React.FC<ModelImageWarningModalProps> = ({
                     </button>
                     <button
                         onClick={onGoToSettings}
-                        className="flex-1 bg-brand-green text-black font-bold py-3 px-4 rounded-lg hover:brightness-110 transition-all"
+                        className="flex-1 bg-secondary text-on-secondary font-bold py-3 px-4 rounded-lg hover:brightness-110 transition-all"
                     >
                         {t('model_image_warning.go_to_settings')}
                     </button>

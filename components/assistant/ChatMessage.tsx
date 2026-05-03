@@ -54,7 +54,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                             p-3 rounded-2xl text-sm shadow-sm
                             ${isAssistant
                                 ? 'bg-neutral-card text-neutral-text-primary rounded-bl-sm border border-neutral-border'
-                                : 'bg-brand-green text-black font-medium rounded-br-sm'
+                                : 'bg-secondary text-on-secondary font-medium rounded-br-sm'
                             }
                         `}
                     >

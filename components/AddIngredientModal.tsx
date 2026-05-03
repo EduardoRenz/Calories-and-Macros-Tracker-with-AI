@@ -194,7 +194,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
             disabled={isAnalyzing || !formState.name || !formState.quantity || isUserApiKeysRequired}
             className={`p-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${isUserApiKeysRequired
               ? 'bg-neutral-card text-neutral-text-secondary'
-              : 'bg-brand-green text-black hover:brightness-110'
+              : 'bg-secondary text-on-secondary hover:brightness-110'
               }`}
             aria-label={t('add_ingredient_modal.analyze_button_aria')}
             title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
@@ -243,7 +243,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
           <button type="button" onClick={onClose} disabled={isSubmitting} className="bg-neutral-card text-neutral-text-primary font-bold py-2 px-4 rounded-lg hover:bg-neutral-border transition-all disabled:opacity-50 disabled:cursor-not-allowed">
             {t('add_ingredient_modal.cancel')}
           </button>
-          <button type="submit" disabled={isSubmitting} className="bg-brand-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" data-testid="save-ingredient-button">
+          <button type="submit" disabled={isSubmitting} className="bg-secondary text-on-secondary font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" data-testid="save-ingredient-button">
             {isSubmitting ? <SpinnerIcon className="w-5 h-5" /> : null}
             {t('add_ingredient_modal.save')}
           </button>

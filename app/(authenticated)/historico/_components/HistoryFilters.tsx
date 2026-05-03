@@ -47,7 +47,7 @@ export function HistoryFilters({
                 type="button"
                 onClick={onApply}
                 data-testid="history-filter-apply"
-                className="bg-brand-green text-black font-bold px-4 py-2 rounded-lg hover:brightness-110 transition-all text-sm"
+                className="bg-secondary text-on-secondary font-bold px-4 py-2 rounded-lg hover:brightness-110 transition-all text-sm"
             >
                 {labels.apply}
             </button>

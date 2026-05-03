@@ -146,7 +146,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                                         ) : (
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${subscription.isFree
                                                 ? 'bg-gray-700 text-gray-300'
-                                                : 'bg-brand-green text-black'
+                                                : 'bg-secondary text-on-secondary'
                                                 }`}>
                                                 {subscription.isFree ? t('settings.subscription.plan_free') : t('settings.subscription.plan_premium')}
                                             </span>

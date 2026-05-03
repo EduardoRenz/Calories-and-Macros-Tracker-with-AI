@@ -90,7 +90,7 @@ const SubscriptionCard: React.FC = () => {
                     ) : isFreePlan ? (
                         <Link
                             href="/plans"
-                            className="px-4 py-2 rounded-lg bg-brand-green text-black font-bold text-sm hover:brightness-110 transition-all flex items-center gap-2"
+                            className="px-4 py-2 rounded-lg bg-secondary text-on-secondary font-bold text-sm hover:brightness-110 transition-all flex items-center gap-2"
                         >
                             <SparklesIcon className="w-4 h-4" />
                             {t('settings.subscription.upgrade') || 'Upgrade Now'}

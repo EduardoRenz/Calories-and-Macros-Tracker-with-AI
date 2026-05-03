@@ -218,7 +218,7 @@ export default function FoodAnalysisPage() {
                         key={option.value}
                         onClick={() => setDateRangeOption(option.value)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${dateRangeOption === option.value
-                            ? 'bg-brand-green text-black'
+                            ? 'bg-secondary text-on-secondary'
                             : 'bg-neutral-card text-neutral-text-secondary hover:bg-neutral-border'
                             }`}
                     >
@@ -238,7 +238,7 @@ export default function FoodAnalysisPage() {
                         disabled={isUserApiKeysRequired}
                         className={`font-bold py-3 px-8 rounded-lg transition-all ${isUserApiKeysRequired
                             ? 'bg-neutral-card text-neutral-text-secondary cursor-not-allowed'
-                            : 'bg-brand-green text-black hover:brightness-110 shadow-lg shadow-brand-green/20'
+                            : 'bg-secondary text-on-secondary hover:brightness-110 shadow-lg shadow-brand-green/20'
                             }`}
                         id="generate-report-btn"
                         title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}

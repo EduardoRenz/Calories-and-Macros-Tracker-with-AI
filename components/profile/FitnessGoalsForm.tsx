@@ -3,6 +3,7 @@
 import React from 'react';
 import { FitnessGoals } from '@/domain/entities/profile';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Button } from '@/components/ui/Button';
 
 interface FitnessGoalsFormProps {
     fitnessGoals?: FitnessGoals;
@@ -43,33 +44,30 @@ export default function FitnessGoalsForm({ fitnessGoals, onChange, className = '
                     {t('profile.fitness_goals.primary_goal')}
                 </label>
                 <div className={`grid grid-cols-3 gap-2 border rounded-lg p-1 mb-6 ${getFieldError('primaryGoal', 'profile.fitness_goals.primary_goal') ? 'border-red-500' : 'border-neutral-border'}`}>
-                    <button
+                    <Button
+                        variant={safeFitnessGoals.primaryGoal === 'lose' ? 'secondary' : 'ghost'}
+                        size="sm"
                         onClick={() => handlePrimaryGoalClick('lose')}
-                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${safeFitnessGoals.primaryGoal === 'lose'
-                            ? 'bg-brand-green text-black'
-                            : 'hover:bg-neutral-border'
-                            }`}
+                        className="py-2"
                     >
                         {t('profile.fitness_goals.lose_weight')}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                        variant={safeFitnessGoals.primaryGoal === 'maintain' ? 'secondary' : 'ghost'}
+                        size="sm"
                         onClick={() => handlePrimaryGoalClick('maintain')}
-                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${safeFitnessGoals.primaryGoal === 'maintain'
-                            ? 'bg-brand-green text-black'
-                            : 'hover:bg-neutral-border'
-                            }`}
+                        className="py-2"
                     >
                         {t('profile.fitness_goals.maintain_weight')}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                        variant={safeFitnessGoals.primaryGoal === 'gain' ? 'secondary' : 'ghost'}
+                        size="sm"
                         onClick={() => handlePrimaryGoalClick('gain')}
-                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${safeFitnessGoals.primaryGoal === 'gain'
-                            ? 'bg-brand-green text-black'
-                            : 'hover:bg-neutral-border'
-                            }`}
+                        className="py-2"
                     >
                         {t('profile.fitness_goals.gain_muscle')}
-                    </button>
+                    </Button>
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
