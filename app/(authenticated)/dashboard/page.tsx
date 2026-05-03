@@ -252,7 +252,6 @@ export default function DashboardPage() {
                 onDateChange={handleDateChange}
                 onGoToToday={handleGoToToday}
                 todayLabel={t('dashboard.today')}
-                title={t('dashboard.title')}
             />
 
             {/* Main Grid */}
