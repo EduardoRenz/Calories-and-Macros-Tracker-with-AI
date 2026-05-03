@@ -5,13 +5,24 @@ import { PersonalInfo } from '@/domain/entities/profile';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface PersonalInfoFormProps {
-    personalInfo: PersonalInfo;
+    personalInfo?: PersonalInfo;
     onChange: (updates: Partial<PersonalInfo>) => void;
     className?: string;
+    errors?: string[];
+    touched?: Record<string, boolean>;
 }
 
-export default function PersonalInfoForm({ personalInfo, onChange, className = '' }: PersonalInfoFormProps) {
+export default function PersonalInfoForm({ personalInfo, onChange, className = '', errors = [], touched = {} }: PersonalInfoFormProps) {
     const { t } = useTranslation();
+
+    // Defensive default if personalInfo is undefined
+    const safePersonalInfo = personalInfo || { age: null, height: null, weight: null, gender: null };
+
+    const getFieldError = (fieldName: string): boolean => {
+        const hasError = errors.includes(t(`profile.personal_info.${fieldName}`));
+        const isTouched = touched[fieldName];
+        return hasError && isTouched;
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -31,10 +42,10 @@ export default function PersonalInfoForm({ personalInfo, onChange, className = '
                     <input
                         type="number"
                         name="age"
-                        value={personalInfo.age ?? ''}
+                        value={safePersonalInfo.age ?? ''}
                         onChange={handleChange}
                         placeholder="30"
-                        className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3"
+                        className={`w-full bg-healthpal-panel border rounded-lg p-3 ${getFieldError('age') ? 'border-red-500' : 'border-healthpal-border'}`}
                     />
                 </div>
                 <div>
@@ -44,10 +55,10 @@ export default function PersonalInfoForm({ personalInfo, onChange, className = '
                     <input
                         type="number"
                         name="height"
-                        value={personalInfo.height ?? ''}
+                        value={safePersonalInfo.height ?? ''}
                         onChange={handleChange}
                         placeholder="170"
-                        className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3"
+                        className={`w-full bg-healthpal-panel border rounded-lg p-3 ${getFieldError('height') ? 'border-red-500' : 'border-healthpal-border'}`}
                     />
                 </div>
                 <div>
@@ -57,10 +68,10 @@ export default function PersonalInfoForm({ personalInfo, onChange, className = '
                     <input
                         type="number"
                         name="weight"
-                        value={personalInfo.weight ?? ''}
+                        value={safePersonalInfo.weight ?? ''}
                         onChange={handleChange}
                         placeholder="70"
-                        className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3"
+                        className={`w-full bg-healthpal-panel border rounded-lg p-3 ${getFieldError('weight') ? 'border-red-500' : 'border-healthpal-border'}`}
                     />
                 </div>
                 <div>
@@ -69,9 +80,9 @@ export default function PersonalInfoForm({ personalInfo, onChange, className = '
                     </label>
                     <select
                         name="gender"
-                        value={personalInfo.gender ?? ''}
+                        value={safePersonalInfo.gender ?? ''}
                         onChange={handleChange}
-                        className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none"
+                        className={`w-full bg-healthpal-panel border rounded-lg p-3 appearance-none ${getFieldError('gender') ? 'border-red-500' : 'border-healthpal-border'}`}
                     >
                         <option value="">{t('profile.personal_info.select_gender')}</option>
                         <option value="female">{t('profile.personal_info.female')}</option>

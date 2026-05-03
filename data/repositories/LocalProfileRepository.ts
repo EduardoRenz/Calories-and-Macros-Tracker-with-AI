@@ -2,6 +2,7 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { DietType, UserProfile } from '../../domain/entities/profile';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 const initialProfile: UserProfile = {
     name: "Jane Doe",
@@ -47,6 +48,26 @@ const incompleteProfile: UserProfile = {
     dietType: 'omnivore' as DietType,
 };
 
+// Partial profile for testing - age, weight, height filled, rest null
+const partialProfile: UserProfile = {
+    name: "Partial User",
+    email: "partial@email.com",
+    personalInfo: {
+        age: 28,
+        height: 175,
+        weight: 70,
+        gender: null, // not filled
+    },
+    fitnessGoals: {
+        primaryGoal: null, // not filled
+        targetWeight: null, // not filled
+        activityLevel: null, // not filled
+    },
+    weightHistory: [],
+    healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
+};
+
 // Helper to check if we're in mock mode
 const isMockMode = (): boolean => {
     return typeof window !== 'undefined' &&
@@ -55,28 +76,35 @@ const isMockMode = (): boolean => {
 };
 
 // Get sessionStorage value for testing first-time setup (only works in mock mode)
-const shouldUseIncompleteProfile = (): boolean => {
+// Values: 'true'/'incomplete' = empty profile, 'partial' = partial data, 'false' = complete profile
+const getMockProfileType = (): 'complete' | 'incomplete' | 'partial' => {
     if (typeof window === 'undefined' || !isMockMode()) {
-        return false;
+        return 'complete';
     }
     const value = sessionStorage.getItem('mock_use_incomplete_profile');
-    return value === 'true';
+    if (value === 'true' || value === 'incomplete') return 'incomplete';
+    if (value === 'partial') return 'partial';
+    // Warn about invalid values in development/test mode
+    if (value && value !== 'false' && process.env.NODE_ENV !== 'production') {
+        console.warn(`[LocalProfileRepository] Invalid mock_use_incomplete_profile value: "${value}". Falling back to 'complete'. Valid values: 'true', 'incomplete', 'partial', 'false'`);
+    }
+    return 'complete';
 };
 
 // Initialize profile data based on sessionStorage (mock mode only) or default to complete profile
 const getInitialProfileData = (): UserProfile => {
-    if (shouldUseIncompleteProfile()) {
+    const profileType = getMockProfileType();
+    if (profileType === 'incomplete') {
         return JSON.parse(JSON.stringify(incompleteProfile));
+    }
+    if (profileType === 'partial') {
+        return JSON.parse(JSON.stringify(partialProfile));
     }
     return JSON.parse(JSON.stringify(initialProfile));
 };
 
 let userProfileData: UserProfile = getInitialProfileData();
 let lastSessionStorageValue: string | null = null;
-
-import { DataCacheManager } from '../infrastructure/DataCacheManager';
-
-// ... (existing imports)
 
 export class LocalProfileRepository implements ProfileRepository {
     private static instance: LocalProfileRepository;

@@ -203,8 +203,9 @@ export default function DashboardPage() {
         }).format(currentDate);
     }, [currentDate, hasMounted]);
 
-    // Show first-time setup if profile is not complete
+    // Show first-time setup if profile is not complete or goals cannot be calculated
     const profileComplete = useMemo(() => isProfileComplete(profile), [profile]);
+    const canCalculateGoals = computedGoals !== null;
 
     const handleFirstTimeSave = async (updatedProfile: UserProfile) => {
         await updateProfile(updatedProfile);
@@ -215,8 +216,8 @@ export default function DashboardPage() {
         return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
     }
 
-    // Show first-time setup for incomplete profiles
-    if (!profileComplete && profile) {
+    // Show first-time setup for incomplete profiles or when goals cannot be calculated
+    if ((!profileComplete || !canCalculateGoals) && profile) {
         return (
             <div className="py-8">
                 <FirstTimeSetup

@@ -42,19 +42,32 @@ const CALORIE_ADJUSTMENT: Record<PrimaryGoal, number> = {
 
 export class CalorieCalculationService {
     public static calculateGoals(profile: UserProfile): { calories: number; protein: number; carbs: number; fats: number } | null {
+        // Defensive check for profile structure
+        if (!profile?.personalInfo || !profile?.fitnessGoals) {
+            return null;
+        }
+
         const { personalInfo, fitnessGoals } = profile;
         const { weight, height, age, gender } = personalInfo;
         const { activityLevel, primaryGoal } = fitnessGoals;
 
-        // Return null if any required field is missing
+        // Return null if any required field is missing (null, undefined, or empty string)
         if (
-            weight === null ||
-            height === null ||
-            age === null ||
-            gender === null ||
-            activityLevel === null ||
-            primaryGoal === null
+            weight == null ||
+            height == null ||
+            age == null ||
+            !gender ||  // checks for null, undefined, or empty string
+            !activityLevel ||  // checks for null, undefined, or empty string
+            !primaryGoal  // checks for null, undefined, or empty string
         ) {
+            return null;
+        }
+
+        // Validate enum values are valid
+        const validGoals: PrimaryGoal[] = ['lose', 'maintain', 'gain'];
+        const validActivityLevels: ActivityLevel[] = ['sedentary', 'lightly', 'moderately', 'very'];
+        if (!validGoals.includes(primaryGoal) || !validActivityLevels.includes(activityLevel)) {
+            console.warn('[CalorieCalculationService] Invalid goal or activity level:', { primaryGoal, activityLevel });
             return null;
         }
 

@@ -45,23 +45,29 @@ export interface UserProfile {
     dietType?: DietType;
 }
 
-export function isProfileComplete(profile: UserProfile | null): boolean {
+export function isProfileComplete(profile: UserProfile | null | undefined): boolean {
     if (!profile) return false;
 
+    // Check if personalInfo exists
+    if (!profile.personalInfo) return false;
+
     const personalInfoComplete =
-        profile.personalInfo.age !== null &&
+        profile.personalInfo.age != null &&
         profile.personalInfo.age > 0 &&
-        profile.personalInfo.height !== null &&
+        profile.personalInfo.height != null &&
         profile.personalInfo.height > 0 &&
-        profile.personalInfo.weight !== null &&
+        profile.personalInfo.weight != null &&
         profile.personalInfo.weight > 0 &&
-        profile.personalInfo.gender !== null;
+        profile.personalInfo.gender != null;
+
+    // Check if fitnessGoals exists
+    if (!profile.fitnessGoals) return false;
 
     const fitnessGoalsComplete =
-        profile.fitnessGoals.primaryGoal !== null &&
-        profile.fitnessGoals.targetWeight !== null &&
+        profile.fitnessGoals.primaryGoal != null &&
+        profile.fitnessGoals.targetWeight != null &&
         profile.fitnessGoals.targetWeight > 0 &&
-        profile.fitnessGoals.activityLevel !== null;
+        profile.fitnessGoals.activityLevel != null;
 
     return personalInfoComplete && fitnessGoalsComplete;
 }

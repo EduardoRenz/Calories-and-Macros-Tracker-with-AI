@@ -5,13 +5,24 @@ import { FitnessGoals } from '@/domain/entities/profile';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface FitnessGoalsFormProps {
-    fitnessGoals: FitnessGoals;
+    fitnessGoals?: FitnessGoals;
     onChange: (updates: Partial<FitnessGoals>) => void;
     className?: string;
+    errors?: string[];
+    touched?: Record<string, boolean>;
 }
 
-export default function FitnessGoalsForm({ fitnessGoals, onChange, className = '' }: FitnessGoalsFormProps) {
+export default function FitnessGoalsForm({ fitnessGoals, onChange, className = '', errors = [], touched = {} }: FitnessGoalsFormProps) {
     const { t } = useTranslation();
+
+    // Defensive default if fitnessGoals is undefined
+    const safeFitnessGoals = fitnessGoals || { primaryGoal: null, targetWeight: null, activityLevel: null };
+
+    const getFieldError = (fieldName: string, translatedField: string): boolean => {
+        const hasError = errors.includes(t(translatedField));
+        const isTouched = touched[fieldName];
+        return hasError && isTouched;
+    };
 
     const handlePrimaryGoalClick = (goal: 'lose' | 'maintain' | 'gain') => {
         onChange({ primaryGoal: goal });
@@ -31,34 +42,31 @@ export default function FitnessGoalsForm({ fitnessGoals, onChange, className = '
                 <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">
                     {t('profile.fitness_goals.primary_goal')}
                 </label>
-                <div className="grid grid-cols-3 gap-2 border border-healthpal-border rounded-lg p-1 mb-6">
+                <div className={`grid grid-cols-3 gap-2 border rounded-lg p-1 mb-6 ${getFieldError('primaryGoal', 'profile.fitness_goals.primary_goal') ? 'border-red-500' : 'border-healthpal-border'}`}>
                     <button
                         onClick={() => handlePrimaryGoalClick('lose')}
-                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${
-                            fitnessGoals.primaryGoal === 'lose'
-                                ? 'bg-healthpal-green text-black'
-                                : 'hover:bg-healthpal-border'
-                        }`}
+                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${safeFitnessGoals.primaryGoal === 'lose'
+                            ? 'bg-healthpal-green text-black'
+                            : 'hover:bg-healthpal-border'
+                            }`}
                     >
                         {t('profile.fitness_goals.lose_weight')}
                     </button>
                     <button
                         onClick={() => handlePrimaryGoalClick('maintain')}
-                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${
-                            fitnessGoals.primaryGoal === 'maintain'
-                                ? 'bg-healthpal-green text-black'
-                                : 'hover:bg-healthpal-border'
-                        }`}
+                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${safeFitnessGoals.primaryGoal === 'maintain'
+                            ? 'bg-healthpal-green text-black'
+                            : 'hover:bg-healthpal-border'
+                            }`}
                     >
                         {t('profile.fitness_goals.maintain_weight')}
                     </button>
                     <button
                         onClick={() => handlePrimaryGoalClick('gain')}
-                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${
-                            fitnessGoals.primaryGoal === 'gain'
-                                ? 'bg-healthpal-green text-black'
-                                : 'hover:bg-healthpal-border'
-                        }`}
+                        className={`py-2 rounded-md font-semibold text-sm transition-colors ${safeFitnessGoals.primaryGoal === 'gain'
+                            ? 'bg-healthpal-green text-black'
+                            : 'hover:bg-healthpal-border'
+                            }`}
                     >
                         {t('profile.fitness_goals.gain_muscle')}
                     </button>
@@ -72,10 +80,10 @@ export default function FitnessGoalsForm({ fitnessGoals, onChange, className = '
                     <input
                         type="number"
                         name="targetWeight"
-                        value={fitnessGoals.targetWeight ?? ''}
+                        value={safeFitnessGoals.targetWeight ?? ''}
                         onChange={handleChange}
                         placeholder="70"
-                        className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3"
+                        className={`w-full bg-healthpal-panel border rounded-lg p-3 ${getFieldError('targetWeight', 'profile.fitness_goals.target_weight') ? 'border-red-500' : 'border-healthpal-border'}`}
                     />
                 </div>
                 <div>
@@ -84,9 +92,9 @@ export default function FitnessGoalsForm({ fitnessGoals, onChange, className = '
                     </label>
                     <select
                         name="activityLevel"
-                        value={fitnessGoals.activityLevel ?? ''}
+                        value={safeFitnessGoals.activityLevel ?? ''}
                         onChange={handleChange}
-                        className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none"
+                        className={`w-full bg-healthpal-panel border rounded-lg p-3 appearance-none ${getFieldError('activityLevel', 'profile.fitness_goals.activity_level') ? 'border-red-500' : 'border-healthpal-border'}`}
                     >
                         <option value="">{t('profile.fitness_goals.select_activity')}</option>
                         <option value="sedentary">{t('profile.fitness_goals.sedentary')}</option>
