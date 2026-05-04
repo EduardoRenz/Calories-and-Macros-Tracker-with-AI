@@ -29,7 +29,7 @@ const MobileNutrientSummary: React.FC<MobileNutrientSummaryProps> = ({ data }) =
     const NutrientItem = ({ label, current, goal, unit, color, percentage }: { label: string, current: number, goal: number, unit: string, color: string, percentage: number }) => (
         <div className="flex flex-col gap-2 py-3">
             <div className="flex justify-between items-end">
-                <span className="text-neutral-text-secondary font-medium text-lg">{label}</span>
+                <h3 className="text-neutral-text-primary font-bold text-lg">{label}</h3>
                 <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-neutral-text-primary leading-none">
                         {formatNumber(current)}

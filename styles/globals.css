@@ -161,8 +161,12 @@
         touch-action: manipulation;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h4, h5, h6 {
         @apply font-headline;
+    }
+
+    h3 {
+        @apply font-label;
     }
 
     label, button {
