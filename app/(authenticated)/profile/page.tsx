@@ -342,18 +342,30 @@ export default function ProfilePage() {
                 <div className="lg:col-span-1 space-y-8">
                     {/* Progress Summary */}
                     <div className="bg-neutral-card p-6 rounded-2xl">
-                        <h3 className="text-xl font-bold mb-4">{t('profile.progress_summary.title')}</h3>
+                        <h3 className="text-xl font-bold mb-6">{t('profile.progress_summary.title')}</h3>
+                        
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-neutral-text-secondary">{t('profile.progress_summary.current_weight')}</span>
-                            <span className="font-bold text-lg">{profile.personalInfo.weight} kg</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-xl font-bold text-neutral-text-primary">{profile.personalInfo.weight}</span>
+                                <span className="text-xs font-bold text-neutral-text-secondary uppercase">kg</span>
+                            </div>
                         </div>
+
                         <div className="flex justify-between items-center mb-6">
                             <span className="text-neutral-text-secondary">{t('profile.progress_summary.weight_to_go')}</span>
-                            <span className="font-bold text-lg bg-brand-yellow text-black px-3 py-1 rounded-md">{weightToGo.toFixed(1)} kg</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-2xl font-bold text-brand-yellow">{weightToGo.toFixed(1)}</span>
+                                <span className="text-xs font-bold text-neutral-text-secondary uppercase">kg</span>
+                            </div>
                         </div>
-                        <div className="bg-neutral-panel p-4 rounded-lg text-center">
-                            <span className="text-neutral-text-secondary text-sm">{t('profile.progress_summary.daily_calorie_target')}</span>
-                            <p className="font-bold text-2xl text-brand-green">{calorieGoal} kcal</p>
+
+                        <div className="bg-neutral-panel/50 p-5 rounded-2xl text-center border border-neutral-border/50">
+                            <span className="text-neutral-text-secondary text-xs font-bold uppercase tracking-wider">{t('profile.progress_summary.daily_calorie_target')}</span>
+                            <div className="flex items-baseline justify-center gap-1 mt-1">
+                                <p className="text-3xl font-black text-brand-green">{calorieGoal}</p>
+                                <p className="text-xs font-bold text-neutral-text-secondary uppercase">kcal</p>
+                            </div>
                         </div>
                     </div>
 
