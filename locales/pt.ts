@@ -262,30 +262,20 @@ export default {
       "member_monthly": [
         { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
         { "text": "Análise nutricional completa por foto", "included": true },
-        { "text": "Histórico ilimitado e backups", "included": true },
+        { "text": "Histórico ilimitado", "included": true },
         { "text": "Relatórios de micronutrientes e saúde", "included": true },
         { "text": "Assistente LeveMente disponível 24/7", "included": true },
-        { "text": "Suporte prioritário", "included": true }
       ],
       "member_annual": {
         "discount_message": "Economize {{percentage}}%",
         "features": [
           { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
           { "text": "Análise nutricional completa por foto", "included": true },
-          { "text": "Histórico ilimitado e backups", "included": true },
+          { "text": "Histórico ilimitado", "included": true },
           { "text": "Relatórios de micronutrientes e saúde", "included": true },
           { "text": "Assistente LeveMente disponível 24/7", "included": true },
-          { "text": "Suporte prioritário", "included": true }
         ]
       },
-      "member_yearly": [
-        { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
-        { "text": "Análise nutricional completa por foto", "included": true },
-        { "text": "Histórico ilimitado e backups", "included": true },
-        { "text": "Relatórios de micronutrientes e saúde", "included": true },
-        { "text": "Assistente LeveMente disponível 24/7", "included": true },
-        { "text": "Suporte prioritário", "included": true }
-      ]
     }
   },
   "checkout": {

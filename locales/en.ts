@@ -262,30 +262,20 @@ export default {
       "member_monthly": [
         { "text": "Integrated AI (No personal keys needed)", "included": true },
         { "text": "Full photo-based nutrition analysis", "included": true },
-        { "text": "Unlimited history and backups", "included": true },
+        { "text": "Unlimited history", "included": true },
         { "text": "Micronutrient and health reports", "included": true },
         { "text": "LeveMente Assistant available 24/7", "included": true },
-        { "text": "Priority support", "included": true }
       ],
       "member_annual": {
         "discount_message": "Save {{percentage}}%",
         "features": [
           { "text": "Integrated AI (No personal keys needed)", "included": true },
           { "text": "Full photo-based nutrition analysis", "included": true },
-          { "text": "Unlimited history and backups", "included": true },
+          { "text": "Unlimited history", "included": true },
           { "text": "Micronutrient and health reports", "included": true },
           { "text": "LeveMente Assistant available 24/7", "included": true },
-          { "text": "Priority support", "included": true }
         ]
-      },
-      "member_yearly": [
-        { "text": "Integrated AI (No personal keys needed)", "included": true },
-        { "text": "Full photo-based nutrition analysis", "included": true },
-        { "text": "Unlimited history and backups", "included": true },
-        { "text": "Micronutrient and health reports", "included": true },
-        { "text": "LeveMente Assistant available 24/7", "included": true },
-        { "text": "Priority support", "included": true }
-      ]
+      }
     }
   },
   "checkout": {

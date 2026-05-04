@@ -43,16 +43,16 @@ export const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({ se
                         type="button"
                         onClick={() => onSelect(method.id)}
                         className={`flex flex-col items-center justify-center gap-2 rounded-xl border p-4 transition-all ${isSelected
-                            ? 'border-green-500 bg-green-500/10 text-white'
-                            : 'border-gray-800 bg-gray-900/50 text-gray-400 hover:border-gray-700 hover:bg-gray-800'
+                            ? 'border-secondary bg-secondary/10 text-neutral-text-primary'
+                            : 'border-neutral-border bg-neutral-panel/50 text-neutral-text-secondary hover:border-neutral-text-secondary/30 hover:bg-neutral-panel'
                             } relative`}
                     >
                         {isSelected && (
-                            <div className="absolute right-2 top-2 h-4 w-4 rounded-full bg-green-500 text-black p-0.5">
+                            <div className="absolute right-2 top-2 h-4 w-4 rounded-full bg-secondary text-on-secondary p-0.5">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </div>
                         )}
-                        <div dangerouslySetInnerHTML={{ __html: method.icon }} className={isSelected ? 'text-green-500' : 'text-gray-400'} />
+                        <div dangerouslySetInnerHTML={{ __html: method.icon }} className={isSelected ? 'text-secondary' : 'text-neutral-text-secondary'} />
                         <span className="text-sm font-medium">{t(method.labelKey)}</span>
                     </button>
                 );

@@ -105,34 +105,34 @@ function PlansContent() {
     });
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-neutral-panel text-neutral-text-primary">
             <PublicNavbar />
 
             <main className="container mx-auto px-4 py-20 min-h-[80vh] flex flex-col items-center justify-center">
                 <div className="text-center mb-12">
-                    <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500/10 text-green-500">
+                    <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" /></svg>
                     </div>
                     <h1 className="text-4xl font-bold mb-4">{t('plans.title') || 'Choose your plan'}</h1>
-                    <p className="text-gray-400 max-w-xl mx-auto">
+                    <p className="text-neutral-text-secondary max-w-xl mx-auto">
                         {t('plans.subtitle') || 'Select the plan that fits your fitness journey. Upgrade anytime to unlock advanced features.'}
                     </p>
                 </div>
 
                 {/* Toggle */}
-                <div className="flex items-center justify-center gap-4 mb-12">
+                <div className="flex items-center justify-center p-1 bg-neutral-card/50 rounded-full mb-12 shadow-sm border border-neutral-border/10">
                     <button
                         onClick={() => updateBillingCycle('month')}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${billingCycle === 'month' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white'}`}
+                        className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${billingCycle === 'month' ? 'bg-secondary text-on-secondary shadow-ambient scale-105' : 'bg-transparent text-neutral-text-secondary hover:text-neutral-text-primary'}`}
                     >
                         {t('plans.monthly') || 'Monthly'}
                     </button>
                     <button
                         onClick={() => updateBillingCycle('year')}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${billingCycle === 'year' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
+                        className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${billingCycle === 'year' ? 'bg-secondary text-on-secondary shadow-ambient scale-105' : 'bg-transparent text-neutral-text-secondary hover:text-neutral-text-primary'}`}
                     >
                         {t('plans.annual') || 'Annual'}
-                        <span className="bg-green-100 text-green-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                        <span className={`${billingCycle === 'year' ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'} text-[10px] font-bold px-1.5 py-0.5 rounded-full`}>
                             -{BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE}%
                         </span>
                     </button>
@@ -140,7 +140,7 @@ function PlansContent() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
                     {isLoading || subscriptionLoading ? (
-                        <div className="col-span-2 text-center text-gray-400">{t('plans.loading') || 'Loading plans...'}</div>
+                        <div className="col-span-2 text-center text-neutral-text-secondary">{t('plans.loading') || 'Loading plans...'}</div>
                     ) : (
                         displayedPlans.map(plan => (
                             <PlanCard
@@ -163,8 +163,8 @@ function PlansContent() {
 export default function PlansPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                <div className="text-center text-gray-400">Loading...</div>
+            <div className="min-h-screen bg-background text-neutral-text-primary flex items-center justify-center">
+                <div className="text-center text-neutral-text-secondary">Loading...</div>
             </div>
         }>
             <PlansContent />

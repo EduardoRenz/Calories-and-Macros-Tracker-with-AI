@@ -26,7 +26,7 @@ const LanguageSelector: React.FC = () => {
     return (
         <div className="bg-neutral-panel p-6 rounded-2xl flex items-center justify-between border border-neutral-border">
             <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-neutral-card flex items-center justify-center text-neutral-text-secondary">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                     <GlobeIcon className="w-6 h-6" />
                 </div>
                 <div>

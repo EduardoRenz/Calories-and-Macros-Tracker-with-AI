@@ -2,6 +2,7 @@ import React from 'react';
 import { Plan } from '../../domain/entities/payment';
 import { useTranslation } from '../../hooks/useTranslation';
 import { BILLING_CONSTANTS } from '../../domain/constants/billing';
+import { Button } from '../ui/Button';
 
 interface PlanCardProps {
     plan: Plan;
@@ -35,34 +36,34 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
 
     return (
         <div
-            className={`relative flex flex-col rounded-2xl border p-6 shadow-sm transition-all hover:shadow-md ${shouldUseGreenStyle
-                ? 'border-green-500 bg-gray-900/50'
-                : 'border-gray-800 bg-gray-900/20'
+            className={`relative flex flex-col rounded-2xl border p-6 shadow-ambient transition-all hover:scale-[1.02] bg-neutral-card ${shouldUseGreenStyle
+                ? 'border-secondary'
+                : 'border-neutral-border'
                 }`}
         >
             {(isPopular || discountMessage) && (
-                <div className="absolute -top-3 right-4 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-black shadow-lg">
+                <div className="absolute -top-3 right-4 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-on-secondary shadow-lg">
                     {discountMessage || t('plans.popular')}
                 </div>
             )}
 
             <div className="mb-4">
-                <h3 className={`text-lg font-semibold ${shouldUseGreenStyle ? 'text-green-400' : 'text-gray-200'}`}>
+                <h3 className={`text-lg font-semibold ${shouldUseGreenStyle ? 'text-primary' : 'text-neutral-text-primary'}`}>
                     {plan.name}
                 </h3>
                 <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-white">
+                    <span className="text-4xl font-bold text-neutral-text-primary">
                         {plan.formattedPrice}
                     </span>
                     {originalPriceLabel && (
-                        <span className="text-sm text-gray-500 line-through">
+                        <span className="text-sm text-neutral-text-secondary/60 line-through">
                             {originalPriceLabel}
                         </span>
                     )}
-                    <span className="text-sm text-gray-400">/{plan.interval}</span>
+                    <span className="text-sm text-neutral-text-secondary">/{plan.interval}</span>
                 </div>
                 {plan.description && (
-                    <p className="mt-2 text-sm text-gray-400">{plan.description}</p>
+                    <p className="mt-2 text-sm text-neutral-text-secondary">{plan.description}</p>
                 )}
             </div>
 
@@ -71,7 +72,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                     <li key={index} className="flex items-start gap-3">
                         {feature.included ? (
                             <svg
-                                className="h-5 w-5 shrink-0 text-green-500"
+                                className="h-5 w-5 shrink-0 text-secondary"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 strokeWidth="2"
@@ -81,7 +82,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                             </svg>
                         ) : (
                             <svg
-                                className="h-5 w-5 shrink-0 text-gray-600"
+                                className="h-5 w-5 shrink-0 text-neutral-text-secondary/40"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 strokeWidth="2"
@@ -90,20 +91,19 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                             </svg>
                         )}
-                        <span className={`text-sm ${feature.included ? 'text-gray-300' : 'text-gray-500 line-through'}`}>
+                        <span className={`text-sm ${feature.included ? 'text-neutral-text-primary' : 'text-neutral-text-secondary/50 line-through'}`}>
                             {feature.text}
                         </span>
                     </li>
                 ))}
             </ul>
 
-            <button
+            <Button
                 onClick={() => onSelect(plan)}
                 disabled={isLoading || isCurrentPlan}
-                className={`w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors ${shouldUseGreenStyle
-                    ? 'bg-green-500 text-black hover:bg-green-400'
-                    : 'bg-gray-800 text-white hover:bg-gray-700'
-                    } disabled:opacity-50 disabled:cursor-not-allowed ${isCurrentPlan ? 'bg-gray-700 text-gray-400 hover:bg-gray-700' : ''}`}
+                variant={shouldUseGreenStyle ? 'secondary' : 'outline'}
+                fullWidth
+                isLoading={isLoading}
             >
                 {isCurrentPlan
                     ? (plan.currency.code === 'BRL' ? 'Plano Atual' : 'Current Plan')
@@ -111,7 +111,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                         ? (plan.currency.code === 'BRL' ? 'Atualizar para Membro' : 'Upgrade to Member')
                         : (plan.currency.code === 'BRL' ? 'Começar' : 'Get Started')
                 }
-            </button>
+            </Button>
         </div>
     );
 };
