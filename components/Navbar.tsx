@@ -11,7 +11,7 @@ import { useSubscription } from '../contexts/SubscriptionContext';
 import { Avatar } from './ui/Avatar';
 import { useApiKeys } from '../hooks/useApiKeys';
 import { ModelImageWarningModal } from './ModelImageWarningModal';
-import ThemeSwitcher from './ThemeSwitcher';
+import { ProfileDropdown } from './ProfileDropdown';
 
 interface NavbarProps {
     onQuickMealClick: () => void;
@@ -29,15 +29,6 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
     const avatarMenuRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const router = useRouter();
-
-    const getTrialDaysRemaining = (sub: typeof subscription): number => {
-        if (!sub || !sub.currentPeriodEnd) return 0;
-        const now = new Date();
-        const end = new Date(sub.currentPeriodEnd);
-        const diffMs = end.getTime() - now.getTime();
-        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        return Math.max(0, diffDays);
-    };
 
     // Close avatar menu when clicking outside
     useEffect(() => {
@@ -133,48 +124,13 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
 
                     {/* Avatar dropdown menu */}
                     {isAvatarMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-neutral-panel border border-neutral-border rounded-lg shadow-lg z-50">
-                            <div className="p-3 border-b border-neutral-border">
-                                <p className="font-medium text-neutral-text-primary truncate">{user?.displayName || 'User'}</p>
-                                <p className="text-sm text-neutral-text-secondary truncate">{user?.email}</p>
-                                {!subscriptionLoading && subscription && (
-                                    <div className="mt-2">
-                                        {subscription.isTrial ? (
-                                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-600 text-white">
-                                                {t('settings.subscription.plan_trial')} ({getTrialDaysRemaining(subscription)}d)
-                                            </span>
-                                        ) : (
-                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${subscription.isFree
-                                                ? 'bg-gray-700 text-gray-300'
-                                                : 'bg-secondary text-on-secondary'
-                                                }`}>
-                                                {subscription.isFree ? t('settings.subscription.plan_free') : t('settings.subscription.plan_premium')}
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                            <ThemeSwitcher />
-                            <Link
-                                href="/profile"
-                                onClick={() => setIsAvatarMenuOpen(false)}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-neutral-text-secondary hover:text-neutral-text-primary hover:bg-neutral-card transition-colors"
-                                data-testid="profile-link"
-                            >
-                                <UserIcon className="w-5 h-5" />
-                                <span>{t('navbar.profile')}</span>
-                            </Link>
-                            <button
-                                onClick={() => {
-                                    signOut();
-                                    setIsAvatarMenuOpen(false);
-                                }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-neutral-text-secondary hover:text-neutral-text-primary hover:bg-neutral-card transition-colors rounded-b-lg"
-                            >
-                                <LogoutIcon className="w-5 h-5" />
-                                <span>{t('navbar.logout')}</span>
-                            </button>
-                        </div>
+                        <ProfileDropdown
+                            user={user}
+                            subscription={subscription}
+                            subscriptionLoading={subscriptionLoading}
+                            onClose={() => setIsAvatarMenuOpen(false)}
+                            signOut={signOut}
+                        />
                     )}
                 </div>
             </div>
