@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Poppins } from "next/font/google";
+import { Montserrat, Lexend } from "next/font/google";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -11,7 +11,7 @@ import SWRegistration from "@/components/SWRegistration";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-body" });
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-label" });
+const lexend = Lexend({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-label" });
 const nearo = localFont({
     src: [
         {
@@ -68,7 +68,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={`${montserrat.variable} ${poppins.variable} ${nearo.variable} font-body bg-background text-on-surface`}>
+            <body className={`${montserrat.variable} ${lexend.variable} ${nearo.variable} font-body bg-background text-on-surface`}>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                     <SWRegistration />
                     <LanguageProvider>

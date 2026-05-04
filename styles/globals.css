@@ -78,10 +78,9 @@
     --brand-green: var(--primary);
     --brand-orange: var(--secondary);
     --brand-yellow: var(--tertiary);
-
-    /* Fonts */
-    --font-headline: 'Nara', sans-serif;
 }
+
+
 
 /* Dark mode fallback (to be expanded later) */
 .dark {
@@ -160,6 +159,14 @@
     body {
         @apply bg-background text-on-surface font-body;
         touch-action: manipulation;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-headline;
+    }
+
+    label, button {
+        @apply font-label;
     }
 
     * {
