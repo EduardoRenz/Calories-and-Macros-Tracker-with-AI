@@ -19,11 +19,16 @@ describe('Macros Validation', () => {
     // Wait for dashboard to load
     cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
 
-    // Expand breakfast section
-    cy.get('[data-testid="meal-breakfast"]').click();
-
-    // Click add ingredient for breakfast
-    cy.get('[data-testid="add-ingredient-breakfast"]').click();
+    // Expand breakfast section or click '+'
+    cy.get('body').then(($body) => {
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-breakfast"]');
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        cy.get('[data-testid="meal-breakfast"]').click();
+        cy.get('[data-testid="add-ingredient-breakfast"]').click();
+      }
+    });
 
     // Wait for modal to open
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
@@ -48,8 +53,15 @@ describe('Macros Validation', () => {
   });
 
   it('should not allow saving ingredient with empty protein', () => {
-    cy.get('[data-testid="meal-lunch"]').click();
-    cy.get('[data-testid="add-ingredient-lunch"]').click();
+    cy.get('body').then(($body) => {
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-lunch"]');
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        cy.get('[data-testid="meal-lunch"]').click();
+        cy.get('[data-testid="add-ingredient-lunch"]').click();
+      }
+    });
 
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
 
@@ -70,8 +82,15 @@ describe('Macros Validation', () => {
   });
 
   it('should allow saving ingredient when all macros are filled', () => {
-    cy.get('[data-testid="meal-dinner"]').click();
-    cy.get('[data-testid="add-ingredient-dinner"]').click();
+    cy.get('body').then(($body) => {
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-dinner"]');
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        cy.get('[data-testid="meal-dinner"]').click();
+        cy.get('[data-testid="add-ingredient-dinner"]').click();
+      }
+    });
 
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
 
@@ -86,9 +105,18 @@ describe('Macros Validation', () => {
     cy.get('[data-testid="save-ingredient-button"]').click();
 
     // Modal should close
+    cy.get('[data-testid="not-existent"]', {timeout: 2000}).should('not.exist');
     cy.get('[data-testid="add-ingredient-modal"]').should('not.exist');
 
     // Verify ingredient was saved
+    // Ensure expanded
+    cy.get('body').then(($body) => {
+        const details = $body.find('#meal-details-dinner');
+        if (!details.is(':visible')) {
+            cy.get('[data-testid="meal-dinner"]').click();
+        }
+    });
+
     cy.get('[data-testid="dinner-ingredients"]').within(() => {
       cy.contains('Chicken').should('exist');
       cy.contains('150g').should('exist');
@@ -96,8 +124,15 @@ describe('Macros Validation', () => {
   });
 
   it('should allow saving ingredient with zero values in macros (valid input)', () => {
-    cy.get('[data-testid="meal-snacks"]').click();
-    cy.get('[data-testid="add-ingredient-snacks"]').click();
+    cy.get('body').then(($body) => {
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-snacks"]');
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        cy.get('[data-testid="meal-snacks"]').click();
+        cy.get('[data-testid="add-ingredient-snacks"]').click();
+      }
+    });
 
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
 
