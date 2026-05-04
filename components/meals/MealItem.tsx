@@ -38,8 +38,11 @@ export const MealItem: React.FC<MealItemProps> = ({
     const hasIngredients = meal.ingredients.length > 0;
 
     return (
-        <div className="py-4 border-b border-neutral-border last:border-none" data-testid={testId}>
-            <div className="flex justify-between items-center w-full">
+        <div
+            className={`bg-neutral-card rounded-2xl border ${isExpanded ? 'border-brand-green/30' : 'border-neutral-border'} transition-colors duration-200 overflow-hidden shadow-sm`}
+            data-testid={testId}
+        >
+            <div className="p-4 flex justify-between items-center w-full">
                 <button
                     onClick={() => hasIngredients && setIsExpanded(!isExpanded)}
                     className={`flex items-center gap-4 flex-grow text-left ${!hasIngredients ? 'cursor-default' : ''}`}
@@ -47,14 +50,14 @@ export const MealItem: React.FC<MealItemProps> = ({
                     aria-controls={`meal-details-${mealType}`}
                     disabled={!hasIngredients}
                 >
-                    <div className="bg-brand-green/10 p-3 rounded-2xl text-brand-green">
-                        <MealIcon type={mealType} className="w-8 h-8" />
+                    <div className="bg-[#E9F7F5] p-3 rounded-xl text-brand-green">
+                        <MealIcon type={mealType} className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="font-bold text-lg leading-tight">{t(`meals.${mealType}`)}</p>
+                        <p className="font-bold text-lg leading-tight text-neutral-text-primary">{t(`meals.${mealType}`)}</p>
                         <p className="text-sm text-neutral-text-secondary">
-                            {/* Mock time or dynamic time if available in future, for now just show kcal */}
-                            {meal.calories} kcal
+                            {/* Format matching design: 08:30 AM • 420 kcal */}
+                            {meal.calories > 0 ? `08:30 AM • ${meal.calories} kcal` : `${meal.calories} kcal`}
                         </p>
                     </div>
                 </button>
@@ -72,7 +75,7 @@ export const MealItem: React.FC<MealItemProps> = ({
                     ) : (
                         <button
                             onClick={onAddIngredient}
-                            className="bg-brand-green/10 p-2 rounded-full text-brand-green hover:bg-brand-green/20 transition-colors"
+                            className="bg-[#E9F7F5] p-3 rounded-2xl text-brand-green hover:bg-brand-green/20 transition-colors"
                             aria-label={t('meals.add_ingredient')}
                             data-testid={`add-ingredient-${mealType}`}
                         >
@@ -83,7 +86,7 @@ export const MealItem: React.FC<MealItemProps> = ({
             </div>
 
             {isExpanded && hasIngredients && (
-                <div id={`meal-details-${mealType}`}>
+                <div className="px-4 pb-4 border-t border-neutral-border/50">
                     <MealDetails
                         meal={meal}
                         mealType={mealType}

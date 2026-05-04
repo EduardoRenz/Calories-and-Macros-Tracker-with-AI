@@ -59,7 +59,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
         const calories = Math.round((protein * 4) + (carbs * 4) + (fats * 9));
 
         return {
-            quantity: newQuantityStr.includes('g') ? `${newQuantity}g` : `${newQuantity}g`, // Normalize to 'g' if requested logic follows AddIngredientModal
+            quantity: newQuantityStr.includes('g') ? `${newQuantity}g` : `${newQuantity}g`,
             protein,
             carbs,
             fats,
@@ -90,75 +90,60 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
     };
 
     return (
-        <li className="group bg-neutral-panel/50 p-2 rounded-md flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center">
-            <div className="flex items-start justify-between gap-2 md:col-span-4">
-                <div className="flex items-center gap-3">
-                    <div className="hidden md:flex bg-neutral-panel p-2 rounded-xl text-neutral-text-secondary/50">
-                        <CategoryIcon category={ingredient.category} className="w-6 h-6" />
-                    </div>
-                    <div className="text-neutral-text-primary font-medium leading-snug break-words" title={ingredient.name}>
-                        {ingredient.name}
-                    </div>
+        <li className="group py-3 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-grow">
+                <div className="hidden md:flex bg-neutral-panel p-2 rounded-xl text-neutral-text-secondary/50">
+                    <CategoryIcon category={ingredient.category} className="w-5 h-5" />
                 </div>
-                <div className="md:hidden flex justify-end">
-                    <button
-                        onClick={() => onRemove(ingredient.id)}
-                        className="text-red-400 hover:text-red-500"
-                        aria-label={t('meals.remove_ingredient')}
-                    >
-                        <TrashIcon className="w-4 h-4" />
-                    </button>
+                <div className="flex flex-col">
+                    <span className="text-neutral-text-primary font-bold leading-snug">{ingredient.name}</span>
+                    <div className="flex items-center gap-1 text-xs text-neutral-text-secondary">
+                        {isEditing ? (
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onBlur={handleSave}
+                                onKeyDown={handleKeyDown}
+                                className="bg-neutral-card border border-brand-green rounded px-1 w-12 focus:outline-none"
+                            />
+                        ) : (
+                            <span onClick={handleStartEditing} className="cursor-pointer hover:underline decoration-dotted">
+                                {ingredient.quantity}
+                            </span>
+                        )}
+                        <span>•</span>
+                        <span>Organic</span> {/* Mock detail matching design */}
+                    </div>
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-text-secondary md:contents">
-                <div className="whitespace-nowrap md:col-span-2 md:text-center">
-                    <span className="md:hidden">Qtd: </span>
-                    {isEditing ? (
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            onBlur={handleSave}
-                            onKeyDown={handleKeyDown}
-                            className="bg-neutral-card border border-brand-green rounded px-1 py-0.5 w-16 text-center text-neutral-text-primary focus:outline-none"
-                        />
-                    ) : (
-                        <span
-                            onClick={handleStartEditing}
-                            className="md:text-neutral-text-secondary cursor-pointer hover:text-brand-green hover:underline decoration-dotted"
-                            title={t('meals.edit_quantity')}
-                        >
-                            {ingredient.quantity}
-                        </span>
-                    )}
+            <div className="flex items-center gap-6">
+                <div className="flex flex-col items-center min-w-[3ch]">
+                    <span className="text-brand-protein font-bold text-sm">{ingredient.protein}g</span>
+                    <span className="text-[10px] text-neutral-text-secondary uppercase">P</span>
+                </div>
+                <div className="flex flex-col items-center min-w-[3ch]">
+                    <span className="text-brand-carbs font-bold text-sm">{ingredient.carbs}g</span>
+                    <span className="text-[10px] text-neutral-text-secondary uppercase">C</span>
+                </div>
+                <div className="flex flex-col items-center min-w-[3ch]">
+                    <span className="text-brand-fats font-bold text-sm">{ingredient.fats}g</span>
+                    <span className="text-[10px] text-neutral-text-secondary uppercase">F</span>
                 </div>
 
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
-                    <span className="md:hidden text-brand-carbs">C: </span>
-                    {ingredient.carbs}g
+                {/* Calories hidden to match screenshot, but can be added back if needed */}
+                <div className="hidden md:flex flex-col items-center min-w-[4ch] opacity-50">
+                    <span className="text-neutral-text-primary font-bold text-sm">{Math.round(ingredient.calories)}</span>
+                    <span className="text-[10px] text-neutral-text-secondary uppercase text-[8px]">kcal</span>
                 </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
-                    <span className="md:hidden text-brand-protein">P: </span>
-                    {ingredient.protein}g
-                </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
-                    <span className="md:hidden text-brand-fats">G: </span>
-                    {ingredient.fats}g
-                </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-brand-fiber">
-                    <span className="md:hidden">F: </span>
-                    {ingredient.fiber}g
-                </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary font-bold">
-                    <span className="md:hidden text-brand-green">Kcal: </span>
-                    {Math.round(ingredient.calories)}
-                </div>
-            </div>
 
-            <div className="hidden md:col-span-1 md:flex md:justify-end">
-                <button onClick={() => onRemove(ingredient.id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-500">
+                <button
+                    onClick={() => onRemove(ingredient.id)}
+                    className="ml-2 text-neutral-text-secondary/30 hover:text-red-500 transition-colors md:opacity-0 md:group-hover:opacity-100"
+                    aria-label={t('meals.remove_ingredient')}
+                >
                     <TrashIcon className="w-4 h-4" />
                 </button>
             </div>

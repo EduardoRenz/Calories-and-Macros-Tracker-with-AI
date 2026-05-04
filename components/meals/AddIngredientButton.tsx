@@ -14,7 +14,7 @@ export const AddIngredientButton: React.FC<AddIngredientButtonProps> = ({ onClic
     return (
         <button
             onClick={onClick}
-            className="w-full flex items-center justify-center gap-2 bg-brand-green/10 text-brand-green font-bold py-3 rounded-lg hover:bg-brand-green/20 transition-colors"
+            className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-neutral-border text-neutral-text-secondary font-bold py-3 rounded-2xl hover:bg-neutral-panel/50 transition-colors"
             data-testid={mealType ? `add-ingredient-${mealType}` : undefined}
         >
             <PlusIcon className="w-5 h-5" />
