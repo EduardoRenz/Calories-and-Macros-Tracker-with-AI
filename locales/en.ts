@@ -129,8 +129,8 @@ export default {
     "tabs": {
       "settings": "Profile Settings",
       "progress": "Progress",
+      "food_analysis": "Food Analysis"
     },
-    "food_analysis": "Food Analysis",
     "health_conditions": {
       "title": "Health Conditions",
       "subtitle": "Select any conditions that apply so we can tailor safe dietary recommendations.",
