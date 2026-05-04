@@ -18,17 +18,17 @@ export default function DietTypeForm({ dietType, onChange, className = '' }: Die
     };
 
     return (
-        <div className={`bg-healthpal-card p-6 rounded-2xl ${className}`}>
+        <div className={`bg-neutral-card p-6 rounded-2xl ${className}`}>
             <h3 className="text-xl font-bold mb-6">{t('profile.personal_info.diet_type')}</h3>
             <div>
-                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">
+                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">
                     {t('profile.personal_info.diet_type')}
                 </label>
                 <select
                     name="dietType"
                     value={dietType}
                     onChange={handleChange}
-                    className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none"
+                    className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3 appearance-none"
                 >
                     <option value="omnivore">{t('profile.personal_info.diet_types.omnivore')}</option>
                     <option value="vegetarian">{t('profile.personal_info.diet_types.vegetarian')}</option>

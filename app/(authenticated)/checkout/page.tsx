@@ -181,7 +181,7 @@ export default function CheckoutPage() {
                             <button
                                 type="submit"
                                 disabled={isProcessing}
-                                className="w-full rounded-xl bg-healthpal-green py-4 text-center font-bold text-black transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full rounded-xl bg-brand-green py-4 text-center font-bold text-black transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isProcessing ? t('checkout.processing_payment') : (t('checkout.confirm_and_pay') || 'Confirm and Pay →')}
                             </button>

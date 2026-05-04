@@ -53,7 +53,7 @@ export default {
     "api_keys_required_desc": "To continue using AI features, please configure your own API keys in settings.",
     "go_to_settings": "Go to Settings",
     "first_time": {
-      "title": "Welcome to HealthPal!",
+      "title": "Welcome to LeveMente!",
       "description": "To calculate your personalized calorie and macro goals, we need to know a bit about you. Please fill in your personal information and fitness goals below.",
       "dietary_restrictions_title": "Dietary Restrictions (Optional)",
       "dietary_restrictions_desc": "If you have any health conditions or dietary preferences, you can add them later in your profile settings for personalized recommendations.",
@@ -129,8 +129,8 @@ export default {
     "tabs": {
       "settings": "Profile Settings",
       "progress": "Progress",
+      "food_analysis": "Food Analysis"
     },
-    "food_analysis": "Food Analysis",
     "health_conditions": {
       "title": "Health Conditions",
       "subtitle": "Select any conditions that apply so we can tailor safe dietary recommendations.",
@@ -257,35 +257,25 @@ export default {
         { "text": "7-day free trial with premium features", "included": true },
         { "text": "Photo-based nutrition analysis", "included": false },
         { "text": "Advanced health reports", "included": false },
-        { "text": "HealthPal Assistant 24/7", "included": false }
+        { "text": "Lumi 24/7", "included": false }
       ],
       "member_monthly": [
         { "text": "Integrated AI (No personal keys needed)", "included": true },
         { "text": "Full photo-based nutrition analysis", "included": true },
-        { "text": "Unlimited history and backups", "included": true },
+        { "text": "Unlimited history", "included": true },
         { "text": "Micronutrient and health reports", "included": true },
-        { "text": "HealthPal Assistant available 24/7", "included": true },
-        { "text": "Priority support", "included": true }
+        { "text": "Lumi available 24/7", "included": true },
       ],
       "member_annual": {
         "discount_message": "Save {{percentage}}%",
         "features": [
           { "text": "Integrated AI (No personal keys needed)", "included": true },
           { "text": "Full photo-based nutrition analysis", "included": true },
-          { "text": "Unlimited history and backups", "included": true },
+          { "text": "Unlimited history", "included": true },
           { "text": "Micronutrient and health reports", "included": true },
-          { "text": "HealthPal Assistant available 24/7", "included": true },
-          { "text": "Priority support", "included": true }
+          { "text": "Lumi available 24/7", "included": true },
         ]
-      },
-      "member_yearly": [
-        { "text": "Integrated AI (No personal keys needed)", "included": true },
-        { "text": "Full photo-based nutrition analysis", "included": true },
-        { "text": "Unlimited history and backups", "included": true },
-        { "text": "Micronutrient and health reports", "included": true },
-        { "text": "HealthPal Assistant available 24/7", "included": true },
-        { "text": "Priority support", "included": true }
-      ]
+      }
     }
   },
   "checkout": {
@@ -337,6 +327,7 @@ export default {
       "title": "General Settings",
       "language": "Language"
     },
+    "theme": "Theme",
     "subscription": {
       "title": "Subscription",
       "description": "Manage your plan and billing details",
@@ -390,11 +381,11 @@ export default {
     }
   },
   "assistant": {
-    "title": "Assistant",
+    "title": "Lumi",
     "status_online": "ONLINE",
     "status_absent": "ABSENT",
     "close": "Close chat",
-    "input_placeholder": "Ask Assistant...",
+    "input_placeholder": "Ask Lumi...",
     "send": "Send",
     "confirm_action": "Action pending confirmation",
     "confirm": "Confirm",
@@ -404,8 +395,8 @@ export default {
     "action_error": "Failed to execute action. Please try again.",
     "action_cancelled": "Action cancelled.",
     "prepared_action": "I have prepared the action for you.",
-    "welcome_message": "Say hello to your personal health assistant!",
-    "disclaimer": "HealthPal Assistant may provide inaccurate info.",
+    "welcome_message": "Say hello to Lumi, your personal health assistant!",
+    "disclaimer": "Lumi may provide inaccurate info.",
     "open_assistant": "Open Assistant",
     "action_undone_warning": "This action cannot be easily undone.",
     "protein": "Protein",

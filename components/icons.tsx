@@ -8,7 +8,9 @@ export const HealthPalLogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) =>
 
 export const HomeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a.75.75 0 011.06 0l8.955 8.955M3 11.25V21a.75.75 0 00.75.75H8.25a.75.75 0 00.75-.75V15a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v5.25a.75.75 0 00.75.75H20.25a.75.75 0 00.75-.75V11.25m-18 0A24.004 24.004 0 0112 3c4.183 0 8.046 1.47 11.25 3.938" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 10v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 12l9-9a1.5 1.5 0 0 1 2 0l9 9" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10 21v-6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6" />
     </svg>
 );
 
@@ -84,7 +86,12 @@ export const LogoutIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export const GlobeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c1.354 0 2.665-.25 3.88-.716M12 21c-1.354 0-2.665-.25-3.88-.716M12 3c1.354 0 2.665.25 3.88.716M12 3c-1.354 0-2.665-.25-3.88-.716M3.116 14.253a9.003 9.003 0 010-4.506M20.884 14.253a9.003 9.003 0 000-4.506M12 3v18M12 3a9 9 0 00-7.79 13.253M12 3a9 9 0 017.79 13.253" />
+        <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 12h20" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 15h16.8" />
     </svg>
 );
 
@@ -214,5 +221,29 @@ export const AlertIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 export const InfoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+    </svg>
+);
+
+export const LumiIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" {...props}>
+        {/* Body / Head */}
+        <ellipse cx="50" cy="55" rx="38" ry="36" fill="white" />
+        {/* Ear left */}
+        <ellipse cx="14" cy="56" rx="8" ry="9" fill="#00C853" />
+        {/* Ear right */}
+        <ellipse cx="86" cy="56" rx="8" ry="9" fill="#00C853" />
+        {/* Top antenna nub */}
+        <ellipse cx="50" cy="20" rx="9" ry="7" fill="#00C853" />
+        <rect x="47" y="19" width="6" height="10" fill="white" />
+        {/* Face screen */}
+        <rect x="22" y="34" width="56" height="42" rx="12" ry="12" fill="#1a1a1a" />
+        {/* Left eye */}
+        <ellipse cx="37" cy="53" rx="7" ry="7" fill="#00E676" />
+        <ellipse cx="37" cy="53" rx="3.5" ry="3.5" fill="#69FF97" opacity="0.7" />
+        {/* Right eye */}
+        <ellipse cx="63" cy="53" rx="7" ry="7" fill="#00E676" />
+        <ellipse cx="63" cy="53" rx="3.5" ry="3.5" fill="#69FF97" opacity="0.7" />
+        {/* Smile */}
+        <path d="M 38 65 Q 50 74 62 65" stroke="#00E676" strokeWidth="3.5" strokeLinecap="round" fill="none" />
     </svg>
 );

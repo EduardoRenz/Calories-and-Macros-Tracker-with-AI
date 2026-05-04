@@ -78,9 +78,9 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
     };
 
     return (
-        <li className="group bg-healthpal-panel/50 p-2 rounded-md flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center">
+        <li className="group bg-neutral-panel/50 p-2 rounded-md flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center">
             <div className="flex items-start justify-between gap-2 md:col-span-4">
-                <div className="text-healthpal-text-primary font-medium leading-snug break-words" title={ingredient.name}>
+                <div className="text-neutral-text-primary font-medium leading-snug break-words" title={ingredient.name}>
                     {ingredient.name}
                 </div>
                 <div className="md:hidden flex justify-end">
@@ -94,7 +94,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-healthpal-text-secondary md:contents">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-text-secondary md:contents">
                 <div className="whitespace-nowrap md:col-span-2 md:text-center">
                     <span className="md:hidden">Qtd: </span>
                     {isEditing ? (
@@ -105,12 +105,12 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                             onChange={(e) => setEditValue(e.target.value)}
                             onBlur={handleSave}
                             onKeyDown={handleKeyDown}
-                            className="bg-healthpal-card border border-healthpal-green rounded px-1 py-0.5 w-16 text-center text-healthpal-text-primary focus:outline-none"
+                            className="bg-neutral-card border border-brand-green rounded px-1 py-0.5 w-16 text-center text-neutral-text-primary focus:outline-none"
                         />
                     ) : (
                         <span
                             onClick={handleStartEditing}
-                            className="md:text-healthpal-text-secondary cursor-pointer hover:text-healthpal-green hover:underline decoration-dotted"
+                            className="md:text-neutral-text-secondary cursor-pointer hover:text-brand-green hover:underline decoration-dotted"
                             title={t('meals.edit_quantity')}
                         >
                             {ingredient.quantity}
@@ -118,24 +118,24 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                     )}
                 </div>
 
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
-                    <span className="md:hidden text-healthpal-carbs">C: </span>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
+                    <span className="md:hidden text-brand-carbs">C: </span>
                     {ingredient.carbs}g
                 </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
-                    <span className="md:hidden text-healthpal-protein">P: </span>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
+                    <span className="md:hidden text-brand-protein">P: </span>
                     {ingredient.protein}g
                 </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
-                    <span className="md:hidden text-healthpal-fats">G: </span>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
+                    <span className="md:hidden text-brand-fats">G: </span>
                     {ingredient.fats}g
                 </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-fiber">
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-brand-fiber">
                     <span className="md:hidden">F: </span>
                     {ingredient.fiber}g
                 </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-healthpal-text-primary">
-                    <span className="md:hidden text-healthpal-green">Kcal: </span>
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
+                    <span className="md:hidden text-brand-green">Kcal: </span>
                     {Math.round(ingredient.calories)}
                 </div>
             </div>

@@ -75,7 +75,7 @@ CRITICAL INSTRUCTIONS:
     }
 
     protected getPersonaHeader(): string {
-        return `You are HealthPal AI, a purely functional and objective nutrition assistant. 
+        return `You are Lumi, a purely functional and objective nutrition assistant. 
 Your goal is to help users track data and answer questions with absolute brevity and no conversational filler.`;
     }
 

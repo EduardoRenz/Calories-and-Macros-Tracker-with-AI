@@ -1,16 +1,19 @@
 describe('First Time Profile Setup', () => {
-    it('should display first-time setup form when profile is completely empty', () => {
-        // Set incomplete profile flag before visiting
-        cy.window().then((win) => {
-            win.sessionStorage.setItem('mock_use_incomplete_profile', 'true');
+    const loginWithProfileState = (profileState: 'true' | 'false' | 'partial') => {
+        cy.visit('/', {
+            onBeforeLoad(win) {
+                win.sessionStorage.setItem('mock_use_incomplete_profile', profileState);
+            },
         });
-
-        // Login and navigate
-        cy.visit('/');
         cy.contains('Sign in with Google').click();
+    };
+
+    it('should display first-time setup form when profile is completely empty', () => {
+        // Login and navigate with an incomplete profile
+        loginWithProfileState('true');
 
         // Should show first-time setup instead of dashboard
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
         cy.contains('To calculate your personalized calorie and macro goals').should('be.visible');
 
         // Should show Personal Info and Fitness Goals forms
@@ -30,17 +33,11 @@ describe('First Time Profile Setup', () => {
     });
 
     it('should display first-time setup with partial data and allow completion', () => {
-        // Set partial profile (age, weight, height filled; gender, goals null)
-        cy.window().then((win) => {
-            win.sessionStorage.setItem('mock_use_incomplete_profile', 'partial');
-        });
-
-        // Login and navigate
-        cy.visit('/');
-        cy.contains('Sign in with Google').click();
+        // Login and navigate with a partially complete profile
+        loginWithProfileState('partial');
 
         // Should show first-time setup (profile incomplete)
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Verify partial data is pre-filled
         cy.get('input[name="age"]').should('have.value', '28');
@@ -67,40 +64,28 @@ describe('First Time Profile Setup', () => {
         cy.contains('button', 'Save and Continue').click();
 
         // Should redirect to dashboard
-        cy.get('h2').contains('Dashboard', { timeout: 10000 }).should('be.visible');
+        cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
     });
 
     it('should redirect to dashboard when profile is complete', () => {
-        // Set complete profile flag
-        cy.window().then((win) => {
-            win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
-        });
-
-        // Login and navigate
-        cy.visit('/');
-        cy.contains('Sign in with Google').click();
+        // Login and navigate with a complete profile
+        loginWithProfileState('false');
 
         // Should NOT show first-time setup, go directly to dashboard
-        cy.get('h2').contains('Dashboard', { timeout: 10000 }).should('be.visible');
+        cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
 
         // Verify dashboard elements are present
-        cy.contains('button', 'Breakfast').should('be.visible');
-        cy.contains('button', 'Lunch').should('be.visible');
-        cy.contains('button', 'Dinner').should('be.visible');
+        cy.get('[data-testid="meal-breakfast"]').should('be.visible');
+        cy.get('[data-testid="meal-lunch"]').should('be.visible');
+        cy.get('[data-testid="meal-dinner"]').should('be.visible');
     });
 
     it('should allow completing profile and redirect to dashboard', () => {
-        // Set incomplete profile flag
-        cy.window().then((win) => {
-            win.sessionStorage.setItem('mock_use_incomplete_profile', 'true');
-        });
-
-        // Login and navigate
-        cy.visit('/');
-        cy.contains('Sign in with Google').click();
+        // Login and navigate with an incomplete profile
+        loginWithProfileState('true');
 
         // Wait for first-time setup screen
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Fill Personal Info
         cy.get('input[name="age"]').type('30');
@@ -117,21 +102,15 @@ describe('First Time Profile Setup', () => {
         cy.contains('button', 'Save and Continue').click();
 
         // Should redirect to dashboard after successful save
-        cy.get('h2').contains('Dashboard', { timeout: 10000 }).should('be.visible');
+        cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
     });
 
     it('should show validation error when clicking save with incomplete profile', () => {
-        // Set incomplete profile flag
-        cy.window().then((win) => {
-            win.sessionStorage.setItem('mock_use_incomplete_profile', 'true');
-        });
-
-        // Login and navigate
-        cy.visit('/');
-        cy.contains('Sign in with Google').click();
+        // Login and navigate with an incomplete profile
+        loginWithProfileState('true');
 
         // Wait for first-time setup screen
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Verify save button is enabled but shows error with missing fields when clicked
         cy.contains('button', 'Save and Continue').should('not.be.disabled');
@@ -140,17 +119,11 @@ describe('First Time Profile Setup', () => {
     });
 
     it('should allow navigating to profile for dietary restrictions', () => {
-        // Set incomplete profile flag
-        cy.window().then((win) => {
-            win.sessionStorage.setItem('mock_use_incomplete_profile', 'true');
-        });
-
-        // Login and navigate
-        cy.visit('/');
-        cy.contains('Sign in with Google').click();
+        // Login and navigate with an incomplete profile
+        loginWithProfileState('true');
 
         // Wait for first-time setup screen
-        cy.contains('Welcome to HealthPal!', { timeout: 10000 }).should('be.visible');
+        cy.contains('Welcome to LeveMente!', { timeout: 10000 }).should('be.visible');
 
         // Click on link to profile settings
         cy.contains('Go to Profile Settings').click();

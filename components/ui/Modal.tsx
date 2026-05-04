@@ -100,7 +100,7 @@ const Modal: React.FC<ModalProps> = ({
             <div
                 className={
                     className ||
-                    `bg-healthpal-panel w-full ${sizeToMaxWidthClass[size]} rounded-2xl border border-healthpal-border shadow-2xl relative`
+                    `bg-neutral-panel w-full ${sizeToMaxWidthClass[size]} rounded-2xl border border-neutral-border shadow-2xl relative`
                 }
                 onClick={(e) => e.stopPropagation()}
             >
@@ -108,7 +108,7 @@ const Modal: React.FC<ModalProps> = ({
                     <div
                         className={
                             headerClassName ||
-                            'flex justify-between items-center p-4 border-b border-healthpal-border bg-healthpal-card/50 rounded-t-2xl'
+                            'flex justify-between items-center p-4 border-b border-neutral-border bg-neutral-card/50 rounded-t-2xl'
                         }
                     >
                         {title ? (
@@ -123,7 +123,7 @@ const Modal: React.FC<ModalProps> = ({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="text-healthpal-text-secondary hover:text-white transition-colors"
+                                className="text-neutral-text-secondary hover:text-white transition-colors"
                                 aria-label="Close"
                             >
                                 <XMarkIcon className="w-6 h-6" />

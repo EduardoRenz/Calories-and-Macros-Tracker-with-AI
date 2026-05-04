@@ -16,7 +16,7 @@ const MealSummaryCard: React.FC<MealSummaryCardProps> = ({ meals, onAddIngredien
     const mealOrder: (keyof MealSummary)[] = ['breakfast', 'lunch', 'dinner', 'snacks'];
 
     return (
-        <div className="bg-healthpal-card p-6 rounded-2xl h-full">
+        <div className="bg-neutral-card p-6 rounded-2xl h-full">
             <h3 className="text-xl font-bold mb-2">{t('meals.summary_title')}</h3>
             <div>
                 {mealOrder.map((mealType) => (

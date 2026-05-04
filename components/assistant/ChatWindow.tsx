@@ -43,7 +43,7 @@ const ChatWindow: React.FC = () => {
             <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-[48]" onClick={closeChat} />
 
             {/* Container principal do chat */}
-            <div className="fixed md:bottom-6 md:left-auto md:right-6 md:translate-x-0 inset-0 md:inset-auto md:w-full md:max-w-[400px] md:h-[600px] md:max-h-[80vh] bg-healthpal-panel md:rounded-2xl shadow-2xl border border-healthpal-border flex flex-col z-[49] animate-in slide-in-from-bottom-10 fade-in duration-300">
+            <div className="fixed md:bottom-6 md:left-auto md:right-6 md:translate-x-0 inset-0 md:inset-auto md:w-full md:max-w-[400px] md:h-[600px] md:max-h-[80vh] bg-neutral-panel md:rounded-2xl shadow-2xl border border-neutral-border flex flex-col z-[49] animate-in slide-in-from-bottom-10 fade-in duration-300">
                 <ChatHeader onClose={closeChat} />
 
                 <ChatMessages

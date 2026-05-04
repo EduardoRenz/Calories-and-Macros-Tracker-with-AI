@@ -13,11 +13,11 @@ const BillingHistory: React.FC = () => {
 
     if (loadingHistory && billingHistory.length === 0) {
         return (
-            <div className="bg-healthpal-panel p-6 rounded-2xl border border-healthpal-border animate-pulse">
-                <div className="h-6 w-48 bg-healthpal-card rounded mb-6"></div>
+            <div className="bg-neutral-panel p-6 rounded-2xl border border-neutral-border animate-pulse">
+                <div className="h-6 w-48 bg-neutral-card rounded mb-6"></div>
                 <div className="space-y-4">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-16 bg-healthpal-card rounded-xl"></div>
+                        <div key={i} className="h-16 bg-neutral-card rounded-xl"></div>
                     ))}
                 </div>
             </div>
@@ -29,15 +29,15 @@ const BillingHistory: React.FC = () => {
     }
 
     return (
-        <div className="bg-healthpal-panel p-6 rounded-2xl border border-healthpal-border">
+        <div className="bg-neutral-panel p-6 rounded-2xl border border-neutral-border">
             <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">
-                    <HistoryIcon className="w-6 h-6 text-healthpal-green" />
+                    <HistoryIcon className="w-6 h-6 text-brand-green" />
                     {t('settings.subscription.history_title') || 'Financial History'}
                 </h3>
                 <button 
                     onClick={() => refreshHistory()}
-                    className="p-2 text-healthpal-text-secondary hover:text-healthpal-green transition-colors"
+                    className="p-2 text-neutral-text-secondary hover:text-brand-green transition-colors"
                     title={t('common.refresh') || 'Refresh'}
                 >
                     <RefreshIcon className={`w-5 h-5 ${loadingHistory ? 'animate-spin' : ''}`} />
@@ -46,7 +46,7 @@ const BillingHistory: React.FC = () => {
 
             <div className="space-y-3">
                 {billingHistory.map((tx) => (
-                    <div key={tx.id} className="bg-healthpal-card/50 p-4 rounded-xl border border-healthpal-border flex items-center justify-between group hover:border-healthpal-text-secondary/30 transition-all">
+                    <div key={tx.id} className="bg-neutral-card/50 p-4 rounded-xl border border-neutral-border flex items-center justify-between group hover:border-neutral-text-secondary/30 transition-all">
                         <div className="flex items-center gap-4">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                                 tx.status === 'paid'
@@ -58,16 +58,16 @@ const BillingHistory: React.FC = () => {
                                 {tx.status === 'paid' ? <CheckCircleIcon className="w-5 h-5" /> : <XCircleIcon className="w-5 h-5" />}
                             </div>
                             <div>
-                                <p className="font-semibold text-healthpal-text-primary capitalize">
+                                <p className="font-semibold text-neutral-text-primary capitalize">
                                     {t(`settings.subscription.transaction_types.${tx.type}`) || tx.type}
                                 </p>
-                                <p className="text-xs text-healthpal-text-secondary">
+                                <p className="text-xs text-neutral-text-secondary">
                                     {tx.occurredAt.toLocaleDateString()} • {tx.provider}
                                 </p>
                             </div>
                         </div>
                         <div className="text-right">
-                            <p className="font-bold text-healthpal-text-primary">
+                            <p className="font-bold text-neutral-text-primary">
                                 {tx.currency.symbol}{tx.amountCents / 100}
                             </p>
                             <p className={`text-[10px] font-bold uppercase tracking-wider ${

@@ -19,8 +19,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="bg-healthpal-dark min-h-screen flex items-center justify-center">
-                <p className="text-healthpal-text-secondary">Loading...</p>
+            <div className="bg-neutral-dark min-h-screen flex items-center justify-center">
+                <p className="text-neutral-text-secondary">Loading...</p>
             </div>
         );
     }

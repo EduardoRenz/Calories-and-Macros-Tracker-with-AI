@@ -34,14 +34,14 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
     };
 
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-healthpal-panel/80 backdrop-blur-sm border-t border-healthpal-border z-40">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-neutral-panel/80 backdrop-blur-sm border-t border-neutral-border z-40">
             <nav className="flex items-center justify-around h-full max-w-md mx-auto px-2" data-testid="mobile-bottom-nav">
                 <div className="w-1/3">
                     <Link
                         href="/dashboard"
                         className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${pathname === '/dashboard'
-                            ? 'text-healthpal-green'
-                            : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                            ? 'text-brand-green'
+                            : 'text-neutral-text-secondary hover:text-neutral-text-primary'
                             }`}
                     >
                         <HomeIcon className="w-6 h-6" />
@@ -57,8 +57,8 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                         <button
                             onClick={handleChatClick}
                             className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${isOpen
-                                ? 'text-healthpal-green'
-                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                ? 'text-brand-green'
+                                : 'text-neutral-text-secondary hover:text-neutral-text-primary'
                                 }`}
                             id="mobile-chat-button"
                         >
@@ -69,8 +69,8 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                         <Link
                             href="/profile"
                             className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${pathname === '/profile'
-                                ? 'text-healthpal-green'
-                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                ? 'text-brand-green'
+                                : 'text-neutral-text-secondary hover:text-neutral-text-primary'
                                 }`}
                         >
                             <UserIcon className="w-6 h-6" />
@@ -89,9 +89,9 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                         }
                         onQuickMealClick();
                     }}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center text-black shadow-lg shadow-black/30 transition-all ${isUserApiKeysRequired || isDeepSeekOnly
-                        ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed grayscale'
-                        : 'bg-healthpal-green hover:brightness-110'
+                    className={`w-16 h-16 rounded-full flex items-center justify-center shadow-ambient transition-all ${isUserApiKeysRequired || isDeepSeekOnly
+                        ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed grayscale'
+                        : 'bg-secondary text-on-secondary hover:brightness-110 active:scale-95'
                         }`}
                     aria-label={t('navbar.quick_meal')}
                     title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}

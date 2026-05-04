@@ -24,30 +24,30 @@ export function HistoryFilters({
     return (
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
             <div className="flex flex-col">
-                <label className="text-xs text-healthpal-text-secondary">{labels.start}</label>
+                <label className="text-xs text-neutral-text-secondary">{labels.start}</label>
                 <input
                     type="date"
                     value={startDate}
                     onChange={e => onStartDateChange(e.target.value)}
                     data-testid="history-filter-start"
-                    className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
+                    className="bg-neutral-card border border-neutral-border rounded-lg px-3 py-2 text-sm text-neutral-text-primary"
                 />
             </div>
             <div className="flex flex-col">
-                <label className="text-xs text-healthpal-text-secondary">{labels.end}</label>
+                <label className="text-xs text-neutral-text-secondary">{labels.end}</label>
                 <input
                     type="date"
                     value={endDate}
                     onChange={e => onEndDateChange(e.target.value)}
                     data-testid="history-filter-end"
-                    className="bg-healthpal-card border border-healthpal-border rounded-lg px-3 py-2 text-sm text-healthpal-text-primary"
+                    className="bg-neutral-card border border-neutral-border rounded-lg px-3 py-2 text-sm text-neutral-text-primary"
                 />
             </div>
             <button
                 type="button"
                 onClick={onApply}
                 data-testid="history-filter-apply"
-                className="bg-healthpal-green text-black font-bold px-4 py-2 rounded-lg hover:brightness-110 transition-all text-sm"
+                className="bg-secondary text-on-secondary font-bold px-4 py-2 rounded-lg hover:brightness-110 transition-all text-sm"
             >
                 {labels.apply}
             </button>

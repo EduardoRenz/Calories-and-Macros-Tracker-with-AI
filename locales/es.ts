@@ -53,7 +53,7 @@ export default {
     "api_keys_required_desc": "Para continuar usando las funciones de IA, configure sus propias claves de API en la configuración.",
     "go_to_settings": "Ir a Configuración",
     "first_time": {
-      "title": "¡Bienvenido a HealthPal!",
+      "title": "¡Bienvenido a LeveMente!",
       "description": "Para calcular tus objetivos personalizados de calorías y macros, necesitamos saber un poco sobre ti. Por favor, completa tu información personal y objetivos de fitness a continuación.",
       "dietary_restrictions_title": "Restricciones Alimentarias (Opcional)",
       "dietary_restrictions_desc": "Si tienes alguna condición de salud o preferencia alimentaria, puedes agregarlas más tarde en la configuración de tu perfil para obtener recomendaciones personalizadas.",
@@ -257,35 +257,25 @@ export default {
         { "text": "7 días de prueba gratis con funciones premium", "included": true },
         { "text": "Análisis nutricional por foto", "included": false },
         { "text": "Informes de salud avanzados", "included": false },
-        { "text": "Asistente HealthPal 24/7", "included": false }
+        { "text": "Lumi 24/7", "included": false }
       ],
       "member_monthly": [
         { "text": "IA Integrada (Sin necesidad de claves propias)", "included": true },
         { "text": "Análisis nutricional completo por foto", "included": true },
-        { "text": "Historial ilimitado y copias de seguridad", "included": true },
+        { "text": "Historial ilimitado", "included": true },
         { "text": "Informes de micronutrientes y salud", "included": true },
-        { "text": "Asistente HealthPal disponible 24/7", "included": true },
-        { "text": "Soporte prioritário", "included": true }
+          { "text": "Lumi disponible 24/7", "included": true },
       ],
       "member_annual": {
         "discount_message": "Ahorra {{percentage}}%",
         "features": [
           { "text": "IA Integrada (Sin necesidad de claves próprias)", "included": true },
           { "text": "Análisis nutricional completo por foto", "included": true },
-          { "text": "Historial ilimitado y copias de seguridad", "included": true },
+          { "text": "Historial ilimitado", "included": true },
           { "text": "Informes de micronutrientes y salud", "included": true },
-          { "text": "Asistente HealthPal disponible 24/7", "included": true },
-          { "text": "Soporte prioritário", "included": true }
+          { "text": "Asistente LeveMente disponible 24/7", "included": true },
         ]
-      },
-      "member_yearly": [
-        { "text": "IA Integrada (Sin necesidad de claves próprias)", "included": true },
-        { "text": "Análisis nutricional completo por foto", "included": true },
-        { "text": "Historial ilimitado y copias de seguridad", "included": true },
-        { "text": "Informes de micronutrientes y salud", "included": true },
-        { "text": "Asistente HealthPal disponible 24/7", "included": true },
-        { "text": "Soporte prioritário", "included": true }
-      ]
+      }
     }
   },
   "checkout": {
@@ -337,6 +327,7 @@ export default {
       "title": "Ajustes Generales",
       "language": "Idioma"
     },
+    "theme": "Tema",
     "subscription": {
       "title": "Suscripción",
       "description": "Gestiona tu plan y detalles de facturación",
@@ -385,11 +376,11 @@ export default {
     }
   },
   "assistant": {
-    "title": "Asistente HealthPal",
+    "title": "Lumi",
     "status_online": "EN LÍNEA",
     "status_absent": "AUSENTE",
     "close": "Cerrar chat",
-    "input_placeholder": "Pregunta a HealthPal...",
+    "input_placeholder": "Pregunta a Lumi...",
     "send": "Enviar",
     "confirm_action": "Acción pendiente de confirmación",
     "confirm": "Confirmar",
@@ -400,7 +391,7 @@ export default {
     "action_cancelled": "Acción cancelada.",
     "prepared_action": "He preparado la acción para ti.",
     "welcome_message": "¡Saluda a tu asistente personal de salud!",
-    "disclaimer": "El Asistente HealthPal puede proporcionar información inexacta.",
+    "disclaimer": "Lumi puede proporcionar información inexacta.",
     "open_assistant": "Abrir Asistente",
     "action_undone_warning": "Esta acción no se puede deshacer fácilmente.",
     "protein": "Proteína",

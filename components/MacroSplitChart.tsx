@@ -7,9 +7,9 @@ interface MacroSplitChartProps {
 }
 
 const COLORS = {
-  protein: '#A076F9',
-  carbs: '#F4A261',
-  fats: '#E9C46A',
+  protein: 'var(--brand-protein)',
+  carbs: 'var(--brand-carbs)',
+  fats: 'var(--brand-fats)',
 };
 
 const MacroSplitChart: React.FC<MacroSplitChartProps> = ({ data }) => {
@@ -50,9 +50,9 @@ const MacroSplitChart: React.FC<MacroSplitChartProps> = ({ data }) => {
                 </PieChart>
             </ResponsiveContainer>
              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <p className="text-xs text-healthpal-text-secondary">Total Intake</p>
+                <p className="text-xs text-neutral-text-secondary">Total Intake</p>
                 <p className="text-3xl font-bold">{calories.current}</p>
-                <p className="text-sm text-healthpal-text-secondary">kcal</p>
+                <p className="text-sm text-neutral-text-secondary">kcal</p>
             </div>
         </div>
 

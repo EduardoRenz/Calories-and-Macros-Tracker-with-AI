@@ -13,7 +13,7 @@ describe('Ingredient Quantity Adjustment', () => {
 
   it('should save adjusted quantity after image analysis', () => {
     // Wait for dashboard to load
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
     
     // Expand breakfast section first
     cy.get('[data-testid="meal-breakfast"]').click();
@@ -81,7 +81,7 @@ describe('Ingredient Quantity Adjustment', () => {
 
   it('should save adjusted quantity in Quick Meal Modal after image upload and analysis', () => {
     // Wait for dashboard to load
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
     
     // Open Quick Meal Modal using the exact text from the button
     cy.contains('button', 'Quick Meal').click();

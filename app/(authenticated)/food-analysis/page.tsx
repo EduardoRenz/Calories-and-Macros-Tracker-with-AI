@@ -69,6 +69,15 @@ const MealIcon: React.FC<{ meal: string }> = ({ meal }) => {
     return <span className="text-3xl">{icons[meal.toLowerCase()] || '🍽️'}</span>;
 };
 
+const getMacroColor = (macro: string) => {
+    const lower = macro.toLowerCase();
+    if (lower.includes('protein') || lower.includes('proteína')) return 'brand-protein';
+    if (lower.includes('carb') || lower.includes('carboidrato')) return 'brand-carbs';
+    if (lower.includes('fat') || lower.includes('gordura')) return 'brand-fats';
+    if (lower.includes('fiber') || lower.includes('fibra')) return 'brand-fiber';
+    return 'brand-green';
+};
+
 export default function FoodAnalysisPage() {
     const { t } = useTranslation();
     const { language } = useLanguage();
@@ -185,19 +194,19 @@ export default function FoodAnalysisPage() {
     ];
 
     return (
-        <div className="text-healthpal-text-primary pb-8">
+        <div className="text-neutral-text-primary pb-8">
             {/* Header */}
             <div className="mb-8">
                 <button
                     onClick={() => router.push('/profile')}
-                    className="text-healthpal-text-secondary hover:text-healthpal-green mb-4 flex items-center gap-2"
+                    className="text-neutral-text-secondary hover:text-brand-green mb-4 flex items-center gap-2"
                 >
                     ← {t('food_analysis.back_to_profile')}
                 </button>
-                <h1 className="text-3xl font-bold text-healthpal-green mb-2">
+                <h1 className="text-3xl font-bold text-brand-green mb-2">
                     {t('food_analysis.title')}
                 </h1>
-                <p className="text-healthpal-text-secondary">
+                <p className="text-neutral-text-secondary">
                     {t('food_analysis.subtitle')}
                 </p>
             </div>
@@ -209,8 +218,8 @@ export default function FoodAnalysisPage() {
                         key={option.value}
                         onClick={() => setDateRangeOption(option.value)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${dateRangeOption === option.value
-                            ? 'bg-healthpal-green text-black'
-                            : 'bg-healthpal-card text-healthpal-text-secondary hover:bg-healthpal-border'
+                            ? 'bg-secondary text-on-secondary'
+                            : 'bg-neutral-card text-neutral-text-secondary hover:bg-neutral-border'
                             }`}
                     >
                         {option.label}
@@ -220,16 +229,16 @@ export default function FoodAnalysisPage() {
 
             {/* Generate Report Button or Loading State */}
             {!report && !isLoading && (
-                <div className="bg-healthpal-card p-8 rounded-2xl text-center mb-8">
-                    <p className="text-healthpal-text-secondary mb-4">
+                <div className="bg-neutral-card p-8 rounded-2xl text-center mb-8">
+                    <p className="text-neutral-text-secondary mb-4">
                         {t('food_analysis.generate_prompt')}
                     </p>
                     <button
                         onClick={isUserApiKeysRequired ? undefined : generateReport}
                         disabled={isUserApiKeysRequired}
                         className={`font-bold py-3 px-8 rounded-lg transition-all ${isUserApiKeysRequired
-                            ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed'
-                            : 'bg-healthpal-green text-black hover:brightness-110 shadow-lg shadow-healthpal-green/20'
+                            ? 'bg-neutral-card text-neutral-text-secondary cursor-not-allowed'
+                            : 'bg-secondary text-on-secondary hover:brightness-110 shadow-lg shadow-brand-green/20'
                             }`}
                         id="generate-report-btn"
                         title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
@@ -246,18 +255,18 @@ export default function FoodAnalysisPage() {
 
             {/* Progress Bar */}
             {isLoading && (
-                <div className="bg-healthpal-card p-8 rounded-2xl mb-8" id="progress-container">
-                    <p className="text-healthpal-text-secondary mb-4 text-center">
+                <div className="bg-neutral-card p-8 rounded-2xl mb-8" id="progress-container">
+                    <p className="text-neutral-text-secondary mb-4 text-center">
                         {t('food_analysis.generating')}
                     </p>
-                    <div className="w-full bg-healthpal-panel rounded-full h-3">
+                    <div className="w-full bg-neutral-panel rounded-full h-3">
                         <div
-                            className="bg-healthpal-green h-3 rounded-full transition-all duration-300"
+                            className="bg-brand-green h-3 rounded-full transition-all duration-300"
                             style={{ width: `${progress}%` }}
                             id="progress-bar"
                         />
                     </div>
-                    <p className="text-center text-sm text-healthpal-text-secondary mt-2">
+                    <p className="text-center text-sm text-neutral-text-secondary mt-2">
                         {progress}%
                     </p>
                 </div>
@@ -284,7 +293,7 @@ export default function FoodAnalysisPage() {
                     {/* Common Foods Section */}
                     <section id="common-foods-section">
                         <h2 className="text-2xl font-bold mb-2">{t('food_analysis.common_foods.title')}</h2>
-                        <p className="text-healthpal-text-secondary mb-4">
+                        <p className="text-neutral-text-secondary mb-4">
                             {t('food_analysis.common_foods.subtitle')}
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -293,7 +302,7 @@ export default function FoodAnalysisPage() {
                                 return (
                                     <div
                                         key={meal}
-                                        className="bg-healthpal-card p-6 rounded-2xl"
+                                        className="bg-neutral-card p-6 rounded-2xl"
                                     >
                                         <div className="flex items-center gap-3 mb-3">
                                             <MealIcon meal={meal} />
@@ -301,10 +310,10 @@ export default function FoodAnalysisPage() {
                                                 {t(`meals.${meal}`)}
                                             </h3>
                                         </div>
-                                        <p className="text-healthpal-text-secondary text-sm mb-2">
+                                        <p className="text-neutral-text-secondary text-sm mb-2">
                                             {mealData.foods.join(', ')}
                                         </p>
-                                        <p className="text-xs text-healthpal-text-secondary">
+                                        <p className="text-xs text-neutral-text-secondary">
                                             {mealData.consistency}% {t('food_analysis.common_foods.consistency')}
                                         </p>
                                     </div>
@@ -316,7 +325,7 @@ export default function FoodAnalysisPage() {
                     {/* Vitamins Overview Section */}
                     <section id="vitamins-section">
                         <h2 className="text-2xl font-bold mb-2">{t('food_analysis.vitamins.title')}</h2>
-                        <p className="text-healthpal-text-secondary mb-4">
+                        <p className="text-neutral-text-secondary mb-4">
                             {t('food_analysis.vitamins.subtitle')}
                         </p>
 
@@ -330,14 +339,14 @@ export default function FoodAnalysisPage() {
                                     {/* Sufficient & Moderate Group */}
                                     {sufficientVitamins.length > 0 && (
                                         <div>
-                                            <h3 className="text-sm font-bold text-healthpal-text-secondary uppercase mb-3">
+                                            <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3">
                                                 {t('food_analysis.vitamins.sufficient_moderate')}
                                             </h3>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 {sufficientVitamins.map((vitamin, idx) => (
                                                     <div
                                                         key={idx}
-                                                        className="bg-healthpal-card p-5 rounded-2xl"
+                                                        className="bg-neutral-card p-5 rounded-2xl"
                                                     >
                                                         <div className="flex items-start gap-3">
                                                             <span className="text-3xl">{vitamin.emoji || '💊'}</span>
@@ -358,11 +367,11 @@ export default function FoodAnalysisPage() {
                                                         </div>
 
                                                         {vitamin.positiveReason && (
-                                                            <div className="mt-3 pt-3 border-t border-healthpal-border">
-                                                                <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
+                                                            <div className="mt-3 pt-3 border-t border-neutral-border">
+                                                                <p className="text-xs text-neutral-text-secondary uppercase mb-2">
                                                                     {t('food_analysis.vitamins.positive_reason')}:
                                                                 </p>
-                                                                <p className="text-sm text-healthpal-text-secondary">
+                                                                <p className="text-sm text-neutral-text-secondary">
                                                                     {vitamin.positiveReason}
                                                                 </p>
                                                             </div>
@@ -383,7 +392,7 @@ export default function FoodAnalysisPage() {
                                                 {deficientVitamins.map((vitamin, idx) => (
                                                     <div
                                                         key={idx}
-                                                        className="bg-healthpal-card p-5 rounded-2xl border border-red-500/30"
+                                                        className="bg-neutral-card p-5 rounded-2xl border border-red-500/30"
                                                     >
                                                         <div className="flex items-center gap-3 mb-3">
                                                             <span className="text-3xl">{vitamin.emoji || '💊'}</span>
@@ -401,13 +410,13 @@ export default function FoodAnalysisPage() {
                                                             </div>
                                                         </div>
                                                         {vitamin.recommendations && vitamin.recommendations.length > 0 && (
-                                                            <div className="mt-3 pt-3 border-t border-healthpal-border">
-                                                                <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
+                                                            <div className="mt-3 pt-3 border-t border-neutral-border">
+                                                                <p className="text-xs text-neutral-text-secondary uppercase mb-2">
                                                                     {t('food_analysis.vitamins.recommendations')}:
                                                                 </p>
                                                                 <ul className="space-y-1">
                                                                     {vitamin.recommendations.map((rec, recIdx) => (
-                                                                        <li key={recIdx} className="flex items-start gap-2 text-sm text-healthpal-text-secondary">
+                                                                        <li key={recIdx} className="flex items-start gap-2 text-sm text-neutral-text-secondary">
                                                                             <span className="text-green-400">✓</span>
                                                                             <span>{rec}</span>
                                                                         </li>
@@ -430,7 +439,7 @@ export default function FoodAnalysisPage() {
                         {/* Attention Points Section */}
                         <section id="attention-points-section">
                             <h2 className="text-2xl font-bold mb-2">{t('food_analysis.attention.title')}</h2>
-                            <p className="text-healthpal-text-secondary mb-4">
+                            <p className="text-neutral-text-secondary mb-4">
                                 {t('food_analysis.attention.subtitle')}
                             </p>
                             <div className="space-y-4">
@@ -446,13 +455,13 @@ export default function FoodAnalysisPage() {
                                             <span>{point.severity === 'alert' ? '🔴' : '🟡'}</span>
                                             <h3 className="font-bold">{point.title}</h3>
                                         </div>
-                                        <p className="text-sm text-healthpal-text-secondary">
+                                        <p className="text-sm text-neutral-text-secondary">
                                             {point.description}
                                         </p>
                                     </div>
                                 ))}
                                 {report.attentionPoints.length === 0 && (
-                                    <p className="text-healthpal-text-secondary text-center py-4">
+                                    <p className="text-neutral-text-secondary text-center py-4">
                                         {t('food_analysis.attention.no_issues')}
                                     </p>
                                 )}
@@ -462,7 +471,7 @@ export default function FoodAnalysisPage() {
                         {/* Suggestions Section */}
                         <section id="suggestions-section">
                             <h2 className="text-2xl font-bold mb-2">{t('food_analysis.suggestions.title')}</h2>
-                            <p className="text-healthpal-text-secondary mb-4">
+                            <p className="text-neutral-text-secondary mb-4">
                                 {t('food_analysis.suggestions.subtitle')}
                             </p>
                             <div className="space-y-6">
@@ -473,7 +482,7 @@ export default function FoodAnalysisPage() {
                                     return (
                                         <div
                                             key={idx}
-                                            className={`bg-healthpal-card p-4 rounded-xl ${isExceeded ? 'border border-red-500/30' : ''}`}
+                                            className={`bg-neutral-card p-4 rounded-xl ${isExceeded ? 'border border-red-500/30' : ''}`}
                                         >
                                             {/* Macro Progress Header */}
                                             <div className="flex justify-between items-center mb-1">
@@ -483,15 +492,15 @@ export default function FoodAnalysisPage() {
                                                         <span className="text-red-400 text-xl">🔴</span>
                                                     )}
                                                 </div>
-                                                <span className={`font-bold ${isExceeded ? 'text-red-400' : 'text-healthpal-green'}`}>
+                                                <span className={`font-bold ${isExceeded ? 'text-red-400' : `text-${getMacroColor(suggestion.macro)}`}`}>
                                                     {suggestion.current}g / {suggestion.goal}g
                                                 </span>
                                             </div>
 
                                             {/* Progress bar */}
-                                            <div className="w-full bg-healthpal-panel rounded-full h-2 mb-4">
+                                            <div className="w-full bg-neutral-panel rounded-full h-2 mb-4">
                                                 <div
-                                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : 'bg-healthpal-green'}`}
+                                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : `bg-${getMacroColor(suggestion.macro)}`}`}
                                                     style={{
                                                         width: `${Math.min(100, percentage)}%`
                                                     }}
@@ -499,7 +508,7 @@ export default function FoodAnalysisPage() {
                                             </div>
 
                                             {/* Recommendations header */}
-                                            <p className="text-xs text-healthpal-text-secondary uppercase mb-2">
+                                            <p className="text-xs text-neutral-text-secondary uppercase mb-2">
                                                 {isExceeded
                                                     ? t('food_analysis.suggestions.adjustments_required')
                                                     : t('food_analysis.suggestions.recommended')}
@@ -510,7 +519,7 @@ export default function FoodAnalysisPage() {
                                                 {suggestion.recommendations.map((rec, recIdx) => (
                                                     <div
                                                         key={recIdx}
-                                                        className="flex items-center justify-between bg-healthpal-panel p-3 rounded-lg"
+                                                        className="flex items-center justify-between bg-neutral-panel p-3 rounded-lg"
                                                     >
                                                         <div className="flex items-center gap-3">
                                                             <span className={`text-lg ${rec.type === 'reduce' ? 'text-red-400' : rec.type === 'substitute' ? 'text-green-400' : ''}`}>
@@ -524,12 +533,12 @@ export default function FoodAnalysisPage() {
                                                             </span>
                                                             <div>
                                                                 <p className="font-medium">{rec.food}</p>
-                                                                <p className="text-xs text-healthpal-text-secondary">
+                                                                <p className="text-xs text-neutral-text-secondary">
                                                                     {rec.meal}
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        <span className={`text-sm font-medium ${isExceeded ? 'text-healthpal-text-secondary' : 'text-healthpal-green'}`}>
+                                                        <span className={`text-sm font-medium ${isExceeded ? 'text-neutral-text-secondary' : `text-${getMacroColor(suggestion.macro)}`}`}>
                                                             {rec.benefit}
                                                         </span>
                                                     </div>
@@ -549,7 +558,7 @@ export default function FoodAnalysisPage() {
                                 localStorage.removeItem(getCacheKey(dateRange.start, dateRange.end));
                                 setReport(null);
                             }}
-                            className="text-healthpal-text-secondary hover:text-healthpal-green underline text-sm"
+                            className="text-neutral-text-secondary hover:text-brand-green underline text-sm"
                         >
                             {t('food_analysis.regenerate')}
                         </button>

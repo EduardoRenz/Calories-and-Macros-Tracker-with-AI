@@ -193,8 +193,8 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
             onClick={isUserApiKeysRequired ? undefined : handleAnalyze}
             disabled={isAnalyzing || !formState.name || !formState.quantity || isUserApiKeysRequired}
             className={`p-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${isUserApiKeysRequired
-              ? 'bg-healthpal-card text-healthpal-text-secondary'
-              : 'bg-healthpal-green text-black hover:brightness-110'
+              ? 'bg-neutral-card text-neutral-text-secondary'
+              : 'bg-secondary text-on-secondary hover:brightness-110'
               }`}
             aria-label={t('add_ingredient_modal.analyze_button_aria')}
             title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
@@ -204,46 +204,46 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
           </button>
           <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.name')}</label>
-              <input type="text" name="name" value={formState.name} onChange={handleChange} required className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-name-input" />
+              <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('add_ingredient_modal.name')}</label>
+              <input type="text" name="name" value={formState.name} onChange={handleChange} required className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3" data-testid="ingredient-name-input" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.quantity')}</label>
-              <input type="text" name="quantity" value={formState.quantity} onChange={handleChange} placeholder={t('add_ingredient_modal.quantity_placeholder')} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-quantity-input" />
+              <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('add_ingredient_modal.quantity')}</label>
+              <input type="text" name="quantity" value={formState.quantity} onChange={handleChange} placeholder={t('add_ingredient_modal.quantity_placeholder')} className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3" data-testid="ingredient-quantity-input" />
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.calories')}</label>
-            <input type="text" name="calories" value={formState.calories} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-calories-input" />
+            <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('add_ingredient_modal.calories')}</label>
+            <input type="text" name="calories" value={formState.calories} readOnly className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-calories-input" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fiber')}</label>
-            <input type="text" name="fiber" value={formState.fiber} readOnly className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-fiber-input" />
+            <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('add_ingredient_modal.fiber')}</label>
+            <input type="text" name="fiber" value={formState.fiber} readOnly className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3 opacity-70 cursor-not-allowed" data-testid="ingredient-fiber-input" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.protein')}</label>
-            <input type="text" name="protein" value={formState.protein} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-protein-input" placeholder="" />
+            <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('add_ingredient_modal.protein')}</label>
+            <input type="text" name="protein" value={formState.protein} onChange={handleChange} className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3" data-testid="ingredient-protein-input" placeholder="" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.carbs')}</label>
-            <input type="text" name="carbs" value={formState.carbs} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-carbs-input" placeholder="" />
+            <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('add_ingredient_modal.carbs')}</label>
+            <input type="text" name="carbs" value={formState.carbs} onChange={handleChange} className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3" data-testid="ingredient-carbs-input" placeholder="" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('add_ingredient_modal.fats')}</label>
-            <input type="text" name="fats" value={formState.fats} onChange={handleChange} className="w-full bg-healthpal-card border border-healthpal-border rounded-lg p-3" data-testid="ingredient-fats-input" placeholder="" />
+            <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('add_ingredient_modal.fats')}</label>
+            <input type="text" name="fats" value={formState.fats} onChange={handleChange} className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3" data-testid="ingredient-fats-input" placeholder="" />
           </div>
         </div>
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <div className="flex justify-end gap-4 pt-4">
-          <button type="button" onClick={onClose} disabled={isSubmitting} className="bg-healthpal-card text-healthpal-text-primary font-bold py-2 px-4 rounded-lg hover:bg-healthpal-border transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+          <button type="button" onClick={onClose} disabled={isSubmitting} className="bg-neutral-card text-neutral-text-primary font-bold py-2 px-4 rounded-lg hover:bg-neutral-border transition-all disabled:opacity-50 disabled:cursor-not-allowed">
             {t('add_ingredient_modal.cancel')}
           </button>
-          <button type="submit" disabled={isSubmitting} className="bg-healthpal-green text-black font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" data-testid="save-ingredient-button">
+          <button type="submit" disabled={isSubmitting} className="bg-secondary text-on-secondary font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" data-testid="save-ingredient-button">
             {isSubmitting ? <SpinnerIcon className="w-5 h-5" /> : null}
             {t('add_ingredient_modal.save')}
           </button>

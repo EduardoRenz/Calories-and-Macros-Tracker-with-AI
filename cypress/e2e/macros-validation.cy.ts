@@ -1,16 +1,15 @@
 describe('Macros Validation', () => {
   const login = () => {
-    cy.visit('/');
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
+      },
+    });
     cy.url().should('include', '/login');
     cy.contains('Sign in with Google').click();
   };
 
   beforeEach(() => {
-    // Ensure complete profile is used (not first-time setup)
-    cy.window().then((win) => {
-      win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
-    });
-
     // Login and navigate to dashboard
     login();
     cy.visit('/dashboard');
@@ -18,7 +17,7 @@ describe('Macros Validation', () => {
 
   it('should not allow saving ingredient without filling macros', () => {
     // Wait for dashboard to load
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
 
     // Expand breakfast section
     cy.get('[data-testid="meal-breakfast"]').click();

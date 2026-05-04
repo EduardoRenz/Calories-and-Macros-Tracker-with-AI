@@ -24,7 +24,7 @@ describe('Chat Assistant', () => {
         // Mock service responds with "I am a mock assistant..." or similar default
         // In our MockChatAssistantService, if content is "Hello", it might differ.
         // But let's just check for ANY response from assistant
-        cy.get('.text-healthpal-text-primary').should('have.length.at.least', 1);
+        cy.get('.text-neutral-text-primary').should('have.length.at.least', 1);
     });
 
     it('should prevent body scroll when chat is open on mobile', () => {
@@ -32,7 +32,7 @@ describe('Chat Assistant', () => {
         cy.viewport(375, 667); // iPhone 6/7/8 dimensions
 
         // Open chat using mobile bottom navigation
-        cy.get('[data-testid="mobile-bottom-nav"] button').contains('Assistant').click();
+        cy.get('#mobile-chat-button').click();
         cy.get('#chat-header').should('be.visible');
 
         // Check if body has scroll lock styles
@@ -69,7 +69,7 @@ describe('Chat Assistant', () => {
         cy.viewport(375, 667);
 
         // Open chat on mobile using mobile bottom navigation
-        cy.get('[data-testid="mobile-bottom-nav"] button').contains('Assistant').click();
+        cy.get('#mobile-chat-button').click();
         cy.get('#chat-header').should('be.visible');
 
         // Verify scroll lock is applied on mobile

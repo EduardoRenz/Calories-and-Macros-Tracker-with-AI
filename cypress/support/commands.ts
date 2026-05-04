@@ -17,13 +17,17 @@ export {}
 declare global {
   namespace Cypress {
     interface Chainable {
-      login(): Chainable
+      login(profileState?: 'false' | 'true' | 'partial'): Chainable
     }
   }
 }
 
-Cypress.Commands.add('login', () => {
-    cy.visit('/');
+Cypress.Commands.add('login', (profileState = 'false') => {
+    cy.visit('/', {
+        onBeforeLoad(win) {
+            win.sessionStorage.setItem('mock_use_incomplete_profile', profileState);
+        },
+    });
     cy.url().should('include', 'login');
     cy.contains('Sign in with Google').click();
 })

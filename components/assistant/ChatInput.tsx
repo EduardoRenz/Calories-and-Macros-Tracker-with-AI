@@ -51,8 +51,8 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
     };
 
     return (
-        <div className="p-4 border-t border-healthpal-border bg-healthpal-panel rounded-b-2xl">
-            <div className="relative flex items-end gap-2 bg-healthpal-card rounded-xl p-2 border border-healthpal-border focus-within:border-healthpal-green focus-within:ring-1 focus-within:ring-healthpal-green transition-all">
+        <div className="p-4 border-t border-neutral-border bg-neutral-panel rounded-b-2xl">
+            <div className="relative flex items-end gap-2 bg-neutral-card rounded-xl p-2 border border-neutral-border focus-within:border-brand-green focus-within:ring-1 focus-within:ring-brand-green transition-all">
                 <textarea
                     ref={textareaRef}
                     value={value}
@@ -60,7 +60,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                     onKeyDown={handleKeyDown}
                     placeholder={t('assistant.input_placeholder')}
                     disabled={isSending || disabled}
-                    className="w-full bg-transparent border-0 focus:ring-0 text-healthpal-text-primary p-2 resize-none max-h-[120px] min-h-[44px] disabled:opacity-50"
+                    className="w-full bg-transparent border-0 focus:ring-0 text-neutral-text-primary p-2 resize-none max-h-[120px] min-h-[44px] disabled:opacity-50"
                     rows={1}
                     id="chat-input"
                 />
@@ -68,7 +68,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                 <button
                     onClick={onSend}
                     disabled={!value.trim() || isSending || disabled}
-                    className="p-2.5 rounded-lg bg-healthpal-primary text-black font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-opacity-90 transition-all flex-shrink-0 mb-0.5"
+                    className="p-2.5 rounded-lg bg-brand-primary text-black font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-opacity-90 transition-all flex-shrink-0 mb-0.5"
                     aria-label={t('assistant.send')}
                 >
                     {isSending ? (
@@ -78,7 +78,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                     )}
                 </button>
             </div>
-            <p className="text-xs text-center text-healthpal-text-tertiary mt-2">
+            <p className="text-xs text-center text-brand-text-tertiary mt-2">
                 {t('assistant.disclaimer')}
             </p>
         </div>
