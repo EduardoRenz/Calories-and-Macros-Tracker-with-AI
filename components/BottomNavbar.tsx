@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { HomeIcon, SparklesIcon, ChatBubbleLeftRightIcon, UserIcon } from './icons';
+import { HomeIcon, AppRoundIcon, ChatBubbleLeftRightIcon, UserIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useChatAssistant } from '../contexts/ChatAssistantContext';
 import { useFeatureFlags } from '../contexts/FeatureFlagContext';
@@ -89,14 +89,14 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                         }
                         onQuickMealClick();
                     }}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center shadow-ambient transition-all ${isUserApiKeysRequired || isDeepSeekOnly
-                        ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed grayscale'
-                        : 'bg-secondary text-on-secondary hover:brightness-110 active:scale-95'
+                    className={`w-16 h-16 rounded-full flex items-center justify-center overflow-hidden shadow-ambient transition-all ${isUserApiKeysRequired || isDeepSeekOnly
+                        ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed grayscale opacity-80'
+                        : 'bg-transparent text-on-secondary hover:brightness-110 active:scale-95'
                         }`}
                     aria-label={t('navbar.quick_meal')}
                     title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}
                 >
-                    <SparklesIcon className="w-8 h-8" />
+                    <AppRoundIcon className="w-[3.7rem] h-[3.7rem] shrink-0" />
                 </button>
             </div>
 

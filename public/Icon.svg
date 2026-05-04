@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Camada_1" data-name="Camada 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 490.67">
+<svg
+  id="Camada_1"
+  data-name="Camada 1"
+  xmlns="http://www.w3.org/2000/svg"
+  width="512"
+  height="512"
+  viewBox="0 0 512 512"
+>
   <defs>
     <style>
       .cls-1 {
@@ -15,8 +22,8 @@
       }
     </style>
   </defs>
-  <rect class="cls-3" x="24" y="61.89" width="405.33" height="362.67" rx="116.72" ry="116.72"/>
-  <g>
+  <g transform="translate(32 10.665)">
+    <rect class="cls-3" x="24" y="61.89" width="405.33" height="362.67" rx="116.72" ry="116.72"/>
     <ellipse class="cls-2" cx="325.02" cy="146.6" rx="16.87" ry="17.21"/>
     <path class="cls-1" d="M379.02,152.19c-4.89,0-8.86,4.02-8.86,8.97v110.12h0v48.94c0,13.59-10.98,24.7-24.4,24.7h-26.13c-5.24,0-9.48,4.3-9.48,9.6v.24h35.62c18.76,0,34.1-15.54,34.1-34.53v-168.05h-.85Z"/>
     <g>

@@ -214,7 +214,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             className="bg-neutral-panel w-full max-w-lg rounded-2xl border border-neutral-border shadow-2xl"
             bodyClassName="p-8 max-h-[85vh] overflow-y-auto overscroll-contain"
         >
-            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2 text-white">
+            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2 text-on-surface">
                 <SparklesIcon className="w-6 h-6 text-brand-green" />
                 {t('quick_meal_modal.title')}
             </h2>
@@ -225,7 +225,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                     id="mealTypeSelect"
                     value={mealType}
                     onChange={(e) => setMealType(e.target.value as keyof MealSummary)}
-                    className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3 appearance-none focus:ring-brand-green focus:border-brand-green text-white"
+                    className="w-full bg-surface-container-lowest border border-neutral-border rounded-lg p-3 appearance-none text-on-surface focus:ring-brand-green focus:border-brand-green"
                     data-testid="meal-type-select"
                 >
                     <option value="breakfast">{t('meals.breakfast')}</option>
@@ -249,14 +249,14 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                             value={imagePrompt}
                             onChange={(e) => setImagePrompt(e.target.value)}
                             placeholder={t('quick_meal_modal.prompt_placeholder')}
-                            className="w-full bg-neutral-card border border-neutral-border rounded-lg p-3 text-white placeholder-neutral-text-secondary focus:ring-brand-green focus:border-brand-green resize-none"
+                            className="w-full bg-surface-container-lowest border border-neutral-border rounded-lg p-3 text-on-surface placeholder-neutral-text-secondary focus:ring-brand-green focus:border-brand-green resize-none"
                             rows={3}
                             data-testid="image-prompt-textarea"
                         />
                     </div>
 
                     <div className="flex gap-4">
-                        <button onClick={handleReset} className="w-full bg-neutral-card text-neutral-text-primary font-bold py-3 rounded-lg hover:bg-neutral-border transition-all">
+                        <button onClick={handleReset} className="w-full bg-surface-container-low text-on-surface font-bold py-3 rounded-lg hover:bg-surface-container transition-all">
                             {t('quick_meal_modal.change_image_button')}
                         </button>
                         <button onClick={handleAnalyzeMeal} disabled={isLoading || analyzedIngredients.length > 0} className="w-full bg-secondary text-on-secondary font-bold py-3 rounded-lg hover:brightness-110 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" data-testid="analyze-meal-button">
@@ -265,11 +265,11 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                     </div>
                 </div>
             ) : (
-                <div className="h-48 flex flex-col justify-center items-center border-2 border-dashed border-neutral-border rounded-lg mb-4 text-center p-4">
+                <div className="h-48 flex flex-col justify-center items-center border-2 border-dashed border-outline-variant rounded-lg mb-4 text-center p-4 bg-surface-container-low/40">
                     <p className="mb-2 text-neutral-text-secondary">{t('quick_meal_modal.upload_prompt')}</p>
                     <div className="flex gap-2 flex-wrap justify-center">
                         {isMobileDevice && (
-                            <label className="bg-neutral-card cursor-pointer text-neutral-text-primary font-bold py-2 px-4 rounded-lg hover:bg-neutral-border transition-all">
+                            <label className="bg-surface-container-lowest border border-neutral-border cursor-pointer text-on-surface font-bold py-2 px-4 rounded-lg hover:bg-surface-container-low transition-all">
                                 {t('quick_meal_modal.take_photo_button')}
                                 <input
                                     type="file"
@@ -280,7 +280,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                 />
                             </label>
                         )}
-                        <label className="bg-neutral-card cursor-pointer text-neutral-text-primary font-bold py-2 px-4 rounded-lg hover:bg-neutral-border transition-all">
+                        <label className="bg-surface-container-lowest border border-neutral-border cursor-pointer text-on-surface font-bold py-2 px-4 rounded-lg hover:bg-surface-container-low transition-all">
                             {t('quick_meal_modal.upload_button')}
                             <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} data-testid="image-upload-input" />
                         </label>
@@ -288,15 +288,15 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 </div>
             )}
 
-            {error && <p className="text-red-400 text-sm text-center my-2">{error}</p>}
+            {error && <p className="text-error text-sm text-center my-2">{error}</p>}
 
             {analyzedIngredients.length > 0 && (
                 <div className="mt-6" data-testid="quick-meal-modal-ingredients">
-                    <h3 className="font-bold text-lg mb-2">{t('quick_meal_modal.gemini_results')}</h3>
+                    <h3 className="font-bold text-lg mb-2 text-on-surface">{t('quick_meal_modal.gemini_results')}</h3>
                     <p className="text-sm text-neutral-text-secondary mb-4">{t('quick_meal_modal.review_prompt')}</p>
-                    <div className="max-h-60 overflow-y-auto bg-neutral-card p-3 rounded-lg space-y-2">
+                    <div className="max-h-60 overflow-y-auto bg-surface-container-low p-3 rounded-lg space-y-2 border border-neutral-border">
                         {analyzedIngredients.map((ing, index) => (
-                            <div key={index} className="p-2 bg-neutral-panel rounded">
+                            <div key={index} className="p-3 bg-surface-container-lowest border border-neutral-border rounded-xl">
                                 {editingIndex === index && editForm ? (
                                     <div className="flex flex-col gap-2">
                                         <div className="grid grid-cols-12 gap-2 text-sm">
@@ -306,7 +306,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                                     name="name"
                                                     value={editForm.name}
                                                     onChange={handleEditFormChange}
-                                                    className="w-full bg-neutral-card border border-neutral-border rounded px-2 py-1 text-white text-xs"
+                                                    className="w-full bg-surface-container-lowest border border-neutral-border rounded px-2 py-1 text-on-surface text-xs"
                                                     placeholder="Name"
                                                 />
                                             </div>
@@ -316,7 +316,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                                     name="quantity"
                                                     value={editForm.quantity}
                                                     onChange={handleEditFormChange}
-                                                    className="w-full bg-neutral-card border border-neutral-border rounded px-2 py-1 text-white text-xs"
+                                                    className="w-full bg-surface-container-lowest border border-neutral-border rounded px-2 py-1 text-on-surface text-xs"
                                                     placeholder="Qty"
                                                 />
                                             </div>
@@ -326,21 +326,21 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                                                     name="calories"
                                                     value={editForm.calories}
                                                     readOnly
-                                                    className="w-full bg-neutral-card border border-neutral-border rounded px-2 py-1 text-gray-400 text-xs cursor-not-allowed"
+                                                    className="w-full bg-surface-container-low border border-neutral-border rounded px-2 py-1 text-neutral-text-secondary text-xs cursor-not-allowed"
                                                     placeholder="Kcal"
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-12 gap-2 text-sm items-center">
+                                    <div className="grid grid-cols-12 gap-2 text-sm items-center text-on-surface">
                                         <span className="col-span-7 font-medium truncate" title={ing.name}>{ing.name} <span className="text-neutral-text-secondary font-normal">({ing.quantity})</span></span>
                                         <span className="col-span-3 text-right text-neutral-text-secondary">{Math.round(ing.calories)} kcal</span>
                                         <div className="col-span-2 flex justify-end gap-1">
-                                            <button onClick={() => handleEditIngredient(index)} className="text-neutral-text-secondary hover:text-white transition-colors">
+                                            <button onClick={() => handleEditIngredient(index)} className="text-neutral-text-secondary hover:text-on-surface transition-colors">
                                                 <EditIcon className="w-4 h-4" />
                                             </button>
-                                            <button onClick={() => handleDeleteIngredient(index)} className="text-neutral-text-secondary hover:text-red-400 transition-colors">
+                                            <button onClick={() => handleDeleteIngredient(index)} className="text-neutral-text-secondary hover:text-error transition-colors">
                                                 <TrashIcon className="w-4 h-4" />
                                             </button>
                                         </div>

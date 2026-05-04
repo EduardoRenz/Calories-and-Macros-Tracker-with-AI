@@ -123,7 +123,7 @@ const Modal: React.FC<ModalProps> = ({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="text-neutral-text-secondary hover:text-white transition-colors"
+                                className="text-neutral-text-secondary hover:text-on-surface transition-colors"
                                 aria-label="Close"
                             >
                                 <XMarkIcon className="w-6 h-6" />
