@@ -2,12 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Meal, Ingredient } from '@/domain/entities/dashboard';
 import { TrashIcon } from '../icons';
 import { useTranslation } from '@/hooks/useTranslation';
+import { LegumesIcon, MeatsIcon, FruitsIcon, CerealsIcon, PastaIcon, OthersIcon } from '../FoodIcons';
 
 interface IngredientItemProps {
     ingredient: Meal['ingredients'][0];
     onRemove: (id: string) => void;
     onUpdate: (ingredientId: string, updates: Partial<Ingredient>) => void;
 }
+
+const CategoryIcon = ({ category, className }: { category?: string; className?: string }) => {
+    switch (category) {
+        case 'legumes': return <LegumesIcon className={className} />;
+        case 'meats': return <MeatsIcon className={className} />;
+        case 'fruits': return <FruitsIcon className={className} />;
+        case 'cereals': return <CerealsIcon className={className} />;
+        case 'pasta': return <PastaIcon className={className} />;
+        default: return <OthersIcon className={className} />;
+    }
+};
 
 export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRemove, onUpdate }) => {
     const { t } = useTranslation();
@@ -80,8 +92,13 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
     return (
         <li className="group bg-neutral-panel/50 p-2 rounded-md flex flex-col gap-2 md:grid md:grid-cols-12 md:gap-4 md:items-center">
             <div className="flex items-start justify-between gap-2 md:col-span-4">
-                <div className="text-neutral-text-primary font-medium leading-snug break-words" title={ingredient.name}>
-                    {ingredient.name}
+                <div className="flex items-center gap-3">
+                    <div className="hidden md:flex bg-neutral-panel p-2 rounded-xl text-neutral-text-secondary/50">
+                        <CategoryIcon category={ingredient.category} className="w-6 h-6" />
+                    </div>
+                    <div className="text-neutral-text-primary font-medium leading-snug break-words" title={ingredient.name}>
+                        {ingredient.name}
+                    </div>
                 </div>
                 <div className="md:hidden flex justify-end">
                     <button
@@ -134,7 +151,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                     <span className="md:hidden">F: </span>
                     {ingredient.fiber}g
                 </div>
-                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary">
+                <div className="whitespace-nowrap md:col-span-1 md:text-center text-neutral-text-primary font-bold">
                     <span className="md:hidden text-brand-green">Kcal: </span>
                     {Math.round(ingredient.calories)}
                 </div>

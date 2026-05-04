@@ -7,6 +7,7 @@ export interface Ingredient {
     carbs: number;
     fats: number;
     fiber: number;
+    category?: string;
 }
 
 export interface Meal {

@@ -19,9 +19,10 @@ export class OpenAINutritionAnalysisService implements NutritionAnalysisService 
         };
         const languageName = languageMap[language] || 'English';
 
-        const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats, fiber) for the following food item: "${quantity} of ${ingredientName}". 
+        const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats, fiber) and a category for the following food item: "${quantity} of ${ingredientName}".
         IMPORTANT: Estimate based on a typical plate size or serving if specific units are ambiguous.
         Also provide the estimated quantity in grams for the given amount.
+        Categories MUST be one of: "legumes", "meats", "fruits", "cereals", "pasta", "others".
         
         Respond ONLY with a valid JSON object (no markdown, no code blocks) matching this schema:
         {
@@ -30,7 +31,8 @@ export class OpenAINutritionAnalysisService implements NutritionAnalysisService 
             "carbs": number, // grams
             "fats": number, // grams
             "fiber": number, // grams
-            "quantityInGrams": number // grams
+            "quantityInGrams": number, // grams
+            "category": "string" // one of: "legumes", "meats", "fruits", "cereals", "pasta", "others"
         }
         
         If you cannot determine the info, return 0 for all values.

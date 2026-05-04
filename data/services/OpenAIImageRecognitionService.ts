@@ -16,7 +16,8 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
         const base64Image = await this.blobToBase64(image);
         const defaultPrompt = `Analyze the food items in this image. 
         Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), 
-        and nutritional information (calories, protein, carbs, fats, fiber) per serving. 
+        nutritional information (calories, protein, carbs, fats, fiber) per serving, and a category for each food item.
+        Categories MUST be one of: "legumes", "meats", "fruits", "cereals", "pasta", "others".
         Name the ingredients in ${language === 'pt' ? 'Portuguese' : language}. 
         
         Respond ONLY with a valid JSON object matching this schema:
@@ -29,7 +30,8 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
                     "protein": number,
                     "carbs": number,
                     "fats": number,
-                    "fiber": number
+                    "fiber": number,
+                    "category": "string" // one of: "legumes", "meats", "fruits", "cereals", "pasta", "others"
                 }
             ]
         }
