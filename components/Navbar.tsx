@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon, LogoutIcon, UserIcon } from './icons';
+import { SparklesIcon, SettingsIcon, MenuIcon, XMarkIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { useFeatureFlags } from '../contexts/FeatureFlagContext';
@@ -54,7 +55,7 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
         <header className="relative flex justify-between items-center px-6 lg:px-8 pt-6 lg:pt-8 border-b border-neutral-border pb-4">
             <div className="flex items-center gap-8">
                 <Link href="/" className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity">
-                    <img src="/LogoHorizontal.svg" alt="LeveMente" className="h-16 w-auto" />
+                    <Image src="/LogoHorizontal.svg" alt="LeveMente" width={200} height={64} className="h-16 w-auto" priority />
                 </Link>
                 <nav className="hidden md:flex items-center gap-6" data-testid="desktop-nav">
                     {navItems.map(item => (

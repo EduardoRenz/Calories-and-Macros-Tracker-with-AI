@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { useLanguage, Language } from '../contexts/LanguageContext';
 import { useTranslation } from '../hooks/useTranslation';
@@ -14,7 +15,7 @@ const PublicNavbar: React.FC = () => {
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     <Link href="/" className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity">
-                        <img src="/LogoHorizontal.svg" alt="LeveMente" className="h-16 w-auto" />
+                        <Image src="/LogoHorizontal.svg" alt="LeveMente" width={200} height={64} className="h-16 w-auto" priority />
                     </Link>
 
                     <div className="flex items-center gap-4">

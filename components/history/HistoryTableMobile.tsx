@@ -29,18 +29,7 @@ export function HistoryTableMobile({ entries, onDateClick }: HistoryTableMobileP
                 const badgeBg = isOver ? 'bg-red-500/15' : 'bg-brand-green/15';
                 const badgeText = isOver ? 'text-red-400' : 'text-brand-green';
 
-                // Calculate macro goals
-                const proteinGoal = Math.round((e.calorieGoal * 0.30) / 4);
-                const carbsGoal = Math.round((e.calorieGoal * 0.40) / 4);
-                const fatsGoal = Math.round((e.calorieGoal * 0.30) / 9);
-                const fiberGoal = 25; // Standard daily fiber recommendation
-
                 // Check if goals are met
-                const proteinMet = e.protein >= proteinGoal;
-                const carbsMet = e.carbs >= carbsGoal;
-                const fatsMet = e.fats >= fatsGoal;
-                const fiberMet = e.fiber >= fiberGoal;
-
                 return (
                     <button
                         key={e.date}

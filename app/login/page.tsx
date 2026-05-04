@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 import { GoogleIcon } from '@/components/icons';
 import LoginPlansCard from '@/components/LoginPlansCard';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
@@ -50,7 +51,7 @@ export default function LoginPage() {
             <div className="w-full max-w-sm">
                 <div className="bg-neutral-panel p-8 rounded-2xl border border-neutral-border text-center shadow-2xl">
                     <div className="flex justify-center items-center gap-4 mb-4">
-                        <img src="/LogoHorizontal.svg" alt="LeveMente" className="h-12" />
+                        <Image src="/LogoHorizontal.svg" alt="LeveMente" width={160} height={48} className="h-12 w-auto" priority />
                     </div>
                     <p className="text-neutral-text-secondary mb-8">
                         Sign in to track your meals, analyze food with AI, and reach your fitness goals.

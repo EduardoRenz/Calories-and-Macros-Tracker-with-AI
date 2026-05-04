@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 
 const TermsOfUsePage = () => {
@@ -6,7 +7,7 @@ const TermsOfUsePage = () => {
         <div className="bg-neutral-dark min-h-screen text-neutral-text-primary py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto bg-neutral-panel p-8 rounded-2xl border border-neutral-border shadow-2xl">
                 <div className="flex items-center gap-4 mb-6">
-                    <img src="/logo.svg" alt="LeveMente" className="h-10 w-10" />
+                    <Image src="/logo.svg" alt="LeveMente" width={40} height={40} className="h-10 w-10" />
                     <h1 className="text-3xl font-bold">Termos de Uso</h1>
                 </div>
 
