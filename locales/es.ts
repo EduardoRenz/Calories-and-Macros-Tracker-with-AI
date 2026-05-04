@@ -257,14 +257,14 @@ export default {
         { "text": "7 días de prueba gratis con funciones premium", "included": true },
         { "text": "Análisis nutricional por foto", "included": false },
         { "text": "Informes de salud avanzados", "included": false },
-        { "text": "Asistente LeveMente 24/7", "included": false }
+        { "text": "Lumi 24/7", "included": false }
       ],
       "member_monthly": [
         { "text": "IA Integrada (Sin necesidad de claves propias)", "included": true },
         { "text": "Análisis nutricional completo por foto", "included": true },
         { "text": "Historial ilimitado", "included": true },
         { "text": "Informes de micronutrientes y salud", "included": true },
-        { "text": "Asistente LeveMente disponible 24/7", "included": true },
+          { "text": "Lumi disponible 24/7", "included": true },
       ],
       "member_annual": {
         "discount_message": "Ahorra {{percentage}}%",
@@ -376,11 +376,11 @@ export default {
     }
   },
   "assistant": {
-    "title": "Asistente LeveMente",
+    "title": "Lumi",
     "status_online": "EN LÍNEA",
     "status_absent": "AUSENTE",
     "close": "Cerrar chat",
-    "input_placeholder": "Pregunta a LeveMente...",
+    "input_placeholder": "Pregunta a Lumi...",
     "send": "Enviar",
     "confirm_action": "Acción pendiente de confirmación",
     "confirm": "Confirmar",
@@ -391,7 +391,7 @@ export default {
     "action_cancelled": "Acción cancelada.",
     "prepared_action": "He preparado la acción para ti.",
     "welcome_message": "¡Saluda a tu asistente personal de salud!",
-    "disclaimer": "El Asistente LeveMente puede proporcionar información inexacta.",
+    "disclaimer": "Lumi puede proporcionar información inexacta.",
     "open_assistant": "Abrir Asistente",
     "action_undone_warning": "Esta acción no se puede deshacer fácilmente.",
     "protein": "Proteína",

@@ -257,14 +257,14 @@ export default {
         { "text": "7-day free trial with premium features", "included": true },
         { "text": "Photo-based nutrition analysis", "included": false },
         { "text": "Advanced health reports", "included": false },
-        { "text": "LeveMente Assistant 24/7", "included": false }
+        { "text": "Lumi 24/7", "included": false }
       ],
       "member_monthly": [
         { "text": "Integrated AI (No personal keys needed)", "included": true },
         { "text": "Full photo-based nutrition analysis", "included": true },
         { "text": "Unlimited history", "included": true },
         { "text": "Micronutrient and health reports", "included": true },
-        { "text": "LeveMente Assistant available 24/7", "included": true },
+        { "text": "Lumi available 24/7", "included": true },
       ],
       "member_annual": {
         "discount_message": "Save {{percentage}}%",
@@ -273,7 +273,7 @@ export default {
           { "text": "Full photo-based nutrition analysis", "included": true },
           { "text": "Unlimited history", "included": true },
           { "text": "Micronutrient and health reports", "included": true },
-          { "text": "LeveMente Assistant available 24/7", "included": true },
+          { "text": "Lumi available 24/7", "included": true },
         ]
       }
     }
@@ -381,11 +381,11 @@ export default {
     }
   },
   "assistant": {
-    "title": "Assistant",
+    "title": "Lumi",
     "status_online": "ONLINE",
     "status_absent": "ABSENT",
     "close": "Close chat",
-    "input_placeholder": "Ask Assistant...",
+    "input_placeholder": "Ask Lumi...",
     "send": "Send",
     "confirm_action": "Action pending confirmation",
     "confirm": "Confirm",
@@ -395,8 +395,8 @@ export default {
     "action_error": "Failed to execute action. Please try again.",
     "action_cancelled": "Action cancelled.",
     "prepared_action": "I have prepared the action for you.",
-    "welcome_message": "Say hello to your personal health assistant!",
-    "disclaimer": "LeveMente Assistant may provide inaccurate info.",
+    "welcome_message": "Say hello to Lumi, your personal health assistant!",
+    "disclaimer": "Lumi may provide inaccurate info.",
     "open_assistant": "Open Assistant",
     "action_undone_warning": "This action cannot be easily undone.",
     "protein": "Protein",

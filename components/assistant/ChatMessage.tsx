@@ -3,6 +3,7 @@ import { ChatMessage as IChatMessage } from '../../domain/entities/ChatMessage';
 import { Avatar } from '../ui/Avatar';
 import MarkdownRenderer from './MarkdownRenderer';
 import PendingActionCard from './PendingActionCard';
+import { LumiIcon } from '../icons';
 
 interface ChatMessageProps {
     message: IChatMessage;
@@ -39,8 +40,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                 {/* Avatar */}
                 <div className="flex-shrink-0 mt-auto">
                     {isAssistant ? (
-                        <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center">
-                            <span className="text-base">🤖</span>
+                        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
+                            <LumiIcon className="w-full h-full" />
                         </div>
                     ) : (
                         <Avatar size={32} className="bg-blue-600" />

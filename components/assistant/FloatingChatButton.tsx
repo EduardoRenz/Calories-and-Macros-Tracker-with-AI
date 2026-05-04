@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChatBubbleLeftRightIcon } from '../icons';
+import { LumiIcon } from '../icons';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface FloatingChatButtonProps {
@@ -18,7 +18,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ onClick, isOpen
             aria-label={t('assistant.open_assistant')}
             id="floating-chat-button"
         >
-            <ChatBubbleLeftRightIcon className="w-8 h-8" />
+            <LumiIcon className="w-9 h-9" />
         </button>
     );
 };

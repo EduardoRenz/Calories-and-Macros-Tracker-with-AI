@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { ChatMessage as IChatMessage } from '../../domain/entities/ChatMessage';
 import ChatMessage from './ChatMessage';
 import { useTranslation } from '../../hooks/useTranslation';
+import { LumiIcon } from '../icons';
 
 interface ChatMessagesProps {
     messages: IChatMessage[];
@@ -54,8 +55,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                 <div className="flex w-full mb-4 justify-start">
                     <div className="flex max-w-[85%] flex-row gap-2">
                         <div className="flex-shrink-0 mt-auto">
-                            <div className="w-8 h-8 rounded-full bg-brand-green flex items-center justify-center text-black">
-                                <span className="text-base">🤖</span>
+                            <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
+                                <LumiIcon className="w-full h-full" />
                             </div>
                         </div>
                         <div className="flex flex-col items-start pt-2">

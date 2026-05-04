@@ -223,3 +223,27 @@ export const InfoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
     </svg>
 );
+
+export const LumiIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" {...props}>
+        {/* Body / Head */}
+        <ellipse cx="50" cy="55" rx="38" ry="36" fill="white" />
+        {/* Ear left */}
+        <ellipse cx="14" cy="56" rx="8" ry="9" fill="#00C853" />
+        {/* Ear right */}
+        <ellipse cx="86" cy="56" rx="8" ry="9" fill="#00C853" />
+        {/* Top antenna nub */}
+        <ellipse cx="50" cy="20" rx="9" ry="7" fill="#00C853" />
+        <rect x="47" y="19" width="6" height="10" fill="white" />
+        {/* Face screen */}
+        <rect x="22" y="34" width="56" height="42" rx="12" ry="12" fill="#1a1a1a" />
+        {/* Left eye */}
+        <ellipse cx="37" cy="53" rx="7" ry="7" fill="#00E676" />
+        <ellipse cx="37" cy="53" rx="3.5" ry="3.5" fill="#69FF97" opacity="0.7" />
+        {/* Right eye */}
+        <ellipse cx="63" cy="53" rx="7" ry="7" fill="#00E676" />
+        <ellipse cx="63" cy="53" rx="3.5" ry="3.5" fill="#69FF97" opacity="0.7" />
+        {/* Smile */}
+        <path d="M 38 65 Q 50 74 62 65" stroke="#00E676" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+    </svg>
+);

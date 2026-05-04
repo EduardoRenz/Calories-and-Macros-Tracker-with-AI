@@ -1,5 +1,5 @@
 import React from 'react';
-import { XMarkIcon } from '../icons';
+import { XMarkIcon, LumiIcon } from '../icons';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useChatAssistant } from '../../contexts/ChatAssistantContext';
 
@@ -15,8 +15,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onClose }) => {
         <div id='chat-header' className="flex items-center justify-between p-4 bg-neutral-panel rounded-t-2xl border-b border-neutral-border">
             <div className="flex items-center gap-3">
                 <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-brand-green flex items-center justify-center text-black">
-                        <span className="text-xl">🤖</span>
+                    <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+                        <LumiIcon className="w-full h-full" />
                     </div>
                     <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-neutral-panel ${isOnline ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                 </div>
