@@ -32,7 +32,7 @@ describe('Chat Assistant', () => {
         cy.viewport(375, 667); // iPhone 6/7/8 dimensions
 
         // Open chat using mobile bottom navigation
-        cy.get('[data-testid="mobile-bottom-nav"] button').contains('Assistant').click();
+        cy.get('#mobile-chat-button').click();
         cy.get('#chat-header').should('be.visible');
 
         // Check if body has scroll lock styles
@@ -69,7 +69,7 @@ describe('Chat Assistant', () => {
         cy.viewport(375, 667);
 
         // Open chat on mobile using mobile bottom navigation
-        cy.get('[data-testid="mobile-bottom-nav"] button').contains('Assistant').click();
+        cy.get('#mobile-chat-button').click();
         cy.get('#chat-header').should('be.visible');
 
         // Verify scroll lock is applied on mobile
