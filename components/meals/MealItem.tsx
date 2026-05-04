@@ -74,6 +74,7 @@ export const MealItem: React.FC<MealItemProps> = ({
                             onClick={onAddIngredient}
                             className="bg-brand-green/10 p-2 rounded-full text-brand-green hover:bg-brand-green/20 transition-colors"
                             aria-label={t('meals.add_ingredient')}
+                            data-testid={`add-ingredient-${mealType}`}
                         >
                             <PlusIcon className="w-6 h-6" />
                         </button>

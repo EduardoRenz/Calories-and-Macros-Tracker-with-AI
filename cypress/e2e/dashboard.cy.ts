@@ -29,11 +29,23 @@ describe('Dashboard Meal Management', () => {
     const carbs = 0;
     const fats = 3.6;
 
-    // 1. Expand lunch section
-    cy.get('[data-testid="meal-lunch"]').click();
+    // 1. Expand lunch section OR click '+' if it's empty
+    // In our new UI, if empty, it's a '+' button that opens the modal directly.
+    // If it has items, we first expand then click add.
 
-    // 2. Click add ingredient button for lunch
-    cy.get('[data-testid="add-ingredient-lunch"]').click();
+    cy.get('body').then(($body) => {
+      const mealLunch = $body.find('[data-testid="meal-lunch"]');
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-lunch"]');
+
+      // If the add button is visible in the meal lunch container (empty state), click it
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        // Otherwise, expand first then click the internal add button
+        cy.wrap(mealLunch).click();
+        cy.get('[data-testid="add-ingredient-lunch"]').click();
+      }
+    });
 
     // 3. Fill in Ingredient Modal
     cy.contains('h3', 'Add Ingredient to Lunch').should('be.visible');
@@ -62,6 +74,14 @@ describe('Dashboard Meal Management', () => {
     cy.contains('h3', 'Add Ingredient to Lunch').should('not.exist');
 
     // 6. Verify Ingredient Added to List
+    // First, ensure lunch is expanded (it might be closed if we just added and it was previously empty)
+    cy.get('body').then(($body) => {
+        const details = $body.find('#meal-details-lunch');
+        if (!details.is(':visible')) {
+            cy.get('[data-testid="meal-lunch"]').click();
+        }
+    });
+
     cy.get('#meal-details-lunch').within(() => {
       cy.contains(ingredientName).should('be.visible');
       cy.contains(quantity).should('be.visible');
