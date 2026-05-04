@@ -69,6 +69,7 @@ create table if not exists public.dashboard_ingredients (
   dashboard_day_id uuid not null references public.dashboard_days(id) on delete cascade,
   meal_type text not null, -- breakfast | lunch | dinner | snacks
   name text not null,
+  category varchar(100), -- Food category assigned by AI (legumes, meats, fruits, cereals, pasta, others)
   quantity text not null default '1',
   calories numeric not null default 0,
   protein numeric not null default 0,
@@ -172,3 +173,6 @@ grant insert on public.weight_history to authenticated;
 
 
 GRANT DELETE ON public.dashboard_ingredients TO authenticated;
+
+-- Add comment explaining the column
+COMMENT ON COLUMN dashboard_ingredients.category IS 'Food category (e.g., legumes, meats, fruits, cereals, pasta, others) assigned by AI analysis';
