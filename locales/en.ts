@@ -49,6 +49,7 @@ export default {
     "limit_exceeded": "You've exceeded your limit.",
     "doing_great": "You're doing great!",
     "macro_split": "Macro Split",
+    "today_meals": "TODAY'S MEALS",
     "api_keys_required_title": "API Keys Required",
     "api_keys_required_desc": "To continue using AI features, please configure your own API keys in settings.",
     "go_to_settings": "Go to Settings",

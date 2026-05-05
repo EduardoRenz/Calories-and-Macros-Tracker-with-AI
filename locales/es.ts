@@ -49,6 +49,7 @@ export default {
     "limit_exceeded": "Has superado tu límite.",
     "doing_great": "¡Lo estás haciendo genial!",
     "macro_split": "División de Macros",
+    "today_meals": "COMIDAS DE HOY",
     "api_keys_required_title": "Claves de API Requeridas",
     "api_keys_required_desc": "Para continuar usando las funciones de IA, configure sus propias claves de API en la configuración.",
     "go_to_settings": "Ir a Configuración",
@@ -264,7 +265,7 @@ export default {
         { "text": "Análisis nutricional completo por foto", "included": true },
         { "text": "Historial ilimitado", "included": true },
         { "text": "Informes de micronutrientes y salud", "included": true },
-          { "text": "Lumi disponible 24/7", "included": true },
+        { "text": "Lumi disponible 24/7", "included": true },
       ],
       "member_annual": {
         "discount_message": "Ahorra {{percentage}}%",

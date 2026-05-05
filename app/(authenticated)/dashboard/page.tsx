@@ -258,6 +258,9 @@ export default function DashboardPage() {
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Shown only on mobile - progress bars instead of chart */}
+                    <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3 block md:hidden">
+                        {t('dashboard.macro_split')}
+                    </h3>
                     <div className="block md:hidden">
                         {macrosWithGoals && <MobileNutrientSummary data={macrosWithGoals} />}
                     </div>
@@ -297,6 +300,9 @@ export default function DashboardPage() {
                             color="bg-brand-fats"
                         />
                     </div>
+                    <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3 md:col-span-2">
+                        {isToday ? t('dashboard.today_meals') : displayDate}
+                    </h3>
                     <div className="md:col-span-2">
                         <MealSummaryCard
                             meals={data.meals}
@@ -308,6 +314,9 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="lg:col-span-1 grid grid-cols-1 gap-6 order-first lg:order-last">
+                    <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3 hidden lg:block">
+                        {t('dashboard.macro_split')}
+                    </h3>
                     <div className="hidden lg:flex bg-neutral-card p-6 rounded-2xl h-full flex-col order-first lg:order-last">
                         <h3 className="text-xl font-bold mb-4">{t('dashboard.macro_split')}</h3>
                         <div className="flex-grow">

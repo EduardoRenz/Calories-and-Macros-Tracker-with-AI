@@ -49,6 +49,7 @@ export default {
     "limit_exceeded": "Você excedeu seu limite.",
     "doing_great": "Você está indo ótimo!",
     "macro_split": "Divisão de Macros",
+    "today_meals": "REFEIÇÕES DE HOJE",
     "api_keys_required_title": "Chaves de API Necessárias",
     "api_keys_required_desc": "Para continuar usando os recursos de IA, configure suas próprias chaves de API nas configurações.",
     "go_to_settings": "Ir para Configurações",
