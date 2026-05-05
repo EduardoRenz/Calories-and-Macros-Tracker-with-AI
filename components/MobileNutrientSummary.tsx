@@ -57,7 +57,7 @@ const MobileNutrientSummary: React.FC<MobileNutrientSummaryProps> = ({ data }) =
                 return (
                     <div
                         key={macro.label}
-                        className="bg-neutral-card p-4 rounded-2xl shadow-sm border border-neutral-border/20"
+                        className="bg-neutral-card p-4 rounded-2xl shadow-sm"
                     >
                         <div className="flex justify-between items-end mb-2">
                             <h3 className="text-neutral-text-primary font-bold text-base">
