@@ -4,7 +4,13 @@ type IconProps = React.SVGProps<SVGSVGElement>;
 
 // Meal Type Icons
 export const BreakfastIcon: React.FC<IconProps> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" {...props}><path d="M6 21q-.825 0-1.413-.588T4 19v-8.55q-.925-.55-1.463-1.462T2 7q0-1.65 1.175-2.825T6 3h12q1.65 0 2.825 1.175T22 7q0 1.075-.537 1.988T20 10.45V19q0 .825-.588 1.413T18 21H6Zm0-2h12V9.3l1-.6q.45-.275.725-.725T20 7q0-.825-.588-1.412T18 5H6q-.825 0-1.413.588T4 7q0 .55.263 1.012T5 8.75l1 .55V19Zm5.3-2.3q.3.275.713.275t.687-.275l3-3q.3-.3.3-.713t-.3-.687l-3-3q-.275-.3-.687-.3t-.713.3l-3 3q-.275.275-.275.688t.275.712l3 3Zm.7-2.1L10.4 13l1.6-1.6l1.6 1.6l-1.6 1.6Zm0-2.6Z" /></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M4 10H16V15C16 17 14 19 12 19H8C6 19 4 17 4 15V10Z" />
+        <path d="M16 11H18C19 11 20 12 20 13C20 14 19 15 18 15H16" />
+        <path d="M8 6C8 5 9 4 9 4" />
+        <path d="M12 6C12 5 13 4 13 4" />
+        <path d="M4 21H17" />
+    </svg>
 );
 
 export const LunchIcon: React.FC<IconProps> = (props) => (
@@ -16,7 +22,15 @@ export const DinnerIcon: React.FC<IconProps> = (props) => (
 );
 
 export const SnacksIcon: React.FC<IconProps> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" {...props} ><path d="M18.38 6.24C17.79 3.24 15.14 1 12 1S6.21 3.24 5.62 6.24A4.014 4.014 0 0 0 3 10c0 2.21 1.79 4 4 4c.12 0 .23-.02.34-.02L12.07 23l4.61-9.03c.11.01.21.03.32.03c2.21 0 4-1.79 4-4c0-1.71-1.08-3.19-2.62-3.76zm-6.33 12.39l-2.73-5.21a6.468 6.468 0 0 0 5.4-.02l-2.67 5.23zM17 12c-.52 0-1.01-.2-1.39-.56l-.56-.54l-.66.42a4.52 4.52 0 0 1-4.78-.01l-.66-.41l-.56.54c-.38.35-.87.56-1.39.56a1.999 1.999 0 0 1-.32-3.97l.77-.13l.06-.78C7.71 4.8 9.66 3 12 3s4.29 1.8 4.48 4.12l.06.78l.77.12c.97.16 1.69.99 1.69 1.98c0 1.1-.9 2-2 2z" /></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M12 9
+             C9.5 6.8 6.5 8.8 6.5 12
+             C6.5 16.5 9.5 19.5 12 19.5
+             C14.5 19.5 17.5 16.5 17.5 12
+             C17.5 8.8 14.5 6.8 12 9Z" />
+        <path d="M12 9C12 7.5 13 6.5 14.5 6" />
+        <path d="M14.5 6C16 6 17 7 17 8" />
+    </svg>
 );
 
 // Food Category Icons (Desktop simple and transparent gray)
