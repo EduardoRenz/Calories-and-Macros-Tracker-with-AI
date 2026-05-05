@@ -1,4 +1,5 @@
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
+import { FOOD_CATEGORIES_LIST, getFoodCategoriesPromptText } from '../../domain/constants/foodCategories';
 
 export class OpenAINutritionAnalysisService implements NutritionAnalysisService {
     private apiKey: string;
@@ -19,10 +20,13 @@ export class OpenAINutritionAnalysisService implements NutritionAnalysisService 
         };
         const languageName = languageMap[language] || 'English';
 
+        const categoriesPrompt = getFoodCategoriesPromptText();
+        const categoriesList = FOOD_CATEGORIES_LIST.join('", "');
+
         const prompt = `Provide the estimated nutritional information (calories, protein, carbs, fats, fiber) and a category for the following food item: "${quantity} of ${ingredientName}".
         IMPORTANT: Estimate based on a typical plate size or serving if specific units are ambiguous.
         Also provide the estimated quantity in grams for the given amount.
-        Categories MUST be one of: "legumes", "meats", "fruits", "cereals", "pasta", "others".
+        ${categoriesPrompt}
         
         Respond ONLY with a valid JSON object (no markdown, no code blocks) matching this schema:
         {
@@ -32,7 +36,7 @@ export class OpenAINutritionAnalysisService implements NutritionAnalysisService 
             "fats": number, // grams
             "fiber": number, // grams
             "quantityInGrams": number, // grams
-            "category": "string" // one of: "legumes", "meats", "fruits", "cereals", "pasta", "others"
+            "category": "string" // one of: "${categoriesList}"
         }
         
         If you cannot determine the info, return 0 for all values.

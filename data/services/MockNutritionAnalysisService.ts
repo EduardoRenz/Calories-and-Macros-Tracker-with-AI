@@ -20,7 +20,7 @@ export class MockNutritionAnalysisService implements NutritionAnalysisService {
             return { calories: 130, protein: 2.7, carbs: 28, fats: 0.3, fiber: 0.4, quantityInGrams: 100, category: 'cereals' };
         }
         if (nameLower.includes('egg') || nameLower.includes('ovo') || nameLower.includes('huevo')) {
-            return { calories: 155, protein: 13, carbs: 1.1, fats: 11, fiber: 0, quantityInGrams: 100, category: 'meats' };
+            return { calories: 155, protein: 13, carbs: 1.1, fats: 11, fiber: 0, quantityInGrams: 100, category: 'eggs' };
         }
         if (nameLower.includes('banana')) {
             return { calories: 89, protein: 1.1, carbs: 23, fats: 0.3, fiber: 2.6, quantityInGrams: 100, category: 'fruits' };

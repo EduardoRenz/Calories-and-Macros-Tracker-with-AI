@@ -12,6 +12,7 @@ export class MockImageRecognitionService implements ImageRecognitionService {
             return [
                 { name: 'Arroz Branco', quantity: '100g', calories: 130, protein: 2.7, carbs: 28, fats: 0.3, fiber: 0.4, category: 'cereals' },
                 { name: 'Peito de Frango', quantity: '150g', calories: 247, protein: 46.5, carbs: 0, fats: 5.4, fiber: 0, category: 'meats' },
+                { name: 'Ovo Cozido', quantity: '50g', calories: 78, protein: 6.5, carbs: 0.6, fats: 5.5, fiber: 0, category: 'eggs' },
                 { name: 'Salada de Alface', quantity: '50g', calories: 7, protein: 0.6, carbs: 1.5, fats: 0.1, fiber: 0.7, category: 'others' }
             ];
         }
@@ -20,6 +21,7 @@ export class MockImageRecognitionService implements ImageRecognitionService {
             return [
                 { name: 'Arroz Blanco', quantity: '100g', calories: 130, protein: 2.7, carbs: 28, fats: 0.3, fiber: 0.4, category: 'cereals' },
                 { name: 'Pechuga de Pollo', quantity: '150g', calories: 247, protein: 46.5, carbs: 0, fats: 5.4, fiber: 0, category: 'meats' },
+                { name: 'Huevo Cocido', quantity: '50g', calories: 78, protein: 6.5, carbs: 0.6, fats: 5.5, fiber: 0, category: 'eggs' },
                 { name: 'Ensalada de Lechuga', quantity: '50g', calories: 7, protein: 0.6, carbs: 1.5, fats: 0.1, fiber: 0.7, category: 'others' }
             ];
         }
@@ -27,6 +29,7 @@ export class MockImageRecognitionService implements ImageRecognitionService {
         return [
             { name: 'White Rice', quantity: '100g', calories: 130, protein: 2.7, carbs: 28, fats: 0.3, fiber: 0.4, category: 'cereals' },
             { name: 'Chicken Breast', quantity: '150g', calories: 247, protein: 46.5, carbs: 0, fats: 5.4, fiber: 0, category: 'meats' },
+            { name: 'Boiled Egg', quantity: '50g', calories: 78, protein: 6.5, carbs: 0.6, fats: 5.5, fiber: 0, category: 'eggs' },
             { name: 'Lettuce Salad', quantity: '50g', calories: 7, protein: 0.6, carbs: 1.5, fats: 0.1, fiber: 0.7, category: 'others' }
         ];
     }

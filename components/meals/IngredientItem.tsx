@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Meal, Ingredient } from '@/domain/entities/dashboard';
 import { TrashIcon } from '../icons';
 import { useTranslation } from '@/hooks/useTranslation';
-import { LegumesIcon, MeatsIcon, FruitsIcon, CerealsIcon, PastaIcon, OthersIcon } from '../FoodIcons';
+import { MeatsIcon, FruitsIcon, PastaIcon, OthersIcon, EggsIcon, VegetablesIcon, CerealsIcon, CandiesIcon, MilkIcon, SeasoningIcon } from '../FoodIcons';
 
 interface IngredientItemProps {
     ingredient: Meal['ingredients'][0];
@@ -12,11 +12,15 @@ interface IngredientItemProps {
 
 const CategoryIcon = ({ category, className }: { category?: string; className?: string }) => {
     switch (category) {
-        case 'legumes': return <LegumesIcon className={className} />;
         case 'meats': return <MeatsIcon className={className} />;
+        case 'eggs': return <EggsIcon className={className} />;
         case 'fruits': return <FruitsIcon className={className} />;
-        case 'cereals': return <CerealsIcon className={className} />;
+        case 'vegetables': return <VegetablesIcon className={className} />;
         case 'pasta': return <PastaIcon className={className} />;
+        case 'cereals': return <CerealsIcon className={className} />;
+        case 'candies': return <CandiesIcon className={className} />;
+        case 'milk': return <MilkIcon className={className} />;
+        case 'seasonings': return <SeasoningIcon className={className} />;
         default: return <OthersIcon className={className} />;
     }
 };
@@ -92,8 +96,8 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
     return (
         <li className="group py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-grow">
-                <div className="hidden md:flex bg-neutral-panel p-2 rounded-xl text-neutral-text-secondary/50">
-                    <CategoryIcon category={ingredient.category} className="w-5 h-5" />
+                <div className="hidden md:flex p-2" style={{ backgroundColor: 'rgb(248 250 252 / var(--tw-bg-opacity, 1))', color: 'rgb(148 163 184 / var(--tw-text-opacity, 1))', borderRadius: '0.75rem' }}>
+                    <CategoryIcon category={ingredient.category} className="w-5 h-5 text-current" />
                 </div>
                 <div className="flex flex-col">
                     <span className="text-neutral-text-primary font-bold leading-snug">{ingredient.name}</span>
@@ -113,8 +117,6 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                                 {ingredient.quantity}
                             </span>
                         )}
-                        <span>•</span>
-                        <span>Organic</span> {/* Mock detail matching design */}
                     </div>
                 </div>
             </div>

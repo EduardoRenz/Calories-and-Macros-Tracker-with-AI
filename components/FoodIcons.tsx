@@ -16,21 +16,21 @@ export const DinnerIcon: React.FC<IconProps> = (props) => (
 );
 
 export const SnacksIcon: React.FC<IconProps> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" {...props} ><path fill="#000000" d="M18.38 6.24C17.79 3.24 15.14 1 12 1S6.21 3.24 5.62 6.24A4.014 4.014 0 0 0 3 10c0 2.21 1.79 4 4 4c.12 0 .23-.02.34-.02L12.07 23l4.61-9.03c.11.01.21.03.32.03c2.21 0 4-1.79 4-4c0-1.71-1.08-3.19-2.62-3.76zm-6.33 12.39l-2.73-5.21a6.468 6.468 0 0 0 5.4-.02l-2.67 5.23zM17 12c-.52 0-1.01-.2-1.39-.56l-.56-.54l-.66.42a4.52 4.52 0 0 1-4.78-.01l-.66-.41l-.56.54c-.38.35-.87.56-1.39.56a1.999 1.999 0 0 1-.32-3.97l.77-.13l.06-.78C7.71 4.8 9.66 3 12 3s4.29 1.8 4.48 4.12l.06.78l.77.12c.97.16 1.69.99 1.69 1.98c0 1.1-.9 2-2 2z" /></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" {...props} ><path d="M18.38 6.24C17.79 3.24 15.14 1 12 1S6.21 3.24 5.62 6.24A4.014 4.014 0 0 0 3 10c0 2.21 1.79 4 4 4c.12 0 .23-.02.34-.02L12.07 23l4.61-9.03c.11.01.21.03.32.03c2.21 0 4-1.79 4-4c0-1.71-1.08-3.19-2.62-3.76zm-6.33 12.39l-2.73-5.21a6.468 6.468 0 0 0 5.4-.02l-2.67 5.23zM17 12c-.52 0-1.01-.2-1.39-.56l-.56-.54l-.66.42a4.52 4.52 0 0 1-4.78-.01l-.66-.41l-.56.54c-.38.35-.87.56-1.39.56a1.999 1.999 0 0 1-.32-3.97l.77-.13l.06-.78C7.71 4.8 9.66 3 12 3s4.29 1.8 4.48 4.12l.06.78l.77.12c.97.16 1.69.99 1.69 1.98c0 1.1-.9 2-2 2z" /></svg>
 );
 
 // Food Category Icons (Desktop simple and transparent gray)
-export const LegumesIcon: React.FC<IconProps> = (props) => (
+export const VegetablesIcon: React.FC<IconProps> = (props) => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M7 12C7 12 9 4 12 4C15 4 17 12 17 12C17 12 15 20 12 20C9 20 7 12 7 12Z" />
-        <circle cx="12" cy="8" r="1" />
-        <circle cx="12" cy="12" r="1" />
-        <circle cx="12" cy="16" r="1" />
+        <path d="M12 20C12 20 7 14 7 10C7 7 9 5 12 5C15 5 17 7 17 10C17 14 12 20 12 20Z" />
+        <path d="M12 5V3" />
+        <path d="M10 4C10 4 9 2.5 8 2" />
+        <path d="M14 4C14 4 15 2.5 16 2" />
     </svg>
 );
 
 export const MeatsIcon: React.FC<IconProps> = (props) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" {...props}>
         <path d="M15 5C15 5 18 5 20 7C22 9 22 12 20 14C18 16 15 16 15 16L12 19L5 12L8 9L15 5Z" />
         <path d="M11 13C11 13 13 11 15 11" />
     </svg>
@@ -44,13 +44,6 @@ export const FruitsIcon: React.FC<IconProps> = (props) => (
     </svg>
 );
 
-export const CerealsIcon: React.FC<IconProps> = (props) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M5 20L10 4L14 20" />
-        <path d="M10 20L14 4L19 20" />
-        <path d="M7 14H17" />
-    </svg>
-);
 
 export const PastaIcon: React.FC<IconProps> = (props) => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -63,9 +56,54 @@ export const PastaIcon: React.FC<IconProps> = (props) => (
 );
 
 export const OthersIcon: React.FC<IconProps> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" stroke="currentColor" fill="none" {...props}><path fill="#000000" d="M224 104h-8.37a88 88 0 0 0-175.26 0H32a8 8 0 0 0-8 8a104.35 104.35 0 0 0 56 92.28V208a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-3.72A104.35 104.35 0 0 0 232 112a8 8 0 0 0-8-8Zm-24.46 0h-51.42a71.84 71.84 0 0 1 41.27-29.57A71.45 71.45 0 0 1 199.54 104Zm-26.06-47.77q2.75 2.25 5.27 4.75a87.92 87.92 0 0 0-49.15 43h-29.5A72.26 72.26 0 0 1 168 56c1.83 0 3.66.09 5.48.23ZM128 40a71.87 71.87 0 0 1 19 2.57A88.36 88.36 0 0 0 83.33 104H56.46A72.08 72.08 0 0 1 128 40Zm36.66 152a8 8 0 0 0-4.66 7.3v8.7H96v-8.7a8 8 0 0 0-4.66-7.3a88.29 88.29 0 0 1-51-72h175.29a88.29 88.29 0 0 1-50.97 72Z" /></svg>
+);
+
+export const EggsIcon: React.FC<IconProps> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" fill="none" {...props}><g fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><circle cx="11.5" cy="12.5" r="3.5" /><path d="M3 8c0-3.5 2.5-6 6.5-6c5 0 4.83 3 7.5 5s5 2 5 6c0 4.5-2.5 6.5-7 6.5c-2.5 0-2.5 2.5-6 2.5s-7-2-7-5.5c0-3 1.5-3 1.5-5C3.5 10 3 9 3 8Z" /></g></svg>
+);
+
+export const CerealsIcon: React.FC<IconProps> = (props) => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 8V16" />
-        <path d="M8 12H16" />
+        <path d="M12 3V21" />
+        <path d="M12 7C10.5 6 9 6.5 8 8" />
+        <path d="M12 7C13.5 6 15 6.5 16 8" />
+        <path d="M12 11C10.5 10 9 10.5 8 12" />
+        <path d="M12 11C13.5 10 15 10.5 16 12" />
+        <path d="M12 15C10.5 14 9 14.5 8 16" />
+        <path d="M12 15C13.5 14 15 14.5 16 16" />
+    </svg>
+);
+
+export const CandiesIcon: React.FC<IconProps> = (props) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <g transform="rotate(-15 12 12)">
+            <rect x="6" y="4" width="12" height="16" rx="2" />
+            <path d="M6 11H18" />
+            <path d="M6 17H18" />
+            <path d="M12 8V20" />
+            <path d="M9 4C8.5 5.5 9.5 7 11 6" />
+            <path d="M11 4C10.5 5.5 11.5 7 13 6" />
+            <path d="M13 4C12.5 5.5 13.5 7 15 6" />
+        </g>
+    </svg>
+);
+
+export const MilkIcon: React.FC<IconProps> = (props) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M7 3H17L16 21H8L7 3Z" />
+        <path d="M8 9C10 8 14 8 16 9" />
+    </svg>
+);
+
+export const SeasoningIcon: React.FC<IconProps> = (props) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M9 3H15L17 7H7L9 3Z" />
+        <path d="M7 7H17L16 21H8L7 7Z" />
+        <circle cx="10" cy="5" r="0.5" />
+        <circle cx="12" cy="5" r="0.5" />
+        <circle cx="14" cy="5" r="0.5" />
+        <path d="M18 10C19 11 19 12 18 13" />
+        <path d="M20 11C21 12 21 13 20 14" />
     </svg>
 );

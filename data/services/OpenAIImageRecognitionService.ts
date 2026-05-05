@@ -1,5 +1,6 @@
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { Ingredient } from '../../domain/entities/dashboard';
+import { FOOD_CATEGORIES_LIST, getFoodCategoriesPromptText } from '../../domain/constants/foodCategories';
 
 export class OpenAIImageRecognitionService implements ImageRecognitionService {
     private apiKey: string;
@@ -14,10 +15,13 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const base64Image = await this.blobToBase64(image);
+        const categoriesPrompt = getFoodCategoriesPromptText();
+        const categoriesList = FOOD_CATEGORIES_LIST.join('", "');
+
         const defaultPrompt = `Analyze the food items in this image. 
         Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), 
         nutritional information (calories, protein, carbs, fats, fiber) per serving, and a category for each food item.
-        Categories MUST be one of: "legumes", "meats", "fruits", "cereals", "pasta", "others".
+        ${categoriesPrompt}
         Name the ingredients in ${language === 'pt' ? 'Portuguese' : language}. 
         
         Respond ONLY with a valid JSON object matching this schema:
@@ -31,7 +35,7 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
                     "carbs": number,
                     "fats": number,
                     "fiber": number,
-                    "category": "string" // one of: "legumes", "meats", "fruits", "cereals", "pasta", "others"
+                    "category": "string" // one of: "${categoriesList}"
                 }
             ]
         }
