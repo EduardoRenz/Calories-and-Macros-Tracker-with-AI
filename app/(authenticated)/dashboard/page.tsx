@@ -314,11 +314,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="lg:col-span-1 grid grid-cols-1 gap-6 order-first lg:order-last">
-                    <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3 hidden lg:block">
-                        {t('dashboard.macro_split')}
-                    </h3>
                     <div className="hidden lg:flex bg-neutral-card p-6 rounded-2xl h-full flex-col order-first lg:order-last">
-                        <h3 className="text-xl font-bold mb-4">{t('dashboard.macro_split')}</h3>
                         <div className="flex-grow">
                             <MacroSplitChart data={data} />
                         </div>
