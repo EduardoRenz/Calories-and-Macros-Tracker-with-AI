@@ -1,6 +1,5 @@
 import type { MealSummary, Ingredient } from '../domain/entities/dashboard';
 import { MealItem } from './meals/MealItem';
-import { useTranslation } from '../hooks/useTranslation';
 
 interface MealSummaryCardProps {
     meals: MealSummary;

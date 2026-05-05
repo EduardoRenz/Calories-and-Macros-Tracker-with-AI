@@ -2,7 +2,6 @@ import React from 'react';
 import { Meal, Ingredient, MealSummary } from '@/domain/entities/dashboard';
 import { useTranslation } from '@/hooks/useTranslation';
 import { IngredientItem } from './IngredientItem';
-import { MealTotalsRow } from './MealTotalsRow';
 import { AddIngredientButton } from './AddIngredientButton';
 
 interface MealDetailsProps {
