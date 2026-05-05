@@ -1,30 +1,31 @@
 export interface Ingredient {
-    id: string;
-    name: string;
-    quantity: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-    fiber: number;
-    category?: string;
+  id: string;
+  name: string;
+  quantity: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  fiber: number;
+  category?: string;
+  created_at?: string;
 }
 
 export interface Meal {
-    name: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-    fiber: number;
-    ingredients: Ingredient[];
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  fiber: number;
+  ingredients: Ingredient[];
 }
 
 export interface MealSummary {
-    breakfast: Meal;
-    lunch: Meal;
-    dinner: Meal;
-    snacks: Meal;
+  breakfast: Meal;
+  lunch: Meal;
+  dinner: Meal;
+  snacks: Meal;
 }
 
 export interface Macro {

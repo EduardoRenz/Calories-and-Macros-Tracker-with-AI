@@ -66,7 +66,8 @@ const createIngredient = (id: string, name: string, calories: number, protein: n
     carbs,
     fats,
     fiber,
-    category
+    category,
+    created_at: new Date().toISOString()
 });
 
 
@@ -263,10 +264,13 @@ export class LocalDashboardRepository implements DashboardRepository {
             dataForDay = createEmptyDashboard(date);
         }
 
+        const now = new Date().toISOString();
         const newIngredients: Ingredient[] = ingredients.map(ing => ({
             ...ing,
             fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
             id: `${new Date().getTime()}-${Math.random()}`, // Ensure unique ID
+            created_at: now,
+            category: ing.category,
         }));
 
         dataForDay.meals[mealType].ingredients.push(...newIngredients);
