@@ -25,7 +25,7 @@ export const MealDetails: React.FC<MealDetailsProps> = ({
     return (
         <div className="mt-2 space-y-2 animate-fade-in-down" id={`meal-details-${mealType}`}>
             {meal.ingredients.length > 0 ? (
-                <ul className="divide-y divide-neutral-border/30" data-testid={`${mealType}-ingredients`}>
+                <ul className="space-y-1" data-testid={`${mealType}-ingredients`}>
                     {meal.ingredients.map((ingredient) => (
                         <IngredientItem
                             key={ingredient.id}

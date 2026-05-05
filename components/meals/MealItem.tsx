@@ -5,6 +5,25 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { MealDetails } from './MealDetails';
 import { BreakfastIcon, LunchIcon, DinnerIcon, SnacksIcon } from '../FoodIcons';
 
+const getMealTime = (ingredients: Ingredient[]): string | null => {
+    if (ingredients.length === 0) return null;
+
+    // Filter ingredients with created_at and find the earliest
+    const dates = ingredients
+        .map(ing => ing.created_at ? new Date(ing.created_at) : null)
+        .filter((d): d is Date => d !== null);
+
+    if (dates.length === 0) return null;
+
+    const earliestDate = new Date(Math.min(...dates.map(d => d.getTime())));
+
+    return earliestDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+};
+
 interface MealItemProps {
     meal: Meal;
     mealType: keyof MealSummary;
@@ -39,7 +58,7 @@ export const MealItem: React.FC<MealItemProps> = ({
 
     return (
         <div
-            className={`bg-neutral-card rounded-2xl border ${isExpanded ? 'border-brand-green/30' : 'border-neutral-border'} transition-colors duration-200 overflow-hidden shadow-sm`}
+            className={`bg-neutral-card rounded-2xl ${isExpanded ? 'border-2 border-secondary shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'border border-transparent shadow-[0_1px_3px_rgba(0,0,0,0.04)]'} transition-all duration-200 overflow-hidden`}
             data-testid={testId}
         >
             <div className="p-4 flex justify-between items-center w-full">
@@ -56,8 +75,12 @@ export const MealItem: React.FC<MealItemProps> = ({
                     <div>
                         <p className="font-bold text-lg leading-tight text-neutral-text-primary">{t(`meals.${mealType}`)}</p>
                         <p className="text-sm text-neutral-text-secondary">
-                            {/* Format matching design: 08:30 AM • 420 kcal */}
-                            {meal.calories > 0 ? `08:30 AM • ${meal.calories} kcal` : `${meal.calories} kcal`}
+                            {(() => {
+                                const mealTime = getMealTime(meal.ingredients);
+                                return meal.calories > 0 && mealTime
+                                    ? `${mealTime} • ${meal.calories} kcal`
+                                    : `${meal.calories} kcal`;
+                            })()}
                         </p>
                     </div>
                 </button>
@@ -86,7 +109,7 @@ export const MealItem: React.FC<MealItemProps> = ({
             </div>
 
             {isExpanded && hasIngredients && (
-                <div className="px-4 pb-4 border-t border-neutral-border/50">
+                <div className="px-4 pb-4">
                     <MealDetails
                         meal={meal}
                         mealType={mealType}
