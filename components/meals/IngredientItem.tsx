@@ -96,7 +96,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
     return (
         <li className="group py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-grow">
-                <div className="hidden md:flex p-2 bg-surface-container-high text-on-surface-variant rounded-xl">
+                <div className="hidden md:flex p-2 bg-slate-50 dark:bg-surface-container-high text-slate-400 dark:text-on-surface-variant rounded-xl">
                     <CategoryIcon category={ingredient.category} className="w-5 h-5 text-current" />
                 </div>
                 <div className="flex flex-col">

@@ -69,7 +69,7 @@ export const MealItem: React.FC<MealItemProps> = ({
                     aria-controls={`meal-details-${mealType}`}
                     disabled={!hasIngredients}
                 >
-                    <div className="bg-surface-container-high p-3 rounded-xl text-on-surface-variant">
+                    <div className="bg-[#E9F7F5] dark:bg-surface-container-high p-3 rounded-xl text-brand-green dark:text-on-surface-variant">
                         <MealIcon type={mealType} className="w-6 h-6" />
                     </div>
                     <div>
@@ -98,7 +98,7 @@ export const MealItem: React.FC<MealItemProps> = ({
                     ) : (
                         <button
                             onClick={onAddIngredient}
-                            className="bg-surface-container-high p-3 rounded-2xl text-on-surface-variant hover:bg-surface-container-highest transition-colors"
+                            className="bg-[#E9F7F5] dark:bg-surface-container-high p-3 rounded-2xl text-brand-green dark:text-on-surface-variant hover:bg-brand-green/20 dark:hover:bg-surface-container-highest transition-colors"
                             aria-label={t('meals.add_ingredient')}
                             data-testid={`add-ingredient-${mealType}`}
                         >
