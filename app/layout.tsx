@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     manifest: "/manifest.webmanifest",
     icons: {
         icon: "/Icon.svg",
-        apple: "/pwa-192x192.png",
+        apple: "/pwa-solid-192x192.png",
     },
 };
 
@@ -72,16 +72,16 @@ export default function RootLayout({
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                     <SWRegistration />
                     <LanguageProvider>
-                    <FeatureFlagProvider>
-                        <AuthProvider>
-                            <SubscriptionProvider>
-                                <ToastProvider>
-                                    {children}
-                                </ToastProvider>
-                            </SubscriptionProvider>
-                        </AuthProvider>
-                    </FeatureFlagProvider>
-                </LanguageProvider>
+                        <FeatureFlagProvider>
+                            <AuthProvider>
+                                <SubscriptionProvider>
+                                    <ToastProvider>
+                                        {children}
+                                    </ToastProvider>
+                                </SubscriptionProvider>
+                            </AuthProvider>
+                        </FeatureFlagProvider>
+                    </LanguageProvider>
                 </ThemeProvider>
             </body>
         </html>
