@@ -15,11 +15,17 @@ describe('Ingredient Quantity Adjustment', () => {
     // Wait for dashboard to load
     cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
     
-    // Expand breakfast section first
-    cy.get('[data-testid="meal-breakfast"]').click();
-    
-    // Click add ingredient for breakfast
-    cy.get('[data-testid="add-ingredient-breakfast"]').click();
+    // In our new UI, if empty, it's a '+' button that opens the modal directly.
+    // If it has items, we first expand then click add.
+    cy.get('body').then(($body) => {
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-breakfast"]');
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        cy.get('[data-testid="meal-breakfast"]').click();
+        cy.get('[data-testid="add-ingredient-breakfast"]').click();
+      }
+    });
     
     // Wait for modal to open
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
@@ -46,6 +52,14 @@ describe('Ingredient Quantity Adjustment', () => {
     cy.get('[data-testid="add-ingredient-modal"]').should('not.exist');
     
     // Verify the ingredient was saved with the adjusted quantity
+    // Ensure expanded
+    cy.get('body').then(($body) => {
+        const details = $body.find('#meal-details-breakfast');
+        if (!details.is(':visible')) {
+            cy.get('[data-testid="meal-breakfast"]').click();
+        }
+    });
+
     cy.get('[data-testid="breakfast-ingredients"]').within(() => {
       cy.contains('150g').should('exist');
       cy.contains('Apple').should('exist');
@@ -54,8 +68,15 @@ describe('Ingredient Quantity Adjustment', () => {
 
   it('should handle quantity adjustment without analysis', () => {
     // Test normal quantity adjustment without image analysis
-    cy.get('[data-testid="meal-lunch"]').click();
-    cy.get('[data-testid="add-ingredient-lunch"]').click();
+    cy.get('body').then(($body) => {
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-lunch"]');
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        cy.get('[data-testid="meal-lunch"]').click();
+        cy.get('[data-testid="add-ingredient-lunch"]').click();
+      }
+    });
     
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
     
@@ -73,6 +94,14 @@ describe('Ingredient Quantity Adjustment', () => {
     cy.get('[data-testid="save-ingredient-button"]').click();
     
     // Verify saved quantity
+    // Ensure expanded
+    cy.get('body').then(($body) => {
+        const details = $body.find('#meal-details-lunch');
+        if (!details.is(':visible')) {
+            cy.get('[data-testid="meal-lunch"]').click();
+        }
+    });
+
     cy.get('[data-testid="lunch-ingredients"]').within(() => {
       cy.contains('250g').should('exist');
       cy.contains('Rice').should('exist');

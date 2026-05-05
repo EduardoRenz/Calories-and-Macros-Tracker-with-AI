@@ -22,6 +22,7 @@ const initialFormState = {
   carbs: '',
   fats: '',
   fiber: '',
+  category: '',
 };
 
 const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose, onSave, mealType }) => {
@@ -30,6 +31,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const [formState, setFormState] = useState(initialFormState);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [macroRatios, setMacroRatios] = useState<{ protein: number; carbs: number; fats: number; fiber: number } | null>(null);
+  const [detectedCategory, setDetectedCategory] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,6 +44,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
       setFormState(initialFormState);
       setMacroRatios(null);
       setError(null);
+      setDetectedCategory('');
     }
   }, [isOpen]);
 
@@ -111,6 +114,8 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
       if (result) {
         const quantityInGrams = result.quantityInGrams || 100; // Default to 100 if not provided (shouldn't happen with new prompt)
         const fiber = typeof result.fiber === 'number' ? result.fiber : 0;
+        const category = result.category || 'others';
+        setDetectedCategory(category);
         setFormState(prev => ({
           ...prev,
           quantity: `${quantityInGrams}g`,
@@ -170,6 +175,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         carbs,
         fats,
         fiber,
+        category: detectedCategory || 'others',
       });
     } finally {
       setIsSubmitting(false);

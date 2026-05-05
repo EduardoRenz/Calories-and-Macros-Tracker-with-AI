@@ -23,12 +23,14 @@ type DashboardIngredientRow = {
   dashboard_day_id: string;
   meal_type: keyof MealSummary;
   name: string;
+  category: string | null;
   quantity: string;
   calories: number;
   protein: number;
   carbs: number;
   fats: number;
   fiber: number;
+  created_at: string;
 };
 
 const createEmptyDashboard = (date: string, goals?: { calories: number; protein: number; carbs: number; fats: number }): DashboardData => ({
@@ -142,7 +144,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('dashboard_ingredients')
-      .select('id,dashboard_day_id,meal_type,name,quantity,calories,protein,carbs,fats,fiber')
+      .select('id,dashboard_day_id,meal_type,name,category,quantity,calories,protein,carbs,fats,fiber,created_at')
       .eq('dashboard_day_id', dayId);
 
     if (error) throw error;
@@ -156,12 +158,14 @@ export class SupabaseDashboardRepository implements DashboardRepository {
       const ing: Ingredient = {
         id: row.id,
         name: row.name,
+        category: row.category || undefined,
         quantity: row.quantity || '1',
         calories: row.calories,
         protein: row.protein,
         carbs: row.carbs,
         fats: row.fats,
         fiber: row.fiber,
+        created_at: row.created_at,
       };
 
       base.meals[row.meal_type].ingredients.push(ing);
@@ -233,7 +237,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
         if (dayIds.length > 0) {
           const { data: ings, error: ingsError } = await supabase
             .from('dashboard_ingredients')
-            .select('id,dashboard_day_id,meal_type,name,quantity,calories,protein,carbs,fats,fiber')
+            .select('id,dashboard_day_id,meal_type,name,category,quantity,calories,protein,carbs,fats,fiber,created_at')
             .in('dashboard_day_id', dayIds);
 
           if (ingsError) throw ingsError;
@@ -327,6 +331,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
       dashboard_day_id: day.id,
       meal_type: mealType,
       name: ing.name,
+      category: ing.category || null,
       quantity: ing.quantity,
       calories: ing.calories,
       protein: ing.protein,
@@ -335,8 +340,10 @@ export class SupabaseDashboardRepository implements DashboardRepository {
       fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
     }));
 
-    const { error } = await supabase.from('dashboard_ingredients').insert(rows);
-    if (error) throw error;
+    const { error, data } = await supabase.from('dashboard_ingredients').insert(rows);
+    if (error) {
+      throw error;
+    }
 
     const goals = {
       calories: day.calories_goal ?? 0,
@@ -437,12 +444,14 @@ export class SupabaseDashboardRepository implements DashboardRepository {
           ingredient: {
             id: row.id,
             name: row.name,
+            category: row.category || undefined,
             quantity: row.quantity || '1',
             calories: row.calories,
             protein: row.protein,
             carbs: row.carbs,
             fats: row.fats,
             fiber: row.fiber,
+            created_at: row.created_at,
           }
         };
       }

@@ -8,15 +8,44 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        id: cypress-binary-cache
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            cypress-binary-${{ runner.os }}-
+
+      - name: Install Cypress binary
+        if: steps.cypress-binary-cache.outputs.cache-hit != 'true'
+        run: pnpm exec cypress install
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: yarn build:mock
-          start: yarn start
+          # We've already installed everything
+          install: false
+          build: pnpm build:mock
+          start: pnpm start
           wait-on: 'http://localhost:3000'
-          command: yarn cy:run
+          command: pnpm cy:run

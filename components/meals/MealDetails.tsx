@@ -2,8 +2,6 @@ import React from 'react';
 import { Meal, Ingredient, MealSummary } from '@/domain/entities/dashboard';
 import { useTranslation } from '@/hooks/useTranslation';
 import { IngredientItem } from './IngredientItem';
-import { IngredientsHeader } from './IngredientsHeader';
-import { MealTotalsRow } from './MealTotalsRow';
 import { AddIngredientButton } from './AddIngredientButton';
 
 interface MealDetailsProps {
@@ -24,11 +22,9 @@ export const MealDetails: React.FC<MealDetailsProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div className="mt-4 space-y-4 animate-fade-in-down">
-            <IngredientsHeader />
-
+        <div className="mt-2 space-y-2 animate-fade-in-down" id={`meal-details-${mealType}`}>
             {meal.ingredients.length > 0 ? (
-                <ul className="text-sm space-y-1" data-testid={`${mealType}-ingredients`}>
+                <ul className="space-y-1" data-testid={`${mealType}-ingredients`}>
                     {meal.ingredients.map((ingredient) => (
                         <IngredientItem
                             key={ingredient.id}
@@ -44,8 +40,7 @@ export const MealDetails: React.FC<MealDetailsProps> = ({
                 </p>
             )}
 
-            <div className="border-t border-neutral-border pt-4 mt-4 space-y-4">
-                <MealTotalsRow meal={meal} />
+            <div className="pt-2 space-y-4">
                 <AddIngredientButton onClick={onAddIngredient} mealType={mealType} />
             </div>
         </div>

@@ -57,7 +57,7 @@ const formatDate = (date: Date) => {
     return `${year}-${month}-${day}`;
 };
 
-const createIngredient = (id: string, name: string, calories: number, protein: number, carbs: number, fats: number, fiber: number): Ingredient => ({
+const createIngredient = (id: string, name: string, calories: number, protein: number, carbs: number, fats: number, fiber: number, category: string = 'others'): Ingredient => ({
     id,
     name,
     quantity: '1',
@@ -66,6 +66,8 @@ const createIngredient = (id: string, name: string, calories: number, protein: n
     carbs,
     fats,
     fiber,
+    category,
+    created_at: new Date().toISOString()
 });
 
 
@@ -116,19 +118,19 @@ export class LocalDashboardRepository implements DashboardRepository {
         // Day 1: Over calories, all meals
         {
             const data = createEmptyDashboard(d1, goals);
-            data.meals.breakfast.ingredients = [createIngredient('seed-d1-b1', 'Oats', 450, 18, 70, 10, 10)];
-            data.meals.lunch.ingredients = [createIngredient('seed-d1-l1', 'Chicken Bowl', 900, 60, 80, 25, 25)];
-            data.meals.dinner.ingredients = [createIngredient('seed-d1-d1', 'Pizza', 1100, 45, 120, 45, 45)];
-            data.meals.snacks.ingredients = [createIngredient('seed-d1-s1', 'Protein Bar', 250, 20, 25, 8, 8)];
+            data.meals.breakfast.ingredients = [createIngredient('seed-d1-b1', 'Oats', 450, 18, 70, 10, 10, 'cereals')];
+            data.meals.lunch.ingredients = [createIngredient('seed-d1-l1', 'Chicken Bowl', 900, 60, 80, 25, 25, 'meats')];
+            data.meals.dinner.ingredients = [createIngredient('seed-d1-d1', 'Pizza', 1100, 45, 120, 45, 45, 'others')];
+            data.meals.snacks.ingredients = [createIngredient('seed-d1-s1', 'Protein Bar', 250, 20, 25, 8, 8, 'others')];
             dailyDataStore.set(d1, recalculateTotals(data));
         }
 
         // Day 2: Under calories, multiple meals
         {
             const data = createEmptyDashboard(d2, goals);
-            data.meals.breakfast.ingredients = [createIngredient('seed-d2-b1', 'Eggs', 220, 18, 2, 15, 15)];
-            data.meals.lunch.ingredients = [createIngredient('seed-d2-l1', 'Salad', 380, 25, 20, 18, 18)];
-            data.meals.snacks.ingredients = [createIngredient('seed-d2-s1', 'Yogurt', 140, 12, 18, 2, 2)];
+            data.meals.breakfast.ingredients = [createIngredient('seed-d2-b1', 'Eggs', 220, 18, 2, 15, 15, 'meats')];
+            data.meals.lunch.ingredients = [createIngredient('seed-d2-l1', 'Salad', 380, 25, 20, 18, 18, 'fruits')];
+            data.meals.snacks.ingredients = [createIngredient('seed-d2-s1', 'Yogurt', 140, 12, 18, 2, 2, 'others')];
             dailyDataStore.set(d2, recalculateTotals(data));
         }
 
@@ -142,8 +144,8 @@ export class LocalDashboardRepository implements DashboardRepository {
         {
             const data = createEmptyDashboard(d4, goals);
             data.meals.breakfast.ingredients = [
-                createIngredient('seed-d4-b1', 'Toast', 200, 6, 35, 3, 3),
-                createIngredient('seed-d4-b2', 'Peanut Butter', 190, 7, 7, 16, 16),
+                createIngredient('seed-d4-b1', 'Toast', 200, 6, 35, 3, 3, 'cereals'),
+                createIngredient('seed-d4-b2', 'Peanut Butter', 190, 7, 7, 16, 16, 'legumes'),
             ];
             dailyDataStore.set(d4, recalculateTotals(data));
         }
@@ -151,10 +153,10 @@ export class LocalDashboardRepository implements DashboardRepository {
         // Day 5: Full day, under calories
         {
             const data = createEmptyDashboard(d5, goals);
-            data.meals.breakfast.ingredients = [createIngredient('seed-d5-b1', 'Smoothie', 320, 25, 35, 8, 8)];
-            data.meals.lunch.ingredients = [createIngredient('seed-d5-l1', 'Turkey Sandwich', 520, 35, 55, 14, 14)];
-            data.meals.dinner.ingredients = [createIngredient('seed-d5-d1', 'Fish & Rice', 650, 45, 70, 15, 15)];
-            data.meals.snacks.ingredients = [createIngredient('seed-d5-s1', 'Fruit', 120, 1, 30, 0, 0)];
+            data.meals.breakfast.ingredients = [createIngredient('seed-d5-b1', 'Smoothie', 320, 25, 35, 8, 8, 'fruits')];
+            data.meals.lunch.ingredients = [createIngredient('seed-d5-l1', 'Turkey Sandwich', 520, 35, 55, 14, 14, 'meats')];
+            data.meals.dinner.ingredients = [createIngredient('seed-d5-d1', 'Fish & Rice', 650, 45, 70, 15, 15, 'meats')];
+            data.meals.snacks.ingredients = [createIngredient('seed-d5-s1', 'Fruit', 120, 1, 30, 0, 0, 'fruits')];
             dailyDataStore.set(d5, recalculateTotals(data));
         }
 
@@ -162,8 +164,8 @@ export class LocalDashboardRepository implements DashboardRepository {
         {
             const data = createEmptyDashboard(d6, goals);
             data.meals.dinner.ingredients = [
-                createIngredient('seed-d6-d1', 'Burger  ', 850, 40, 60, 45, 45),
-                createIngredient('seed-d6-d2', 'Fries', 600, 8, 75, 30, 30),
+                createIngredient('seed-d6-d1', 'Burger  ', 850, 40, 60, 45, 45, 'meats'),
+                createIngredient('seed-d6-d2', 'Fries', 600, 8, 75, 30, 30, 'others'),
             ];
             dailyDataStore.set(d6, recalculateTotals(data));
         }
@@ -171,8 +173,8 @@ export class LocalDashboardRepository implements DashboardRepository {
         // Day 7: Under calories, lunch + dinner
         {
             const data = createEmptyDashboard(d7, goals);
-            data.meals.lunch.ingredients = [createIngredient('seed-d7-l1', 'Rice & Beans', 550, 22, 95, 8, 8)];
-            data.meals.dinner.ingredients = [createIngredient('seed-d7-d1', 'Omelette', 380, 28, 5, 26, 26)];
+            data.meals.lunch.ingredients = [createIngredient('seed-d7-l1', 'Rice & Beans', 550, 22, 95, 8, 8, 'legumes')];
+            data.meals.dinner.ingredients = [createIngredient('seed-d7-d1', 'Omelette', 380, 28, 5, 26, 26, 'meats')];
             dailyDataStore.set(d7, recalculateTotals(data));
         }
 
@@ -262,10 +264,13 @@ export class LocalDashboardRepository implements DashboardRepository {
             dataForDay = createEmptyDashboard(date);
         }
 
+        const now = new Date().toISOString();
         const newIngredients: Ingredient[] = ingredients.map(ing => ({
             ...ing,
             fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
             id: `${new Date().getTime()}-${Math.random()}`, // Ensure unique ID
+            created_at: now,
+            category: ing.category,
         }));
 
         dataForDay.meals[mealType].ingredients.push(...newIngredients);
