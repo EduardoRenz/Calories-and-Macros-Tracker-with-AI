@@ -105,16 +105,15 @@ describe('Macros Validation', () => {
     cy.get('[data-testid="save-ingredient-button"]').click();
 
     // Modal should close
-    cy.get('[data-testid="not-existent"]', {timeout: 2000}).should('not.exist');
     cy.get('[data-testid="add-ingredient-modal"]').should('not.exist');
 
     // Verify ingredient was saved
     // Ensure expanded
     cy.get('body').then(($body) => {
-        const details = $body.find('#meal-details-dinner');
-        if (!details.is(':visible')) {
-            cy.get('[data-testid="meal-dinner"]').click();
-        }
+      const details = $body.find('#meal-details-dinner');
+      if (!details.is(':visible')) {
+        cy.get('[data-testid="meal-dinner"]').click();
+      }
     });
 
     cy.get('[data-testid="dinner-ingredients"]').within(() => {

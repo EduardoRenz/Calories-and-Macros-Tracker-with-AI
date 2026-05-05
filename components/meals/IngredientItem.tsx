@@ -96,7 +96,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
     return (
         <li className="group py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-grow">
-                <div className="hidden md:flex p-2" style={{ backgroundColor: 'rgb(248 250 252 / var(--tw-bg-opacity, 1))', color: 'rgb(148 163 184 / var(--tw-text-opacity, 1))', borderRadius: '0.75rem' }}>
+                <div className="hidden md:flex p-2 bg-slate-50 text-slate-400 rounded-xl">
                     <CategoryIcon category={ingredient.category} className="w-5 h-5 text-current" />
                 </div>
                 <div className="flex flex-col">
@@ -138,7 +138,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                 {/* Calories hidden to match screenshot, but can be added back if needed */}
                 <div className="hidden md:flex flex-col items-center min-w-[4ch] opacity-50">
                     <span className="text-neutral-text-primary font-bold text-sm">{Math.round(ingredient.calories)}</span>
-                    <span className="text-[10px] text-neutral-text-secondary uppercase text-[8px]">kcal</span>
+                    <span className="text-[8px] text-neutral-text-secondary uppercase">kcal</span>
                 </div>
 
                 <button
