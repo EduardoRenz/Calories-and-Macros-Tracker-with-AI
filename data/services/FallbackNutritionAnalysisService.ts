@@ -12,7 +12,7 @@ export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
     }
 
     async getNutritionalInfo(ingredientName: string, quantity: string, language: string): Promise<NutritionalInfo | null> {
-        const errors: any[] = [];
+        const errors: Error[] = [];
 
         for (let index = 0; index < this.services.length; index++) {
             const service = this.services[index];
@@ -23,9 +23,12 @@ export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
                     console.log(`[FallbackNutritionService] Success with ${service.constructor.name}`);
                     return result;
                 }
+                // If result is null (but no error), try next service
+                // Typically null means "I don't know this food", which another AI might know.
+                console.warn(`[FallbackNutritionService] Service ${service.constructor.name} returned null (unknown food).`);
             } catch (error) {
                 console.warn(`[FallbackNutritionService] Service ${service.constructor.name} failed:`, error);
-                errors.push(error);
+                errors.push(error as Error);
             }
         }
 

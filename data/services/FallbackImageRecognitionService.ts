@@ -13,7 +13,7 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
     }
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
-        const errors: any[] = [];
+        const errors: Error[] = [];
 
         for (let index = 0; index < this.services.length; index++) {
             const service = this.services[index];
@@ -24,7 +24,7 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
                 return result;
             } catch (error) {
                 console.warn(`[FallbackImageService] Service ${service.constructor.name} failed:`, error);
-                errors.push(error);
+                errors.push(error as Error);
             }
         }
 
