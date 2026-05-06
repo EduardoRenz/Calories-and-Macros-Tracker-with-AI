@@ -20,7 +20,7 @@ export class GeminiNutritionAnalysisService extends NutritionAnalysisService {
             const prompt = this.buildNutritionPrompt(ingredientName, quantity, language);
 
             const response = await this.ai.models.generateContent({
-                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.0-flash',
+                model: env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview',
                 contents: { parts: [{ text: prompt }] },
                 config: {
                     responseMimeType: "application/json",

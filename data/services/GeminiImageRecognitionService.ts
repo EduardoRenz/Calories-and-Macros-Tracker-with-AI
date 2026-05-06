@@ -34,7 +34,7 @@ export class GeminiImageRecognitionService extends ImageRecognitionService {
         super();
         const key = apiKey || (typeof window === 'undefined' ? env.GEMINI_API_KEY : '');
         this.ai = new GoogleGenAI({ apiKey: key || '' });
-        this.model = model || env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.0-flash';
+        this.model = model || env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-3-flash-preview';
     }
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
