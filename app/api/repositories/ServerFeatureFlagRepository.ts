@@ -1,5 +1,5 @@
 import { FeatureFlagRepository } from '../../../domain/repositories/FeatureFlagRepository';
-import { initializeApp, cert, getApps, getApp } from "firebase-admin/app";
+import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getRemoteConfig, RemoteConfig } from "firebase-admin/remote-config";
 import { env } from '@/env';
 
