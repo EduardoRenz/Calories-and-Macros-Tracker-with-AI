@@ -2,6 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import type { Ingredient } from '../../domain/entities/dashboard';
 import { env } from '../../env';
+import { FOOD_CATEGORIES_LIST } from "../../domain/constants/foodCategories";
 
 const blobToBase64 = async (blob: Blob): Promise<string> => {
     // Check if we are in a browser environment
@@ -25,11 +26,12 @@ const blobToBase64 = async (blob: Blob): Promise<string> => {
     }
 };
 
-export class GeminiImageRecognitionService implements ImageRecognitionService {
+export class GeminiImageRecognitionService extends ImageRecognitionService {
     private ai: GoogleGenAI;
     private model: string;
 
     constructor(apiKey?: string, model?: string) {
+        super();
         const key = apiKey || (typeof window === 'undefined' ? env.GEMINI_API_KEY : '');
         this.ai = new GoogleGenAI({ apiKey: key || '' });
         this.model = model || env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL || 'gemini-2.0-flash';
@@ -38,19 +40,9 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         try {
             const base64Data = await blobToBase64(image);
+            const defaultPrompt = this.buildDefaultPrompt(language);
 
-            const languageMap: { [key: string]: string } = {
-                'en': 'English',
-                'es': 'Spanish',
-                'pt': 'Portuguese'
-            };
-            const languageName = languageMap[language] || 'English';
-
-            let promptText = `Analyze the food items in this image. Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), and nutritional information (calories, protein, carbs, fats, fiber) per serving. Name the ingredients in ${languageName}. Respond in JSON format according to the provided schema. If an item is unrecognizable, omit it from the list.`;
-
-            if (prompt && prompt.trim()) {
-                promptText = `${prompt}\n\n${promptText}`;
-            }
+            let promptText = prompt ? `${prompt}\n\n${defaultPrompt}` : defaultPrompt;
 
             const response = await this.ai.models.generateContent({
                 model: this.model,
@@ -78,8 +70,9 @@ export class GeminiImageRecognitionService implements ImageRecognitionService {
                                         carbs: { type: Type.NUMBER, description: "Estimated carbohydrates (g)." },
                                         fats: { type: Type.NUMBER, description: "Estimated fats (g)." },
                                         fiber: { type: Type.NUMBER, description: "Estimated fiber (g)." },
+                                        category: { type: Type.STRING, description: `Food category. Must be one of: ${FOOD_CATEGORIES_LIST.join(', ')}` },
                                     },
-                                    required: ["name", "quantity", "calories", "protein", "carbs", "fats", "fiber"]
+                                    required: ["name", "quantity", "calories", "protein", "carbs", "fats", "fiber", "category"]
                                 }
                             }
                         },
