@@ -2,8 +2,10 @@ import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
 
-export class NextApiImageRecognitionService implements ImageRecognitionService {
-    constructor(private authRepository: AuthRepository) { }
+export class NextApiImageRecognitionService extends ImageRecognitionService {
+    constructor(private authRepository: AuthRepository) {
+        super();
+    }
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const token = await this.authRepository.getIdToken();

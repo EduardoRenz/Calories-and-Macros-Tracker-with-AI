@@ -1,12 +1,13 @@
-import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { Ingredient } from '../../domain/entities/dashboard';
+import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
 
-export class FallbackImageRecognitionService implements ImageRecognitionService {
+export class FallbackImageRecognitionService extends ImageRecognitionService {
     private services: ImageRecognitionService[];
     private cooldownManager: ServiceCooldownManager;
 
     constructor(services: ImageRecognitionService[]) {
+        super();
         this.services = services;
         this.cooldownManager = ServiceCooldownManager.getInstance();
         if (this.services.length === 0) {
@@ -17,7 +18,8 @@ export class FallbackImageRecognitionService implements ImageRecognitionService 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const errors: Error[] = [];
 
-        for (const [index, service] of this.services.entries()) {
+        for (let index = 0; index < this.services.length; index++) {
+            const service = this.services[index];
             const serviceName = service.constructor.name;
 
             // Check if service is in cooldown

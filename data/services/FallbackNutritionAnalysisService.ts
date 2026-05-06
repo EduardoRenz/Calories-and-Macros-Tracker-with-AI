@@ -1,11 +1,12 @@
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
 
-export class FallbackNutritionAnalysisService implements NutritionAnalysisService {
+export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
     private services: NutritionAnalysisService[];
     private cooldownManager: ServiceCooldownManager;
 
     constructor(services: NutritionAnalysisService[]) {
+        super();
         this.services = services;
         this.cooldownManager = ServiceCooldownManager.getInstance();
         if (this.services.length === 0) {
@@ -16,7 +17,8 @@ export class FallbackNutritionAnalysisService implements NutritionAnalysisServic
     async getNutritionalInfo(ingredientName: string, quantity: string, language: string): Promise<NutritionalInfo | null> {
         const errors: Error[] = [];
 
-        for (const [index, service] of this.services.entries()) {
+        for (let index = 0; index < this.services.length; index++) {
+            const service = this.services[index];
             const serviceName = service.constructor.name;
 
             // Check if service is in cooldown
@@ -45,7 +47,7 @@ export class FallbackNutritionAnalysisService implements NutritionAnalysisServic
             }
         }
 
-        console.error("All nutrition analysis services failed or returned null.", errors);
+        console.error("All nutrition analysis services failed.", errors);
         return null;
     }
 }

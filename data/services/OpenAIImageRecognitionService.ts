@@ -1,13 +1,13 @@
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { Ingredient } from '../../domain/entities/dashboard';
-import { FOOD_CATEGORIES_LIST, getFoodCategoriesPromptText } from '../../domain/constants/foodCategories';
 
-export class OpenAIImageRecognitionService implements ImageRecognitionService {
+export class OpenAIImageRecognitionService extends ImageRecognitionService {
     private apiKey: string;
     private baseUrl: string;
     private model: string;
 
     constructor(apiKey: string, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
+        super();
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
         this.model = model;
@@ -15,32 +15,7 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const base64Image = await this.blobToBase64(image);
-        const categoriesPrompt = getFoodCategoriesPromptText();
-        const categoriesList = FOOD_CATEGORIES_LIST.join('", "');
-
-        const defaultPrompt = `Analyze the food items in this image. 
-        Provide a list of ingredients with their estimated quantity strictly in grams (e.g., "150g"), 
-        nutritional information (calories, protein, carbs, fats, fiber) per serving, and a category for each food item.
-        ${categoriesPrompt}
-        Name the ingredients in ${language === 'pt' ? 'Portuguese' : language}. 
-        
-        Respond ONLY with a valid JSON object matching this schema:
-        {
-            "ingredients": [
-                {
-                    "name": "string",
-                    "quantity": "string", // e.g. "150g"
-                    "calories": number,
-                    "protein": number,
-                    "carbs": number,
-                    "fats": number,
-                    "fiber": number,
-                    "category": "string" // one of: "${categoriesList}"
-                }
-            ]
-        }
-        
-        If an item is unrecognizable, omit it.`;
+        const defaultPrompt = this.buildDefaultPrompt(language);
 
         try {
             const response = await fetch(`${this.baseUrl}/chat/completions`, {
@@ -57,7 +32,7 @@ export class OpenAIImageRecognitionService implements ImageRecognitionService {
                             content: [
                                 {
                                     type: 'text',
-                                    text: prompt || defaultPrompt
+                                    text: prompt ? `${prompt}\n\n${defaultPrompt}` : defaultPrompt
                                 },
                                 {
                                     type: 'image_url',
