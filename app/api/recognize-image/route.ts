@@ -3,6 +3,7 @@ import { ServiceFactory } from '@/data/ServiceFactory';
 import { verifyAuth } from '../auth-middleware';
 import { checkAiAccess } from '../feature-flag-check';
 import { checkPremiumAccess } from '../subscription-check';
+import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
@@ -23,7 +24,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'No image provided' }, { status: 400 });
         }
 
-        const service = await ServiceFactory.getImageRecognitionService();
+        // Get AI priority list from feature flag for premium users
+        const priorityList = await getServerAiPriorityList();
+        const service = await ServiceFactory.getImageRecognitionService(priorityList);
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });

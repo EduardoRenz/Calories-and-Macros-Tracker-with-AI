@@ -3,6 +3,7 @@ import { verifyAuth } from '@/app/api/auth-middleware';
 import { checkAiAccess } from '@/app/api/feature-flag-check';
 import { checkPremiumAccess } from '@/app/api/subscription-check';
 import { ServiceFactory } from '@/data/ServiceFactory';
+import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
@@ -16,8 +17,10 @@ export async function POST(req: NextRequest) {
 
         const { messages, context } = await req.json();
 
+        // Get AI priority list from feature flag for premium users
+        const priorityList = await getServerAiPriorityList();
         // Use Factory to get configured service (Gemini, DeepSeek, OpenAI)
-        const service = ServiceFactory.getChatAssistantService();
+        const service = await ServiceFactory.getChatAssistantService(priorityList);
 
         if (!service) {
             return NextResponse.json({ error: 'No Chat AI service configured on server' }, { status: 500 });

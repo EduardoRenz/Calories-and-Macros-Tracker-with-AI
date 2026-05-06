@@ -33,6 +33,25 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
         return this.flags[flagName] ?? false;
     }
 
+    async getValue(flagName: string): Promise<unknown> {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Allow test overrides via localStorage
+        if (typeof window !== 'undefined') {
+            const override = localStorage.getItem(`feature_flag_${flagName}`);
+            if (override !== null) {
+                try {
+                    return JSON.parse(override);
+                } catch {
+                    return override;
+                }
+            }
+        }
+
+        return null;
+    }
+
     // Helper for testing
     setFlag(flagName: string, value: boolean) {
         this.flags[flagName] = value;

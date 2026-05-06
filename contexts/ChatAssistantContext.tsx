@@ -180,7 +180,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsSending(true);
 
         try {
-            const service = ServiceFactory.getChatAssistantService();
+            const service = await ServiceFactory.getChatAssistantService();
             const dashboardRepo = RepositoryFactory.getDashboardRepository();
 
             // Get local date string for dashboard context

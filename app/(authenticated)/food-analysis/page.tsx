@@ -6,7 +6,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { FoodAnalysisReport, CachedFoodAnalysisReport, VitaminStatus } from '@/domain/entities/analysis';
 import { FoodAnalysisRepository } from '@/domain/repositories/FoodAnalysisRepository';
 import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
-import { FoodAnalysisService } from '@/domain/services/FoodAnalysisService';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -97,10 +96,6 @@ export default function FoodAnalysisPage() {
     const profileRepository: ProfileRepository = useMemo(
         () => RepositoryFactory.getProfileRepository(), []
     );
-    const foodAnalysisService: FoodAnalysisService = useMemo(
-        () => ServiceFactory.getFoodAnalysisService(), []
-    );
-
     const dateRange = useMemo(() => getDateRange(dateRangeOption), [dateRangeOption]);
 
     // Check cache on mount and date range change
@@ -143,6 +138,7 @@ export default function FoodAnalysisPage() {
 
             // Step 3: Generate analysis with AI
             setProgress(60);
+            const foodAnalysisService = await ServiceFactory.getFoodAnalysisService();
             const analysisReport = await foodAnalysisService.generateAnalysis({
                 dashboardData,
                 profile,
@@ -181,7 +177,6 @@ export default function FoodAnalysisPage() {
         dateRange,
         foodAnalysisRepository,
         profileRepository,
-        foodAnalysisService,
         language,
         retryCount,
         t

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { ServiceFactory } from '../data/ServiceFactory';
@@ -36,8 +36,6 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { isUserApiKeysRequired } = useFeatureFlags();
-
-  const nutritionService = useMemo(() => ServiceFactory.getNutritionAnalysisService(), []);
 
   useEffect(() => {
     if (isOpen) {
@@ -110,6 +108,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
     setIsAnalyzing(true);
     setError(null);
     try {
+      const nutritionService = await ServiceFactory.getNutritionAnalysisService();
       const result = await nutritionService.getNutritionalInfo(formState.name, formState.quantity, language);
       if (result) {
         const quantityInGrams = result.quantityInGrams || 100; // Default to 100 if not provided (shouldn't happen with new prompt)

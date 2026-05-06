@@ -53,55 +53,73 @@ export class ServiceFactory {
     private static chatInstance: ChatAssistantService | null = null;
     private static compressionInstance: ImageCompressionService | null = null;
 
-    public static getFoodAnalysisService(): FoodAnalysisService {
-        if (this.instance) {
+    public static async getFoodAnalysisService(priorityList?: string[]): Promise<FoodAnalysisService> {
+        // Skip cache if priorityList is provided to allow dynamic updates from feature flag
+        if (!priorityList && this.instance) {
             return this.instance;
         }
         if (USE_MOCKS) {
-            this.instance = new MockFoodAnalysisService();
-            return this.instance;
+            const mockService = new MockFoodAnalysisService();
+            if (!priorityList) this.instance = mockService;
+            return mockService;
         }
 
-        if (!this.instance) {
-            this.instance = this.createServiceChain();
+        const service = await this.createServiceChain(priorityList);
+        if (!priorityList) {
+            this.instance = service;
         }
-        return this.instance;
+        return service;
     }
 
-    public static getNutritionAnalysisService(): import("../domain/services/NutritionAnalysisService").NutritionAnalysisService {
-        if (this.nutritionInstance) {
+    public static async getNutritionAnalysisService(priorityList?: string[]): Promise<import("../domain/services/NutritionAnalysisService").NutritionAnalysisService> {
+        // Skip cache if priorityList is provided to allow dynamic updates from feature flag
+        if (!priorityList && this.nutritionInstance) {
             return this.nutritionInstance;
         }
         if (USE_MOCKS) {
-            this.nutritionInstance = new MockNutritionAnalysisService();
-            return this.nutritionInstance;
+            const mockService = new MockNutritionAnalysisService();
+            if (!priorityList) this.nutritionInstance = mockService;
+            return mockService;
         }
-        this.nutritionInstance = this.createNutritionServiceChain();
-        return this.nutritionInstance;
+        const service = await this.createNutritionServiceChain(priorityList);
+        if (!priorityList) {
+            this.nutritionInstance = service;
+        }
+        return service;
     }
 
-    public static async getImageRecognitionService(): Promise<ImageRecognitionService> {
-        if (this.imageInstance) {
+    public static async getImageRecognitionService(priorityList?: string[]): Promise<ImageRecognitionService> {
+        // Skip cache if priorityList is provided to allow dynamic updates from feature flag
+        if (!priorityList && this.imageInstance) {
             return this.imageInstance;
         }
         if (USE_MOCKS) {
-            this.imageInstance = new MockImageRecognitionService();
-            return this.imageInstance;
+            const mockService = new MockImageRecognitionService();
+            if (!priorityList) this.imageInstance = mockService;
+            return mockService;
         }
-        this.imageInstance = await this.createImageServiceChain();
-        return this.imageInstance;
+        const service = await this.createImageServiceChain(priorityList);
+        if (!priorityList) {
+            this.imageInstance = service;
+        }
+        return service;
     }
 
-    public static getChatAssistantService(): ChatAssistantService {
-        if (this.chatInstance) {
+    public static async getChatAssistantService(priorityList?: string[]): Promise<ChatAssistantService> {
+        // Skip cache if priorityList is provided to allow dynamic updates from feature flag
+        if (!priorityList && this.chatInstance) {
             return this.chatInstance;
         }
         if (USE_MOCKS) {
-            this.chatInstance = new MockChatAssistantService();
-            return this.chatInstance;
+            const mockService = new MockChatAssistantService();
+            if (!priorityList) this.chatInstance = mockService;
+            return mockService;
         }
-        this.chatInstance = this.createChatServiceChain();
-        return this.chatInstance;
+        const service = await this.createChatServiceChain(priorityList);
+        if (!priorityList) {
+            this.chatInstance = service;
+        }
+        return service;
     }
 
     public static getImageCompressionService(): ImageCompressionService {
@@ -120,24 +138,34 @@ export class ServiceFactory {
         this.compressionInstance = null;
     }
 
-    private static createServiceChain(): FoodAnalysisService {
+    private static async createServiceChain(priorityList?: string[]): Promise<FoodAnalysisService> {
         const services: FoodAnalysisService[] = [];
+        const addedProviders = new Set<string>();
         const savedKeys = this.loadKeys();
 
         for (const keyConfig of savedKeys) {
+            // Skip if this provider is already added (user keys take priority)
+            if (addedProviders.has(keyConfig.provider)) {
+                console.log(`[ServiceFactory] Skipping duplicate provider from user keys: ${keyConfig.provider}`);
+                continue;
+            }
             try {
                 switch (keyConfig.provider) {
                     case 'gemini':
                         services.push(new GeminiFoodAnalysisService(keyConfig.key));
+                        addedProviders.add('gemini');
                         break;
                     case 'openai':
                         services.push(new OpenAIFoodAnalysisService(keyConfig.key));
+                        addedProviders.add('openai');
                         break;
                     case 'deepseek':
                         services.push(new DeepSeekFoodAnalysisService(keyConfig.key));
+                        addedProviders.add('deepseek');
                         break;
                     case 'openrouter':
                         services.push(new OpenRouterFoodAnalysisService(keyConfig.key));
+                        addedProviders.add('openrouter');
                         break;
                 }
             } catch (e) {
@@ -145,24 +173,16 @@ export class ServiceFactory {
             }
         }
 
-        console.log(`[ServiceFactory] Loaded ${services.length} services from user settings:`, savedKeys.map(k => k.provider));
+        console.log(`[ServiceFactory] Loaded ${services.length} services from user settings:`, Array.from(addedProviders));
 
         if (typeof window === 'undefined') {
-            // Server-side: OpenRouter first, then Gemini as fallback
-            if (env.OPENROUTER_API_KEY) {
-                try {
-                    services.push(new OpenRouterFoodAnalysisService(env.OPENROUTER_API_KEY));
-                } catch (e) {
-                    console.error('Failed to instantiate OpenRouterFoodAnalysisService', e);
-                }
-            }
-            if (env.GEMINI_API_KEY) {
-                try {
-                    services.push(new GeminiFoodAnalysisService(env.GEMINI_API_KEY));
-                } catch (e) {
-                    console.error('Failed to instantiate GeminiFoodAnalysisService', e);
-                }
-            }
+            // Server-side: use priority list from parameter or default, skip duplicates
+            const effectivePriorityList = priorityList?.length ? priorityList : ['openai', 'openrouter', 'gemini'];
+            const serverServices = await this.instantiateServerServicesByPriority(
+                effectivePriorityList.filter(p => !addedProviders.has(p)),
+                'food'
+            );
+            services.push(...serverServices as FoodAnalysisService[]);
         } else {
             const authRepo = RepositoryFactory.getAuthRepository();
             services.push(new NextApiFoodAnalysisService(authRepo));
@@ -172,24 +192,34 @@ export class ServiceFactory {
         return new FallbackFoodAnalysisService(services);
     }
 
-    private static createNutritionServiceChain(): import("../domain/services/NutritionAnalysisService").NutritionAnalysisService {
+    private static async createNutritionServiceChain(priorityList?: string[]): Promise<import("../domain/services/NutritionAnalysisService").NutritionAnalysisService> {
         const services: import("../domain/services/NutritionAnalysisService").NutritionAnalysisService[] = [];
+        const addedProviders = new Set<string>();
         const savedKeys = this.loadKeys();
 
         for (const keyConfig of savedKeys) {
+            // Skip if this provider is already added (user keys take priority)
+            if (addedProviders.has(keyConfig.provider)) {
+                console.log(`[ServiceFactory] Skipping duplicate nutrition provider from user keys: ${keyConfig.provider}`);
+                continue;
+            }
             try {
                 switch (keyConfig.provider) {
                     case 'gemini':
                         services.push(new GeminiNutritionAnalysisService(keyConfig.key));
+                        addedProviders.add('gemini');
                         break;
                     case 'openai':
                         services.push(new OpenAINutritionAnalysisService(keyConfig.key));
+                        addedProviders.add('openai');
                         break;
                     case 'deepseek':
                         services.push(new DeepSeekNutritionAnalysisService(keyConfig.key));
+                        addedProviders.add('deepseek');
                         break;
                     case 'openrouter':
                         services.push(new OpenRouterNutritionAnalysisService(keyConfig.key));
+                        addedProviders.add('openrouter');
                         break;
                 }
             } catch (e) {
@@ -198,21 +228,13 @@ export class ServiceFactory {
         }
 
         if (typeof window === 'undefined') {
-            // Server-side: OpenRouter first, then Gemini as fallback
-            if (env.OPENROUTER_API_KEY) {
-                try {
-                    services.push(new OpenRouterNutritionAnalysisService(env.OPENROUTER_API_KEY));
-                } catch (e) {
-                    console.error('Failed to instantiate OpenRouterNutritionAnalysisService', e);
-                }
-            }
-            if (env.GEMINI_API_KEY) {
-                try {
-                    services.push(new GeminiNutritionAnalysisService(env.GEMINI_API_KEY));
-                } catch (e) {
-                    console.error('Failed to instantiate GeminiNutritionAnalysisService', e);
-                }
-            }
+            // Server-side: use priority list from parameter or default, skip duplicates
+            const effectivePriorityList = priorityList?.length ? priorityList : ['openai', 'openrouter', 'gemini'];
+            const serverServices = await this.instantiateServerServicesByPriority(
+                effectivePriorityList.filter(p => !addedProviders.has(p)),
+                'nutrition'
+            );
+            services.push(...serverServices as import("../domain/services/NutritionAnalysisService").NutritionAnalysisService[]);
         } else {
             const authRepo = RepositoryFactory.getAuthRepository();
             services.push(new NextApiNutritionAnalysisService(authRepo));
@@ -222,26 +244,36 @@ export class ServiceFactory {
         return new FallbackNutritionAnalysisService(services);
     }
 
-    private static async createImageServiceChain(): Promise<ImageRecognitionService> {
+    private static async createImageServiceChain(priorityList?: string[]): Promise<ImageRecognitionService> {
         const services: ImageRecognitionService[] = [];
+        const addedProviders = new Set<string>();
         const savedKeys = this.loadKeys();
         const modelRepo = RepositoryFactory.getModelConfigRepository();
 
         for (const keyConfig of savedKeys) {
+            // Skip if this provider is already added (user keys take priority)
+            if (addedProviders.has(keyConfig.provider)) {
+                console.log(`[ServiceFactory] Skipping duplicate image provider from user keys: ${keyConfig.provider}`);
+                continue;
+            }
             try {
                 const model = await modelRepo.getModelVersion(keyConfig.provider, 'image');
                 switch (keyConfig.provider) {
                     case 'gemini':
                         services.push(new GeminiImageRecognitionService(keyConfig.key, model));
+                        addedProviders.add('gemini');
                         break;
                     case 'openai':
                         services.push(new OpenAIImageRecognitionService(keyConfig.key, undefined, model));
+                        addedProviders.add('openai');
                         break;
                     case 'deepseek':
                         services.push(new DeepSeekImageRecognitionService(keyConfig.key, model));
+                        addedProviders.add('deepseek');
                         break;
                     case 'openrouter':
                         services.push(new OpenRouterImageRecognitionService(keyConfig.key, model));
+                        addedProviders.add('openrouter');
                         break;
                 }
             } catch (e) {
@@ -250,23 +282,14 @@ export class ServiceFactory {
         }
 
         if (typeof window === 'undefined') {
-            // Server-side: OpenRouter first, then Gemini as fallback
-            if (env.OPENROUTER_API_KEY) {
-                try {
-                    const model = await modelRepo.getModelVersion('openrouter', 'image');
-                    services.push(new OpenRouterImageRecognitionService(env.OPENROUTER_API_KEY, model));
-                } catch (e) {
-                    console.error('Failed to instantiate OpenRouterImageRecognitionService', e);
-                }
-            }
-            if (env.GEMINI_API_KEY) {
-                try {
-                    const model = await modelRepo.getModelVersion('gemini', 'image');
-                    services.push(new GeminiImageRecognitionService(env.GEMINI_API_KEY, model));
-                } catch (e) {
-                    console.error('Failed to instantiate GeminiImageRecognitionService', e);
-                }
-            }
+            // Server-side: use priority list from parameter or default, skip duplicates
+            const effectivePriorityList = priorityList?.length ? priorityList : ['openai', 'openrouter', 'gemini'];
+            const serverServices = await this.instantiateServerServicesByPriority(
+                effectivePriorityList.filter(p => !addedProviders.has(p)),
+                'image',
+                modelRepo
+            );
+            services.push(...serverServices as ImageRecognitionService[]);
         } else {
             const authRepo = RepositoryFactory.getAuthRepository();
             services.push(new NextApiImageRecognitionService(authRepo));
@@ -276,24 +299,34 @@ export class ServiceFactory {
         return new FallbackImageRecognitionService(services);
     }
 
-    private static createChatServiceChain(): ChatAssistantService {
+    private static async createChatServiceChain(priorityList?: string[]): Promise<ChatAssistantService> {
         const services: ChatAssistantService[] = [];
+        const addedProviders = new Set<string>();
         const savedKeys = this.loadKeys();
 
         for (const keyConfig of savedKeys) {
+            // Skip if this provider is already added (user keys take priority)
+            if (addedProviders.has(keyConfig.provider)) {
+                console.log(`[ServiceFactory] Skipping duplicate chat provider from user keys: ${keyConfig.provider}`);
+                continue;
+            }
             try {
                 switch (keyConfig.provider) {
                     case 'gemini':
                         services.push(new GeminiChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        addedProviders.add('gemini');
                         break;
                     case 'deepseek':
                         services.push(new DeepSeekChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        addedProviders.add('deepseek');
                         break;
                     case 'openai':
                         services.push(new OpenAIChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        addedProviders.add('openai');
                         break;
                     case 'openrouter':
                         services.push(new OpenRouterChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        addedProviders.add('openrouter');
                         break;
                 }
             } catch (e) {
@@ -301,24 +334,16 @@ export class ServiceFactory {
             }
         }
 
-        console.log(`[ServiceFactory] Loaded ${services.length} chat services from user settings:`, savedKeys.map(k => k.provider));
+        console.log(`[ServiceFactory] Loaded ${services.length} chat services from user settings:`, Array.from(addedProviders));
 
         if (typeof window === 'undefined') {
-            // Server-side: OpenRouter first, then Gemini as fallback
-            if (env.OPENROUTER_API_KEY) {
-                try {
-                    services.push(new OpenRouterChatAssistantService(env.OPENROUTER_API_KEY, RepositoryFactory.getDashboardRepository()));
-                } catch (e) {
-                    console.error('Failed to instantiate OpenRouterChatAssistantService', e);
-                }
-            }
-            if (env.GEMINI_API_KEY) {
-                try {
-                    services.push(new GeminiChatAssistantService(env.GEMINI_API_KEY, RepositoryFactory.getDashboardRepository()));
-                } catch (e) {
-                    console.error('Failed to instantiate GeminiChatAssistantService', e);
-                }
-            }
+            // Server-side: use priority list from parameter or default, skip duplicates
+            const effectivePriorityList = priorityList?.length ? priorityList : ['openai', 'openrouter', 'gemini'];
+            const serverServices = await this.instantiateServerServicesByPriority(
+                effectivePriorityList.filter(p => !addedProviders.has(p)),
+                'chat'
+            );
+            services.push(...serverServices as ChatAssistantService[]);
         } else {
             const authRepo = RepositoryFactory.getAuthRepository();
             services.push(new NextApiChatAssistantService(authRepo));
@@ -329,6 +354,112 @@ export class ServiceFactory {
             return new MockChatAssistantService();
         }
         return new FallbackChatAssistantService(services);
+    }
+
+    /**
+     * Instantiates server-side AI services based on priority list.
+     * Filters out providers without corresponding environment variables.
+     */
+    private static async instantiateServerServicesByPriority(
+        priorityList: string[],
+        serviceType: 'food' | 'nutrition' | 'image' | 'chat',
+        modelRepo?: { getModelVersion: (provider: string, type: string) => Promise<string> }
+    ): Promise<Array<FoodAnalysisService | import("../domain/services/NutritionAnalysisService").NutritionAnalysisService | ImageRecognitionService | ChatAssistantService>> {
+        const services: Array<FoodAnalysisService | import("../domain/services/NutritionAnalysisService").NutritionAnalysisService | ImageRecognitionService | ChatAssistantService> = [];
+        const dashboardRepo = RepositoryFactory.getDashboardRepository();
+
+        for (const provider of priorityList) {
+            try {
+                switch (provider) {
+                    case 'openrouter':
+                        if (env.OPENROUTER_API_KEY) {
+                            switch (serviceType) {
+                                case 'food':
+                                    services.push(new OpenRouterFoodAnalysisService(env.OPENROUTER_API_KEY));
+                                    break;
+                                case 'nutrition':
+                                    services.push(new OpenRouterNutritionAnalysisService(env.OPENROUTER_API_KEY));
+                                    break;
+                                case 'image':
+                                    if (modelRepo) {
+                                        const model = await modelRepo.getModelVersion('openrouter', 'image');
+                                        services.push(new OpenRouterImageRecognitionService(env.OPENROUTER_API_KEY, model));
+                                    }
+                                    break;
+                                case 'chat':
+                                    services.push(new OpenRouterChatAssistantService(env.OPENROUTER_API_KEY, dashboardRepo));
+                                    break;
+                            }
+                        }
+                        break;
+                    case 'gemini':
+                        if (env.GEMINI_API_KEY) {
+                            switch (serviceType) {
+                                case 'food':
+                                    services.push(new GeminiFoodAnalysisService(env.GEMINI_API_KEY));
+                                    break;
+                                case 'nutrition':
+                                    services.push(new GeminiNutritionAnalysisService(env.GEMINI_API_KEY));
+                                    break;
+                                case 'image':
+                                    if (modelRepo) {
+                                        const model = await modelRepo.getModelVersion('gemini', 'image');
+                                        services.push(new GeminiImageRecognitionService(env.GEMINI_API_KEY, model));
+                                    }
+                                    break;
+                                case 'chat':
+                                    services.push(new GeminiChatAssistantService(env.GEMINI_API_KEY, dashboardRepo));
+                                    break;
+                            }
+                        }
+                        break;
+                    case 'openai':
+                        if (env.OPENAI_API_KEY) {
+                            switch (serviceType) {
+                                case 'food':
+                                    services.push(new OpenAIFoodAnalysisService(env.OPENAI_API_KEY));
+                                    break;
+                                case 'nutrition':
+                                    services.push(new OpenAINutritionAnalysisService(env.OPENAI_API_KEY));
+                                    break;
+                                case 'image':
+                                    if (modelRepo) {
+                                        const model = await modelRepo.getModelVersion('openai', 'image');
+                                        services.push(new OpenAIImageRecognitionService(env.OPENAI_API_KEY, undefined, model));
+                                    }
+                                    break;
+                                case 'chat':
+                                    services.push(new OpenAIChatAssistantService(env.OPENAI_API_KEY, dashboardRepo));
+                                    break;
+                            }
+                        }
+                        break;
+                    case 'deepseek':
+                        if (env.DEEPSEEK_API_KEY) {
+                            switch (serviceType) {
+                                case 'food':
+                                    services.push(new DeepSeekFoodAnalysisService(env.DEEPSEEK_API_KEY));
+                                    break;
+                                case 'nutrition':
+                                    services.push(new DeepSeekNutritionAnalysisService(env.DEEPSEEK_API_KEY));
+                                    break;
+                                case 'image':
+                                    // DeepSeek doesn't support image recognition - skip to avoid wasting time
+                                    console.log('[ServiceFactory] Skipping DeepSeek for image recognition (not supported)');
+                                    break;
+                                case 'chat':
+                                    services.push(new DeepSeekChatAssistantService(env.DEEPSEEK_API_KEY, dashboardRepo));
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            } catch (e) {
+                console.error(`[ServiceFactory] Failed to instantiate ${provider} ${serviceType} service:`, e);
+            }
+        }
+
+        return services;
     }
 
     private static loadKeys(): ApiKey[] {

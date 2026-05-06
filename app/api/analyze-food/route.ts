@@ -4,6 +4,7 @@ import { ServiceFactory } from '@/data/ServiceFactory';
 import { verifyAuth } from '../auth-middleware';
 import { checkAiAccess } from '../feature-flag-check';
 import { checkPremiumAccess } from '../subscription-check';
+import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
@@ -17,7 +18,9 @@ export async function POST(req: NextRequest) {
 
         const input: FoodAnalysisInput = await req.json();
 
-        const service = ServiceFactory.getFoodAnalysisService();
+        // Get AI priority list from feature flag for premium users
+        const priorityList = await getServerAiPriorityList();
+        const service = await ServiceFactory.getFoodAnalysisService(priorityList);
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });

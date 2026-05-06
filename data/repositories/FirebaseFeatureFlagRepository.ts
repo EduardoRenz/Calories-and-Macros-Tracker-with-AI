@@ -39,4 +39,24 @@ export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
             throw error;
         }
     }
+
+    async getValue(flagName: string): Promise<unknown> {
+        try {
+            await fetchAndActivate(this.remoteConfig);
+            const value = getValue(this.remoteConfig, flagName);
+            // Try as string first, then parse as JSON if possible
+            const stringValue = value.asString();
+            if (stringValue) {
+                try {
+                    return JSON.parse(stringValue);
+                } catch {
+                    return stringValue;
+                }
+            }
+            return null;
+        } catch (error) {
+            console.error(`Error fetching feature flag value ${flagName}:`, error);
+            return null;
+        }
+    }
 }
