@@ -1,9 +1,10 @@
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
 
-export class FallbackNutritionAnalysisService implements NutritionAnalysisService {
+export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
     private services: NutritionAnalysisService[];
 
     constructor(services: NutritionAnalysisService[]) {
+        super();
         this.services = services;
         if (this.services.length === 0) {
             console.warn("FallbackNutritionAnalysisService initialized with no services.");
@@ -13,7 +14,8 @@ export class FallbackNutritionAnalysisService implements NutritionAnalysisServic
     async getNutritionalInfo(ingredientName: string, quantity: string, language: string): Promise<NutritionalInfo | null> {
         const errors: Error[] = [];
 
-        for (const [index, service] of this.services.entries()) {
+        for (let index = 0; index < this.services.length; index++) {
+            const service = this.services[index];
             try {
                 console.log(`[FallbackNutritionService] Attempting analysis with service ${index + 1}/${this.services.length}: ${service.constructor.name}`);
                 const result = await service.getNutritionalInfo(ingredientName, quantity, language);
@@ -21,7 +23,7 @@ export class FallbackNutritionAnalysisService implements NutritionAnalysisServic
                     console.log(`[FallbackNutritionService] Success with ${service.constructor.name}`);
                     return result;
                 }
-                // If result is null (but no error), maybe we should try next? 
+                // If result is null (but no error), try next service
                 // Typically null means "I don't know this food", which another AI might know.
                 console.warn(`[FallbackNutritionService] Service ${service.constructor.name} returned null (unknown food).`);
             } catch (error) {
@@ -30,7 +32,7 @@ export class FallbackNutritionAnalysisService implements NutritionAnalysisServic
             }
         }
 
-        console.error("All nutrition analysis services failed or returned null.", errors);
+        console.error("All nutrition analysis services failed.", errors);
         return null;
     }
 }
