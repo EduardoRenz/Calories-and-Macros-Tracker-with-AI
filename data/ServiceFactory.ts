@@ -277,28 +277,34 @@ export class ServiceFactory {
     }
 
     private static createChatServiceChain(): ChatAssistantService {
+        const services: ChatAssistantService[] = [];
         const savedKeys = this.loadKeys();
 
         for (const keyConfig of savedKeys) {
             try {
                 switch (keyConfig.provider) {
                     case 'gemini':
-                        return new GeminiChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                        services.push(new GeminiChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        break;
                     case 'deepseek':
-                        return new DeepSeekChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                        services.push(new DeepSeekChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        break;
                     case 'openai':
-                        return new OpenAIChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                        services.push(new OpenAIChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        break;
                     case 'openrouter':
-                        return new OpenRouterChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository());
+                        services.push(new OpenRouterChatAssistantService(keyConfig.key, RepositoryFactory.getDashboardRepository()));
+                        break;
                 }
             } catch (e) {
                 console.error(`Failed to instantiate chat service for ${keyConfig.provider}`, e);
             }
         }
 
+        console.log(`[ServiceFactory] Loaded ${services.length} chat services from user settings:`, savedKeys.map(k => k.provider));
+
         if (typeof window === 'undefined') {
             // Server-side: OpenRouter first, then Gemini as fallback
-            const services: ChatAssistantService[] = [];
             if (env.OPENROUTER_API_KEY) {
                 try {
                     services.push(new OpenRouterChatAssistantService(env.OPENROUTER_API_KEY, RepositoryFactory.getDashboardRepository()));
@@ -313,14 +319,16 @@ export class ServiceFactory {
                     console.error('Failed to instantiate GeminiChatAssistantService', e);
                 }
             }
-            if (services.length > 0) {
-                return new FallbackChatAssistantService(services);
-            }
-            return new MockChatAssistantService();
+        } else {
+            const authRepo = RepositoryFactory.getAuthRepository();
+            services.push(new NextApiChatAssistantService(authRepo));
         }
 
-        const authRepo = RepositoryFactory.getAuthRepository();
-        return new NextApiChatAssistantService(authRepo);
+        if (services.length === 0) {
+            console.warn("No Chat Assistant services available.");
+            return new MockChatAssistantService();
+        }
+        return new FallbackChatAssistantService(services);
     }
 
     private static loadKeys(): ApiKey[] {
