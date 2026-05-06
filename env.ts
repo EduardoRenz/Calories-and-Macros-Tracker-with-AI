@@ -17,6 +17,9 @@ export const env = createEnv({
         // OpenAI API Key (server-only, optional - used for premium AI fallback)
         OPENAI_API_KEY: z.string().optional(),
 
+        // DeepSeek API Key (server-only, optional - used for premium AI fallback)
+        DEEPSEEK_API_KEY: z.string().optional(),
+
         // Payment Configuration
         ABACATE_PAY_API_KEY: z.string().optional(),
 
@@ -83,6 +86,7 @@ export const env = createEnv({
         GEMINI_PRO_DEFAULT_MODEL: process.env.GEMINI_PRO_DEFAULT_MODEL,
         OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
         OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+        DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
         ABACATE_PAY_API_KEY: process.env.ABACATE_PAY_API_KEY,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
