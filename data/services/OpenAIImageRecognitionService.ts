@@ -58,6 +58,9 @@ export class OpenAIImageRecognitionService extends ImageRecognitionService {
             if (!content) throw new Error("Empty response from OpenAI");
 
             const result = JSON.parse(content);
+            if (!result || !Array.isArray(result.ingredients)) {
+                throw new Error("Invalid response format from OpenAI");
+            }
             return result.ingredients;
         } catch (error) {
             console.error("OpenAI Image Recognition Error:", error);
