@@ -422,5 +422,12 @@ export default {
     "message": "The {{model}} model doesn't support image analysis. Please configure another AI provider (OpenAI, Gemini, or OpenRouter) in Settings to use this feature.",
     "go_to_settings": "Go to Settings",
     "close": "Close"
+  },
+  "ai_errors": {
+    "disabled": "AI features are currently disabled.",
+    "premium_required": "This feature is exclusive for Premium members. How about upgrading your plan to unlock all features? Check out our [plans here](/plans).",
+    "chatbot_premium_required": "This feature is exclusive for Premium members. How about upgrading your plan to unlock Lumi's full potential? Check out our [plans here](/plans).",
+    "api_keys_required": "This feature requires a [Premium](/plans) subscription or that you configure your own [API keys in the settings](/settings).",
+    "feature_premium_only": "This feature is exclusive for Premium subscribers. Visit our [plans page](/plans) to learn more."
   }
 };
