@@ -33,24 +33,6 @@ async function getFeatureRequirements(): Promise<FeatureRequirements> {
     return requirements as FeatureRequirements;
 }
 
-/**
- * NOTE: User API keys are stored ONLY in frontend localStorage.
- * There is NO server-side storage of user API keys in Supabase.
- *
- * This means the backend CANNOT verify if a free user has their own API keys.
- * The frontend controls visibility of features based on localStorage.
- *
- * Security model:
- * - Backend only trusts premium subscriptions (verified via Supabase)
- * - Free users are blocked from server-side AI features
- * - If a hacker manipulates the frontend to show disabled buttons,
- *   the backend will block the request anyway
- */
-async function userHasApiKeys(_userId: string): Promise<boolean> {
-    // Backend cannot verify - keys are only in frontend localStorage
-    // Always returns false to ensure free users are blocked server-side
-    return false;
-}
 
 /**
  * Checks if a specific feature can be used based on feature requirements.
@@ -83,10 +65,8 @@ async function checkFeatureAccess(
 
     // Check if free user has API keys for features requiring them
     if (minPlan === 'free_plan_api_keys') {
-        const hasKeys = await userHasApiKeys(userId);
-        if (hasKeys) {
-            return null;
-        }
+        // NOTE: Backend cannot verify API keys (stored in frontend localStorage).
+        // Free users are always blocked from server-side AI for these features.
         return NextResponse.json(
             { error: 'Please add your API keys in settings to use this feature' },
             { status: 403 }
@@ -146,14 +126,12 @@ export async function checkAiAccess(
     }
 
     // Verify user auth for remaining modes
-    let userId: string;
     let isPremium: boolean;
     try {
-        const user = await verifyAuth(authHeader);
-        userId = user.uid;
+        await verifyAuth(authHeader);
         // checkPremiumAccess returns null if premium, response if not
         isPremium = (await checkPremiumAccess(authHeader)) === null;
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: 'Authentication required' },
             { status: 401 }
@@ -177,11 +155,8 @@ export async function checkAiAccess(
             return null;
         }
 
-        const hasKeys = await userHasApiKeys(userId);
-        if (hasKeys) {
-            return null;
-        }
-
+        // NOTE: Backend cannot verify API keys (stored in frontend localStorage).
+        // Free users are always blocked from server-side AI in this mode.
         return NextResponse.json(
             { error: 'Please add your API keys in settings to use this feature' },
             { status: 403 }

@@ -3,7 +3,6 @@ import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 import { SparklesIcon, SpinnerIcon } from './icons';
 import Modal from './ui/Modal';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
@@ -152,13 +151,13 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         }
       } else {
         const message = err instanceof Error ? err.message : String(err);
-        
-        if (message.includes('Premium') || message.includes('premium') || 
-            message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
-          
+
+        if (message.includes('Premium') || message.includes('premium') ||
+          message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+
           const aiAccessService = ServiceFactory.getAiAccessService();
           const minPlan = await aiAccessService.getMinPlan('ingredient_search');
-          
+
           if (minPlan === 'premium') {
             setError(t('ai_errors.premium_required'));
           } else {
