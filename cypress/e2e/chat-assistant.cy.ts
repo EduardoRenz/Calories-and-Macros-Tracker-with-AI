@@ -1,6 +1,9 @@
 describe('Chat Assistant', () => {
     beforeEach(() => {
         cy.login();
+        // Ensure AI features are accessible for functional testing
+        cy.setAiAccessMode('open');
+        cy.setFeatureRequirement('chatbot', 'free');
     });
 
     it('should open and close the chat window', () => {

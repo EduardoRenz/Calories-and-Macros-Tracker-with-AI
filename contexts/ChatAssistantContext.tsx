@@ -35,10 +35,10 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     const { t } = useTranslation();
     const { profile } = useProfile();
     const { language } = useLanguage();
-    const { isFeatureEnabled, isUserApiKeysRequired } = useFeatureFlags();
+    const { isFeatureEnabled, isAiFeatureVisible } = useFeatureFlags();
     const cookieManager = CookieManager.getInstance();
 
-    const isChatEnabled = isFeatureEnabled('enable_chatbot') && !isUserApiKeysRequired;
+    const isChatEnabled = isFeatureEnabled('enable_chatbot') && isAiFeatureVisible('chatbot');
 
     // Check initial status from cookie
     useEffect(() => {

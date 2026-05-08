@@ -9,9 +9,9 @@ import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '@/domain/exceptions/AiAccessException';
 import MarkdownRenderer from '@/components/assistant/MarkdownRenderer';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 
 
 // Cache TTL: 24 hours in milliseconds
@@ -84,6 +84,9 @@ export default function FoodAnalysisPage() {
     const { t } = useTranslation();
     const { language } = useLanguage();
     const router = useRouter();
+
+    const { isAiFeatureVisible } = useFeatureFlags();
+    const isVisible = isAiFeatureVisible('food_analysis');
 
     const [dateRangeOption, setDateRangeOption] = useState<DateRangeOption>('last7days');
     const [report, setReport] = useState<FoodAnalysisReport | null>(null);
@@ -261,13 +264,19 @@ export default function FoodAnalysisPage() {
                     <p className="text-neutral-text-secondary mb-4">
                         {t('food_analysis.generate_prompt')}
                     </p>
-                    <button
-                        onClick={generateReport}
-                        className="bg-secondary text-on-secondary font-bold py-3 px-8 rounded-lg hover:brightness-110 shadow-lg shadow-brand-green/20 transition-all"
-                        id="generate-report-btn"
-                    >
-                        {t('food_analysis.generate_button')}
-                    </button>
+                    {isVisible ? (
+                        <button
+                            onClick={generateReport}
+                            className="bg-secondary text-on-secondary font-bold py-3 px-8 rounded-lg hover:brightness-110 shadow-lg shadow-brand-green/20 transition-all"
+                            id="generate-report-btn"
+                        >
+                            {t('food_analysis.generate_button')}
+                        </button>
+                    ) : (
+                        <div className="bg-neutral-panel p-4 rounded-xl text-neutral-text-secondary border border-neutral-border">
+                            {t('ai_errors.disabled')}
+                        </div>
+                    )}
                     {/* API keys warning removed from here as it will be shown as an error message after click */}
                 </div>
             )}

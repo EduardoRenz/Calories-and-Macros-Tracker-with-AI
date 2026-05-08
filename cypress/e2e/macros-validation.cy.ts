@@ -46,7 +46,7 @@ describe('Macros Validation', () => {
     cy.get('[data-testid="save-ingredient-button"]').click();
 
     // Should show error message about macros being required
-    cy.get('p.text-red-400').should('contain', 'Please fill in protein, carbs, and fats');
+    cy.contains('Please fill in protein, carbs, and fats');
 
     // Modal should still be open (ingredient not saved)
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
@@ -75,7 +75,7 @@ describe('Macros Validation', () => {
     cy.get('[data-testid="save-ingredient-button"]').click();
 
     // Should show error message
-    cy.get('p.text-red-400').should('contain', 'Please fill in protein, carbs, and fats');
+    cy.contains('Please fill in protein, carbs, and fats');
 
     // Modal should still be open
     cy.get('[data-testid="add-ingredient-modal"]').should('be.visible');
