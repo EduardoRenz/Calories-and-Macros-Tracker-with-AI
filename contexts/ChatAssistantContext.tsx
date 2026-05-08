@@ -10,6 +10,8 @@ import FloatingChatButton from '../components/assistant/FloatingChatButton';
 import ChatWindow from '../components/assistant/ChatWindow';
 import { CookieManager } from '../utils/CookieManager';
 import { ChatAssistantException } from '../domain/exceptions/ChatAssistantException';
+import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+
 
 interface ChatAssistantContextType {
     isOpen: boolean;
@@ -33,10 +35,10 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     const { t } = useTranslation();
     const { profile } = useProfile();
     const { language } = useLanguage();
-    const { isFeatureEnabled, isUserApiKeysRequired } = useFeatureFlags();
+    const { isFeatureEnabled, isAiFeatureVisible } = useFeatureFlags();
     const cookieManager = CookieManager.getInstance();
 
-    const isChatEnabled = isFeatureEnabled('enable_chatbot') && !isUserApiKeysRequired;
+    const isChatEnabled = isFeatureEnabled('enable_chatbot') && isAiFeatureVisible('chatbot');
 
     // Check initial status from cookie
     useEffect(() => {
@@ -176,11 +178,14 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
             timestamp: new Date(),
         };
 
-        setMessages(prev => [...prev, userMsg]);
         setIsSending(true);
+        setMessages(prev => [...prev, userMsg]);
 
         try {
-            const service = ServiceFactory.getChatAssistantService();
+            const aiAccessService = ServiceFactory.getAiAccessService();
+            await aiAccessService.checkAccess('chatbot');
+
+            const service = await ServiceFactory.getChatAssistantService();
             const dashboardRepo = RepositoryFactory.getDashboardRepository();
 
             // Get local date string for dashboard context
@@ -207,6 +212,25 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         } catch (error) {
             console.error('Failed to send message:', error);
 
+            if (error instanceof AiAccessException) {
+                let errorMessage = t('assistant.errors.api_error');
+                if (error instanceof AiDisabledException) {
+                    errorMessage = t('ai_errors.disabled');
+                } else if (error instanceof PremiumOnlyException) {
+                    errorMessage = t('ai_errors.chatbot_premium_required');
+                } else if (error instanceof ApiKeysRequiredException) {
+                    errorMessage = t('ai_errors.api_keys_required');
+                }
+
+                setMessages(prev => [...prev, {
+                    id: Date.now().toString(),
+                    role: 'assistant',
+                    content: errorMessage,
+                    timestamp: new Date(),
+                }]);
+                return;
+            }
+
             // Set status cookie to absent with different durations based on error type
             if (error instanceof ChatAssistantException) {
                 // 1 hour for auth errors, 5 minutes for API errors
@@ -227,10 +251,28 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                     timestamp: new Date(),
                 }]);
             } else {
+                const message = error instanceof Error ? error.message : String(error);
+                let errorMessage = t('assistant.action_error');
+                let role: 'assistant' | 'system' = 'system';
+
+                if (message.includes('Premium') || message.includes('premium') || 
+                    message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+                    
+                    const aiAccessService = ServiceFactory.getAiAccessService();
+                    const minPlan = await aiAccessService.getMinPlan('chatbot');
+                    
+                    if (minPlan === 'premium') {
+                        errorMessage = t('ai_errors.chatbot_premium_required');
+                    } else {
+                        errorMessage = t('ai_errors.api_keys_required');
+                    }
+                    role = 'assistant';
+                }
+
                 setMessages(prev => [...prev, {
                     id: Date.now().toString(),
-                    role: 'system',
-                    content: t('assistant.action_error'),
+                    role,
+                    content: errorMessage,
                     timestamp: new Date(),
                 }]);
             }

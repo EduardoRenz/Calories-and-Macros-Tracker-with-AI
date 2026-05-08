@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FoodAnalysisInput } from '@/domain/services/FoodAnalysisService';
 import { ServiceFactory } from '@/data/ServiceFactory';
-import { verifyAuth } from '../auth-middleware';
 import { checkAiAccess } from '../feature-flag-check';
+import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
-        await verifyAuth(req.headers.get('Authorization'));
+        const authHeader = req.headers.get('Authorization');
 
-        const accessCheck = await checkAiAccess();
+        // Unified AI access check for food analysis feature
+        const accessCheck = await checkAiAccess(authHeader, 'food_analysis');
         if (accessCheck) return accessCheck;
 
         const input: FoodAnalysisInput = await req.json();
 
-        const service = ServiceFactory.getFoodAnalysisService();
+        // Get AI priority list from feature flag for premium users
+        const priorityList = await getServerAiPriorityList();
+        const service = await ServiceFactory.getFoodAnalysisService(priorityList);
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });

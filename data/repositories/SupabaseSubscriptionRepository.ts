@@ -126,8 +126,8 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                 // Validate if subscription period has expired (fallback protection)
                 const now = new Date();
                 const periodEndStr = data.current_period_end;
-                const periodEnd = periodEndStr ? new Date(periodEndStr) : new Date(0);
-                const isPeriodValid = !isNaN(periodEnd.getTime()) && now <= periodEnd;
+                // NULL current_period_end means infinite/lifetime access (e.g., admin plans)
+                const isPeriodValid = periodEndStr === null || (!isNaN(new Date(periodEndStr).getTime()) && now <= new Date(periodEndStr));
 
                 // If period expired but access_status is still premium, force downgrade
                 const effectiveAccessStatus = (data.access_status === 'premium' && !isPeriodValid)
@@ -142,7 +142,7 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                     status: isPeriodValid ? data.status : 'unpaid',
                     accessStatus: effectiveAccessStatus,
                     currentPeriodStart: new Date(data.current_period_start),
-                    currentPeriodEnd: periodEnd,
+                    currentPeriodEnd: periodEndStr ? new Date(periodEndStr) : new Date(8640000000000000), // Max date for NULL (infinite)
                     cancelAtPeriodEnd: data.cancel_at_period_end,
                     isTrial: isTrial && effectiveAccessStatus !== 'premium',
                 });

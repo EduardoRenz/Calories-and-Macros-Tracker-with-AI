@@ -417,5 +417,12 @@ export default {
     "message": "El modelo {{model}} no soporta análisis de imágenes. Por favor, configure otro proveedor de IA (OpenAI, Gemini o OpenRouter) en Configuración para usar esta función.",
     "go_to_settings": "Ir a Configuración",
     "close": "Cerrar"
+  },
+  "ai_errors": {
+    "disabled": "Las funciones de IA están desactivadas actualmente.",
+    "premium_required": "Esta función es exclusiva para miembros Premium. ¿Qué tal mejorar tu plan para desbloquear todas las funciones? Consulta nuestros [planes aquí](/plans).",
+    "chatbot_premium_required": "Esta función es exclusiva para miembros Premium. ¿Qué tal mejorar tu plan para desbloquear todo el potencial de Lumi? Consulta nuestros [planes aquí](/plans).",
+    "api_keys_required": "Esta función requiere una suscripción [Premium](/plans) o que configures tus propias [claves de API en la configuración](/settings).",
+    "feature_premium_only": "Esta función es exclusiva para suscriptores Premium. Visita nuestra [página de planes](/plans) para obtener más información."
   }
 }

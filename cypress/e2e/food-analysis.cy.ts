@@ -9,6 +9,10 @@ describe('Food Analysis Page', () => {
         });
         cy.contains('Sign in with Google').click();
         cy.url().should('include', '/dashboard');
+
+        // Ensure AI features are accessible for functional testing
+        cy.setAiAccessMode('open');
+        cy.setFeatureRequirement('food_analysis', 'free');
     });
 
     it('should navigate to Food Analysis page via Profile submenu', () => {

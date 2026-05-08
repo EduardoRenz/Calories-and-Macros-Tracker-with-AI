@@ -8,11 +8,17 @@ export class NextApiFoodAnalysisService implements FoodAnalysisService {
     async generateAnalysis(input: FoodAnalysisInput): Promise<FoodAnalysisReport> {
         const token = await this.authRepository.getIdToken();
 
+        // Require authentication for server-side AI features
+        if (!token) {
+            console.error('[FoodAnalysis] No auth token available');
+            throw new Error('Authentication required. Please sign in to use this feature.');
+        }
+
         const response = await fetch('/api/analyze-food', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(input),
         });

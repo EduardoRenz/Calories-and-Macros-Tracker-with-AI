@@ -8,6 +8,10 @@ import { ImageRecognitionService } from '../domain/services/ImageRecognitionServ
 import { ImageCompressionService } from '../domain/services/ImageCompressionService';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
+import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import MarkdownRenderer from './assistant/MarkdownRenderer';
+
+
 
 interface QuickMealModalProps {
     isOpen: boolean;
@@ -117,6 +121,9 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         setError(null);
 
         try {
+            const aiAccessService = ServiceFactory.getAiAccessService();
+            await aiAccessService.checkAccess('quick_meal_photo');
+
             const ingredients = await imageRecognitionService.analyzeMealImage(image, language, imagePrompt);
 
             if (ingredients && ingredients.length > 0) {
@@ -126,7 +133,33 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             }
         } catch (err) {
             console.error("Image Analysis Error:", err);
-            setError(t('quick_meal_modal.analysis_error'));
+            if (err instanceof AiAccessException) {
+                if (err instanceof AiDisabledException) {
+                    setError(t('ai_errors.disabled'));
+                } else if (err instanceof PremiumOnlyException) {
+                    setError(t('ai_errors.premium_required'));
+                } else if (err instanceof ApiKeysRequiredException) {
+                    setError(t('ai_errors.api_keys_required'));
+                } else {
+                    setError(t('quick_meal_modal.analysis_error'));
+                }
+            } else {
+                const message = err instanceof Error ? err.message : String(err);
+                if (message.includes('Premium') || message.includes('premium') || 
+                    message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+                    
+                    const aiAccessService = ServiceFactory.getAiAccessService();
+                    const minPlan = await aiAccessService.getMinPlan('quick_meal_photo');
+                    
+                    if (minPlan === 'premium') {
+                        setError(t('ai_errors.premium_required'));
+                    } else {
+                        setError(t('ai_errors.api_keys_required'));
+                    }
+                } else {
+                    setError(t('quick_meal_modal.analysis_error'));
+                }
+            }
         } finally {
             setIsLoading(false);
         }
@@ -288,7 +321,11 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 </div>
             )}
 
-            {error && <p className="text-error text-sm text-center my-2">{error}</p>}
+            {error && (
+                <div className="my-2 text-error text-center">
+                    <MarkdownRenderer content={error} />
+                </div>
+            )}
 
             {analyzedIngredients.length > 0 && (
                 <div className="mt-6" data-testid="quick-meal-modal-ingredients">

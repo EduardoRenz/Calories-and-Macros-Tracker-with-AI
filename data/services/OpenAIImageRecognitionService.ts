@@ -58,6 +58,9 @@ export class OpenAIImageRecognitionService extends ImageRecognitionService {
             if (!content) throw new Error("Empty response from OpenAI");
 
             const result = JSON.parse(content);
+            if (!result || !Array.isArray(result.ingredients)) {
+                throw new Error("Invalid response format from OpenAI");
+            }
             return result.ingredients;
         } catch (error) {
             console.error("OpenAI Image Recognition Error:", error);
@@ -66,16 +69,9 @@ export class OpenAIImageRecognitionService extends ImageRecognitionService {
     }
 
     private async blobToBase64(blob: Blob): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
-                // Remove potential metadata prefix (data:image/jpeg;base64,)
-                const base64Data = base64String.split(',')[1] || base64String;
-                resolve(base64Data);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
+        const arrayBuffer = await blob.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const base64String = buffer.toString('base64');
+        return base64String;
     }
 }

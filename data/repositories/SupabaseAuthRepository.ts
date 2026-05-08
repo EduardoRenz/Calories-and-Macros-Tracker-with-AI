@@ -103,8 +103,25 @@ export class SupabaseAuthRepository implements AuthRepository {
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
         const supabase = getSupabaseClient();
-        const { data } = await supabase.auth.getSession();
-        return data.session?.access_token ?? null;
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('[SupabaseAuth] Error getting session:', error);
+          return null;
+        }
+
+        const token = data.session?.access_token;
+
+        // Validate token format (basic JWT check)
+        if (token && token.split('.').length === 3) {
+          return token;
+        }
+
+        if (token) {
+          console.warn('[SupabaseAuth] Invalid token format, clearing cache');
+        }
+
+        return null;
       });
     }, TOKEN_TTL);
   }
