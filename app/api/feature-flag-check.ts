@@ -170,24 +170,3 @@ export async function checkAiAccess(
         { status: 500 }
     );
 }
-
-/**
- * Legacy function for backward compatibility.
- * Uses the new checkAiAccess with default behavior.
- */
-export async function checkLegacyAiAccess(): Promise<NextResponse | null> {
-    const ffRepo = ServerFeatureFlagRepository.getInstance();
-    const mandatoryUserApiKeys = await cacheManager.getCached('feature_flag:mandatory_users_apy_keys', async () => {
-        return await ffRepo.isEnabled(FeatureFlags.MANDATORY_USER_API_KEYS);
-    });
-
-    if (mandatoryUserApiKeys) {
-        console.warn('[Backend] AI access blocked: legacy mandatory_users_apy_keys flag is ACTIVE');
-        return NextResponse.json(
-            { error: 'User API keys are required to use AI features. Please configure them in your settings.' },
-            { status: 403 }
-        );
-    }
-
-    return null;
-}
