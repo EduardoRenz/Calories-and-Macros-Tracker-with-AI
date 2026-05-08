@@ -34,6 +34,9 @@ import { NextApiImageRecognitionService } from './services/NextApiImageRecogniti
 import { NextApiChatAssistantService } from './services/NextApiChatAssistantService';
 import { BrowserImageCompressionService } from './services/BrowserImageCompressionService';
 import { ImageCompressionService } from '../domain/services/ImageCompressionService';
+import { AiAccessService } from '../domain/services/AiAccessService';
+import { DefaultAiAccessService } from './services/DefaultAiAccessService';
+
 
 import { RepositoryFactory } from './RepositoryFactory';
 import { env } from '../env';
@@ -52,6 +55,8 @@ export class ServiceFactory {
     private static imageInstance: ImageRecognitionService | null = null;
     private static chatInstance: ChatAssistantService | null = null;
     private static compressionInstance: ImageCompressionService | null = null;
+    private static aiAccessInstance: AiAccessService | null = null;
+
 
     public static async getFoodAnalysisService(priorityList?: string[]): Promise<FoodAnalysisService> {
         // Skip cache if priorityList is provided to allow dynamic updates from feature flag
@@ -130,12 +135,25 @@ export class ServiceFactory {
         return this.compressionInstance;
     }
 
+    public static getAiAccessService(): AiAccessService {
+        if (this.aiAccessInstance) {
+            return this.aiAccessInstance;
+        }
+        this.aiAccessInstance = DefaultAiAccessService.getInstance(
+            RepositoryFactory.getFeatureFlagRepository(),
+            RepositoryFactory.getSubscriptionRepository(),
+            RepositoryFactory.getUserApiKeysRepository()
+        );
+        return this.aiAccessInstance;
+    }
+
     public static reset(): void {
         this.instance = null;
         this.nutritionInstance = null;
         this.imageInstance = null;
         this.chatInstance = null;
         this.compressionInstance = null;
+        this.aiAccessInstance = null;
     }
 
     private static async createServiceChain(priorityList?: string[]): Promise<FoodAnalysisService> {

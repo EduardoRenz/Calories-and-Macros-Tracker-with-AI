@@ -3,10 +3,17 @@ import { FeatureFlagRepository, FeatureFlags } from '../../domain/repositories/F
 export class LocalFeatureFlagRepository implements FeatureFlagRepository {
     static instance: LocalFeatureFlagRepository;
 
-    private flags: Record<string, boolean> = {
+    private flags: Record<string, any> = {
         [FeatureFlags.ENABLE_CHATBOT]: true,
         [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
         [FeatureFlags.ENABLE_PLANS]: true,
+        [FeatureFlags.AI_ACCESS_MODE]: 'premium_only',
+        [FeatureFlags.FEATURE_REQUIREMENTS]: {
+            "chatbot": { "min_plan": "premium" },
+            "food_analysis": { "min_plan": "premium" },
+            "quick_meal_photo": { "min_plan": "free_plan_api_keys" },
+            "ingredient_search": { "min_plan": "open" }
+        }
     };
 
     private constructor() { }
@@ -49,7 +56,7 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
             }
         }
 
-        return null;
+        return this.flags[flagName] ?? null;
     }
 
     // Helper for testing

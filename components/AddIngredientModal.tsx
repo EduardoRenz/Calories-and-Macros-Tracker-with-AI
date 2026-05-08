@@ -6,6 +6,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 import { SparklesIcon, SpinnerIcon } from './icons';
 import Modal from './ui/Modal';
+import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import MarkdownRenderer from './assistant/MarkdownRenderer';
 
 interface AddIngredientModalProps {
   isOpen: boolean;
@@ -35,7 +37,6 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { isUserApiKeysRequired } = useFeatureFlags();
 
   useEffect(() => {
     if (isOpen) {
@@ -108,6 +109,9 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
     setIsAnalyzing(true);
     setError(null);
     try {
+      const aiAccessService = ServiceFactory.getAiAccessService();
+      await aiAccessService.checkAccess('ingredient_search');
+
       const nutritionService = await ServiceFactory.getNutritionAnalysisService();
       const result = await nutritionService.getNutritionalInfo(formState.name, formState.quantity, language);
       if (result) {
@@ -135,8 +139,35 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
       } else {
         setError(t('add_ingredient_modal.analysis_error'));
       }
-    } catch {
-      setError(t('add_ingredient_modal.analysis_error'));
+    } catch (err) {
+      if (err instanceof AiAccessException) {
+        if (err instanceof AiDisabledException) {
+          setError(t('ai_errors.disabled'));
+        } else if (err instanceof PremiumOnlyException) {
+          setError(t('ai_errors.premium_required'));
+        } else if (err instanceof ApiKeysRequiredException) {
+          setError(t('ai_errors.api_keys_required'));
+        } else {
+          setError(t('add_ingredient_modal.analysis_error'));
+        }
+      } else {
+        const message = err instanceof Error ? err.message : String(err);
+        
+        if (message.includes('Premium') || message.includes('premium') || 
+            message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+          
+          const aiAccessService = ServiceFactory.getAiAccessService();
+          const minPlan = await aiAccessService.getMinPlan('ingredient_search');
+          
+          if (minPlan === 'premium') {
+            setError(t('ai_errors.premium_required'));
+          } else {
+            setError(t('ai_errors.api_keys_required'));
+          }
+        } else {
+          setError(t('add_ingredient_modal.analysis_error'));
+        }
+      }
     }
     setIsAnalyzing(false);
   };
@@ -195,14 +226,10 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         <div className="flex items-end gap-3">
           <button
             type="button"
-            onClick={isUserApiKeysRequired ? undefined : handleAnalyze}
-            disabled={isAnalyzing || !formState.name || !formState.quantity || isUserApiKeysRequired}
-            className={`p-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${isUserApiKeysRequired
-              ? 'bg-neutral-card text-neutral-text-secondary'
-              : 'bg-secondary text-on-secondary hover:brightness-110'
-              }`}
+            onClick={handleAnalyze}
+            disabled={isAnalyzing || !formState.name || !formState.quantity}
+            className="p-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary text-on-secondary hover:brightness-110"
             aria-label={t('add_ingredient_modal.analyze_button_aria')}
-            title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
             data-testid="analyze-button"
           >
             {isAnalyzing ? <SpinnerIcon className="w-6 h-6" /> : <SparklesIcon className="w-6 h-6" />}
@@ -242,7 +269,11 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
           </div>
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && (
+          <div className="text-red-400 text-sm">
+            <MarkdownRenderer content={error} />
+          </div>
+        )}
 
         <div className="flex justify-end gap-4 pt-4">
           <button type="button" onClick={onClose} disabled={isSubmitting} className="bg-neutral-card text-neutral-text-primary font-bold py-2 px-4 rounded-lg hover:bg-neutral-border transition-all disabled:opacity-50 disabled:cursor-not-allowed">

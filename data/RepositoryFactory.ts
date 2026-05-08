@@ -35,6 +35,9 @@ import { MockPlansRepository } from './repositories/MockPlansRepository';
 import { SupabaseSubscriptionRepository } from './repositories/SupabaseSubscriptionRepository';
 import { FirebaseSubscriptionRepository } from './repositories/FirebaseSubscriptionRepository';
 import { MockSubscriptionRepository } from './repositories/MockSubscriptionRepository';
+import { UserApiKeysRepository } from '../domain/repositories/UserApiKeysRepository';
+import { LocalUserApiKeysRepository } from './repositories/LocalUserApiKeysRepository';
+
 
 type Provider = 'firebase' | 'supabase' | 'mock';
 
@@ -98,6 +101,8 @@ export class RepositoryFactory {
     private static modelConfigRepository: ModelConfigRepository | null = null;
     private static plansRepository: PlansRepository | null = null;
     private static subscriptionRepository: SubscriptionRepository | null = null;
+    private static userApiKeysRepository: UserApiKeysRepository | null = null;
+
 
     private static getStrategy(): RepositoryStrategy {
         return strategies[BACKEND_PROVIDER ?? 'firebase'] || strategies.firebase;
@@ -164,6 +169,13 @@ export class RepositoryFactory {
             this.subscriptionRepository = this.getStrategy().subscription();
         }
         return this.subscriptionRepository;
+    }
+
+    public static getUserApiKeysRepository(): UserApiKeysRepository {
+        if (!this.userApiKeysRepository) {
+            this.userApiKeysRepository = LocalUserApiKeysRepository.getInstance();
+        }
+        return this.userApiKeysRepository;
     }
 }
 

@@ -10,6 +10,9 @@ import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '@/domain/exceptions/AiAccessException';
+import MarkdownRenderer from '@/components/assistant/MarkdownRenderer';
+
 
 // Cache TTL: 24 hours in milliseconds
 const CACHE_TTL = 24 * 60 * 60 * 1000;
@@ -80,7 +83,6 @@ const getMacroColor = (macro: string) => {
 export default function FoodAnalysisPage() {
     const { t } = useTranslation();
     const { language } = useLanguage();
-    const { isUserApiKeysRequired } = useFeatureFlags();
     const router = useRouter();
 
     const [dateRangeOption, setDateRangeOption] = useState<DateRangeOption>('last7days');
@@ -123,8 +125,10 @@ export default function FoodAnalysisPage() {
         setIsLoading(true);
         setProgress(0);
         setError(null);
-
         try {
+            const aiAccessService = ServiceFactory.getAiAccessService();
+            await aiAccessService.checkAccess('food_analysis');
+
             // Step 1: Fetch dashboard data
             setProgress(20);
             const dashboardData = await foodAnalysisRepository.getDashboardDataForRange(
@@ -160,6 +164,35 @@ export default function FoodAnalysisPage() {
             setRetryCount(0);
         } catch (err) {
             console.error('Error generating food analysis:', err);
+
+            if (err instanceof AiAccessException) {
+                if (err instanceof AiDisabledException) {
+                    setError(t('ai_errors.disabled'));
+                } else if (err instanceof PremiumOnlyException) {
+                    setError(t('ai_errors.premium_required'));
+                } else if (err instanceof ApiKeysRequiredException) {
+                    setError(t('ai_errors.api_keys_required'));
+                } else {
+                    setError(t('food_analysis.error_generating'));
+                }
+                return;
+            }
+
+            const message = err instanceof Error ? err.message : String(err);
+            if (message.includes('Premium') || message.includes('premium') || 
+                message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+                
+                const aiAccessService = ServiceFactory.getAiAccessService();
+                const minPlan = await aiAccessService.getMinPlan('food_analysis');
+                
+                if (minPlan === 'premium') {
+                    setError(t('ai_errors.premium_required'));
+                } else {
+                    setError(t('ai_errors.api_keys_required'));
+                }
+                return;
+            }
+
             setError(t('food_analysis.error_generating'));
 
             // Retry logic with exponential backoff
@@ -229,22 +262,13 @@ export default function FoodAnalysisPage() {
                         {t('food_analysis.generate_prompt')}
                     </p>
                     <button
-                        onClick={isUserApiKeysRequired ? undefined : generateReport}
-                        disabled={isUserApiKeysRequired}
-                        className={`font-bold py-3 px-8 rounded-lg transition-all ${isUserApiKeysRequired
-                            ? 'bg-neutral-card text-neutral-text-secondary cursor-not-allowed'
-                            : 'bg-secondary text-on-secondary hover:brightness-110 shadow-lg shadow-brand-green/20'
-                            }`}
+                        onClick={generateReport}
+                        className="bg-secondary text-on-secondary font-bold py-3 px-8 rounded-lg hover:brightness-110 shadow-lg shadow-brand-green/20 transition-all"
                         id="generate-report-btn"
-                        title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
                     >
                         {t('food_analysis.generate_button')}
                     </button>
-                    {isUserApiKeysRequired && (
-                        <p className="mt-4 text-sm text-red-500 font-medium">
-                            {t('dashboard.api_keys_required_desc')}
-                        </p>
-                    )}
+                    {/* API keys warning removed from here as it will be shown as an error message after click */}
                 </div>
             )}
 
@@ -270,7 +294,7 @@ export default function FoodAnalysisPage() {
             {/* Error State */}
             {error && !isLoading && (
                 <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl mb-8 text-red-400">
-                    <p>{error}</p>
+                    <MarkdownRenderer content={error} />
                     {retryCount < 3 && (
                         <button
                             onClick={generateReport}

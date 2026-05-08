@@ -40,14 +40,25 @@ export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
                 // Shorter cooldown (30s) for null responses vs full failure (60s)
                 this.cooldownManager.recordFailure(serviceName, 30);
             } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
                 console.warn(`[FallbackNutritionService] Service ${serviceName} failed:`, error);
+                
+                // If it's a permission/access error, throw immediately to inform the UI
+                if (message.includes('Premium') || message.includes('premium') || 
+                    message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+                    throw error;
+                }
+
                 errors.push(error as Error);
                 // Record failure to trigger cooldown (60s for hard failures)
                 this.cooldownManager.recordFailure(serviceName, 60);
             }
         }
 
-        console.error("All nutrition analysis services failed.", errors);
+        if (errors.length > 0) {
+            throw new Error(errors[errors.length - 1].message);
+        }
+
         return null;
     }
 }

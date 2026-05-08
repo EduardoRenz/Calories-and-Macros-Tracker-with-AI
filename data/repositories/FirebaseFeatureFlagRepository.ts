@@ -17,6 +17,13 @@ export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
             [FeatureFlags.ENABLE_CHATBOT]: true,
             [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
             [FeatureFlags.ENABLE_PLANS]: true,
+            [FeatureFlags.AI_ACCESS_MODE]: 'premium_only',
+            [FeatureFlags.FEATURE_REQUIREMENTS]: JSON.stringify({
+                "chatbot": { "min_plan": "premium" },
+                "food_analysis": { "min_plan": "premium" },
+                "quick_meal_photo": { "min_plan": "free_plan_api_keys" },
+                "ingredient_search": { "min_plan": "open" }
+            }),
             'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
         };
 

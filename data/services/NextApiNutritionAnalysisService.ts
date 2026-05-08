@@ -9,11 +9,17 @@ export class NextApiNutritionAnalysisService extends NutritionAnalysisService {
     async getNutritionalInfo(ingredientName: string, quantity: string, language: string): Promise<NutritionalInfo | null> {
         const token = await this.authRepository.getIdToken();
 
+        // Require authentication for server-side AI features
+        if (!token) {
+            console.error('[NutritionAnalysis] No auth token available');
+            throw new Error('Authentication required. Please sign in to use this feature.');
+        }
+
         const response = await fetch('/api/analyze-nutrition', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({ ingredientName, quantity, language }),
         });

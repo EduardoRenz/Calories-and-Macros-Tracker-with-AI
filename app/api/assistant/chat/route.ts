@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/app/api/auth-middleware';
 import { checkAiAccess } from '@/app/api/feature-flag-check';
-import { checkPremiumAccess } from '@/app/api/subscription-check';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
-        await verifyAuth(req.headers.get('Authorization'));
-
-        const accessCheck = await checkAiAccess();
+        const authHeader = req.headers.get('Authorization');
+        const accessCheck = await checkAiAccess(authHeader, 'chatbot');
         if (accessCheck) return accessCheck;
-
-        const premiumCheck = await checkPremiumAccess(req.headers.get('Authorization'));
-        if (premiumCheck) return premiumCheck;
 
         const { messages, context } = await req.json();
 

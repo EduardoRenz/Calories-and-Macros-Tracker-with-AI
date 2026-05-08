@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ServiceFactory } from '@/data/ServiceFactory';
-import { verifyAuth } from '../auth-middleware';
 import { checkAiAccess } from '../feature-flag-check';
-import { checkPremiumAccess } from '../subscription-check';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
-        await verifyAuth(req.headers.get('Authorization'));
-
-        const accessCheck = await checkAiAccess();
+        const authHeader = req.headers.get('Authorization');
+        const accessCheck = await checkAiAccess(authHeader, 'quick_meal_photo');
         if (accessCheck) return accessCheck;
-
-        const premiumCheck = await checkPremiumAccess(req.headers.get('Authorization'));
-        if (premiumCheck) return premiumCheck;
 
         const formData = await req.formData();
         const image = formData.get('image') as File;

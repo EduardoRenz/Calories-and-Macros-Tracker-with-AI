@@ -35,11 +35,11 @@ export async function checkPremiumAccess(authHeader: string | null): Promise<Nex
 
       if (!error && subscription && subscription.access_status === "premium") {
         // Fallback: check if subscription period has expired
+        // NULL current_period_end means infinite/lifetime access (e.g., admin plans)
         const now = new Date()
         const periodEndStr = subscription.current_period_end
-        const periodEnd = periodEndStr ? new Date(periodEndStr) : new Date(0)
 
-        if (!isNaN(periodEnd.getTime()) && now <= periodEnd) {
+        if (periodEndStr === null || (!isNaN(new Date(periodEndStr).getTime()) && now <= new Date(periodEndStr))) {
           console.log("[SubscriptionCheck] User has active premium subscription")
           return null
         }
