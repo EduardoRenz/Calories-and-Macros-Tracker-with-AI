@@ -21,7 +21,7 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
             case 'add_ingredient': {
                 const data = action.data as AddIngredientActionData;
                 const ing = data.ingredient;
-                if (!ing) return null;
+                if (!ing || !ing.name) return null;
 
                 return (
                     <div className="bg-neutral-panel rounded-lg p-3 my-2 text-sm border border-neutral-border">
@@ -53,47 +53,53 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
 
             case 'update_ingredient': {
                 const data = action.data as UpdateIngredientActionData;
-                const ing = data.updates;
-                if (!ing) return null;
+                const updates = data.updates;
+                if (!updates || Object.keys(updates).length === 0) return null;
 
                 return (
                     <div className="bg-neutral-panel rounded-lg p-3 my-2 text-sm border border-neutral-border">
                         <div className="grid grid-cols-2 gap-2 text-center my-2">
-                            {ing.protein !== undefined && (
+                            {updates.protein !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.protein')}</p>
-                                    <p className="font-bold text-brand-protein">{ing.protein}g</p>
+                                    <p className="font-bold text-brand-protein">{updates.protein}g</p>
                                 </div>
                             )}
-                            {ing.carbs !== undefined && (
+                            {updates.carbs !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.carbs')}</p>
-                                    <p className="font-bold text-brand-carbs">{ing.carbs}g</p>
+                                    <p className="font-bold text-brand-carbs">{updates.carbs}g</p>
                                 </div>
                             )}
-                            {ing.fats !== undefined && (
+                            {updates.fats !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.fats')}</p>
-                                    <p className="font-bold text-brand-fats">{ing.fats}g</p>
+                                    <p className="font-bold text-brand-fats">{updates.fats}g</p>
                                 </div>
                             )}
-                            {ing.fiber !== undefined && (
+                            {updates.fiber !== undefined && (
                                 <div>
                                     <p className="text-neutral-text-secondary text-xs">{t('assistant.fiber')}</p>
-                                    <p className="font-bold text-brand-fiber">{ing.fiber}g</p>
+                                    <p className="font-bold text-brand-fiber">{updates.fiber}g</p>
                                 </div>
                             )}
                         </div>
-                        {ing.calories !== undefined && (
+                        {updates.calories !== undefined && (
                             <div className="text-center border-t border-neutral-border pt-2 mt-2">
                                 <p className="text-neutral-text-secondary text-xs">{t('assistant.calories')}</p>
-                                <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
+                                <p className="font-bold text-white text-lg">{updates.calories} kcal</p>
                             </div>
                         )}
-                        {ing.quantity !== undefined && (
+                        {updates.quantity !== undefined && (
                             <div className="text-center mt-1">
                                 <p className="text-neutral-text-secondary text-xs">{t('assistant.new_quantity')}</p>
-                                <p className="font-bold text-white">{ing.quantity}</p>
+                                <p className="font-bold text-white">{updates.quantity}</p>
+                            </div>
+                        )}
+                        {updates.name && (
+                            <div className="text-center mt-1">
+                                <p className="text-neutral-text-secondary text-xs">{t('assistant.name')}</p>
+                                <p className="font-bold text-white">{updates.name}</p>
                             </div>
                         )}
                     </div>
