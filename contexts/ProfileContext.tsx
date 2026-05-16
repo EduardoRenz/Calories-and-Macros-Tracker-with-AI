@@ -4,6 +4,7 @@ import { RepositoryFactory } from '../data/RepositoryFactory';
 import { ProfileRepository } from '../domain/repositories/ProfileRepository';
 import { UserProfile } from '../domain/entities/profile';
 import { GoalsManagementService } from '../data/services/GoalsManagementService';
+import { UserService } from '../data/services/UserService';
 
 interface ProfileContextType {
     profile: UserProfile | null;
@@ -32,7 +33,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     const refreshProfile = async () => {
         setLoading(true);
         try {
-            const userProfile = await profileRepository.getProfile();
+            const userProfile = await UserService.getInstance().getUserProfile();
             setProfile(userProfile);
             setOriginalProfile(userProfile);
         } catch (error) {
@@ -49,7 +50,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     const updateProfile = async (updatedProfile: UserProfile) => {
         setLoading(true);
         try {
-            await profileRepository.updateProfile(updatedProfile);
+            await UserService.getInstance().updateProfile(updatedProfile);
             await refreshProfile(); // Refresh to get the latest data
 
             // Apply goals to today after profile update
