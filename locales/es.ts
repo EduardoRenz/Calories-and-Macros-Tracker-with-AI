@@ -119,7 +119,7 @@ export default {
     "add_to_diary_button": "Añadir al Diario",
     "analysis_error": "Lo siento, no pude analizar esa imagen. Por favor, intenta con otra.",
     "add_error": "Error al añadir los alimentos. Por favor, inténtalo de nuevo.",
-    "gemini_results": "Análisis de Gemini",
+    "ai_analysis": "Análisis de IA",
     "review_prompt": "Revisa los ingredientes a continuación antes de añadirlos a tu diario.",
     "prompt_label": "Contexto adicional",
     "prompt_optional": "opcional",

@@ -145,12 +145,12 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 }
             } else {
                 const message = err instanceof Error ? err.message : String(err);
-                if (message.includes('Premium') || message.includes('premium') || 
+                if (message.includes('Premium') || message.includes('premium') ||
                     message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
-                    
+
                     const aiAccessService = ServiceFactory.getAiAccessService();
                     const minPlan = await aiAccessService.getMinPlan('quick_meal_photo');
-                    
+
                     if (minPlan === 'premium') {
                         setError(t('ai_errors.premium_required'));
                     } else {
@@ -329,7 +329,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
 
             {analyzedIngredients.length > 0 && (
                 <div className="mt-6" data-testid="quick-meal-modal-ingredients">
-                    <h3 className="font-bold text-lg mb-2 text-on-surface">{t('quick_meal_modal.gemini_results')}</h3>
+                    <h3 className="font-bold text-lg mb-2 text-on-surface">{t('quick_meal_modal.ai_analysis')}</h3>
                     <p className="text-sm text-neutral-text-secondary mb-4">{t('quick_meal_modal.review_prompt')}</p>
                     <div className="max-h-60 overflow-y-auto bg-surface-container-low p-3 rounded-lg space-y-2 border border-neutral-border">
                         {analyzedIngredients.map((ing, index) => (

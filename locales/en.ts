@@ -119,7 +119,7 @@ export default {
     "add_to_diary_button": "Add to Diary",
     "analysis_error": "Sorry, I couldn't analyze that image. Please try another one.",
     "add_error": "Failed to add items. Please try again.",
-    "gemini_results": "Gemini's Analysis",
+    "ai_analysis": "AI Analysis",
     "review_prompt": "Review the ingredients below before adding them to your diary.",
     "prompt_label": "Additional context",
     "prompt_optional": "optional",
