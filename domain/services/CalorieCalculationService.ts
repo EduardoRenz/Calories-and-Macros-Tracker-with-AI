@@ -1,17 +1,75 @@
 import { UserProfile } from '../entities/profile';
 
-const activityFactors = {
+type ActivityLevel = 'sedentary' | 'lightly' | 'moderately' | 'very';
+type PrimaryGoal = 'lose' | 'maintain' | 'gain';
+
+const activityFactors: Record<ActivityLevel, number> = {
     sedentary: 1.2,
     lightly: 1.375,
     moderately: 1.55,
     very: 1.725,
 };
 
+// Protein in g/kg — based on evidence-based guidelines:
+// - Maintenance/Health: 0.8–1.2 g/kg (scaled by activity)
+// - Weight Loss (preserve muscle): 1.2–2.0 g/kg
+// - Muscle Gain (hypertrophy): 1.4–2.0 g/kg
+const proteinMultipliers: Record<PrimaryGoal, Record<ActivityLevel, number>> = {
+    maintain: { sedentary: 0.8, lightly: 1.0, moderately: 1.2, very: 1.4 },
+    lose: { sedentary: 1.2, lightly: 1.5, moderately: 1.8, very: 2.0 },
+    gain: { sedentary: 1.4, lightly: 1.6, moderately: 1.8, very: 2.0 },
+};
+
+// Fat in g/kg — essential for hormonal regulation and vitamin absorption:
+// - Maintenance: 1.0 g/kg
+// - Weight Loss: 0.8 g/kg (slightly lower to allow more protein/carbs)
+// - Muscle Gain: 0.8 g/kg
+const fatMultipliers: Record<PrimaryGoal, number> = {
+    maintain: 1.0,
+    lose: 0.8,
+    gain: 0.8,
+};
+
+const CALORIES_PER_GRAM_PROTEIN = 4;
+const CALORIES_PER_GRAM_CARB = 4;
+const CALORIES_PER_GRAM_FAT = 9;
+
+const CALORIE_ADJUSTMENT: Record<PrimaryGoal, number> = {
+    lose: -500,
+    maintain: 0,
+    gain: 500,
+};
+
 export class CalorieCalculationService {
-    public static calculateGoals(profile: UserProfile) {
+    public static calculateGoals(profile: UserProfile): { calories: number; protein: number; carbs: number; fats: number } | null {
+        // Defensive check for profile structure
+        if (!profile?.personalInfo || !profile?.fitnessGoals) {
+            return null;
+        }
+
         const { personalInfo, fitnessGoals } = profile;
         const { weight, height, age, gender } = personalInfo;
         const { activityLevel, primaryGoal } = fitnessGoals;
+
+        // Return null if any required field is missing (null, undefined, or empty string)
+        if (
+            weight == null ||
+            height == null ||
+            age == null ||
+            !gender ||  // checks for null, undefined, or empty string
+            !activityLevel ||  // checks for null, undefined, or empty string
+            !primaryGoal  // checks for null, undefined, or empty string
+        ) {
+            return null;
+        }
+
+        // Validate enum values are valid
+        const validGoals: PrimaryGoal[] = ['lose', 'maintain', 'gain'];
+        const validActivityLevels: ActivityLevel[] = ['sedentary', 'lightly', 'moderately', 'very'];
+        if (!validGoals.includes(primaryGoal) || !validActivityLevels.includes(activityLevel)) {
+            console.warn('[CalorieCalculationService] Invalid goal or activity level:', { primaryGoal, activityLevel });
+            return null;
+        }
 
         let bmr: number;
         if (gender === 'male') {
@@ -21,18 +79,15 @@ export class CalorieCalculationService {
         }
 
         const tdee = bmr * activityFactors[activityLevel];
-        
-        let calorieGoal = tdee;
-        if (primaryGoal === 'lose') {
-            calorieGoal -= 500;
-        } else if (primaryGoal === 'gain') {
-            calorieGoal += 500;
-        }
+        const calorieGoal = tdee + CALORIE_ADJUSTMENT[primaryGoal];
 
-        // Standard macro split: 40% Carbs, 30% Protein, 30% Fats
-        const proteinGoal = Math.round((calorieGoal * 0.30) / 4);
-        const carbsGoal = Math.round((calorieGoal * 0.40) / 4);
-        const fatsGoal = Math.round((calorieGoal * 0.30) / 9);
+        const proteinGoal = Math.round(weight * proteinMultipliers[primaryGoal][activityLevel]);
+        const fatsGoal = Math.round(weight * fatMultipliers[primaryGoal]);
+
+        const proteinCalories = proteinGoal * CALORIES_PER_GRAM_PROTEIN;
+        const fatsCalories = fatsGoal * CALORIES_PER_GRAM_FAT;
+        const remainingCalories = calorieGoal - proteinCalories - fatsCalories;
+        const carbsGoal = Math.round(remainingCalories / CALORIES_PER_GRAM_CARB);
 
         return {
             calories: Math.round(calorieGoal),

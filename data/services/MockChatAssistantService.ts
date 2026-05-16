@@ -145,9 +145,9 @@ export class MockChatAssistantService implements ChatAssistantService {
         }
 
         const defaultResponses = {
-            'pt': 'Olá! Eu sou o assistente **HealthPal**. Como posso ajudar?\n\nPosso ajudar com:\n- 📊 Calorias e macros\n- 🍽️ Adicionar ou remover itens\n- 💡 Dicas de nutrição',
-            'en': 'Hello! I am **HealthPal Assistant**. How can I help today?\n\nI can help with:\n- 📊 Calorie and macro info\n- 🍽️ Add or remove items\n- 💡 Nutritional tips',
-            'es': '¡Hola! Soy el asistente **HealthPal**. ¿Cómo puedo ayudar?\n\nPuedo ayudar con:\n- 📊 Info de calorías y macros\n- 🍽️ Añadir o eliminar puntos\n- 💡 Consejos de nutrición'
+            'pt': 'Olá! Eu sou o assistente **LeveMente**. Como posso ajudar?\n\nPosso ajudar com:\n- 📊 Calorias e macros\n- 🍽️ Adicionar ou remover itens\n- 💡 Dicas de nutrição',
+            'en': 'Hello! I am **LeveMente Assistant**. How can I help today?\n\nI can help with:\n- 📊 Calorie and macro info\n- 🍽️ Add or remove items\n- 💡 Nutritional tips',
+            'es': '¡Hola! Soy el asistente **LeveMente**. ¿Cómo puedo ayudar?\n\nPuedo ayudar con:\n- 📊 Info de calorías y macros\n- 🍽️ Añadir o eliminar puntos\n- 💡 Consejos de nutrición'
         };
 
         let response = defaultResponses[lang] || defaultResponses['en'];

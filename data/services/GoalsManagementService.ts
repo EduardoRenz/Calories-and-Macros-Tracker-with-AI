@@ -23,6 +23,11 @@ export class GoalsManagementService {
             const profile = await this.profileRepository.getProfile();
             const goals = CalorieCalculationService.calculateGoals(profile);
 
+            if (!goals) {
+                console.log(`[GoalsManagementService] Goals not calculated - profile incomplete for date: ${date}`);
+                return;
+            }
+
             await this.dashboardRepository.updateGoals(date, goals);
             console.log(`[GoalsManagementService] Goals applied for date: ${date}`);
         } catch (error) {
@@ -38,6 +43,11 @@ export class GoalsManagementService {
         try {
             const profile = await this.profileRepository.getProfile();
             const goals = CalorieCalculationService.calculateGoals(profile);
+
+            if (!goals) {
+                console.log(`[GoalsManagementService] Goals not calculated - profile incomplete for date range`);
+                return;
+            }
 
             const start = new Date(startDate);
             const end = new Date(endDate);

@@ -72,26 +72,26 @@ export function HistoryCalendar({
     };
 
     return (
-        <div className="bg-healthpal-card p-6 rounded-2xl">
+        <div className="bg-neutral-card p-6 rounded-2xl">
             <div className="flex items-center justify-between mb-4">
                 <button
                     onClick={() => goMonth(-1)}
-                    className="p-2 rounded-md hover:bg-healthpal-border transition-colors"
+                    className="p-2 rounded-md hover:bg-neutral-border transition-colors"
                     aria-label={t('history.calendar_prev')}
                 >
-                    <ChevronLeftIcon className="h-5 w-5 text-white" />
+                    <ChevronLeftIcon className="h-5 w-5 text-primary" />
                 </button>
                 <h3 className="font-bold">{monthLabel}</h3>
                 <button
                     onClick={() => goMonth(1)}
-                    className="p-2 rounded-md hover:bg-healthpal-border transition-colors"
+                    className="p-2 rounded-md hover:bg-neutral-border transition-colors"
                     aria-label={t('history.calendar_next')}
                 >
-                    <ChevronRightIcon className="h-5 w-5 text-white" />
+                    <ChevronRightIcon className="h-5 w-5 text-primary" />
                 </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-2 text-xs text-healthpal-text-secondary mb-2">
+            <div className="grid grid-cols-7 gap-2 text-xs text-neutral-text-secondary mb-2">
                 {weekDays.map((d, i) => (
                     <div key={i} className="text-center font-medium">
                         {d}
@@ -111,10 +111,10 @@ export function HistoryCalendar({
                     const hasEntry = entry?.hasEntry ?? false;
                     const isOver = hasEntry && (entry?.calories ?? 0) > (entry?.calorieGoal ?? 0);
 
-                    const bg = hasEntry ? (isOver ? 'bg-red-500/20' : 'bg-healthpal-green/20') : 'bg-healthpal-card';
-                    const border = hasEntry ? '' : 'border border-healthpal-border';
-                    const text = hasEntry ? (isOver ? 'text-red-400' : 'text-healthpal-green') : 'text-healthpal-text-primary';
-                    const hover = hasEntry ? (isOver ? 'hover:bg-red-500/30' : 'hover:bg-healthpal-green/30') : 'hover:bg-healthpal-border transition-colors';
+                    const bg = hasEntry ? (isOver ? 'bg-red-500/20' : 'bg-brand-green/20') : 'bg-neutral-card';
+                    const border = hasEntry ? '' : 'border border-neutral-border';
+                    const text = hasEntry ? (isOver ? 'text-red-400' : 'text-brand-green') : 'text-neutral-text-primary';
+                    const hover = hasEntry ? (isOver ? 'hover:bg-red-500/30' : 'hover:bg-brand-green/30') : 'hover:bg-neutral-border transition-colors';
 
                     return (
                         <button

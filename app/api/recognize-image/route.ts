@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GeminiImageRecognitionService } from '@/data/services/GeminiImageRecognitionService';
-import { verifyAuth } from '../auth-middleware';
+import { ServiceFactory } from '@/data/ServiceFactory';
 import { checkAiAccess } from '../feature-flag-check';
-import { env } from '@/env';
+import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
-        await verifyAuth(req.headers.get('Authorization'));
-
-        const accessCheck = await checkAiAccess();
+        const authHeader = req.headers.get('Authorization');
+        const accessCheck = await checkAiAccess(authHeader, 'quick_meal_photo');
         if (accessCheck) return accessCheck;
 
         const formData = await req.formData();
@@ -20,13 +18,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'No image provided' }, { status: 400 });
         }
 
-        let service;
-
-        if (env.GEMINI_API_KEY) {
-            service = new GeminiImageRecognitionService(env.GEMINI_API_KEY);
-        }
-        // Note: OPENAI_API_KEY and DEEPSEEK_API_KEY are not in env schema
-        // These would need to be added if you want to use them server-side
+        // Get AI priority list from feature flag for premium users
+        const priorityList = await getServerAiPriorityList();
+        const service = await ServiceFactory.getImageRecognitionService(priorityList);
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });

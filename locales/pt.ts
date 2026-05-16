@@ -9,7 +9,8 @@ export default {
     "profile": "Perfil",
     "settings": "Configurações",
     "logout": "Sair",
-    "quick_meal": "Refeição Rápida"
+    "quick_meal": "Refeição Rápida",
+    "back_to_home": "Voltar para Home"
   },
   "history": {
     "title": "Historico",
@@ -48,9 +49,21 @@ export default {
     "limit_exceeded": "Você excedeu seu limite.",
     "doing_great": "Você está indo ótimo!",
     "macro_split": "Divisão de Macros",
+    "today_meals": "REFEIÇÕES DE HOJE",
     "api_keys_required_title": "Chaves de API Necessárias",
     "api_keys_required_desc": "Para continuar usando os recursos de IA, configure suas próprias chaves de API nas configurações.",
-    "go_to_settings": "Ir para Configurações"
+    "go_to_settings": "Ir para Configurações",
+    "first_time": {
+      "title": "Bem-vindo ao LeveMente!",
+      "description": "Para calcular suas metas personalizadas de calorias e macros, precisamos saber um pouco sobre você. Por favor, preencha suas informações pessoais e objetivos de fitness abaixo.",
+      "dietary_restrictions_title": "Restrições Alimentares (Opcional)",
+      "dietary_restrictions_desc": "Se você tem alguma condição de saúde ou preferência alimentar, pode adicioná-las posteriormente nas configurações do seu perfil para receber recomendações personalizadas.",
+      "go_to_profile": "Ir para Configurações do Perfil →",
+      "save_and_continue": "Salvar e Continuar",
+      "saving": "Salvando...",
+      "error_incomplete": "Por favor, preencha todos os campos obrigatórios para continuar.",
+      "error_saving": "Falha ao salvar perfil. Por favor, tente novamente."
+    }
   },
   "meals": {
     "summary_title": "Resumo das Refeições",
@@ -67,6 +80,7 @@ export default {
     "fiber_short": "Fibras",
     "calories_short": "kcal",
     "no_items_logged": "Nenhum item registrado",
+    "remove_error": "Falha ao remover o ingrediente. Por favor, tente novamente.",
     "ingredient": "Ingrediente",
     "quantity": "Quantidade",
     "total_macros": "Macros Totais",
@@ -85,7 +99,7 @@ export default {
     "fats": "Gorduras (g)",
     "cancel": "Cancelar",
     "save": "Adicionar Ingrediente",
-    "analysis_error": "Não foi possível obter informações nutricionais. Preencha os macros manualmente.",
+    "analysis_error": "Serviço temporariamente indisponível. Por favor, tente novamente em um momento ou preencha os macros manualmente.",
     "analyze_button_aria": "Analisar ingrediente com IA",
     "macros_required": "Por favor, preencha proteína, carboidratos e gorduras",
     "name_required": "Por favor, preencha o nome do ingrediente"
@@ -105,7 +119,7 @@ export default {
     "add_to_diary_button": "Adicionar ao Diário",
     "analysis_error": "Desculpe, não consegui analisar essa imagem. Por favor, tente outra.",
     "add_error": "Falha ao adicionar os itens. Por favor, tente novamente.",
-    "gemini_results": "Análise do Gemini",
+    "ai_analysis": "Análise de IA",
     "review_prompt": "Revise os ingredientes abaixo antes de adicioná-los ao seu diário.",
     "prompt_label": "Contexto adicional",
     "prompt_optional": "opcional",
@@ -128,6 +142,7 @@ export default {
       "female": "Feminino",
       "male": "Masculino",
       "other": "Outro",
+      "select_gender": "Selecione o gênero",
       "diet_type": "Tipo de Dieta",
       "diet_types": {
         "omnivore": "Onívoro",
@@ -149,7 +164,8 @@ export default {
       "sedentary": "Sedentário",
       "lightly_active": "Levemente Ativo",
       "moderately_active": "Moderadamente Ativo",
-      "very_active": "Muito Ativo"
+      "very_active": "Muito Ativo",
+      "select_activity": "Selecione o nível de atividade"
     },
     "health_conditions": {
       "title": "Condições de Saúde",
@@ -228,6 +244,76 @@ export default {
       "adjustments_required": "Ajustes Necessários"
     }
   },
+  "plans": {
+    "title": "Escolha seu plano",
+    "subtitle": "Selecione o plano que se encaixa na sua jornada de fitness. Atualize a qualquer momento para desbloquear recursos avançados.",
+    "monthly": "Mensal",
+    "annual": "Anual",
+    "loading": "Carregando planos...",
+    "features": {
+      "free": [
+        { "text": "Registro manual de alimentos", "included": true },
+        { "text": "Suporte a chaves de API próprias (OpenAI/Gemini)", "included": true },
+        { "text": "Histórico básico de 7 dias", "included": true },
+        { "text": "7 dias de teste grátis com recursos premium", "included": true },
+        { "text": "Análise nutricional por foto", "included": false },
+        { "text": "Relatórios de saúde avançados", "included": false },
+        { "text": "Lumi 24/7", "included": false }
+      ],
+      "member_monthly": [
+        { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
+        { "text": "Análise nutricional completa por foto", "included": true },
+        { "text": "Histórico ilimitado", "included": true },
+        { "text": "Relatórios de micronutrientes e saúde", "included": true },
+        { "text": "Lumi disponível 24/7", "included": true },
+      ],
+      "member_annual": {
+        "discount_message": "Economize {{percentage}}%",
+        "features": [
+          { "text": "IA Integrada (Sem necessidade de chaves próprias)", "included": true },
+          { "text": "Análise nutricional completa por foto", "included": true },
+          { "text": "Histórico ilimitado", "included": true },
+          { "text": "Relatórios de micronutrientes e saúde", "included": true },
+          { "text": "Assistente LeveMente disponível 24/7", "included": true },
+        ]
+      },
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete seu pagamento seguro para atualizar",
+    "back": "Voltar",
+    "contact_information": "Informações de Contato",
+    "email_address": "Endereço de e-mail",
+    "payment_method": "Método de Pagamento",
+    "order_summary": "Resumo do Pedido",
+    "cardholder_name": "Nome do Titular",
+    "cardholder_name_placeholder": "Nome como no cartão",
+    "card_number": "Número do Cartão",
+    "card_number_placeholder": "0000 0000 0000 0000",
+    "expiry_date": "Data de Vencimento",
+    "expiry_date_placeholder": "MM / AA",
+    "cvc": "CVC",
+    "cvc_placeholder": "123",
+    "subtotal": "Subtotal",
+    "annual_discount": "Desconto Anual",
+    "tax": "Imposto",
+    "total_due": "Total a Pagar",
+    "confirm_purchase": "Confirmar Compra",
+    "confirm_and_pay": "Confirmar e Pagar →",
+    "secure_payments": "Os pagamentos são seguros e criptografados",
+    "processing_payment": "Processando Checkout...",
+    "processing_message": "Redirecionando para o pagamento seguro...",
+    "payment_failed": "O pagamento falhou. Por favor, tente novamente.",
+    "redirect_failed": "Não foi possível iniciar o pagamento. Por favor, tente novamente.",
+    "hosted_redirect_notice": "Você será redirecionado para uma página de pagamento segura fornecida pelo AbacatePay para completar sua assinatura.",
+    "payment_methods": {
+      "card": "Cartão",
+      "paypal": "PayPal",
+      "pix": "Pix",
+      "crypto": "Cripto"
+    }
+  },
   "settings": {
     "title": "Configurações do App e Gerenciamento de API",
     "subtitle": "Gerencie suas preferências de aplicativo e integrações de serviços de IA.",
@@ -242,6 +328,52 @@ export default {
       "title": "Configurações Gerais",
       "language": "Idioma"
     },
+    "theme": "Tema",
+    "subscription": {
+      "title": "Assinatura",
+      "description": "Gerencie seu plano e detalhes de cobrança",
+      "manage": "Gerenciar Assinatura",
+      "upgrade": "Upgrade para Premium",
+      "cancel": "Cancelar Assinatura",
+      "plan_free": "Gratuito",
+      "plan_premium": "Premium",
+      "plan_trial": "Período de testes",
+      "premium_description": "Você tem acesso total a todos os recursos de IA e análises avançadas.",
+      "trial_description": "Você tem acesso total a todos os recursos de IA e análises avançadas gratuitamente por {{days}} dias.",
+      "free_description": "Faça o upgrade para desbloquear análise de saúde com IA e recursos exclusivos.",
+      "history_title": "Histórico Financeiro",
+      "ends_on": "Expira em {{date}}",
+      "renews_on": "Renova em {{date}}",
+      "cancel_modal": {
+        "title": "Cancelar Assinatura",
+        "warning": "Tem certeza de que deseja cancelar sua assinatura? Você continuará tendo acesso até o final do seu período de cobrança atual.",
+        "keep": "Manter Assinatura",
+        "confirm": "Sim, Cancelar",
+        "cancelling": "Cancelando...",
+        "error": "Falha ao cancelar assinatura. Por favor, tente novamente."
+      },
+      "transaction_types": {
+        "subscription.completed": "Assinatura Iniciada",
+        "subscription.renewed": "Assinatura Renovada",
+        "subscription.cancelled": "Assinatura Cancelada",
+        "subscription.refunded": "Reembolso",
+        "subscription.chargeback": "Contestação",
+        "payment": "Pagamento",
+        "charge": "Cobrança",
+        "renewal": "Renovação",
+        "refund": "Reembolso",
+        "dispute": "Disputa",
+        "loss": "Perda"
+      },
+      "transaction_status": {
+        "completed": "Concluído",
+        "paid": "Pago",
+        "failed": "Falha",
+        "expired": "Expirado",
+        "refunded": "Reembolsado",
+        "pending": "Pendente"
+      }
+    },
     "tokens": {
       "title": "Tokens de API de IA",
       "add_token": "Adicionar Token de API",
@@ -250,10 +382,11 @@ export default {
     }
   },
   "assistant": {
-    "title": "Assistant",
+    "title": "Lumi",
     "status_online": "ONLINE",
+    "status_absent": "AUSENTE",
     "close": "Fechar chat",
-    "input_placeholder": "Pergunte ao HealthPal...",
+    "input_placeholder": "Pergunte à Lumi...",
     "send": "Enviar",
     "confirm_action": "Ação pendente de confirmação",
     "confirm": "Confirmar",
@@ -263,8 +396,19 @@ export default {
     "action_error": "Falha ao executar a ação. Por favor, tente novamente.",
     "action_cancelled": "Ação cancelada.",
     "prepared_action": "Preparei a ação para você.",
+    "welcome_message": "Diga olá para o seu assistente de saúde pessoal!",
+    "disclaimer": "A Lumi pode fornecer informações imprecisas.",
+    "open_assistant": "Abrir Assistente",
+    "action_undone_warning": "Esta ação não pode ser desfeita facilmente.",
+    "protein": "Proteína",
+    "carbs": "Carboidratos",
+    "fats": "Gorduras",
+    "fiber": "Fibras",
+    "calories": "Calorias",
+    "new_quantity": "Nova Quantidade",
     "errors": {
       "api_key": "Estou tendo problemas de autenticação. Por favor, verifique minha configuração.",
+      "api_error": "Sinto muito, estou com dificuldades para fornecer uma resposta agora.",
       "quota_exceeded": "Atingi meu limite de uso. Por favor, tente novamente em um momento.",
       "model_error": "Estou tendo problemas com meu modelo de IA. Por favor, tente novamente mais tarde.",
       "network_error": "Estou tendo problemas de conexão. Por favor, verifique sua internet e tente novamente.",
@@ -272,5 +416,18 @@ export default {
       "invalid_request": "Recebi um formato de solicitação inválido. Por favor, tente novamente.",
       "unknown_error": "Desculpe, estou tendo problemas para me conectar ao meu cérebro agora. Por favor, tente novamente mais tarde."
     }
+  },
+  "model_image_warning": {
+    "title": "{{model}} não suporta imagens",
+    "message": "O modelo {{model}} não suporta análise de imagens. Por favor, configure outro provedor de IA (OpenAI, Gemini ou OpenRouter) nas Configurações para usar este recurso.",
+    "go_to_settings": "Ir para Configurações",
+    "close": "Fechar"
+  },
+  "ai_errors": {
+    "disabled": "Os recursos de IA estão desativados no momento.",
+    "premium_required": "Esta funcionalidade é exclusiva para membros Premium. Que tal dar um upgrade no seu plano para desbloquear todos os recursos? Confira nossos [planos aqui](/plans).",
+    "chatbot_premium_required": "Esta funcionalidade é exclusiva para membros Premium. Que tal dar um upgrade no seu plano para desbloquear todo o potencial da Lumi? Confira nossos [planos aqui](/plans).",
+    "api_keys_required": "Este recurso requer uma assinatura [Premium](/plans) ou que você configure suas próprias [chaves de API nas configurações](/settings).",
+    "feature_premium_only": "Este recurso é exclusivo para assinantes Premium. Visite nossa [página de planos](/plans) para saber mais."
   }
 }

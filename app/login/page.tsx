@@ -3,13 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { HealthPalLogo, GoogleIcon } from '@/components/icons';
-import { DonationPanel } from '@/components/DonationPanel';
+import Image from 'next/image';
+import { GoogleIcon } from '@/components/icons';
+import LoginPlansCard from '@/components/LoginPlansCard';
+import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { FeatureFlags } from '@/domain/repositories/FeatureFlagRepository';
+// import { DonationPanel } from '@/components/DonationPanel';
 
 export default function LoginPage() {
     const { user, signInWithGoogle, loading } = useAuth();
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const { isFeatureEnabled, loading: flagsLoading } = useFeatureFlags();
+    const plansEnabled = !flagsLoading && isFeatureEnabled(FeatureFlags.ENABLE_PLANS);
 
     useEffect(() => {
         if (user && !loading) {
@@ -41,14 +47,13 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="bg-healthpal-dark min-h-screen flex flex-col items-center justify-center p-4">
+        <div className="bg-neutral-dark min-h-screen flex flex-col items-center justify-center p-4">
             <div className="w-full max-w-sm">
-                <div className="bg-healthpal-panel p-8 rounded-2xl border border-healthpal-border text-center shadow-2xl">
+                <div className="bg-neutral-panel p-8 rounded-2xl border border-neutral-border text-center shadow-2xl">
                     <div className="flex justify-center items-center gap-4 mb-4">
-                        <HealthPalLogo className="h-10 w-10 text-healthpal-green" />
-                        <h1 className="text-3xl font-bold text-healthpal-text-primary">CalorieApp</h1>
+                        <Image src="/LogoHorizontal.svg" alt="LeveMente" width={160} height={48} className="h-12 w-auto" priority />
                     </div>
-                    <p className="text-healthpal-text-secondary mb-8">
+                    <p className="text-neutral-text-secondary mb-8">
                         Sign in to track your meals, analyze food with AI, and reach your fitness goals.
                     </p>
 
@@ -73,23 +78,23 @@ export default function LoginPage() {
                             </>
                         )}
                     </button>
-
-                    <p className="text-xs text-healthpal-text-secondary mt-4 text-center">
+                    {plansEnabled && <LoginPlansCard />}
+                    <p className="text-xs text-neutral-text-secondary mt-4 text-center">
                         Ao usar esta ferramenta, você concorda com nossas{' '}
                         <a
                             href="/terms-of-use"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="underline hover:text-healthpal-green"
+                            className="underline hover:text-brand-green"
                         >
                             Termos de Uso
                         </a>
                     </p>
                 </div>
-
+                {/* 
                 <div className="mt-8">
                     <DonationPanel variant="compact" />
-                </div>
+                </div> */}
             </div>
         </div>
     );

@@ -205,10 +205,13 @@ export class FirestoreDashboardRepository implements DashboardRepository {
     async addIngredients(date: string, mealType: keyof MealSummary, ingredients: Omit<Ingredient, 'id'>[]): Promise<DashboardData> {
         const dataForDay = await this.getDashboardForDate(date);
 
+        const now = new Date().toISOString();
         const newIngredients: Ingredient[] = ingredients.map(ing => ({
             ...ing,
             fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
             id: `${new Date().getTime()}-${Math.random()}`,
+            created_at: now,
+            category: ing.category,
         }));
 
         dataForDay.meals[mealType].ingredients.push(...newIngredients);

@@ -32,7 +32,7 @@ describe('Authenticated User Access', () => {
     cy.login();
     cy.visit('/dashboard'); // Test persistence across visit within same test
     cy.url().should('include', '/dashboard');
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
   });
 
   it('should allow authenticated user to access /profile', () => {
@@ -72,7 +72,7 @@ describe('URL Navigation', () => {
     // Click Dashboard in navbar
     cy.get('[data-testid="desktop-nav"]').contains('Dashboard').click();
     cy.url().should('include', '/dashboard');
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
   });
 
   it('should update URL when using mobile navigation', () => {
@@ -88,7 +88,7 @@ describe('URL Navigation', () => {
     // Click Dashboard in bottom navbar
     cy.get('[data-testid="mobile-bottom-nav"]').contains('Dashboard').click();
     cy.url().should('include', '/dashboard');
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
   });
 });
 
@@ -112,7 +112,7 @@ describe('Browser Navigation', () => {
     // Click browser back button again
     cy.go('back');
     cy.url().should('include', '/dashboard');
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
 
     // Click browser forward button
     cy.go('forward');
@@ -127,7 +127,7 @@ describe('Logout Functionality', () => {
 
     // Verify user is on dashboard
     cy.url().should('include', '/dashboard');
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
 
     // Click on user avatar to open dropdown menu
     cy.get('button[aria-label="User menu"]').click();
@@ -169,7 +169,7 @@ describe('Root Path Redirect', () => {
     cy.visit('/');
 
     cy.url().should('include', '/dashboard');
-    cy.get('h2').contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
   });
 
   it('should show login page for unauthenticated user at /', () => {

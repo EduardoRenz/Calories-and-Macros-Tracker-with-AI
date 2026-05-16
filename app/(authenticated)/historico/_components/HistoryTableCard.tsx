@@ -44,8 +44,8 @@ export function HistoryTableCard({
     };
 }) {
     return (
-        <div className="bg-healthpal-card rounded-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-healthpal-border">
+        <div className="bg-neutral-card rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-neutral-border">
                 <div className="flex flex-col md:flex-row md:items-end gap-4 justify-between">
                     <div>
                         <h3 className="text-xl font-bold">{title}</h3>
@@ -64,25 +64,25 @@ export function HistoryTableCard({
 
             <div className="p-0">
                 {loading ? (
-                    <div className="flex justify-center items-center h-64 text-healthpal-text-secondary">{loadingLabel}</div>
+                    <div className="flex justify-center items-center h-64 text-neutral-text-secondary">{loadingLabel}</div>
                 ) : (
                     <>
                         <HistoryTable entries={entries} onDateClick={onDateClick} />
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-4 sm:px-6 py-4 border-t border-healthpal-border">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-4 sm:px-6 py-4 border-t border-neutral-border">
                             <button
                                 type="button"
                                 onClick={pagination.onPrevPage}
                                 disabled={pagination.pageIndex === 0}
-                                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
+                                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-neutral-panel/40 border border-neutral-border text-sm disabled:opacity-50"
                             >
                                 {pagination.labels.prev}
                             </button>
-                            <span className="text-sm text-healthpal-text-secondary text-center">{pagination.pageIndex + 1}</span>
+                            <span className="text-sm text-neutral-text-secondary text-center">{pagination.pageIndex + 1}</span>
                             <button
                                 type="button"
                                 onClick={pagination.onNextPage}
                                 disabled={!pagination.hasNextPage}
-                                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-healthpal-panel/40 border border-healthpal-border text-sm disabled:opacity-50"
+                                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-neutral-panel/40 border border-neutral-border text-sm disabled:opacity-50"
                             >
                                 {pagination.labels.next}
                             </button>

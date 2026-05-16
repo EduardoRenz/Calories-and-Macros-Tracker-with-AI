@@ -14,10 +14,13 @@ import { DashboardRepository } from '@/domain/repositories/DashboardRepository';
 import AddIngredientModal from '@/components/AddIngredientModal';
 import DashboardNavigation from '@/components/DashboardNavigation';
 import DashboardWarningBar from '@/components/DashboardWarningBar';
+import FirstTimeSetup from '@/components/profile/FirstTimeSetup';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { useToast } from '@/contexts/ToastContext';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
+import { isProfileComplete, UserProfile } from '@/domain/entities/profile';
 
 const getFormattedDate = (date: Date) => {
     const year = date.getFullYear();
@@ -36,7 +39,7 @@ export default function DashboardPage() {
 
     const { isUserApiKeysRequired } = useFeatureFlags();
 
-    const { profile, goalsManagementService } = useProfile();
+    const { profile, goalsManagementService, updateProfile, loading: profileLoading } = useProfile();
     const computedGoals = useMemo(() => {
         if (profile) return CalorieCalculationService.calculateGoals(profile);
         return null;
@@ -62,6 +65,7 @@ export default function DashboardPage() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMealType, setSelectedMealType] = useState<keyof MealSummary | null>(null);
+    const { showError } = useToast();
 
     const dashboardRepository: DashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
 
@@ -165,8 +169,12 @@ export default function DashboardPage() {
 
     const handleRemoveIngredient = async (mealType: keyof MealSummary, ingredientId: string) => {
         if (!data) return;
-        const updatedData = await dashboardRepository.removeIngredient(data.date, mealType, ingredientId);
-        setData(updatedData);
+        try {
+            const updatedData = await dashboardRepository.removeIngredient(data.date, mealType, ingredientId);
+            setData(updatedData);
+        } catch {
+            showError(t('meals.remove_error'));
+        }
     };
 
     const handleUpdateIngredient = async (mealType: keyof MealSummary, ingredientId: string, updates: Partial<Ingredient>) => {
@@ -195,8 +203,33 @@ export default function DashboardPage() {
         }).format(currentDate);
     }, [currentDate, hasMounted]);
 
+    // Show first-time setup if profile is not complete or goals cannot be calculated
+    const profileComplete = useMemo(() => isProfileComplete(profile), [profile]);
+    const canCalculateGoals = computedGoals !== null;
+
+    const handleFirstTimeSave = async (updatedProfile: UserProfile) => {
+        await updateProfile(updatedProfile);
+    };
+
+    // Show loading state while profile is loading
+    if (profileLoading) {
+        return <div className="flex justify-center items-center h-96 text-neutral-text-secondary">{t('dashboard.loading')}</div>;
+    }
+
+    // Show first-time setup for incomplete profiles or when goals cannot be calculated
+    if ((!profileComplete || !canCalculateGoals) && profile) {
+        return (
+            <div className="py-8">
+                <FirstTimeSetup
+                    profile={profile}
+                    onSave={handleFirstTimeSave}
+                />
+            </div>
+        );
+    }
+
     if (isLoading || !data) {
-        return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('dashboard.loading')}</div>;
+        return <div className="flex justify-center items-center h-96 text-neutral-text-secondary">{t('dashboard.loading')}</div>;
     }
 
     const caloriesRemaining = ((macrosWithGoals?.calories.goal ?? 0) - data.macros.calories.current);
@@ -219,13 +252,15 @@ export default function DashboardPage() {
                 onDateChange={handleDateChange}
                 onGoToToday={handleGoToToday}
                 todayLabel={t('dashboard.today')}
-                title={t('dashboard.title')}
             />
 
             {/* Main Grid */}
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Shown only on mobile - progress bars instead of chart */}
+                    <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3 block md:hidden">
+                        {t('dashboard.macro_split')}
+                    </h3>
                     <div className="block md:hidden">
                         {macrosWithGoals && <MobileNutrientSummary data={macrosWithGoals} />}
                     </div>
@@ -235,7 +270,7 @@ export default function DashboardPage() {
                             unit="kcal"
                             current={data.macros.calories.current}
                             goal={macrosWithGoals?.calories.goal ?? 0}
-                            color="bg-healthpal-green"
+                            color="bg-brand-green"
                         />
                     </div>
                     <div className="hidden md:block">
@@ -244,7 +279,7 @@ export default function DashboardPage() {
                             unit="g"
                             current={data.macros.protein.current}
                             goal={macrosWithGoals?.protein.goal ?? 0}
-                            color="bg-healthpal-protein"
+                            color="bg-brand-protein"
                         />
                     </div>
                     <div className="hidden md:block">
@@ -253,7 +288,7 @@ export default function DashboardPage() {
                             unit="g"
                             current={data.macros.carbs.current}
                             goal={macrosWithGoals?.carbs.goal ?? 0}
-                            color="bg-healthpal-carbs"
+                            color="bg-brand-carbs"
                         />
                     </div>
                     <div className="hidden md:block">
@@ -262,9 +297,12 @@ export default function DashboardPage() {
                             unit="g"
                             current={data.macros.fats.current}
                             goal={macrosWithGoals?.fats.goal ?? 0}
-                            color="bg-healthpal-fats"
+                            color="bg-brand-fats"
                         />
                     </div>
+                    <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3 md:col-span-2">
+                        {isToday ? t('dashboard.today_meals') : displayDate}
+                    </h3>
                     <div className="md:col-span-2">
                         <MealSummaryCard
                             meals={data.meals}
@@ -276,8 +314,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="lg:col-span-1 grid grid-cols-1 gap-6 order-first lg:order-last">
-                    <div className="hidden lg:flex bg-healthpal-card p-6 rounded-2xl h-full flex-col order-first lg:order-last">
-                        <h3 className="text-xl font-bold mb-4">{t('dashboard.macro_split')}</h3>
+                    <div className="hidden lg:flex bg-neutral-card p-6 rounded-2xl h-full flex-col order-first lg:order-last">
                         <div className="flex-grow">
                             <MacroSplitChart data={data} />
                         </div>

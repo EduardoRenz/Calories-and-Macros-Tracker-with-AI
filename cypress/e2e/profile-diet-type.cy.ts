@@ -1,7 +1,11 @@
 describe('Profile Diet Type Selection', () => {
     beforeEach(() => {
         // Login and navigate
-        cy.visit('/');
+        cy.visit('/', {
+            onBeforeLoad(win) {
+                win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
+            },
+        });
         cy.contains('Sign in with Google').click();
         cy.url().should('include', '/dashboard');
 

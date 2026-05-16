@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GeminiNutritionAnalysisService } from '@/data/services/GeminiNutritionAnalysisService';
-import { verifyAuth } from '../auth-middleware';
+import { ServiceFactory } from '@/data/ServiceFactory';
 import { checkAiAccess } from '../feature-flag-check';
-import { env } from '@/env';
+import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
     try {
-        await verifyAuth(req.headers.get('Authorization'));
+        const authHeader = req.headers.get('Authorization');
 
-        const accessCheck = await checkAiAccess();
+        // Unified AI access check for nutrition analysis feature
+        const accessCheck = await checkAiAccess(authHeader, 'food_analysis');
         if (accessCheck) return accessCheck;
 
         const { ingredientName, quantity, language } = await req.json();
 
-        let service;
-
-        if (env.GEMINI_API_KEY) {
-            service = new GeminiNutritionAnalysisService(env.GEMINI_API_KEY);
-        }
-        // Note: OPENAI_API_KEY and DEEPSEEK_API_KEY are not in env schema
-        // These would need to be added if you want to use them server-side
+        // Get AI priority list from feature flag for premium users
+        const priorityList = await getServerAiPriorityList();
+        const service = await ServiceFactory.getNutritionAnalysisService(priorityList);
 
         if (!service) {
             return NextResponse.json({ error: 'No AI service configured on server' }, { status: 500 });

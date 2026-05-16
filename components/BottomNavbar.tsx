@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { HomeIcon, SparklesIcon, ChatBubbleLeftRightIcon, UserIcon } from './icons';
+import { usePathname, useRouter } from 'next/navigation';
+import { HomeIcon, AppRoundIcon, ChatBubbleLeftRightIcon, UserIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import { useChatAssistant } from '../contexts/ChatAssistantContext';
 import { useFeatureFlags } from '../contexts/FeatureFlagContext';
+import { useApiKeys } from '../hooks/useApiKeys';
+import { ModelImageWarningModal } from './ModelImageWarningModal';
 
 interface BottomNavbarProps {
     onQuickMealClick: () => void;
@@ -15,8 +17,11 @@ interface BottomNavbarProps {
 const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
     const { t } = useTranslation();
     const pathname = usePathname();
+    const router = useRouter();
     const { openChat, closeChat, isOpen } = useChatAssistant();
     const { isFeatureEnabled, isUserApiKeysRequired } = useFeatureFlags();
+    const { isDeepSeekOnly, nonVisionProvider } = useApiKeys();
+    const [showWarningModal, setShowWarningModal] = useState(false);
 
     const isChatEnabled = isFeatureEnabled('enable_chatbot');
 
@@ -29,14 +34,14 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
     };
 
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-healthpal-panel/80 backdrop-blur-sm border-t border-healthpal-border z-40">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-neutral-panel/80 backdrop-blur-sm border-t border-neutral-border z-40">
             <nav className="flex items-center justify-around h-full max-w-md mx-auto px-2" data-testid="mobile-bottom-nav">
                 <div className="w-1/3">
                     <Link
                         href="/dashboard"
                         className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${pathname === '/dashboard'
-                            ? 'text-healthpal-green'
-                            : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                            ? 'text-brand-green'
+                            : 'text-neutral-text-secondary hover:text-neutral-text-primary'
                             }`}
                     >
                         <HomeIcon className="w-6 h-6" />
@@ -52,8 +57,8 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                         <button
                             onClick={handleChatClick}
                             className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${isOpen
-                                ? 'text-healthpal-green'
-                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                ? 'text-brand-green'
+                                : 'text-neutral-text-secondary hover:text-neutral-text-primary'
                                 }`}
                             id="mobile-chat-button"
                         >
@@ -64,8 +69,8 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
                         <Link
                             href="/profile"
                             className={`flex flex-col items-center justify-center w-full h-full pt-1 transition-colors ${pathname === '/profile'
-                                ? 'text-healthpal-green'
-                                : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                                ? 'text-brand-green'
+                                : 'text-neutral-text-secondary hover:text-neutral-text-primary'
                                 }`}
                         >
                             <UserIcon className="w-6 h-6" />
@@ -76,17 +81,34 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ onQuickMealClick }) => {
             </nav>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <button
-                    onClick={isUserApiKeysRequired ? undefined : onQuickMealClick}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center text-black shadow-lg shadow-black/30 transition-all ${isUserApiKeysRequired
-                        ? 'bg-healthpal-card text-healthpal-text-secondary cursor-not-allowed grayscale'
-                        : 'bg-healthpal-green hover:brightness-110'
+                    onClick={() => {
+                        if (isUserApiKeysRequired) return;
+                        if (isDeepSeekOnly) {
+                            setShowWarningModal(true);
+                            return;
+                        }
+                        onQuickMealClick();
+                    }}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center overflow-hidden shadow-ambient transition-all ${isUserApiKeysRequired || isDeepSeekOnly
+                        ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed grayscale opacity-80'
+                        : 'bg-transparent text-on-secondary hover:brightness-110 active:scale-95'
                         }`}
                     aria-label={t('navbar.quick_meal')}
-                    title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : undefined}
+                    title={isUserApiKeysRequired ? t('dashboard.api_keys_required_title') : nonVisionProvider ? t('model_image_warning.title', { model: nonVisionProvider }) : undefined}
                 >
-                    <SparklesIcon className="w-8 h-8" />
+                    <AppRoundIcon className="w-[3.7rem] h-[3.7rem] shrink-0" />
                 </button>
             </div>
+
+            <ModelImageWarningModal
+                isOpen={showWarningModal}
+                onClose={() => setShowWarningModal(false)}
+                onGoToSettings={() => {
+                    setShowWarningModal(false);
+                    router.push('/settings');
+                }}
+                modelName={nonVisionProvider || 'DeepSeek'}
+            />
         </div>
     );
 };

@@ -2,9 +2,17 @@
 describe('Food Analysis Page', () => {
     beforeEach(() => {
         // Login and navigate
-        cy.visit('/');
+        cy.visit('/', {
+            onBeforeLoad(win) {
+                win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
+            },
+        });
         cy.contains('Sign in with Google').click();
         cy.url().should('include', '/dashboard');
+
+        // Ensure AI features are accessible for functional testing
+        cy.setAiAccessMode('open');
+        cy.setFeatureRequirement('food_analysis', 'free');
     });
 
     it('should navigate to Food Analysis page via Profile submenu', () => {

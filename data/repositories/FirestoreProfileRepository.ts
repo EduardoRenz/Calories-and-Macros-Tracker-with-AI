@@ -6,18 +6,18 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
-// This is the default profile structure for a new user.
+// This is the default profile structure for a new user (with null values for required fields).
 const initialProfileData = {
     personalInfo: {
-        age: 30,
-        height: 170,
-        weight: 70,
-        gender: 'other' as 'female' | 'male' | 'other',
+        age: null as number | null,
+        height: null as number | null,
+        weight: null as number | null,
+        gender: null as 'female' | 'male' | 'other' | null,
     },
     fitnessGoals: {
-        primaryGoal: 'maintain' as 'lose' | 'maintain' | 'gain',
-        targetWeight: 70,
-        activityLevel: 'lightly' as 'sedentary' | 'lightly' | 'moderately' | 'very',
+        primaryGoal: null as 'lose' | 'maintain' | 'gain' | null,
+        targetWeight: null as number | null,
+        activityLevel: null as 'sedentary' | 'lightly' | 'moderately' | 'very' | null,
     },
     weightHistory: [],
     healthConditions: { selected: [] },
@@ -80,6 +80,17 @@ export class FirestoreProfileRepository implements ProfileRepository {
                 const loaded = docSnap.data() as UserProfile;
                 return {
                     ...loaded,
+                    personalInfo: {
+                        age: loaded.personalInfo?.age ?? null,
+                        height: loaded.personalInfo?.height ?? null,
+                        weight: loaded.personalInfo?.weight ?? null,
+                        gender: loaded.personalInfo?.gender ?? null,
+                    },
+                    fitnessGoals: {
+                        primaryGoal: loaded.fitnessGoals?.primaryGoal ?? null,
+                        targetWeight: loaded.fitnessGoals?.targetWeight ?? null,
+                        activityLevel: loaded.fitnessGoals?.activityLevel ?? null,
+                    },
                     healthConditions: loaded.healthConditions ?? { selected: [] },
                     dietType: loaded.dietType ?? 'omnivore',
                 };
@@ -91,25 +102,29 @@ export class FirestoreProfileRepository implements ProfileRepository {
         const currentProfile = await this.getProfile();
 
         const newWeight = profile.personalInfo.weight;
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const today = `${year}-${month}-${day}`;
+        let updatedHistory = [...currentProfile.weightHistory];
 
-        const updatedHistory = [...currentProfile.weightHistory];
-        const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
+        // Only update weight history if weight is provided
+        if (newWeight !== null && newWeight > 0) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`;
 
-        if (entryForTodayIndex !== -1) {
-            updatedHistory[entryForTodayIndex] = {
-                ...updatedHistory[entryForTodayIndex],
-                weight: newWeight
-            };
-        } else {
-            updatedHistory.push({ date: today, weight: newWeight });
+            const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
+
+            if (entryForTodayIndex !== -1) {
+                updatedHistory[entryForTodayIndex] = {
+                    ...updatedHistory[entryForTodayIndex],
+                    weight: newWeight
+                };
+            } else {
+                updatedHistory.push({ date: today, weight: newWeight });
+            }
+
+            updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         }
-
-        updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         const profileToSave: UserProfile = { ...profile, weightHistory: updatedHistory };
 

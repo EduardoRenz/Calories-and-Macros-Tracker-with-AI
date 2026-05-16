@@ -1,10 +1,15 @@
 import { OpenAIImageRecognitionService } from './OpenAIImageRecognitionService';
+import { Ingredient } from '../../domain/entities/dashboard';
 
 export class DeepSeekImageRecognitionService extends OpenAIImageRecognitionService {
-    constructor(apiKey: string) {
+    constructor(apiKey: string, model?: string) {
         // DeepSeek API is OpenAI-compatible.
-        // We use 'deepseek-chat'. If this model doesn't support vision, it will fail 
-        // and the FallbackService will automatically try the next provider.
-        super(apiKey, 'https://api.deepseek.com', 'deepseek-chat');
+        super(apiKey, 'https://api.deepseek.com', model || 'deepseek-v4-flash');
+    }
+
+    async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
+        // DeepSeek does not support image recognition - fail immediately
+        // This allows the fallback service to skip to the next model
+        throw new Error('DeepSeek does not support image recognition');
     }
 }

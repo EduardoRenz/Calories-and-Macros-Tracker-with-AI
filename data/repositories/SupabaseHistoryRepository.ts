@@ -80,8 +80,14 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryRange:${params.startDate}:${params.endDate}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        // Using hardcoded user ID for now - removed profile repository dependency
-        const userId = '6abcbe20-3ded-40e6-9ede-ef670ac14324';
+        const supabase = getSupabaseClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+          throw new Error('User not authenticated');
+        }
+
+        const userId = user.id;
         const days = await this.loadDays(userId, params.startDate, params.endDate);
         const fibers = await this.loadFibersForDays(days.map(d => d.id));
 
@@ -108,9 +114,14 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryPage:${params.startDate}:${params.endDate}:${params.pageSize}:${params.cursor}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        // Using hardcoded user ID for now - removed profile repository dependency
-        const userId = '6abcbe20-3ded-40e6-9ede-ef670ac14324';
         const supabase = getSupabaseClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+          throw new Error('User not authenticated');
+        }
+
+        const userId = user.id;
 
         let q = supabase
           .from('dashboard_days')

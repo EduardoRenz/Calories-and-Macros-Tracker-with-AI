@@ -21,11 +21,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     setLoading(true);
-    authRepository.onAuthStateChanged((firebaseUser) => {
-      setUser(firebaseUser);
+    const unsubscribe = authRepository.onAuthStateChanged((user) => {
+      setUser(user);
       setLoading(false);
     });
 
+    return () => unsubscribe();
   }, [authRepository]);
 
   const signIn = async (email: string, password?: string) => {

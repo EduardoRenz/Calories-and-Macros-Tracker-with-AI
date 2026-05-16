@@ -8,7 +8,9 @@ export const HealthPalLogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) =>
 
 export const HomeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a.75.75 0 011.06 0l8.955 8.955M3 11.25V21a.75.75 0 00.75.75H8.25a.75.75 0 00.75-.75V15a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v5.25a.75.75 0 00.75.75H20.25a.75.75 0 00.75-.75V11.25m-18 0A24.004 24.004 0 0112 3c4.183 0 8.046 1.47 11.25 3.938" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 10v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 12l9-9a1.5 1.5 0 0 1 2 0l9 9" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10 21v-6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6" />
     </svg>
 );
 
@@ -84,7 +86,12 @@ export const LogoutIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export const GlobeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c1.354 0 2.665-.25 3.88-.716M12 21c-1.354 0-2.665-.25-3.88-.716M12 3c1.354 0 2.665.25 3.88.716M12 3c-1.354 0-2.665-.25-3.88-.716M3.116 14.253a9.003 9.003 0 010-4.506M20.884 14.253a9.003 9.003 0 000-4.506M12 3v18M12 3a9 9 0 00-7.79 13.253M12 3a9 9 0 017.79 13.253" />
+        <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v20" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 12h20" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 15h16.8" />
     </svg>
 );
 
@@ -95,10 +102,46 @@ export const RkIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     </svg>
 );
 
+export const OpenRouterIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+    </svg>
+);
+
 
 export const SparklesIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.455-2.456L12.75 18l1.178-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.178a3.375 3.375 0 002.456 2.456L20.25 18l-1.178.398a3.375 3.375 0 00-2.456 2.456z" />
+    </svg>
+);
+
+export const AppIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" {...props}>
+        <g transform="translate(32 10.665)">
+            <rect x="24" y="61.89" width="405.33" height="362.67" rx="116.72" ry="116.72" fill="#03be7c" />
+            <ellipse cx="325.02" cy="146.6" rx="16.87" ry="17.21" fill="#006664" />
+            <path fill="#006664" fillRule="evenodd" d="M379.02,152.19c-4.89,0-8.86,4.02-8.86,8.97v110.12h0v48.94c0,13.59-10.98,24.7-24.4,24.7h-26.13c-5.24,0-9.48,4.3-9.48,9.6v.24h35.62c18.76,0,34.1-15.54,34.1-34.53v-168.05h-.85Z" />
+            <g>
+                <path fill="#006664" d="M93.38,320.05h0v-119.1h9.84v109.26c0,5.43-4.4,9.84-9.84,9.84Z" />
+                <path fill="#006664" fillRule="evenodd" d="M103.22,152c0-13.58,11.11-24.7,24.7-24.7h29.21c3.78,0,6.85-3.07,6.85-6.85v-2.99h-36.06c-19,0-34.54,15.54-34.54,34.54v48.94h9.84v-48.95Z" />
+            </g>
+            <path fill="#006664" d="M324.23,214.41c-5.19-12.28-12.63-23.3-22.09-32.77-9.47-9.47-20.49-16.9-32.77-22.09-12.72-5.38-26.22-8.11-40.14-8.11s-27.42,2.73-40.14,8.11c-12.28,5.19-23.3,12.63-32.77,22.09-9.47,9.47-16.9,20.49-22.09,32.77-5.38,12.72-8.11,26.22-8.11,40.14s2.73,27.42,8.11,40.14c5.19,12.28,12.63,23.3,22.09,32.77,9.47,9.47,20.49,16.9,32.77,22.09,14.58,6.17,30.19,8.85,46.27,7.93,22.38-1.28,43.9-9.94,60.89-24.56,12.31-10.59,21.76-23.51,27.98-38.23,5.38-12.72,8.11-26.22,8.11-40.14s-2.73-27.42-8.11-40.14ZM311.84,289.44c-1.01,2.38-2.12,4.71-3.32,6.99.84-5.86,1.08-11.96.68-18.25-2.81-44.37-11.9-63.03-27.32-79.53-19.39-20.77-51.65-28.36-78.27-18.43-1.94.72-4.04,1.72-4.76,3.66-.65,1.74-.55,4.01.7,5.38,23.84,26.32,18.61,42.79,39.34,63.32,13.13,13,37.86,15.66,51.33,7.72,12.61,49.45-22.2,83.89-61,83.89-12.11,0-23.85-2.37-34.89-7.04-10.67-4.51-20.26-10.98-28.5-19.22-8.24-8.24-14.7-17.82-19.22-28.5-4.67-11.05-7.04-22.79-7.04-34.89s2.37-23.85,7.04-34.89c4.51-10.67,10.98-20.26,19.22-28.5,8.24-8.24,17.82-14.7,28.5-19.22,11.05-4.67,22.79-7.04,34.89-7.04s23.85,2.37,34.89,7.04c10.67,4.51,20.26,10.98,28.5,19.22,8.24,8.24,14.7,17.82,19.22,28.5,4.67,11.05,7.04,22.79,7.04,34.89s-2.37,23.85-7.04,34.89Z" />
+        </g>
+    </svg>
+);
+
+export const AppRoundIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" {...props}>
+        <circle cx="256" cy="256" r="256" fill="#03be7c" />
+        <g transform="translate(51 44) scale(0.92)">
+            <ellipse cx="325.02" cy="146.6" rx="16.87" ry="17.21" fill="#006664" />
+            <path fill="#006664" fillRule="evenodd" d="M379.02,152.19c-4.89,0-8.86,4.02-8.86,8.97v110.12h0v48.94c0,13.59-10.98,24.7-24.4,24.7h-26.13c-5.24,0-9.48,4.3-9.48,9.6v.24h35.62c18.76,0,34.1-15.54,34.1-34.53v-168.05h-.85Z" />
+            <g>
+                <path fill="#006664" d="M93.38,320.05h0v-119.1h9.84v109.26c0,5.43-4.4,9.84-9.84,9.84Z" />
+                <path fill="#006664" fillRule="evenodd" d="M103.22,152c0-13.58,11.11-24.7,24.7-24.7h29.21c3.78,0,6.85-3.07,6.85-6.85v-2.99h-36.06c-19,0-34.54,15.54-34.54,34.54v48.94h9.84v-48.95Z" />
+            </g>
+            <path fill="#006664" d="M324.23,214.41c-5.19-12.28-12.63-23.3-22.09-32.77-9.47-9.47-20.49-16.9-32.77-22.09-12.72-5.38-26.22-8.11-40.14-8.11s-27.42,2.73-40.14,8.11c-12.28,5.19-23.3,12.63-32.77,22.09-9.47,9.47-16.9,20.49-22.09,32.77-5.38,12.72-8.11,26.22-8.11,40.14s2.73,27.42,8.11,40.14c5.19,12.28,12.63,23.3,22.09,32.77,9.47,9.47,20.49,16.9,32.77,22.09,14.58,6.17,30.19,8.85,46.27,7.93,22.38-1.28,43.9-9.94,60.89-24.56,12.31-10.59,21.76-23.51,27.98-38.23,5.38-12.72,8.11-26.22,8.11-40.14s-2.73-27.42-8.11-40.14ZM311.84,289.44c-1.01,2.38-2.12,4.71-3.32,6.99.84-5.86,1.08-11.96.68-18.25-2.81-44.37-11.9-63.03-27.32-79.53-19.39-20.77-51.65-28.36-78.27-18.43-1.94.72-4.04,1.72-4.76,3.66-.65,1.74-.55,4.01.7,5.38,23.84,26.32,18.61,42.79,39.34,63.32,13.13,13,37.86,15.66,51.33,7.72,12.61,49.45-22.2,83.89-61,83.89-12.11,0-23.85-2.37-34.89-7.04-10.67-4.51-20.26-10.98-28.5-19.22-8.24-8.24-14.7-17.82-19.22-28.5-4.67-11.05-7.04-22.79-7.04-34.89s2.37-23.85,7.04-34.89c4.51-10.67,10.98-20.26,19.22-28.5,8.24-8.24,17.82-14.7,28.5-19.22,11.05-4.67,22.79-7.04,34.89-7.04s23.85,2.37,34.89,7.04c10.67,4.51,20.26,10.98,28.5,19.22,8.24,8.24,14.7,17.82,19.22,28.5,4.67,11.05,7.04,22.79,7.04,34.89s-2.37,23.85-7.04,34.89Z" />
+        </g>
     </svg>
 );
 
@@ -163,5 +206,74 @@ export const SendIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 export const ChatBubbleLeftRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+    </svg>
+);
+
+export const CalendarIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+    </svg>
+);
+
+export const HistoryIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+
+export const RefreshIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+    </svg>
+);
+
+export const CheckCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+
+export const XCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+
+// Alias for XMarkIcon to match common naming
+export const XIcon = XMarkIcon;
+
+export const AlertIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+);
+
+export const InfoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+    </svg>
+);
+
+export const LumiIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" {...props}>
+        {/* Body / Head */}
+        <ellipse cx="50" cy="55" rx="38" ry="36" fill="white" />
+        {/* Ear left */}
+        <ellipse cx="14" cy="56" rx="8" ry="9" fill="#00C853" />
+        {/* Ear right */}
+        <ellipse cx="86" cy="56" rx="8" ry="9" fill="#00C853" />
+        {/* Top antenna nub */}
+        <ellipse cx="50" cy="20" rx="9" ry="7" fill="#00C853" />
+        <rect x="47" y="19" width="6" height="10" fill="white" />
+        {/* Face screen */}
+        <rect x="22" y="34" width="56" height="42" rx="12" ry="12" fill="#1a1a1a" />
+        {/* Left eye */}
+        <ellipse cx="37" cy="53" rx="7" ry="7" fill="#00E676" />
+        <ellipse cx="37" cy="53" rx="3.5" ry="3.5" fill="#69FF97" opacity="0.7" />
+        {/* Right eye */}
+        <ellipse cx="63" cy="53" rx="7" ry="7" fill="#00E676" />
+        <ellipse cx="63" cy="53" rx="3.5" ry="3.5" fill="#69FF97" opacity="0.7" />
+        {/* Smile */}
+        <path d="M 38 65 Q 50 74 62 65" stroke="#00E676" strokeWidth="3.5" strokeLinecap="round" fill="none" />
     </svg>
 );

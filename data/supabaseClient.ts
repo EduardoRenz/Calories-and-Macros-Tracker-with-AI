@@ -7,10 +7,10 @@ export const getSupabaseClient = (): SupabaseClient => {
   if (client) return client;
 
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const key = env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!url || !key) {
-    throw new Error('Supabase client not configured. Missing SUPABASE_URL or SUPABASE_ANON_KEY');
+    throw new Error('Supabase client not configured. Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY');
   }
 
   client = createClient(url, key);

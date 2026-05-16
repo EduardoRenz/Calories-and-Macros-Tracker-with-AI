@@ -9,9 +9,9 @@ import { CalorieCalculationService } from '@/domain/services/CalorieCalculationS
 import { Avatar } from '@/components/ui/Avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
-import { EditIcon } from '@/components/icons';
 import ProfileNavigation from '@/components/ProfileNavigation';
 import HealthConditionsSection, { type HealthConditionOption } from '@/components/HealthConditionsSection';
+import { Button } from '@/components/ui/Button';
 
 // --- Reusable Chart Components ---
 const WeightProgressChart: React.FC<{ data: WeightEntry[] }> = ({ data }) => {
@@ -23,14 +23,15 @@ const WeightProgressChart: React.FC<{ data: WeightEntry[] }> = ({ data }) => {
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
 
-    const formatTooltipLabel = (label: string) => {
+    const formatTooltipLabel = (label: React.ReactNode) => {
+        if (typeof label !== 'string') return label;
         const [year, month, day] = label.split('-').map(Number);
         const date = new Date(year, month - 1, day);
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
     return (
-        <div className="bg-healthpal-card p-6 rounded-2xl">
+        <div className="bg-neutral-card p-6 rounded-2xl">
             <h3 className="text-xl font-bold mb-4">{t('profile.weight_progress')}</h3>
             <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
@@ -64,7 +65,7 @@ const GoalProgressChart: React.FC<{ percentage: number }> = ({ percentage }) => 
     const goalProgressData = [{ name: 'Complete', value: percentage }, { name: 'Remaining', value: 100 - percentage }];
 
     return (
-        <div className="bg-healthpal-card p-6 rounded-2xl flex flex-col items-center justify-center">
+        <div className="bg-neutral-card p-6 rounded-2xl flex flex-col items-center justify-center">
             <h3 className="text-xl font-bold mb-4">{t('profile.goal_progress')}</h3>
             <div className="w-40 h-40 relative">
                 <ResponsiveContainer width="100%" height="100%">
@@ -77,8 +78,8 @@ const GoalProgressChart: React.FC<{ percentage: number }> = ({ percentage }) => 
                     </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-3xl font-bold text-healthpal-yellow">{percentage}%</span>
-                    <span className="text-xs text-healthpal-text-secondary">{t('profile.complete')}</span>
+                    <span className="text-3xl font-bold text-brand-yellow">{percentage}%</span>
+                    <span className="text-xs text-neutral-text-secondary">{t('profile.complete')}</span>
                 </div>
             </div>
         </div>
@@ -110,14 +111,15 @@ export default function ProfilePage() {
 
     const calorieGoal = useMemo(() => {
         if (!profile) return 0;
-        return CalorieCalculationService.calculateGoals(profile).calories;
+        const goals = CalorieCalculationService.calculateGoals(profile);
+        return goals?.calories ?? 0;
     }, [profile]);
 
     const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         if (!profile) return;
         const { name, value } = e.target;
         editProfile({
-            personalInfo: { ...profile.personalInfo, [name]: name === 'gender' ? value : parseFloat(value) || 0 }
+            personalInfo: { ...profile.personalInfo, [name]: name === 'gender' ? value : (parseFloat(value) || null) }
         });
     };
 
@@ -125,7 +127,7 @@ export default function ProfilePage() {
         if (!profile) return;
         const { name, value } = e.target;
         editProfile({
-            fitnessGoals: { ...profile.fitnessGoals, [name]: name === 'activityLevel' ? value : parseFloat(value) || 0 }
+            fitnessGoals: { ...profile.fitnessGoals, [name]: name === 'activityLevel' ? value : (parseFloat(value) || null) }
         });
     };
 
@@ -178,8 +180,10 @@ export default function ProfilePage() {
         if (!profile || profile.weightHistory.length === 0) return 0;
         const startWeight = profile.weightHistory[0]?.weight;
 
-        const { targetWeight } = profile.fitnessGoals;
+        const targetWeight = profile.fitnessGoals.targetWeight;
         const currentWeight = profile.personalInfo.weight;
+
+        if (targetWeight === null || currentWeight === null) return 0;
 
         const totalWeightToChange = Math.abs(startWeight - targetWeight);
         if (totalWeightToChange === 0) return profile.fitnessGoals.primaryGoal === 'maintain' ? 100 : 0;
@@ -192,18 +196,24 @@ export default function ProfilePage() {
         return Math.max(0, Math.min(percentage, 100));
     }, [profile]);
 
+    const weightToGo = useMemo(() => {
+        if (!profile) return 0;
+        const currentWeight = profile.personalInfo.weight;
+        const targetWeight = profile.fitnessGoals.targetWeight;
+        if (currentWeight === null || targetWeight === null) return 0;
+        return Math.abs(currentWeight - targetWeight);
+    }, [profile]);
+
     if (loading) {
-        return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('profile.loading')}</div>;
+        return <div className="flex justify-center items-center h-96 text-neutral-text-secondary">{t('profile.loading')}</div>;
     }
 
     if (!profile) {
-        return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('profile.load_error')}</div>;
+        return <div className="flex justify-center items-center h-96 text-neutral-text-secondary">{t('profile.load_error')}</div>;
     }
 
-    const weightToGo = Math.abs(profile.personalInfo.weight - profile.fitnessGoals.targetWeight);
-
     return (
-        <div className="text-healthpal-text-primary">
+        <div className="text-neutral-text-primary">
             <h2 className="text-3xl font-bold my-8">{t('profile.title')}</h2>
 
             <ProfileNavigation
@@ -217,51 +227,48 @@ export default function ProfilePage() {
                 {/* Left Column */}
                 <div className="lg:col-span-2 space-y-8">
                     {/* User Info */}
-                    <div className="bg-healthpal-card p-6 rounded-2xl flex items-center gap-6">
+                    <div className="bg-neutral-card p-6 rounded-2xl flex items-center gap-6">
                         <div className="relative">
                             <Avatar
                                 name={user?.displayName || 'User'}
                                 size={96}
-                                className="border border-healthpal-border"
+                                className="border border-neutral-border"
                                 photoURL={user?.photoURL}
                             />
-                            <button className="absolute bottom-0 right-0 w-8 h-8 bg-healthpal-green rounded-full flex items-center justify-center text-black hover:brightness-110">
-                                <EditIcon className="w-5 h-5" />
-                            </button>
                         </div>
                         <div>
                             <h3 className="text-2xl font-bold">{user?.displayName}</h3>
-                            <p className="text-healthpal-text-secondary">{user?.email}</p>
+                            <p className="text-neutral-text-secondary">{user?.email}</p>
                         </div>
                     </div>
 
                     {/* Personal Info */}
-                    <div className="bg-healthpal-card p-6 rounded-2xl">
+                    <div className="bg-neutral-card p-6 rounded-2xl">
                         <h3 className="text-xl font-bold mb-6">{t('profile.personal_info.title')}</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.age')}</label>
-                                <input type="number" name="age" value={profile.personalInfo.age} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.personal_info.age')}</label>
+                                <input type="number" name="age" value={profile.personalInfo.age ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.height')}</label>
-                                <input type="number" name="height" value={profile.personalInfo.height} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.personal_info.height')}</label>
+                                <input type="number" name="height" value={profile.personalInfo.height ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.weight')}</label>
-                                <input type="number" name="weight" value={profile.personalInfo.weight} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.personal_info.weight')}</label>
+                                <input type="number" name="weight" value={profile.personalInfo.weight ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.gender')}</label>
-                                <select name="gender" value={profile.personalInfo.gender} onChange={handlePersonalInfoChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
+                                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.personal_info.gender')}</label>
+                                <select name="gender" value={profile.personalInfo.gender ?? ''} onChange={handlePersonalInfoChange} className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3 appearance-none">
                                     <option value="female">{t('profile.personal_info.female')}</option>
                                     <option value="male">{t('profile.personal_info.male')}</option>
                                     <option value="other">{t('profile.personal_info.other')}</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.personal_info.diet_type')}</label>
-                                <select name="dietType" value={profile.dietType ?? 'omnivore'} onChange={handleDietTypeChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
+                                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.personal_info.diet_type')}</label>
+                                <select name="dietType" value={profile.dietType ?? 'omnivore'} onChange={handleDietTypeChange} className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3 appearance-none">
                                     <option value="omnivore">{t('profile.personal_info.diet_types.omnivore')}</option>
                                     <option value="vegetarian">{t('profile.personal_info.diet_types.vegetarian')}</option>
                                     <option value="vegan">{t('profile.personal_info.diet_types.vegan')}</option>
@@ -274,24 +281,24 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Fitness Goals */}
-                    <div className="bg-healthpal-card p-6 rounded-2xl">
+                    <div className="bg-neutral-card p-6 rounded-2xl">
                         <h3 className="text-xl font-bold mb-6">{t('profile.fitness_goals.title')}</h3>
                         <div>
-                            <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.fitness_goals.primary_goal')}</label>
-                            <div className="grid grid-cols-3 gap-2 border border-healthpal-border rounded-lg p-1 mb-6">
-                                <button onClick={() => handlePrimaryGoalClick('lose')} className={`py-2 rounded-md font-semibold text-sm transition-colors ${profile.fitnessGoals.primaryGoal === 'lose' ? 'bg-healthpal-green text-black' : 'hover:bg-healthpal-border'}`}>{t('profile.fitness_goals.lose_weight')}</button>
-                                <button onClick={() => handlePrimaryGoalClick('maintain')} className={`py-2 rounded-md font-semibold text-sm transition-colors ${profile.fitnessGoals.primaryGoal === 'maintain' ? 'bg-healthpal-green text-black' : 'hover:bg-healthpal-border'}`}>{t('profile.fitness_goals.maintain_weight')}</button>
-                                <button onClick={() => handlePrimaryGoalClick('gain')} className={`py-2 rounded-md font-semibold text-sm transition-colors ${profile.fitnessGoals.primaryGoal === 'gain' ? 'bg-healthpal-green text-black' : 'hover:bg-healthpal-border'}`}>{t('profile.fitness_goals.gain_muscle')}</button>
+                            <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.fitness_goals.primary_goal')}</label>
+                            <div className="grid grid-cols-3 gap-2 border border-neutral-border rounded-lg p-1 mb-6">
+                                <Button variant={profile.fitnessGoals.primaryGoal === 'lose' ? 'secondary' : 'ghost'} size="sm" onClick={() => handlePrimaryGoalClick('lose')} className="py-2">{t('profile.fitness_goals.lose_weight')}</Button>
+                                <Button variant={profile.fitnessGoals.primaryGoal === 'maintain' ? 'secondary' : 'ghost'} size="sm" onClick={() => handlePrimaryGoalClick('maintain')} className="py-2">{t('profile.fitness_goals.maintain_weight')}</Button>
+                                <Button variant={profile.fitnessGoals.primaryGoal === 'gain' ? 'secondary' : 'ghost'} size="sm" onClick={() => handlePrimaryGoalClick('gain')} className="py-2">{t('profile.fitness_goals.gain_muscle')}</Button>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.fitness_goals.target_weight')}</label>
-                                <input type="number" name="targetWeight" value={profile.fitnessGoals.targetWeight} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3" />
+                                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.fitness_goals.target_weight')}</label>
+                                <input type="number" name="targetWeight" value={profile.fitnessGoals.targetWeight ?? ''} onChange={handleFitnessGoalChange} className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-healthpal-text-secondary mb-2">{t('profile.fitness_goals.activity_level')}</label>
-                                <select name="activityLevel" value={profile.fitnessGoals.activityLevel} onChange={handleFitnessGoalChange} className="w-full bg-healthpal-panel border border-healthpal-border rounded-lg p-3 appearance-none">
+                                <label className="block text-sm font-medium text-neutral-text-secondary mb-2">{t('profile.fitness_goals.activity_level')}</label>
+                                <select name="activityLevel" value={profile.fitnessGoals.activityLevel ?? ''} onChange={handleFitnessGoalChange} className="w-full bg-neutral-panel border border-neutral-border rounded-lg p-3 appearance-none">
                                     <option value="sedentary">{t('profile.fitness_goals.sedentary')}</option>
                                     <option value="lightly">{t('profile.fitness_goals.lightly_active')}</option>
                                     <option value="moderately">{t('profile.fitness_goals.moderately_active')}</option>
@@ -310,41 +317,55 @@ export default function ProfilePage() {
                         onToggle={handleHealthConditionToggle}
                     />
                     <div className="flex justify-end items-center gap-4">
-                        {showSaveMessage && <p className="text-healthpal-green text-sm">{t('profile.update_success')}</p>}
+                        {showSaveMessage && <p className="text-brand-green text-sm">{t('profile.update_success')}</p>}
                         {hasChanges && (
                             <button
                                 onClick={resetProfile}
-                                className="px-4 py-3 rounded-lg font-semibold text-healthpal-text-primary hover:bg-healthpal-card transition-colors"
+                                className="px-4 py-3 rounded-lg font-semibold text-neutral-text-primary hover:bg-neutral-card transition-colors"
                             >
                                 {t('profile.cancel')}
                             </button>
                         )}
-                        <button
+                        <Button
                             onClick={handleUpdateProfile}
                             disabled={isSaving || !hasChanges}
-                            className="bg-healthpal-green text-black font-bold py-3 px-6 rounded-lg hover:brightness-110 transition-all text-md disabled:opacity-50 disabled:cursor-not-allowed"
+                            isLoading={isSaving}
+                            variant="secondary"
+                            size="md"
                         >
                             {isSaving ? t('profile.saving') : t('profile.update_profile')}
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {/* Right Column */}
                 <div className="lg:col-span-1 space-y-8">
                     {/* Progress Summary */}
-                    <div className="bg-healthpal-card p-6 rounded-2xl">
-                        <h3 className="text-xl font-bold mb-4">{t('profile.progress_summary.title')}</h3>
+                    <div className="bg-neutral-card p-6 rounded-2xl">
+                        <h3 className="text-xl font-bold mb-6">{t('profile.progress_summary.title')}</h3>
+                        
                         <div className="flex justify-between items-center mb-4">
-                            <span className="text-healthpal-text-secondary">{t('profile.progress_summary.current_weight')}</span>
-                            <span className="font-bold text-lg">{profile.personalInfo.weight} kg</span>
+                            <span className="text-neutral-text-secondary">{t('profile.progress_summary.current_weight')}</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-xl font-bold text-neutral-text-primary">{profile.personalInfo.weight}</span>
+                                <span className="text-xs font-bold text-neutral-text-secondary uppercase">kg</span>
+                            </div>
                         </div>
+
                         <div className="flex justify-between items-center mb-6">
-                            <span className="text-healthpal-text-secondary">{t('profile.progress_summary.weight_to_go')}</span>
-                            <span className="font-bold text-lg bg-healthpal-yellow text-black px-3 py-1 rounded-md">{weightToGo.toFixed(1)} kg</span>
+                            <span className="text-neutral-text-secondary">{t('profile.progress_summary.weight_to_go')}</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-2xl font-bold text-brand-yellow">{weightToGo.toFixed(1)}</span>
+                                <span className="text-xs font-bold text-neutral-text-secondary uppercase">kg</span>
+                            </div>
                         </div>
-                        <div className="bg-healthpal-panel p-4 rounded-lg text-center">
-                            <span className="text-healthpal-text-secondary text-sm">{t('profile.progress_summary.daily_calorie_target')}</span>
-                            <p className="font-bold text-2xl text-healthpal-green">{calorieGoal} kcal</p>
+
+                        <div className="bg-neutral-panel/50 p-5 rounded-2xl text-center border border-neutral-border/50">
+                            <span className="text-neutral-text-secondary text-xs font-bold uppercase tracking-wider">{t('profile.progress_summary.daily_calorie_target')}</span>
+                            <div className="flex items-baseline justify-center gap-1 mt-1">
+                                <p className="text-3xl font-black text-brand-green">{calorieGoal}</p>
+                                <p className="text-xs font-bold text-neutral-text-secondary uppercase">kcal</p>
+                            </div>
                         </div>
                     </div>
 

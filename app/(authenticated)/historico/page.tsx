@@ -143,7 +143,7 @@ export default function HistoricoPage() {
     };
 
     if (isLoading) {
-        return <div className="flex justify-center items-center h-96 text-healthpal-text-secondary">{t('history.loading')}</div>;
+        return <div className="flex justify-center items-center h-96 text-neutral-text-secondary">{t('history.loading')}</div>;
     }
 
     return (

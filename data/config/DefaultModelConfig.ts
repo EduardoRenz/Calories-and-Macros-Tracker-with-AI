@@ -1,21 +1,27 @@
 export const DEFAULT_MODEL_CONFIG = {
-    gemini: {
-        chat: 'gemini-2.5-flash-lite',
-        food: 'gemini-2.5-flash-lite',
-        nutrition: 'gemini-3-flash-preview',
-        image: 'gemini-2.5-flash'
+    "gemini": {
+        "chat": "gemini-3.1-flash-lite-preview",
+        "food": "gemini-3.1-flash-lite-preview",
+        "nutrition": "gemini-3.1-flash-lite-preview",
+        "image": "gemini-3.1-flash-lite-preview"
     },
-    openai: {
-        chat: 'gpt-4o',
-        food: 'gpt-4o',
-        nutrition: 'gpt-4o',
-        image: 'gpt-4o'
+    "openai": {
+        "chat": "gpt-5.4-nano-2026-03-17",
+        "food": "gpt-5.4-nano-2026-03-17",
+        "nutrition": "gpt-5.4-nano-2026-03-17",
+        "image": "gpt-5-mini-2025-08-07"
     },
-    deepseek: {
-        chat: 'deepseek-chat',
-        food: 'deepseek-chat',
-        nutrition: 'deepseek-chat',
-        image: 'deepseek-chat'
+    "deepseek": {
+        "chat": "deepseek-v4-flash",
+        "food": "deepseek-v4-flash",
+        "nutrition": "deepseek-v4-flash",
+        "image": "deepseek-v4-flash"
+    },
+    "openrouter": {
+        "chat": "openrouter/auto",
+        "food": "openrouter/auto",
+        "nutrition": "openrouter/auto",
+        "image": "openrouter/auto"
     }
 } as const;
 

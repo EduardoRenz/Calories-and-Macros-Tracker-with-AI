@@ -9,7 +9,8 @@ export default {
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
-    "quick_meal": "Quick Meal"
+    "quick_meal": "Quick Meal",
+    "back_to_home": "Back to Home"
   },
   "history": {
     "title": "History",
@@ -48,9 +49,21 @@ export default {
     "limit_exceeded": "You've exceeded your limit.",
     "doing_great": "You're doing great!",
     "macro_split": "Macro Split",
+    "today_meals": "TODAY'S MEALS",
     "api_keys_required_title": "API Keys Required",
     "api_keys_required_desc": "To continue using AI features, please configure your own API keys in settings.",
-    "go_to_settings": "Go to Settings"
+    "go_to_settings": "Go to Settings",
+    "first_time": {
+      "title": "Welcome to LeveMente!",
+      "description": "To calculate your personalized calorie and macro goals, we need to know a bit about you. Please fill in your personal information and fitness goals below.",
+      "dietary_restrictions_title": "Dietary Restrictions (Optional)",
+      "dietary_restrictions_desc": "If you have any health conditions or dietary preferences, you can add them later in your profile settings for personalized recommendations.",
+      "go_to_profile": "Go to Profile Settings →",
+      "save_and_continue": "Save and Continue",
+      "saving": "Saving...",
+      "error_incomplete": "Please fill in all required fields to continue.",
+      "error_saving": "Failed to save profile. Please try again."
+    }
   },
   "meals": {
     "summary_title": "Meal Summary",
@@ -67,6 +80,7 @@ export default {
     "fiber_short": "Fiber",
     "calories_short": "kcal",
     "no_items_logged": "No items logged",
+    "remove_error": "Failed to remove ingredient. Please try again.",
     "ingredient": "Ingredient",
     "quantity": "Quantity",
     "total_macros": "Total Meal Macros",
@@ -85,7 +99,7 @@ export default {
     "fats": "Fats (g)",
     "cancel": "Cancel",
     "save": "Add Ingredient",
-    "analysis_error": "Could not get nutritional info. Please fill macros manually.",
+    "analysis_error": "Service temporarily unavailable. Please try again in a moment or fill macros manually.",
     "analyze_button_aria": "Analyze ingredient with AI",
     "macros_required": "Please fill in protein, carbs, and fats",
     "name_required": "Please fill in the ingredient name"
@@ -105,7 +119,7 @@ export default {
     "add_to_diary_button": "Add to Diary",
     "analysis_error": "Sorry, I couldn't analyze that image. Please try another one.",
     "add_error": "Failed to add items. Please try again.",
-    "gemini_results": "Gemini's Analysis",
+    "ai_analysis": "AI Analysis",
     "review_prompt": "Review the ingredients below before adding them to your diary.",
     "prompt_label": "Additional context",
     "prompt_optional": "optional",
@@ -116,8 +130,8 @@ export default {
     "tabs": {
       "settings": "Profile Settings",
       "progress": "Progress",
+      "food_analysis": "Food Analysis"
     },
-    "food_analysis": "Food Analysis",
     "health_conditions": {
       "title": "Health Conditions",
       "subtitle": "Select any conditions that apply so we can tailor safe dietary recommendations.",
@@ -145,6 +159,7 @@ export default {
       "female": "Female",
       "male": "Male",
       "other": "Other",
+      "select_gender": "Select gender",
       "diet_type": "Diet Type",
       "diet_types": {
         "omnivore": "Omnivore",
@@ -166,7 +181,8 @@ export default {
       "sedentary": "Sedentary",
       "lightly_active": "Lightly Active",
       "moderately_active": "Moderately Active",
-      "very_active": "Very Active"
+      "very_active": "Very Active",
+      "select_activity": "Select activity level"
     },
     "update_profile": "Update Profile",
     "saving": "Saving...",
@@ -228,6 +244,76 @@ export default {
       "adjustments_required": "Adjustments Required"
     }
   },
+  "plans": {
+    "title": "Choose your plan",
+    "subtitle": "Select the plan that fits your fitness journey. Upgrade anytime to unlock advanced features.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "loading": "Loading plans...",
+    "features": {
+      "free": [
+        { "text": "Manual food logging", "included": true },
+        { "text": "Support for own API keys (OpenAI/Gemini)", "included": true },
+        { "text": "Basic 7-day history", "included": true },
+        { "text": "7-day free trial with premium features", "included": true },
+        { "text": "Photo-based nutrition analysis", "included": false },
+        { "text": "Advanced health reports", "included": false },
+        { "text": "Lumi 24/7", "included": false }
+      ],
+      "member_monthly": [
+        { "text": "Integrated AI (No personal keys needed)", "included": true },
+        { "text": "Full photo-based nutrition analysis", "included": true },
+        { "text": "Unlimited history", "included": true },
+        { "text": "Micronutrient and health reports", "included": true },
+        { "text": "Lumi available 24/7", "included": true },
+      ],
+      "member_annual": {
+        "discount_message": "Save {{percentage}}%",
+        "features": [
+          { "text": "Integrated AI (No personal keys needed)", "included": true },
+          { "text": "Full photo-based nutrition analysis", "included": true },
+          { "text": "Unlimited history", "included": true },
+          { "text": "Micronutrient and health reports", "included": true },
+          { "text": "Lumi available 24/7", "included": true },
+        ]
+      }
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Complete your secure payment to upgrade",
+    "back": "Back",
+    "contact_information": "Contact Information",
+    "email_address": "Email address",
+    "payment_method": "Payment Method",
+    "order_summary": "Order Summary",
+    "cardholder_name": "Cardholder Name",
+    "cardholder_name_placeholder": "Name as on card",
+    "card_number": "Card Number",
+    "card_number_placeholder": "0000 0000 0000 0000",
+    "expiry_date": "Expiry Date",
+    "expiry_date_placeholder": "MM / YY",
+    "cvc": "CVC",
+    "cvc_placeholder": "123",
+    "subtotal": "Subtotal",
+    "annual_discount": "Annual Discount",
+    "tax": "Tax",
+    "total_due": "Total due",
+    "confirm_purchase": "Confirm Purchase",
+    "confirm_and_pay": "Confirm and Pay →",
+    "secure_payments": "Payments are secure and encrypted",
+    "processing_payment": "Processing Checkout...",
+    "processing_message": "Redirecting to secure payment page...",
+    "payment_failed": "Payment failed. Please try again.",
+    "redirect_failed": "Could not initiate payment. Please try again.",
+    "hosted_redirect_notice": "You will be redirected to a secure payment page provided by AbacatePay to complete your subscription.",
+    "payment_methods": {
+      "card": "Card",
+      "paypal": "PayPal",
+      "pix": "Pix",
+      "crypto": "Crypto"
+    }
+  },
   "settings": {
     "title": "App Settings and API Management",
     "subtitle": "Manage your application preferences and AI service integrations.",
@@ -242,6 +328,52 @@ export default {
       "title": "General Settings",
       "language": "Language"
     },
+    "theme": "Theme",
+    "subscription": {
+      "title": "Subscription",
+      "description": "Manage your plan and billing details",
+      "manage": "Manage Subscription",
+      "upgrade": "Upgrade to Premium",
+      "cancel": "Cancel Subscription",
+      "plan_free": "Free",
+      "plan_premium": "Premium",
+      "plan_trial": "Trial Period",
+      "premium_description": "You have full access to all AI features and advanced analysis.",
+      "trial_description": "You have full access to all AI features and advanced analysis for free for {{days}} days.",
+      "free_description": "Upgrade to unlock AI health analysis and exclusive features.",
+      "history_title": "Financial History",
+      "ends_on": "Ends on {{date}}",
+      "renews_on": "Renews on {{date}}",
+      "cancel_modal": {
+        "title": "Cancel Subscription",
+        "warning": "Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.",
+        "keep": "Keep Subscription",
+        "confirm": "Yes, Cancel",
+        "cancelling": "Cancelling...",
+        "error": "Failed to cancel subscription. Please try again."
+      },
+      "transaction_types": {
+        "subscription.completed": "Subscription Started",
+        "subscription.renewed": "Subscription Renewed",
+        "subscription.cancelled": "Subscription Cancelled",
+        "subscription.refunded": "Refund",
+        "subscription.chargeback": "Chargeback",
+        "payment": "Payment",
+        "charge": "Charge",
+        "renewal": "Renewal",
+        "refund": "Refund",
+        "dispute": "Dispute",
+        "loss": "Loss"
+      },
+      "transaction_status": {
+        "completed": "Completed",
+        "paid": "Paid",
+        "failed": "Failed",
+        "expired": "Expired",
+        "refunded": "Refunded",
+        "pending": "Pending"
+      }
+    },
     "tokens": {
       "title": "AI API Tokens",
       "add_token": "Add API Token",
@@ -250,10 +382,11 @@ export default {
     }
   },
   "assistant": {
-    "title": "Assistant",
+    "title": "Lumi",
     "status_online": "ONLINE",
+    "status_absent": "ABSENT",
     "close": "Close chat",
-    "input_placeholder": "Ask Assistant...",
+    "input_placeholder": "Ask Lumi...",
     "send": "Send",
     "confirm_action": "Action pending confirmation",
     "confirm": "Confirm",
@@ -263,8 +396,19 @@ export default {
     "action_error": "Failed to execute action. Please try again.",
     "action_cancelled": "Action cancelled.",
     "prepared_action": "I have prepared the action for you.",
+    "welcome_message": "Say hello to Lumi, your personal health assistant!",
+    "disclaimer": "Lumi may provide inaccurate info.",
+    "open_assistant": "Open Assistant",
+    "action_undone_warning": "This action cannot be easily undone.",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fats": "Fats",
+    "fiber": "Fiber",
+    "calories": "Calories",
+    "new_quantity": "New Quantity",
     "errors": {
       "api_key": "I'm having authentication issues. Please check my configuration.",
+      "api_error": "I'm sorry, I'm having trouble providing a response right now.",
       "quota_exceeded": "I've reached my usage limit. Please try again in a moment.",
       "model_error": "I'm having trouble with my AI model. Please try again later.",
       "network_error": "I'm having connection issues. Please check your internet and try again.",
@@ -272,5 +416,18 @@ export default {
       "invalid_request": "I received an invalid request format. Please try again.",
       "unknown_error": "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later."
     }
+  },
+  "model_image_warning": {
+    "title": "{{model}} doesn't support images",
+    "message": "The {{model}} model doesn't support image analysis. Please configure another AI provider (OpenAI, Gemini, or OpenRouter) in Settings to use this feature.",
+    "go_to_settings": "Go to Settings",
+    "close": "Close"
+  },
+  "ai_errors": {
+    "disabled": "AI features are currently disabled.",
+    "premium_required": "This feature is exclusive for Premium members. How about upgrading your plan to unlock all features? Check out our [plans here](/plans).",
+    "chatbot_premium_required": "This feature is exclusive for Premium members. How about upgrading your plan to unlock Lumi's full potential? Check out our [plans here](/plans).",
+    "api_keys_required": "This feature requires a [Premium](/plans) subscription or that you configure your own [API keys in the settings](/settings).",
+    "feature_premium_only": "This feature is exclusive for Premium subscribers. Visit our [plans page](/plans) to learn more."
   }
-}
+};

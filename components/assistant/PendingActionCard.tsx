@@ -21,30 +21,30 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
             case 'add_ingredient': {
                 const data = action.data as AddIngredientActionData;
                 const ing = data.ingredient;
-                if (!ing) return null;
+                if (!ing || !ing.name) return null;
 
                 return (
-                    <div className="bg-healthpal-panel rounded-lg p-3 my-2 text-sm border border-healthpal-border">
+                    <div className="bg-neutral-panel rounded-lg p-3 my-2 text-sm border border-neutral-border">
                         <div className="grid grid-cols-2 gap-2 text-center my-2">
                             <div>
-                                <p id='pending-action-protein' className="text-healthpal-text-secondary text-xs">Protein</p>
-                                <p className="font-bold text-green-400">{ing.protein}g</p>
+                                <p id='pending-action-protein' className="text-neutral-text-secondary text-xs">{t('assistant.protein')}</p>
+                                <p className="font-bold text-brand-protein">{ing.protein}g</p>
                             </div>
                             <div>
-                                <p id='pending-action-carbs' className="text-healthpal-text-secondary text-xs">Carbs</p>
-                                <p className="font-bold text-yellow-500">{ing.carbs}g</p>
+                                <p id='pending-action-carbs' className="text-neutral-text-secondary text-xs">{t('assistant.carbs')}</p>
+                                <p className="font-bold text-brand-carbs">{ing.carbs}g</p>
                             </div>
                             <div>
-                                <p className="text-healthpal-text-secondary text-xs">Fats</p>
-                                <p className="font-bold text-orange-400">{ing.fats}g</p>
+                                <p className="text-neutral-text-secondary text-xs">{t('assistant.fats')}</p>
+                                <p className="font-bold text-brand-fats">{ing.fats}g</p>
                             </div>
                             <div>
-                                <p className="text-healthpal-text-secondary text-xs">Fiber</p>
-                                <p className="font-bold text-blue-400">{ing.fiber || 0}g</p>
+                                <p className="text-neutral-text-secondary text-xs">{t('assistant.fiber')}</p>
+                                <p className="font-bold text-brand-fiber">{ing.fiber || 0}g</p>
                             </div>
                         </div>
-                        <div className="text-center border-t border-healthpal-border pt-2 mt-2">
-                            <p className="text-healthpal-text-secondary text-xs">Total Calories</p>
+                        <div className="text-center border-t border-neutral-border pt-2 mt-2">
+                            <p className="text-neutral-text-secondary text-xs">{t('assistant.calories')}</p>
                             <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
                         </div>
                     </div>
@@ -53,47 +53,53 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
 
             case 'update_ingredient': {
                 const data = action.data as UpdateIngredientActionData;
-                const ing = data.updates;
-                if (!ing) return null;
+                const updates = data.updates;
+                if (!updates || Object.keys(updates).length === 0) return null;
 
                 return (
-                    <div className="bg-healthpal-panel rounded-lg p-3 my-2 text-sm border border-healthpal-border">
+                    <div className="bg-neutral-panel rounded-lg p-3 my-2 text-sm border border-neutral-border">
                         <div className="grid grid-cols-2 gap-2 text-center my-2">
-                            {ing.protein !== undefined && (
+                            {updates.protein !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Protein</p>
-                                    <p className="font-bold text-green-400">{ing.protein}g</p>
+                                    <p className="text-neutral-text-secondary text-xs">{t('assistant.protein')}</p>
+                                    <p className="font-bold text-brand-protein">{updates.protein}g</p>
                                 </div>
                             )}
-                            {ing.carbs !== undefined && (
+                            {updates.carbs !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Carbs</p>
-                                    <p className="font-bold text-yellow-500">{ing.carbs}g</p>
+                                    <p className="text-neutral-text-secondary text-xs">{t('assistant.carbs')}</p>
+                                    <p className="font-bold text-brand-carbs">{updates.carbs}g</p>
                                 </div>
                             )}
-                            {ing.fats !== undefined && (
+                            {updates.fats !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Fats</p>
-                                    <p className="font-bold text-orange-400">{ing.fats}g</p>
+                                    <p className="text-neutral-text-secondary text-xs">{t('assistant.fats')}</p>
+                                    <p className="font-bold text-brand-fats">{updates.fats}g</p>
                                 </div>
                             )}
-                            {ing.fiber !== undefined && (
+                            {updates.fiber !== undefined && (
                                 <div>
-                                    <p className="text-healthpal-text-secondary text-xs">Fiber</p>
-                                    <p className="font-bold text-blue-400">{ing.fiber}g</p>
+                                    <p className="text-neutral-text-secondary text-xs">{t('assistant.fiber')}</p>
+                                    <p className="font-bold text-brand-fiber">{updates.fiber}g</p>
                                 </div>
                             )}
                         </div>
-                        {ing.calories !== undefined && (
-                            <div className="text-center border-t border-healthpal-border pt-2 mt-2">
-                                <p className="text-healthpal-text-secondary text-xs">Total Calories</p>
-                                <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
+                        {updates.calories !== undefined && (
+                            <div className="text-center border-t border-neutral-border pt-2 mt-2">
+                                <p className="text-neutral-text-secondary text-xs">{t('assistant.calories')}</p>
+                                <p className="font-bold text-white text-lg">{updates.calories} kcal</p>
                             </div>
                         )}
-                        {ing.quantity !== undefined && (
+                        {updates.quantity !== undefined && (
                             <div className="text-center mt-1">
-                                <p className="text-healthpal-text-secondary text-xs">New Quantity</p>
-                                <p className="font-bold text-white">{ing.quantity}</p>
+                                <p className="text-neutral-text-secondary text-xs">{t('assistant.new_quantity')}</p>
+                                <p className="font-bold text-white">{updates.quantity}</p>
+                            </div>
+                        )}
+                        {updates.name && (
+                            <div className="text-center mt-1">
+                                <p className="text-neutral-text-secondary text-xs">{t('assistant.name')}</p>
+                                <p className="font-bold text-white">{updates.name}</p>
                             </div>
                         )}
                     </div>
@@ -104,7 +110,7 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                 return (
                     <div className="bg-red-500/10 rounded-lg p-3 my-2 text-sm border border-red-500/30 text-center">
                         <p className="text-red-300">
-                            This action cannot be easily undone.
+                            {t('assistant.action_undone_warning')}
                         </p>
                     </div>
                 );
@@ -115,11 +121,11 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
     };
 
     return (
-        <div className="mt-3 bg-healthpal-card rounded-xl p-4 border border-healthpal-border shadow-sm">
-            <h4 className="font-bold text-sm mb-1 text-healthpal-text-primary">
+        <div className="mt-3 bg-neutral-card rounded-xl p-4 border border-neutral-border shadow-sm">
+            <h4 className="font-bold text-sm mb-1 text-neutral-text-primary">
                 {t('assistant.confirm_action')}
             </h4>
-            <p className="text-sm text-healthpal-text-secondary mb-2">
+            <p className="text-sm text-neutral-text-secondary mb-2">
                 {action.description}
             </p>
 
@@ -128,14 +134,14 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
             <div className="flex gap-2 mt-3">
                 <button
                     onClick={() => onCancel(action.id)}
-                    className="flex-1 py-2 px-3 rounded-lg bg-healthpal-card text-white text-sm font-semibold hover:bg-healthpal-border transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-2 px-3 rounded-lg bg-neutral-card text-white text-sm font-semibold hover:bg-neutral-border transition-colors flex items-center justify-center gap-2"
                 >
                     <XMarkIcon className="w-4 h-4" />
                     {t('assistant.cancel')}
                 </button>
                 <button
                     onClick={() => onConfirm(action.id)}
-                    className="flex-1 py-2 px-3 rounded-lg bg-healthpal-primary text-black text-sm font-semibold hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-2 px-3 rounded-lg bg-brand-primary text-black text-sm font-semibold hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2"
                 >
                     <CheckIcon className="w-4 h-4" />
                     {t('assistant.confirm')}

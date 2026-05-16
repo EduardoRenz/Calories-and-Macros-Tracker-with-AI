@@ -19,12 +19,12 @@ export default function ProfileNavigation({
     foodAnalysisLabel,
 }: ProfileNavigationProps) {
     return (
-        <div className="flex border-b border-healthpal-border mb-8">
+        <div className="flex border-b border-neutral-border mb-8">
             <button
                 onClick={() => onChangeTab('settings')}
                 className={`pb-2 px-1 mr-6 text-md font-medium ${activeTab === 'settings'
-                    ? 'text-healthpal-green border-b-2 border-healthpal-green'
-                    : 'text-healthpal-text-secondary'
+                    ? 'text-brand-green border-b-2 border-brand-green'
+                    : 'text-neutral-text-secondary'
                     }`}
             >
                 {settingsLabel}
@@ -32,8 +32,8 @@ export default function ProfileNavigation({
             <Link
                 href="/food-analysis"
                 className={`pb-2 px-1 mr-6 text-md font-medium ${activeTab === 'food_analysis'
-                    ? 'text-healthpal-green border-b-2 border-healthpal-green'
-                    : 'text-healthpal-text-secondary hover:text-healthpal-text-primary'
+                    ? 'text-brand-green border-b-2 border-brand-green'
+                    : 'text-neutral-text-secondary hover:text-neutral-text-primary'
                     }`}
             >
                 {foodAnalysisLabel}

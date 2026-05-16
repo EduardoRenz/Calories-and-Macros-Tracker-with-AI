@@ -3,6 +3,7 @@ import { ChatMessage as IChatMessage } from '../../domain/entities/ChatMessage';
 import { Avatar } from '../ui/Avatar';
 import MarkdownRenderer from './MarkdownRenderer';
 import PendingActionCard from './PendingActionCard';
+import { LumiIcon } from '../icons';
 
 interface ChatMessageProps {
     message: IChatMessage;
@@ -25,7 +26,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     if (isSystem) {
         return (
             <div className="flex justify-center my-4">
-                <span className="text-xs text-healthpal-text-secondary bg-healthpal-card px-3 py-1 rounded-full border border-healthpal-border">
+                <span className="text-xs text-neutral-text-secondary bg-neutral-card px-3 py-1 rounded-full border border-neutral-border">
                     {message.content}
                 </span>
             </div>
@@ -39,8 +40,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                 {/* Avatar */}
                 <div className="flex-shrink-0 mt-auto">
                     {isAssistant ? (
-                        <div className="w-8 h-8 rounded-full bg-healthpal-primary flex items-center justify-center">
-                            <span className="text-base">🤖</span>
+                        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
+                            <LumiIcon className="w-full h-full" />
                         </div>
                     ) : (
                         <Avatar size={32} className="bg-blue-600" />
@@ -53,8 +54,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                         className={`
                             p-3 rounded-2xl text-sm shadow-sm
                             ${isAssistant
-                                ? 'bg-healthpal-card text-healthpal-text-primary rounded-bl-sm border border-healthpal-border'
-                                : 'bg-healthpal-green text-black font-medium rounded-br-sm'
+                                ? 'bg-neutral-card text-neutral-text-primary rounded-bl-sm border border-neutral-border'
+                                : 'bg-secondary text-on-secondary font-medium rounded-br-sm'
                             }
                         `}
                     >
@@ -73,7 +74,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                         )}
                     </div>
 
-                    <span className="text-[10px] text-healthpal-text-tertiary mt-1 px-1">
+                    <span className="text-[10px] text-brand-text-tertiary mt-1 px-1">
                         {formattedTime}
                     </span>
                 </div>

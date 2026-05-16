@@ -1,17 +1,17 @@
 {
   "name": "caloriecounter-profile-goals",
   "private": true,
-  "version": "1.8.12",
+  "version": "1.13.2",
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
-    "dev:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock next dev --turbo",
+    "dev:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock next dev --turbo",
     "build": "next build",
-    "build:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock next build",
+    "build:mock": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock next build",
     "start": "next start",
     "lint": "next lint",
-    "cy:open": "NEXT_PUBLIC_BACKEND_PROVIDER=mock cypress open",
-    "cy:run": "NEXT_PUBLIC_BACKEND_PROVIDER=mock cypress run"
+    "cy:open": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress open",
+    "cy:run": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress run"
   },
   "dependencies": {
     "@google/genai": "^1.26.0",
@@ -20,6 +20,7 @@
     "firebase": "^12.4.0",
     "firebase-admin": "^13.6.0",
     "next": "15.1.11",
+    "next-themes": "^0.4.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-is": "^19.0.0",

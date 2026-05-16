@@ -29,11 +29,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                     code: (props: React.ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
                         const { inline, children, ...rest } = props;
                         return inline ? (
-                            <code className="bg-healthpal-card px-1.5 py-0.5 rounded text-sm font-mono select-text" {...rest}>
+                            <code className="bg-neutral-card px-1.5 py-0.5 rounded text-sm font-mono select-text" {...rest}>
                                 {children}
                             </code>
                         ) : (
-                            <code className="block bg-healthpal-card p-3 rounded-lg my-2 text-sm font-mono overflow-x-auto select-text" {...rest}>
+                            <code className="block bg-neutral-card p-3 rounded-lg my-2 text-sm font-mono overflow-x-auto select-text" {...rest}>
                                 {children}
                             </code>
                         );
@@ -41,20 +41,20 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
                     // Customize links
                     a: ({ ...props }) => (
-                        <a className="text-healthpal-primary hover:underline select-text" {...props} />
+                        <a className="text-brand-primary hover:underline select-text" {...props} />
                     ),
 
                     // Customize tables
                     table: ({ ...props }) => (
                         <div className="overflow-x-auto my-2">
-                            <table className="min-w-full border-collapse border border-healthpal-border select-text" {...props} />
+                            <table className="min-w-full border-collapse border border-neutral-border select-text" {...props} />
                         </div>
                     ),
                     th: ({ ...props }) => (
-                        <th className="border border-healthpal-border bg-healthpal-card px-3 py-2 text-left font-semibold select-text" {...props} />
+                        <th className="border border-neutral-border bg-neutral-card px-3 py-2 text-left font-semibold select-text" {...props} />
                     ),
                     td: ({ ...props }) => (
-                        <td className="border border-healthpal-border px-3 py-2 select-text" {...props} />
+                        <td className="border border-neutral-border px-3 py-2 select-text" {...props} />
                     ),
 
                     // Customize strong/bold

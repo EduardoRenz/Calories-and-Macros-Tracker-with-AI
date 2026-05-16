@@ -1,64 +1,30 @@
-import * as admin from 'firebase-admin';
-import { getSupabaseAdminClient } from '@/data/supabaseServer';
-import { env } from '@/env';
-
-const USE_MOCKS = env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock';
-
-if (!USE_MOCKS && !admin.apps.length) {
-    admin.initializeApp({
-        projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    });
-}
-
-export interface AuthenticatedUser {
-    uid: string;
-    email?: string;
-}
+import { getAuthVerifier, AuthenticatedUser } from '@/data/infrastructure/AuthVerifier';
 
 /**
  * Verifies the ID token from the Authorization header.
  * Returns the decoded user information or throws an error.
  */
 export async function verifyAuth(authHeader: string | null): Promise<AuthenticatedUser> {
-    if (USE_MOCKS) {
-        // In mock mode, we accept anything and return a mock user
-        console.log('[Auth] Mock mode: skipping token verification');
-        return { uid: 'mock-user-id', email: 'mock@example.com' };
-    }
+    const verifier = getAuthVerifier();
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        console.error('[Auth] Missing or invalid Authorization header');
+        console.error('[Auth] Missing or malformed Authorization header:', authHeader ? 'Present but no Bearer prefix' : 'Missing');
         throw new Error('Unauthorized: Missing or invalid token');
     }
 
     const token = authHeader.split('Bearer ')[1];
 
-    if (env.NEXT_PUBLIC_BACKEND_PROVIDER === 'supabase') {
-        try {
-            const supabase = getSupabaseAdminClient();
-            const { data, error } = await supabase.auth.getUser(token);
-            if (error || !data.user) {
-                console.error('[Auth] Supabase token verification failed:', error);
-                throw new Error('Unauthorized: Invalid token');
-            }
-            return {
-                uid: data.user.id,
-                email: data.user.email ?? undefined,
-            };
-        } catch (error) {
-            console.error('[Auth] Supabase token verification failed:', error);
-            throw new Error('Unauthorized: Invalid token');
-        }
-    }
-
-    try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        return {
-            uid: decodedToken.uid,
-            email: decodedToken.email,
-        };
-    } catch (error) {
-        console.error('[Auth] Token verification failed:', error);
+    if (!token || token.trim() === '' || token === 'null' || token === 'undefined') {
+        console.error('[Auth] Empty or invalid token value:', token);
         throw new Error('Unauthorized: Invalid token');
     }
+
+    // Basic JWT format validation (should have 3 parts separated by dots)
+    const jwtParts = token.split('.');
+    if (jwtParts.length !== 3) {
+        console.error(`[Auth] Invalid JWT format: expected 3 parts, got ${jwtParts.length}`);
+        throw new Error('Unauthorized: Malformed token');
+    }
+
+    return await verifier.verifyToken(token);
 }

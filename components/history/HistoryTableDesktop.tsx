@@ -26,19 +26,19 @@ export function HistoryTableDesktop({ entries, onDateClick }: HistoryTableDeskto
         <div className="overflow-x-auto">
             <table className="w-full">
                 <thead>
-                    <tr className="text-left text-xs uppercase tracking-wider text-healthpal-text-secondary">
+                    <tr className="text-left text-xs uppercase tracking-wider text-neutral-text-secondary">
                         <th className="px-6 py-3">{t('history.columns.date')}</th>
-                        <th className="px-6 py-3 text-healthpal-protein">{t('history.columns.protein')}</th>
-                        <th className="px-6 py-3 text-healthpal-carbs">{t('history.columns.carbs')}</th>
-                        <th className="px-6 py-3 text-healthpal-fats">{t('history.columns.fats')}</th>
-                        <th className="px-6 py-3 text-healthpal-fiber">{t('history.columns.fiber')}</th>
+                        <th className="px-6 py-3 text-brand-protein">{t('history.columns.protein')}</th>
+                        <th className="px-6 py-3 text-brand-carbs">{t('history.columns.carbs')}</th>
+                        <th className="px-6 py-3 text-brand-fats">{t('history.columns.fats')}</th>
+                        <th className="px-6 py-3 text-brand-fiber">{t('history.columns.fiber')}</th>
                         <th className="px-6 py-3">{t('history.columns.calories')}</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-healthpal-border/20">
+                <tbody className="divide-y divide-neutral-border/20">
                     {entries.map(e => {
                         const isOver = e.calories > e.calorieGoal;
-                        const calorieColor = isOver ? 'text-red-500' : 'text-healthpal-green';
+                        const calorieColor = isOver ? 'text-red-500' : 'text-brand-green';
 
                         // Calculate macro goals
                         const proteinGoal = Math.round((e.calorieGoal * 0.30) / 4);
@@ -53,7 +53,7 @@ export function HistoryTableDesktop({ entries, onDateClick }: HistoryTableDeskto
                         const fiberMet = e.fiber >= fiberGoal;
 
                         return (
-                            <tr key={e.date} className="hover:bg-healthpal-panel/30 transition-colors">
+                            <tr key={e.date} className="hover:bg-neutral-panel/30 transition-colors">
                                 <td className="px-6 py-4 font-medium">
                                     <button
                                         type="button"
@@ -64,10 +64,10 @@ export function HistoryTableDesktop({ entries, onDateClick }: HistoryTableDeskto
                                         {formatDate(e.date)}
                                     </button>
                                 </td>
-                                <td className={`px-6 py-4 ${proteinMet ? 'text-healthpal-protein' : 'text-healthpal-text-primary'}`}>{`${formatNumber(e.protein)}g`}</td>
-                                <td className={`px-6 py-4 ${carbsMet ? 'text-healthpal-carbs' : 'text-healthpal-text-primary'}`}>{`${formatNumber(e.carbs)}g`}</td>
-                                <td className={`px-6 py-4 ${fatsMet ? 'text-healthpal-fats' : 'text-healthpal-text-primary'}`}>{`${formatNumber(e.fats)}g`}</td>
-                                <td className={`px-6 py-4 ${fiberMet ? 'text-healthpal-fiber' : 'text-healthpal-text-primary'}`}>{`${formatNumber(e.fiber)}g`}</td>
+                                <td className={`px-6 py-4 ${proteinMet ? 'text-brand-protein' : 'text-neutral-text-primary'}`}>{`${formatNumber(e.protein)}g`}</td>
+                                <td className={`px-6 py-4 ${carbsMet ? 'text-brand-carbs' : 'text-neutral-text-primary'}`}>{`${formatNumber(e.carbs)}g`}</td>
+                                <td className={`px-6 py-4 ${fatsMet ? 'text-brand-fats' : 'text-neutral-text-primary'}`}>{`${formatNumber(e.fats)}g`}</td>
+                                <td className={`px-6 py-4 ${fiberMet ? 'text-brand-fiber' : 'text-neutral-text-primary'}`}>{`${formatNumber(e.fiber)}g`}</td>
                                 <td className={`px-6 py-4 font-bold ${calorieColor}`}>{formatNumber(e.calories)}</td>
                             </tr>
                         );

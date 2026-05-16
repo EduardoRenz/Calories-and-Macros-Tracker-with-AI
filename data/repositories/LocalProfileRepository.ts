@@ -2,6 +2,7 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { DietType, UserProfile } from '../../domain/entities/profile';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
 const initialProfile: UserProfile = {
     name: "Jane Doe",
@@ -27,12 +28,83 @@ const initialProfile: UserProfile = {
     dietType: 'omnivore' as DietType,
 };
 
-// Simulate a local data store
-let userProfileData: UserProfile = JSON.parse(JSON.stringify(initialProfile));
+// Incomplete profile for testing first-time setup flow
+const incompleteProfile: UserProfile = {
+    name: "New User",
+    email: "newuser@email.com",
+    personalInfo: {
+        age: null,
+        height: null,
+        weight: null,
+        gender: null,
+    },
+    fitnessGoals: {
+        primaryGoal: null,
+        targetWeight: null,
+        activityLevel: null,
+    },
+    weightHistory: [],
+    healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
+};
 
-import { DataCacheManager } from '../infrastructure/DataCacheManager';
+// Partial profile for testing - age, weight, height filled, rest null
+const partialProfile: UserProfile = {
+    name: "Partial User",
+    email: "partial@email.com",
+    personalInfo: {
+        age: 28,
+        height: 175,
+        weight: 70,
+        gender: null, // not filled
+    },
+    fitnessGoals: {
+        primaryGoal: null, // not filled
+        targetWeight: null, // not filled
+        activityLevel: null, // not filled
+    },
+    weightHistory: [],
+    healthConditions: { selected: [] },
+    dietType: 'omnivore' as DietType,
+};
 
-// ... (existing imports)
+// Helper to check if we're in mock mode
+const isMockMode = (): boolean => {
+    return typeof window !== 'undefined' &&
+        (process.env.NEXT_PUBLIC_BACKEND_PROVIDER === 'mock' ||
+            process.env.NEXT_PUBLIC_BACKEND_PROVIDER === undefined);
+};
+
+// Get sessionStorage value for testing first-time setup (only works in mock mode)
+// Values: 'true'/'incomplete' = empty profile, 'partial' = partial data, 'false' = complete profile
+const getMockProfileType = (): 'complete' | 'incomplete' | 'partial' => {
+    if (typeof window === 'undefined' || !isMockMode()) {
+        return 'complete';
+    }
+    const value = sessionStorage.getItem('mock_use_incomplete_profile');
+    if (value === 'true' || value === 'incomplete') return 'incomplete';
+    if (value === 'partial') return 'partial';
+    // Warn about invalid values in development/test mode
+    if (value && value !== 'false' && process.env.NODE_ENV !== 'production') {
+        console.warn(`[LocalProfileRepository] Invalid mock_use_incomplete_profile value: "${value}". Falling back to 'complete'. Valid values: 'true', 'incomplete', 'partial', 'false'`);
+    }
+    return 'complete';
+};
+
+// Initialize profile data based on sessionStorage (mock mode only) or default to complete profile
+const getInitialProfileData = (): UserProfile => {
+    const profileType = getMockProfileType();
+    if (profileType === 'incomplete') {
+        return JSON.parse(JSON.stringify(incompleteProfile));
+    }
+    if (profileType === 'partial') {
+        return JSON.parse(JSON.stringify(partialProfile));
+    }
+    return JSON.parse(JSON.stringify(initialProfile));
+};
+
+let userProfileData: UserProfile = getInitialProfileData();
+let lastSessionStorageValue: string | null = null;
 
 export class LocalProfileRepository implements ProfileRepository {
     private static instance: LocalProfileRepository;
@@ -52,6 +124,19 @@ export class LocalProfileRepository implements ProfileRepository {
     }
     async getProfile(): Promise<UserProfile> {
         const key = 'getProfile';
+
+        // Check if sessionStorage value changed (for testing)
+        const currentValue = typeof window !== 'undefined'
+            ? sessionStorage.getItem('mock_use_incomplete_profile')
+            : null;
+
+        if (currentValue !== lastSessionStorageValue) {
+            // Session storage changed, reload profile
+            lastSessionStorageValue = currentValue;
+            userProfileData = getInitialProfileData();
+            this.dataCacheManager.invalidate(key);
+        }
+
         return this.dataCacheManager.getCached(key, async () => {
             return this.concurrencyManager.run(key, async () => {
                 // Simulate an async API call
@@ -66,30 +151,42 @@ export class LocalProfileRepository implements ProfileRepository {
         await new Promise(resolve => setTimeout(resolve, 250));
 
         const newWeight = profile.personalInfo.weight;
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const today = `${year}-${month}-${day}`;
+        let updatedHistory = [...userProfileData.weightHistory];
 
-        // Use a mutable copy of the stored history
-        const updatedHistory = [...userProfileData.weightHistory];
-        const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
+        // Only update weight history if weight is provided
+        if (newWeight !== null && newWeight > 0) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`;
 
-        if (entryForTodayIndex !== -1) {
-            // Update existing entry for today
-            updatedHistory[entryForTodayIndex].weight = newWeight;
-        } else {
-            // Add new entry for today
-            updatedHistory.push({ date: today, weight: newWeight });
+            const entryForTodayIndex = updatedHistory.findIndex(entry => entry.date === today);
+
+            if (entryForTodayIndex !== -1) {
+                // Update existing entry for today
+                updatedHistory[entryForTodayIndex].weight = newWeight;
+            } else {
+                // Add new entry for today
+                updatedHistory.push({ date: today, weight: newWeight });
+            }
+
+            // Ensure history is sorted by date before saving
+            updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         }
-
-        // Ensure history is sorted by date before saving
-        updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         userProfileData = { ...profile, weightHistory: updatedHistory };
         // Invalidate cache
         this.dataCacheManager.invalidate('getProfile');
         return;
+    }
+
+    /**
+     * Reload profile from sessionStorage settings (mock mode only).
+     * Use this to switch between complete and incomplete profile for testing.
+     */
+    public reloadFromSessionStorage(): void {
+        userProfileData = getInitialProfileData();
+        this.dataCacheManager.invalidate('getProfile');
     }
 }

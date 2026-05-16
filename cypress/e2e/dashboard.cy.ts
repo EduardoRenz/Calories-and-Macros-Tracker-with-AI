@@ -9,11 +9,16 @@ describe('Dashboard Meal Management', () => {
 
   beforeEach(() => {
     // Login and navigate to dashboard
-    cy.visit('/');
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
+      },
+    });
     cy.contains('Sign in with Google').click();
 
     // Verify we're on the dashboard
     cy.url().should('include', '/dashboard');
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
   });
 
   it('should add a meal to lunch section', () => {
@@ -24,16 +29,22 @@ describe('Dashboard Meal Management', () => {
     const carbs = 0;
     const fats = 3.6;
 
-    // 1. Expand "Lunch" section
-    // Finding the button associated with "Lunch" text
-    cy.contains('button', 'Lunch').click();
+    // 1. Expand lunch section OR click '+' if it's empty
+    // In our new UI, if empty, it's a '+' button that opens the modal directly.
+    // If it has items, we first expand then click add.
 
-    // 2. Click "Add Ingredient" button for Lunch
-    // We need to target the specific "Add Ingredient" button within the Lunch section.
-    // Since "Add Ingredient" text is repeated for each meal, we scope it.
-    // The Lunch section has id="meal-details-lunch" after expansion.
-    cy.get('#meal-details-lunch').within(() => {
-      cy.contains('button', 'Add Ingredient').click();
+    cy.get('body').then(($body) => {
+      const mealLunch = $body.find('[data-testid="meal-lunch"]');
+      const addIngredientBtn = $body.find('[data-testid="add-ingredient-lunch"]');
+
+      // If the add button is visible in the meal lunch container (empty state), click it
+      if (addIngredientBtn.is(':visible')) {
+        cy.wrap(addIngredientBtn).click();
+      } else {
+        // Otherwise, expand first then click the internal add button
+        cy.wrap(mealLunch).click();
+        cy.get('[data-testid="add-ingredient-lunch"]').click();
+      }
     });
 
     // 3. Fill in Ingredient Modal
@@ -46,7 +57,7 @@ describe('Dashboard Meal Management', () => {
     cy.get('input[name="name"]').type(ingredientName);
     cy.get('input[name="quantity"]').type(quantity);
     cy.get('input[name="fiber"]').should('have.attr', 'readonly');
-    cy.get('input[name="fiber"]').should('have.value', '0');
+    cy.get('input[name="fiber"]').should('have.value', '');
     // Calories is read-only now, so we don't type it.
     // cy.get('input[name="calories"]').type(calories.toString());
     cy.get('input[name="protein"]').type(protein.toString());
@@ -63,6 +74,14 @@ describe('Dashboard Meal Management', () => {
     cy.contains('h3', 'Add Ingredient to Lunch').should('not.exist');
 
     // 6. Verify Ingredient Added to List
+    // First, ensure lunch is expanded (it might be closed if we just added and it was previously empty)
+    cy.get('body').then(($body) => {
+        const details = $body.find('#meal-details-lunch');
+        if (!details.is(':visible')) {
+            cy.get('[data-testid="meal-lunch"]').click();
+        }
+    });
+
     cy.get('#meal-details-lunch').within(() => {
       cy.contains(ingredientName).should('be.visible');
       cy.contains(quantity).should('be.visible');
@@ -77,7 +96,7 @@ describe('Dashboard Meal Management', () => {
         // Should be positive (under goal)
         expect(remainingCalories).to.be.greaterThan(0);
         // Should be green (under limit) - check parent paragraph element
-        cy.get('[data-testid="calorie-goal"]').parent().should('have.class', 'text-healthpal-green');
+        cy.get('[data-testid="calorie-goal"]').parent().should('have.class', 'text-brand-green');
       });
     });
   });
@@ -85,32 +104,10 @@ describe('Dashboard Meal Management', () => {
   it('should never show zero goals when profile is available', () => {
     // Wait for profile to load and goals to be calculated
     cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
-    
-    // Check that calorie goal is not zero by checking the macro progress cards
-    cy.contains('h3', 'Calories').parent().within(() => {
-      cy.get('[data-testid="macro-goal-calories"]').invoke('text').then((text) => {
-        const goalValue = parseInt(text);
-        expect(goalValue).to.be.greaterThan(0);
-      });
-    });
 
     // Check that macro goals are not zero
-    cy.contains('h3', 'Protein').parent().within(() => {
-      cy.get('[data-testid="macro-goal-protein"]').invoke('text').then((text) => {
-        const goalValue = parseInt(text);
-        expect(goalValue).to.be.greaterThan(0);
-      });
-    });
-
-    cy.contains('h3', 'Carbs').parent().within(() => {
-      cy.get('[data-testid="macro-goal-carbs"]').invoke('text').then((text) => {
-        const goalValue = parseInt(text);
-        expect(goalValue).to.be.greaterThan(0);
-      });
-    });
-
-    cy.contains('h3', 'Fats').parent().within(() => {
-      cy.get('[data-testid="macro-goal-fats"]').invoke('text').then((text) => {
+    ['calories', 'protein', 'carbs', 'fats'].forEach((macro) => {
+      cy.get(`[data-testid="macro-goal-${macro}"]`).invoke('text').then((text) => {
         const goalValue = parseInt(text);
         expect(goalValue).to.be.greaterThan(0);
       });

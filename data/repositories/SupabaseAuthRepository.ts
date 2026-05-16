@@ -3,8 +3,8 @@ import { User } from '../../domain/entities/user';
 import { getSupabaseClient } from '../supabaseClient';
 import type { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
-
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
+import { getAuthRedirectUrl } from '../utils/getAuthRedirectUrl';
 
 export class SupabaseAuthRepository implements AuthRepository {
   private static instance: SupabaseAuthRepository;
@@ -29,7 +29,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     };
   }
 
-  onAuthStateChanged(callback: (user: User | null) => void): void {
+  onAuthStateChanged(callback: (user: User | null) => void): () => void {
     const supabase = getSupabaseClient();
 
     supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
@@ -40,9 +40,9 @@ export class SupabaseAuthRepository implements AuthRepository {
       callback(session?.user ? this.mapUser(session.user) : null);
     });
 
-
-    data.subscription.unsubscribe();
-
+    return () => {
+      data.subscription.unsubscribe();
+    };
   }
 
   async signIn(email: string, password?: string): Promise<User | null> {
@@ -72,7 +72,7 @@ export class SupabaseAuthRepository implements AuthRepository {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined,
+          redirectTo: getAuthRedirectUrl(),
         },
       });
 
@@ -103,8 +103,25 @@ export class SupabaseAuthRepository implements AuthRepository {
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
         const supabase = getSupabaseClient();
-        const { data } = await supabase.auth.getSession();
-        return data.session?.access_token ?? null;
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('[SupabaseAuth] Error getting session:', error);
+          return null;
+        }
+
+        const token = data.session?.access_token;
+
+        // Validate token format (basic JWT check)
+        if (token && token.split('.').length === 3) {
+          return token;
+        }
+
+        if (token) {
+          console.warn('[SupabaseAuth] Invalid token format, clearing cache');
+        }
+
+        return null;
       });
     }, TOKEN_TTL);
   }

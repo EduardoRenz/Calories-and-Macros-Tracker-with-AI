@@ -13,14 +13,14 @@ const MacroProgressCard: React.FC<MacroProgressCardProps> = ({ title, current, g
   const percentage = goal > 0 ? (current / goal) * 100 : 0;
 
   return (
-    <div className="bg-healthpal-card p-6 rounded-2xl">
+    <div className="bg-neutral-card p-6 rounded-2xl">
       <div className="flex justify-between items-baseline mb-3">
-        <h3 className="font-bold text-healthpal-text-primary">{title}</h3>
-        <p className="text-sm text-healthpal-text-secondary">
-          <span className="font-semibold text-healthpal-text-primary">{current}</span> / <span data-testid={`macro-goal-${title.toLowerCase()}`}>{goal}</span> {unit}
+        <h3 className="font-bold text-neutral-text-primary">{title}</h3>
+        <p className="text-sm text-neutral-text-secondary">
+          <span className="font-semibold text-neutral-text-primary">{current}</span> / <span data-testid={`macro-goal-${title.toLowerCase()}`}>{goal}</span> {unit}
         </p>
       </div>
-      <div className="w-full bg-healthpal-panel h-2.5 rounded-full">
+      <div className="w-full bg-neutral-panel h-2.5 rounded-full">
         <div
           className={`${color} h-2.5 rounded-full`}
           style={{ width: `${Math.min(percentage, 100)}%` }}
