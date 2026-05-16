@@ -3,6 +3,7 @@ import { DietType, HealthConditionKey, HealthConditions, UserProfile } from '../
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
+import { SupabaseUserSession } from '../infrastructure/SupabaseUserSession';
 
 type ProfilesRow = {
   user_id: string;
@@ -37,22 +38,13 @@ export class SupabaseProfileRepository implements ProfileRepository {
     }
     return SupabaseProfileRepository.instance;
   }
-  private userId: string | undefined;
 
   private getDefaultHealthConditions(): string[] {
     return [];
   }
 
   async getUserId(): Promise<string> {
-    if (this.userId) return this.userId;
-    return this.concurrencyManager.run('GET_USER_ID_LOCK', async () => {
-      const supabase = getSupabaseClient();
-      const { data, error } = await supabase.auth.getUser();
-      if (error) throw error;
-      if (!data.user) throw new Error('User not authenticated. Cannot fetch profile.');
-      this.userId = data.user.id;
-      return data.user.id;
-    });
+    return SupabaseUserSession.getInstance().getUserId();
   }
 
   private mapToDomain(profile: ProfilesRow, weightHistory: WeightHistoryRow[]): UserProfile {
@@ -100,9 +92,7 @@ export class SupabaseProfileRepository implements ProfileRepository {
         if (error) throw error;
 
         if (!profile) {
-          const { data: authData, error: authError } = await supabase.auth.getUser();
-          if (authError) throw authError;
-          const user = authData.user;
+          const user = await SupabaseUserSession.getInstance().getUser();
           if (!user) throw new Error('User not authenticated. Cannot create profile.');
 
           const insert: Partial<ProfilesRow> = {

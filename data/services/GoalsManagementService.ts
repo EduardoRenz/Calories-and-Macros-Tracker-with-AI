@@ -3,6 +3,7 @@ import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
 import { DashboardData } from '../../domain/entities/dashboard';
 import { CalorieCalculationService } from '../../domain/services/CalorieCalculationService';
 import { RepositoryFactory } from '../RepositoryFactory';
+import { UserService } from './UserService';
 
 export class GoalsManagementService {
     private dashboardRepository: DashboardRepository;
@@ -19,8 +20,8 @@ export class GoalsManagementService {
     async applyGoalsForDate(date: string): Promise<void> {
         try {
             console.log(`[GoalsManagementService] Applying goals for date: ${date}`);
-
-            const profile = await this.profileRepository.getProfile();
+            
+            const profile = await UserService.getInstance().getUserProfile();
             const goals = CalorieCalculationService.calculateGoals(profile);
 
             if (!goals) {
@@ -41,7 +42,7 @@ export class GoalsManagementService {
      */
     async applyGoalsForDateRange(startDate: string, endDate: string): Promise<void> {
         try {
-            const profile = await this.profileRepository.getProfile();
+            const profile = await UserService.getInstance().getUserProfile();
             const goals = CalorieCalculationService.calculateGoals(profile);
 
             if (!goals) {

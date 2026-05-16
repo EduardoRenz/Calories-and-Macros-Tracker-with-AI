@@ -4,6 +4,7 @@ import { BillingTransaction } from '../../domain/entities/BillingTransaction';
 import { Currency } from '../../domain/entities/payment';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
+import { SupabaseUserSession } from '../infrastructure/SupabaseUserSession';
 import { BILLING_CONSTANTS } from '../../domain/constants/billing';
 
 export class SupabaseSubscriptionRepository implements SubscriptionRepository {
@@ -21,10 +22,9 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
 
     private async isUserInTrialPeriod(userId: string): Promise<{ isTrial: boolean; trialEndDate: Date | null }> {
         try {
-            const supabase = getSupabaseClient();
-            const { data: { user }, error } = await supabase.auth.getUser();
+            const user = await SupabaseUserSession.getInstance().getUser();
 
-            if (error || !user || !user.created_at) {
+            if (!user || !user.created_at) {
                 return { isTrial: false, trialEndDate: null };
             }
 
@@ -44,25 +44,7 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
     async getUserSubscription(): Promise<Subscription | null> {
         let userId: string;
         try {
-            const supabase = getSupabaseClient();
-            const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-            if (authError || !user) {
-                console.log('[SupabaseSubscriptionRepository] No current user, returning free plan');
-                return Subscription.create({
-                    id: 'free',
-                    userId: 'unknown',
-                    planId: 'free',
-                    planCode: 'free',
-                    status: 'inactive',
-                    accessStatus: 'free',
-                    currentPeriodStart: new Date(),
-                    currentPeriodEnd: new Date(),
-                    cancelAtPeriodEnd: false,
-                });
-            }
-
-            userId = user.id;
+            userId = await SupabaseUserSession.getInstance().getUserId();
         } catch (error) {
             console.error('[SupabaseSubscriptionRepository] Error fetching user:', error);
             return Subscription.create({
@@ -164,16 +146,13 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
     }
 
     async getBillingHistory(): Promise<BillingTransaction[]> {
-        const supabase = getSupabaseClient();
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) return [];
-
-        const userId = user.id;
+        const userId = await SupabaseUserSession.getInstance().getUserId();
+        if (!userId) return [];
         const key = `getBillingHistory:${userId}`;
 
         return this.concurrencyManager.run(key, async () => {
             try {
+                const supabase = getSupabaseClient();
                 const { data, error } = await supabase
                     .from('billing_transactions')
                     .select('*')
@@ -182,7 +161,7 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
 
                 if (error || !data) return [];
 
-                return data.map(item => BillingTransaction.create({
+                return data.map((item: any) => BillingTransaction.create({
                     id: item.id,
                     userId: item.user_id,
                     subscriptionId: item.subscription_id,
