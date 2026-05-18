@@ -2,8 +2,8 @@ import { HistoryRepository, HistoryPage } from '../../domain/repositories/Histor
 import { DailyHistoryEntry } from '../../domain/entities/history';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
-
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
+import { SupabaseUserSession } from '../infrastructure/SupabaseUserSession';
 
 type DashboardDayRow = {
   id: string;
@@ -80,14 +80,11 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryRange:${params.startDate}:${params.endDate}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const supabase = getSupabaseClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const userId = await SupabaseUserSession.getInstance().getUserId();
 
-        if (authError || !user) {
+        if (!userId) {
           throw new Error('User not authenticated');
         }
-
-        const userId = user.id;
         const days = await this.loadDays(userId, params.startDate, params.endDate);
         const fibers = await this.loadFibersForDays(days.map(d => d.id));
 
@@ -114,15 +111,12 @@ export class SupabaseHistoryRepository implements HistoryRepository {
     const key = `getDailyHistoryPage:${params.startDate}:${params.endDate}:${params.pageSize}:${params.cursor}`;
     return this.dataCacheManager.getCached(key, async () => {
       return this.concurrencyManager.run(key, async () => {
-        const supabase = getSupabaseClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-        if (authError || !user) {
+        const userId = await SupabaseUserSession.getInstance().getUserId();
+        if (!userId) {
           throw new Error('User not authenticated');
         }
 
-        const userId = user.id;
-
+        const supabase = getSupabaseClient();
         let q = supabase
           .from('dashboard_days')
           .select('id,date,calories_current,calories_goal,protein_current,carbs_current,fats_current')

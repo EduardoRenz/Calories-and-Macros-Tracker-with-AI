@@ -3,6 +3,7 @@ import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/da
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
+import { SupabaseUserSession } from '../infrastructure/SupabaseUserSession';
 
 type DashboardDayRow = {
   id: string;
@@ -94,11 +95,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
   }
 
   private async getUserId(): Promise<string> {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    if (!data.user) throw new Error('No authenticated user found for dashboard operations.');
-    return data.user.id;
+    return SupabaseUserSession.getInstance().getUserId();
   }
 
   private async getOrCreateDashboardDay(date: string): Promise<DashboardDayRow> {
