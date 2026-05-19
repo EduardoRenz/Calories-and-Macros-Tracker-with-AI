@@ -18,7 +18,13 @@ function AuthCallbackContent() {
 
     const handleCallback = async () => {
       const code = searchParams.get('code');
-      const next = searchParams.get('next') ?? '/dashboard';
+      let next = searchParams.get('next') ?? '/dashboard';
+
+      // Security: Validate that 'next' is a relative URL to prevent open redirects
+      // It must start with a single '/' and not be a protocol-relative URL (// or /\)
+      if (!next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\')) {
+        next = '/dashboard';
+      }
 
       const supabase = getSupabaseClient();
 
