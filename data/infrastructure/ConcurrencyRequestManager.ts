@@ -4,7 +4,7 @@
  * redundant operations.
  */
 export class ConcurrencyRequestManager {
-    private inFlightRequests: Map<string, Promise<any>> = new Map();
+    private inFlightRequests: Map<string, Promise<unknown>> = new Map();
 
     /**
      * Runs a task or returns an existing in-flight promise if the key matches.
@@ -17,7 +17,7 @@ export class ConcurrencyRequestManager {
 
         if (existingRequest) {
             console.log(`[ConcurrencyRequestManager] Reusing in-flight request for key: ${key}`);
-            return existingRequest;
+            return existingRequest as Promise<T>;
         }
 
         const promise = task().finally(() => {

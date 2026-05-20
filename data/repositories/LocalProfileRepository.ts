@@ -151,7 +151,7 @@ export class LocalProfileRepository implements ProfileRepository {
         await new Promise(resolve => setTimeout(resolve, 250));
 
         const newWeight = profile.personalInfo.weight;
-        let updatedHistory = [...userProfileData.weightHistory];
+        const updatedHistory = [...userProfileData.weightHistory];
 
         // Only update weight history if weight is provided
         if (newWeight !== null && newWeight > 0) {

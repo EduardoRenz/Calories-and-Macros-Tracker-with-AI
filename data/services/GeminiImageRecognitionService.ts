@@ -42,7 +42,7 @@ export class GeminiImageRecognitionService extends ImageRecognitionService {
             const base64Data = await blobToBase64(image);
             const defaultPrompt = this.buildDefaultPrompt(language);
 
-            let promptText = prompt ? `${prompt}\n\n${defaultPrompt}` : defaultPrompt;
+            const promptText = prompt ? `${prompt}\n\n${defaultPrompt}` : defaultPrompt;
 
             const response = await this.ai.models.generateContent({
                 model: this.model,

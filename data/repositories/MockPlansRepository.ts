@@ -1,5 +1,5 @@
 import { PlanProviderMapping, PlansRepository } from '../../domain/repositories/PlansRepository';
-import { Plan, Currency, PlanFeature } from '../../domain/entities/payment';
+import { Plan, Currency } from '../../domain/entities/payment';
 
 export class MockPlansRepository implements PlansRepository {
     private static instance: MockPlansRepository | null = null;
@@ -74,7 +74,8 @@ export class MockPlansRepository implements PlansRepository {
         ];
     }
 
-    async getProviderMapping(planCode: string, _provider: string): Promise<PlanProviderMapping | null> {
+    async getProviderMapping(planCode: string, provider: string): Promise<PlanProviderMapping | null> {
+        void provider;
         // MockPlansRepository always returns mock mappings regardless of provider parameter
         const mappings: Record<string, PlanProviderMapping> = {
             free: {

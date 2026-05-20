@@ -1,5 +1,5 @@
 
-export default {
+const es = {
   "navbar": {
     "dashboard": "Panel",
     "history": "Historial",
@@ -426,3 +426,5 @@ export default {
     "feature_premium_only": "Esta función es exclusiva para suscriptores Premium. Visita nuestra [página de planes](/plans) para obtener más información."
   }
 }
+
+export default es;

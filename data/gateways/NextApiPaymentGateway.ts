@@ -9,7 +9,7 @@ import { getSupabaseClient } from '../supabaseClient';
 
 export class NextApiPaymentGateway implements PaymentGateway {
 
-    async createCheckoutSession(planId: string, userId: string): Promise<string> {
+    async createCheckoutSession(): Promise<string> {
         throw new Error('Method not implemented in NextApiPaymentGateway. Use processPayment.');
     }
 

@@ -1,5 +1,5 @@
 import { ProfileRepository } from '../../domain/repositories/ProfileRepository';
-import { DietType, HealthConditionKey, HealthConditions, UserProfile } from '../../domain/entities/profile';
+import { DietType, HealthConditionKey, UserProfile } from '../../domain/entities/profile';
 import { getSupabaseClient } from '../supabaseClient';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';

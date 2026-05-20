@@ -1,5 +1,6 @@
 import { SubscriptionRepository } from '../../domain/repositories/SubscriptionRepository';
 import { Subscription } from '../../domain/entities/subscription';
+import { BillingTransaction } from '../../domain/entities/BillingTransaction';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getDb, auth } from '../firebase';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
@@ -18,7 +19,7 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
         return FirebaseSubscriptionRepository.instance;
     }
 
-    private async isUserInTrialPeriod(userId: string): Promise<{ isTrial: boolean; trialEndDate: Date | null }> {
+    private async isUserInTrialPeriod(): Promise<{ isTrial: boolean; trialEndDate: Date | null }> {
         try {
             if (!auth || !auth.currentUser) {
                 return { isTrial: false, trialEndDate: null };
@@ -74,7 +75,7 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
 
                 console.log('[FirebaseSubscriptionRepository] Query snapshot empty:', querySnapshot.empty);
 
-                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod(currentUser.uid);
+                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod();
 
                 if (querySnapshot.empty) {
                     if (isTrial && trialEndDate) {
@@ -131,7 +132,7 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
         });
     }
 
-    async getBillingHistory(): Promise<any[]> {
+    async getBillingHistory(): Promise<BillingTransaction[]> {
         return [];
     }
 

@@ -20,7 +20,7 @@ const createEmptyDashboard = (date: string, goals?: { calories: number; protein:
 });
 
 const recalculateTotals = (data: DashboardData): DashboardData => {
-    const newData = JSON.parse(JSON.stringify(data));
+    const newData = JSON.parse(JSON.stringify(data)) as DashboardData;
 
     let totalCalories = 0;
     let totalProtein = 0;
@@ -267,7 +267,7 @@ export class LocalDashboardRepository implements DashboardRepository {
         const now = new Date().toISOString();
         const newIngredients: Ingredient[] = ingredients.map(ing => ({
             ...ing,
-            fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
+            fiber: typeof ing.fiber === 'number' ? ing.fiber : 0,
             id: `${new Date().getTime()}-${Math.random()}`, // Ensure unique ID
             created_at: now,
             category: ing.category,

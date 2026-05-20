@@ -1,5 +1,5 @@
 import { FoodAnalysisRepository } from '../../domain/repositories/FoodAnalysisRepository';
-import { DashboardData, MealSummary } from '../../domain/entities/dashboard';
+import { DashboardData } from '../../domain/entities/dashboard';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';

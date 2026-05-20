@@ -5,12 +5,12 @@ import es from '../locales/es';
 import pt from '../locales/pt';
 
 // ... (translations mapping remains same)
-const translations: Record<string, any> = { en, es, pt };
+const translations: Record<string, Record<string, unknown>> = { en, es, pt };
 
-function getNestedValue(language: string, key: string): any {
+function getNestedValue(language: string, key: string): unknown {
   return key.split('.').reduce((obj, k) => {
-    return obj && typeof obj === 'object' ? obj[k] : undefined;
-  }, translations[language]);
+    return obj && typeof obj === 'object' ? (obj as Record<string, unknown>)[k] : undefined;
+  }, translations[language] as unknown);
 }
 
 export const useTranslation = () => {
@@ -32,8 +32,8 @@ export const useTranslation = () => {
   /**
    * Translates to an object or array
    */
-  const to = useCallback(<T = any>(key: string): T | undefined => {
-    return getNestedValue(language, key);
+  const to = useCallback(<T = unknown>(key: string): T | undefined => {
+    return getNestedValue(language, key) as T | undefined;
   }, [language]);
 
   return useMemo(() => ({ t, to }), [t, to]);

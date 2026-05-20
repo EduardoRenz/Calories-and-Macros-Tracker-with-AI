@@ -5,7 +5,7 @@ import { DailyHistoryEntry } from '../../domain/entities/history';
 import { HistoryPage } from '../../domain/repositories/HistoryRepository';
 import { getDb } from '../firebase';
 import { getAuth } from '../auth';
-import { DashboardData, MealSummary } from '../../domain/entities/dashboard';
+import { DashboardData, Ingredient, MealSummary } from '../../domain/entities/dashboard';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
@@ -19,7 +19,7 @@ const hasAnyIngredients = (meals?: MealSummary): boolean => {
 const calculateTotalFiber = (meals?: MealSummary): number => {
   if (!meals) return 0;
   return Object.values(meals).reduce((total: number, meal) => {
-    return total + meal.ingredients.reduce((mealTotal: number, ingredient: any) => {
+    return total + meal.ingredients.reduce((mealTotal: number, ingredient: Ingredient) => {
       return mealTotal + (ingredient.fiber || 0);
     }, 0);
   }, 0);

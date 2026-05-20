@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useProfile } from './ProfileContext';
 import { useLanguage } from './LanguageContext';
-import { ChatMessage, PendingAction, AddIngredientActionData, UpdateIngredientActionData, RemoveIngredientActionData } from '../domain/entities/ChatMessage';
+import { ChatMessage, AddIngredientActionData, UpdateIngredientActionData, RemoveIngredientActionData } from '../domain/entities/ChatMessage';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { RepositoryFactory } from '../data/RepositoryFactory';
 import { useFeatureFlags } from './FeatureFlagContext';
@@ -11,6 +11,7 @@ import ChatWindow from '../components/assistant/ChatWindow';
 import { CookieManager } from '../utils/CookieManager';
 import { ChatAssistantException } from '../domain/exceptions/ChatAssistantException';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import { Ingredient } from '../domain/entities/dashboard';
 
 
 interface ChatAssistantContextType {
@@ -36,7 +37,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     const { profile } = useProfile();
     const { language } = useLanguage();
     const { isFeatureEnabled, isAiFeatureVisible } = useFeatureFlags();
-    const cookieManager = CookieManager.getInstance();
+    const cookieManager = useMemo(() => CookieManager.getInstance(), []);
 
     const isChatEnabled = isFeatureEnabled('enable_chatbot') && isAiFeatureVisible('chatbot');
 
@@ -44,7 +45,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
     useEffect(() => {
         const status = cookieManager.getCookie('healthpal_assistant_status');
         setIsOnline(status !== 'absent');
-    }, []);
+    }, [cookieManager]);
 
     // Periodic check for cookie expiration (every minute)
     useEffect(() => {
@@ -55,7 +56,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         }, 60000); // Check every minute
 
         return () => clearInterval(interval);
-    }, []);
+    }, [cookieManager]);
 
     // Initial message
     useEffect(() => {
@@ -112,7 +113,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     }, [isOpen]);
 
-    const closeChat = () => {
+    const closeChat = useCallback(() => {
         setIsOpen(false);
         // Restore body scroll on mobile when chat is closed
         if (typeof window !== 'undefined') {
@@ -125,7 +126,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                 window.scrollTo(0, parseInt(scrollY || '0') * -1);
             }
         }
-    };
+    }, []);
 
     // Handle browser back button to close chat on mobile
     useEffect(() => {
@@ -306,9 +307,9 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                     }
 
                     // Validate mandatory fields
-                    const requiredFields = ['name', 'quantity', 'calories', 'protein', 'carbs', 'fats'] as const;
+                    const requiredFields = ['name', 'quantity', 'calories', 'protein', 'carbs', 'fats'] as const satisfies readonly (keyof Omit<Ingredient, 'id'>)[];
                     for (const field of requiredFields) {
-                        const val = (ingredient as any)[field];
+                        const val = ingredient[field];
                         if (val === undefined || val === null || (typeof val === 'number' && isNaN(val))) {
                             console.error(`Missing mandatory field: ${field}`, ingredient);
                             throw new Error(t('assistant.error_generic'));
@@ -363,7 +364,7 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                 return newMessages;
             });
 
-        } catch (error: any) {
+        } catch (error) {
             console.error('Action failed:', error);
             const errorMessage = error instanceof Error ? error.message : t('assistant.action_error');
             setMessages(prev => [...prev, {

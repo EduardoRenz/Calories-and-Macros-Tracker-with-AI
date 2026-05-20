@@ -1,10 +1,31 @@
 import { ChatAssistantContextData } from "../../domain/services/ChatAssistantService"
 import { BaseChatAssistantService } from "./BaseChatAssistantService"
-import { ChatMessage, PendingAction } from "../../domain/entities/ChatMessage"
+import { ChatMessage } from "../../domain/entities/ChatMessage"
 import { DashboardRepository } from "../../domain/repositories/DashboardRepository"
 import { ModelConfigRepository } from "../../domain/repositories/ModelConfigRepository"
 import { RepositoryFactory } from "../RepositoryFactory"
 import { ChatAssistantApiException, ChatAssistantAuthException } from "../../domain/exceptions/ChatAssistantException"
+
+type OpenAIChatMessage = {
+  role: "system" | "user" | "assistant" | "tool"
+  content: string | null
+  tool_call_id?: string
+  tool_calls?: OpenAIToolCall[]
+}
+
+type OpenAIToolCall = {
+  id: string
+  function: {
+    name: string
+    arguments: string
+  }
+}
+
+type OpenAIChatResponse = {
+  choices: Array<{
+    message: OpenAIChatMessage
+  }>
+}
 
 export class OpenAIChatAssistantService extends BaseChatAssistantService {
   protected apiKey: string
@@ -42,7 +63,7 @@ export class OpenAIChatAssistantService extends BaseChatAssistantService {
 
   async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {
     // Build System Prompt
-    let systemContent = `${this.getPersonaHeader()}
+    const systemContent = `${this.getPersonaHeader()}
 
 ${this.buildContextString(context)}
 
@@ -51,7 +72,13 @@ ${this.getSystemCapabilities()}
 IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE 'create_action' TOOL provided. Do not output JSON text.
 `
 
-    const apiMessages: any[] = [{ role: "system", content: systemContent }, ...messages.map((m) => ({ role: m.role, content: m.content }))]
+    const apiMessages: OpenAIChatMessage[] = [
+      { role: "system", content: systemContent },
+      ...messages.map((m): OpenAIChatMessage => ({
+        role: m.role === "system" ? "assistant" : m.role,
+        content: m.content,
+      })),
+    ]
 
     const tools = [
       {
@@ -151,7 +178,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
     ]
 
     try {
-      let currentMessages = [...apiMessages]
+      const currentMessages = [...apiMessages]
 
       while (true) {
         const response = await fetch(`${this.baseUrl}/chat/completions`, {
@@ -177,7 +204,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
           throw new ChatAssistantApiException(`API Error: ${response.status} - ${errText}`)
         }
 
-        const data = await response.json()
+        const data = await response.json() as OpenAIChatResponse
         const choice = data.choices[0]
         const message = choice.message
 
@@ -190,7 +217,7 @@ IMPORTANT: To propose an action (add/update/remove ingredient), YOU MUST USE THE
               try {
                 const dashboardData = await this.dashboardRepo.getDashboardForDate(args.date)
                 dataResult = JSON.stringify(dashboardData)
-              } catch (e) {
+              } catch {
                 dataResult = "Error fetching data for this date."
               }
             } else {

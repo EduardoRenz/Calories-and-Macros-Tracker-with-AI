@@ -80,7 +80,7 @@ export const FeatureFlagProvider: React.FC<{ children: React.ReactNode }> = ({ c
             try {
                 const keys = keysStr ? JSON.parse(keysStr) : [];
                 setHasUserApiKeys(Array.isArray(keys) && keys.length > 0);
-            } catch (e) {
+            } catch {
                 setHasUserApiKeys(false);
             }
         }
@@ -169,6 +169,7 @@ export const FeatureFlagProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const isAiFeatureVisible = useCallback((
         featureName: keyof FeatureRequirements
     ): boolean => {
+        void featureName;
         // Mode: disabled - hide all AI features
         if (aiAccessMode === 'disabled') {
             return false;

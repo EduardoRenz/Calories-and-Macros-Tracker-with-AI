@@ -25,7 +25,7 @@ const createEmptyDashboard = (date: string, goals?: { calories: number; protein:
 
 // Helper function to recalculate all meal and macro totals from the ingredients list
 const recalculateTotals = (data: DashboardData): DashboardData => {
-    const newData = JSON.parse(JSON.stringify(data));
+    const newData = JSON.parse(JSON.stringify(data)) as DashboardData;
 
     let totalCalories = 0;
     let totalProtein = 0;
@@ -110,14 +110,14 @@ export class FirestoreDashboardRepository implements DashboardRepository {
                     const meal = data.meals[mealType as keyof MealSummary];
                     if (!meal.ingredients) continue;
                     for (const ing of meal.ingredients) {
-                        if (typeof (ing as any).fiber !== 'number') {
-                            (ing as any).fiber = 0;
+                        if (typeof ing.fiber !== 'number') {
+                            ing.fiber = 0;
                             needsUpdate = true;
                         }
                     }
                     // Ensure meal has fiber field (backward compatibility)
-                    if (typeof (meal as any).fiber !== 'number') {
-                        (meal as any).fiber = meal.ingredients.reduce((total: number, ing: any) => total + (ing.fiber || 0), 0);
+                    if (typeof meal.fiber !== 'number') {
+                        meal.fiber = meal.ingredients.reduce((total: number, ing: Ingredient) => total + (ing.fiber || 0), 0);
                         needsUpdate = true;
                     }
                 }
@@ -208,7 +208,7 @@ export class FirestoreDashboardRepository implements DashboardRepository {
         const now = new Date().toISOString();
         const newIngredients: Ingredient[] = ingredients.map(ing => ({
             ...ing,
-            fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
+            fiber: typeof ing.fiber === 'number' ? ing.fiber : 0,
             id: `${new Date().getTime()}-${Math.random()}`,
             created_at: now,
             category: ing.category,
@@ -263,7 +263,7 @@ export class FirestoreDashboardRepository implements DashboardRepository {
         if (typeof updatedIngredient.protein !== 'number') updatedIngredient.protein = Number(updatedIngredient.protein) || 0;
         if (typeof updatedIngredient.carbs !== 'number') updatedIngredient.carbs = Number(updatedIngredient.carbs) || 0;
         if (typeof updatedIngredient.fats !== 'number') updatedIngredient.fats = Number(updatedIngredient.fats) || 0;
-        if (typeof (updatedIngredient as any).fiber !== 'number') (updatedIngredient as any).fiber = Number((updatedIngredient as any).fiber) || 0;
+        if (typeof updatedIngredient.fiber !== 'number') updatedIngredient.fiber = Number(updatedIngredient.fiber) || 0;
 
         meal.ingredients[ingredientIndex] = updatedIngredient;
 
@@ -274,9 +274,10 @@ export class FirestoreDashboardRepository implements DashboardRepository {
             // Invalidate cache
             this.dataCacheManager.invalidate(`getDashboardForDate:${date}`);
             return updatedData;
-        } catch (error: any) {
+        } catch (error) {
             console.error("Firestore update failed:", error);
-            throw new Error(`Failed to update Firestore: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to update Firestore: ${message}`);
         }
     }
 

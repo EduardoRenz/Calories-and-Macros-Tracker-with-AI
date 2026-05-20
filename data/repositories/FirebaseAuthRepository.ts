@@ -2,7 +2,6 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
     onAuthStateChanged as onFirebaseAuthStateChanged,
-    Unsubscribe,
     User as FirebaseUser,
     Auth
 } from 'firebase/auth';
@@ -58,7 +57,7 @@ export class FirebaseAuthRepository implements AuthRepository {
         });
     }
 
-    async signIn(email: string, password?: string): Promise<User | null> {
+    async signIn(): Promise<User | null> {
         return this.signInWithGoogle();
     }
 

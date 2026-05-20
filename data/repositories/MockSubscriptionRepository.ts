@@ -1,5 +1,6 @@
 import { SubscriptionRepository } from '../../domain/repositories/SubscriptionRepository';
 import { Subscription } from '../../domain/entities/subscription';
+import { BillingTransaction } from '../../domain/entities/BillingTransaction';
 import { ConcurrencyRequestManager } from '../infrastructure/ConcurrencyRequestManager';
 import { DataCacheManager } from '../infrastructure/DataCacheManager';
 
@@ -66,7 +67,7 @@ export class MockSubscriptionRepository implements SubscriptionRepository {
         }, CACHE_TTL);
     }
 
-    async getBillingHistory(): Promise<any[]> {
+    async getBillingHistory(): Promise<BillingTransaction[]> {
         return [];
     }
 

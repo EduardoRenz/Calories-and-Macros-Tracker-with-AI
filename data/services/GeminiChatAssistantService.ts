@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { BaseChatAssistantService } from './BaseChatAssistantService';
-import { ChatMessage } from '../../domain/entities/ChatMessage';
+import { AddIngredientActionData, ChatMessage, RemoveIngredientActionData, UpdateIngredientActionData } from '../../domain/entities/ChatMessage';
 import { DashboardRepository } from '../../domain/repositories/DashboardRepository';
 import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
 import { RepositoryFactory } from '../RepositoryFactory';
@@ -9,6 +9,47 @@ import { env } from '../../env';
 import en from '../../locales/en';
 import pt from '../../locales/pt';
 import es from '../../locales/es';
+
+type GeminiFunctionCall = {
+    name: string;
+    args: Record<string, unknown>;
+};
+
+type GeminiPart = {
+    text?: string;
+    functionCall?: GeminiFunctionCall;
+    functionResponse?: {
+        name: string;
+        response: Record<string, unknown>;
+    };
+};
+
+type GeminiContent = {
+    role: string;
+    parts: GeminiPart[];
+};
+
+type GeminiCandidate = {
+    content?: GeminiContent;
+};
+
+type GeminiGenerateContentResult = {
+    response?: {
+        candidates?: GeminiCandidate[];
+    };
+    candidates?: GeminiCandidate[];
+};
+
+type GeminiModelClient = {
+    models: {
+        generateContent(input: Record<string, unknown>): Promise<GeminiGenerateContentResult>;
+    };
+};
+
+type CreateActionToolArgs =
+    | { type: 'add_ingredient'; data: Partial<AddIngredientActionData> }
+    | { type: 'update_ingredient'; data: Partial<UpdateIngredientActionData> }
+    | { type: 'remove_ingredient'; data: Partial<RemoveIngredientActionData> };
 
 export class GeminiChatAssistantService extends BaseChatAssistantService {
     private ai: GoogleGenAI;
@@ -39,7 +80,7 @@ export class GeminiChatAssistantService extends BaseChatAssistantService {
         // Construct the prompt manually using Base parts, BUT skipping getOutputInstructions (JSON)
         // because we want to use Tools.
 
-        let systemPrompt = `${this.getPersonaHeader()}
+        const systemPrompt = `${this.getPersonaHeader()}
 
 ${this.buildContextString(context)}
 
@@ -52,8 +93,6 @@ WHEN TO USE TOOLS:
 
 CRITICAL: Do NOT use tools for general conversation or questions. Only use tools for specific actions.
 `;
-
-        const prompt = `${systemPrompt}\n\nChat History:\n${messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n')}\n\nAssistant Response:`;
 
         const tools = [{
             functionDeclarations: [
@@ -134,7 +173,7 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
         }];
 
         try {
-            const contents = [
+            const contents: GeminiContent[] = [
                 {
                     role: 'model',
                     parts: [{ text: systemPrompt }]
@@ -146,12 +185,12 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
             ];
 
             // Manual loop for tool calls
-            let result;
-            let candidate;
+            let result: GeminiGenerateContentResult;
+            let candidate: GeminiCandidate | undefined;
 
             while (true) {
                 const currentModel = await this.getModelVersion();
-                result = await (this.ai as any).models.generateContent({
+                result = await (this.ai as unknown as GeminiModelClient).models.generateContent({
                     model: currentModel,
                     contents: contents,
                     config: {
@@ -162,17 +201,18 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
                 candidate = result.response?.candidates?.[0] || result.candidates?.[0];
                 if (!candidate) throw new Error("No response from Gemini");
 
-                const functionCalls = candidate.content?.parts?.filter((p: any) => p.functionCall);
-                const getDashboardCall = functionCalls?.find((p: any) => p.functionCall.name === 'get_dashboard_for_date');
+                const functionCalls = candidate.content?.parts?.filter((p): p is GeminiPart & { functionCall: GeminiFunctionCall } => Boolean(p.functionCall));
+                const getDashboardCall = functionCalls?.find((p) => p.functionCall.name === 'get_dashboard_for_date');
 
                 if (getDashboardCall) {
-                    const date = getDashboardCall.functionCall.args.date;
+                    if (!candidate.content) throw new Error("Gemini tool call missing content");
+                    const date = String(getDashboardCall.functionCall.args.date ?? '');
                     let dataResult = "{}";
                     if (this.dashboardRepo) {
                         try {
                             const dashboardData = await this.dashboardRepo.getDashboardForDate(date);
                             dataResult = JSON.stringify(dashboardData);
-                        } catch (e) {
+                        } catch {
                             dataResult = "Error fetching data for this date.";
                         }
                     } else {
@@ -189,7 +229,7 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
                                 response: { content: dataResult }
                             }
                         }]
-                    } as any);
+                    });
 
                     // Continue loop to get final text
                     continue;
@@ -200,7 +240,7 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
             }
 
             let content = "";
-            let functionCallPart = null;
+            let functionCallPart: GeminiFunctionCall | null = null;
 
             if (candidate?.content?.parts) {
                 for (const part of candidate.content.parts) {
@@ -228,7 +268,7 @@ CRITICAL: Do NOT use tools for general conversation or questions. Only use tools
             };
 
             if (functionCallPart && functionCallPart.name === "create_action") {
-                assistantMessage.pendingAction = this.createPendingAction(functionCallPart.args as any, context);
+                assistantMessage.pendingAction = this.createPendingAction(functionCallPart.args as CreateActionToolArgs, context);
             }
 
             return assistantMessage;

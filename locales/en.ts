@@ -1,5 +1,5 @@
 
-export default {
+const en = {
   "navbar": {
     "dashboard": "Dashboard",
     "history": "History",
@@ -431,3 +431,5 @@ export default {
     "feature_premium_only": "This feature is exclusive for Premium subscribers. Visit our [plans page](/plans) to learn more."
   }
 };
+
+export default en;
