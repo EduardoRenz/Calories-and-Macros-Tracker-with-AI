@@ -1,7 +1,7 @@
 {
   "name": "caloriecounter-profile-goals",
   "private": true,
-  "version": "1.13.5",
+  "version": "1.13.6",
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
@@ -14,7 +14,7 @@
     "cy:run": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress run"
   },
   "dependencies": {
-    "@google/genai": "^1.26.0",
+    "@google/genai": "^2.4.0",
     "@supabase/supabase-js": "^2.89.0",
     "@t3-oss/env-nextjs": "^0.13.10",
     "firebase": "^12.4.0",
@@ -24,7 +24,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-is": "^19.0.0",
-    "react-markdown": "^9.0.1",
+    "react-markdown": "^10.1.0",
     "recharts": "^3.3.0",
     "remark-gfm": "^4.0.0",
     "zod": "^4.3.5"
