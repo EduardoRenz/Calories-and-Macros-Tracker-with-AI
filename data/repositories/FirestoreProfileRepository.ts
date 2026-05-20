@@ -102,7 +102,7 @@ export class FirestoreProfileRepository implements ProfileRepository {
         const currentProfile = await this.getProfile();
 
         const newWeight = profile.personalInfo.weight;
-        let updatedHistory = [...currentProfile.weightHistory];
+        const updatedHistory = [...currentProfile.weightHistory];
 
         // Only update weight history if weight is provided
         if (newWeight !== null && newWeight > 0) {

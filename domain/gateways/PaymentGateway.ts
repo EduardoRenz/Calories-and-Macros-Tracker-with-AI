@@ -1,4 +1,4 @@
-import { PaymentData, Plan, Transaction } from '../entities/payment';
+import { PaymentData, Transaction } from '../entities/payment';
 
 export interface HostedSubscriptionCheckoutInput {
     userId: string;

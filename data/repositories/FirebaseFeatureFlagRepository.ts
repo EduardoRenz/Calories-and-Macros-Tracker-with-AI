@@ -1,17 +1,18 @@
 import { FeatureFlagRepository, FeatureFlags } from '../../domain/repositories/FeatureFlagRepository';
-import { getRemoteConfig, getValue, fetchAndActivate } from "firebase/remote-config";
+import { RemoteConfig, getRemoteConfig, getValue, fetchAndActivate } from "firebase/remote-config";
 import { getApp } from "firebase/app";
 import { DEFAULT_MODEL_CONFIG } from '../config/DefaultModelConfig';
 
 export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
     static instance: FirebaseFeatureFlagRepository;
-    private remoteConfig: any;
+    private remoteConfig: RemoteConfig;
 
     constructor() {
         this.remoteConfig = getRemoteConfig(getApp());
         // Default configuration
         this.remoteConfig.settings = {
-            minimumFetchIntervalMillis: 10000
+            minimumFetchIntervalMillis: 10000,
+            fetchTimeoutMillis: 60000,
         };
         this.remoteConfig.defaultConfig = {
             [FeatureFlags.ENABLE_CHATBOT]: true,

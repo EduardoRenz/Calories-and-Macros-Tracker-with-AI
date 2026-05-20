@@ -53,6 +53,7 @@ class FirebaseAuthVerifier implements AuthVerifier {
 
 class MockAuthVerifier implements AuthVerifier {
     async verifyToken(token: string): Promise<AuthenticatedUser> {
+        void token;
         console.log('[Auth] Mock mode: skipping token verification');
         return { uid: 'mock-user-id', email: 'mock@example.com' };
     }

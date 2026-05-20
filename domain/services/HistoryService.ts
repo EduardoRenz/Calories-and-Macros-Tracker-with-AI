@@ -1,29 +1,11 @@
 import { DailyHistoryEntry } from '../entities/history';
 import { HistoryRepository, HistoryPage } from '../repositories/HistoryRepository';
 
-const parseDate = (yyyyMmDd: string) => {
-  const [y, m, d] = yyyyMmDd.split('-').map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
-};
-
 const formatDate = (date: Date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-};
-
-const listDates = (startDate: string, endDate: string): string[] => {
-  const start = parseDate(startDate);
-  const end = parseDate(endDate);
-
-  const dates: string[] = [];
-  const d = new Date(start);
-  while (d <= end) {
-    dates.push(formatDate(d));
-    d.setDate(d.getDate() + 1);
-  }
-  return dates;
 };
 
 export type HistoryAverages = {

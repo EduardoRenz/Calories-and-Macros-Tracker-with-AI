@@ -3,7 +3,7 @@ import { FeatureFlagRepository, FeatureFlags } from '../../domain/repositories/F
 export class LocalFeatureFlagRepository implements FeatureFlagRepository {
     static instance: LocalFeatureFlagRepository;
 
-    private flags: Record<string, any> = {
+    private flags: Record<string, unknown> = {
         [FeatureFlags.ENABLE_CHATBOT]: true,
         [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
         [FeatureFlags.ENABLE_PLANS]: true,
@@ -37,7 +37,7 @@ export class LocalFeatureFlagRepository implements FeatureFlagRepository {
             }
         }
 
-        return this.flags[flagName] ?? false;
+        return Boolean(this.flags[flagName] ?? false);
     }
 
     async getValue(flagName: string): Promise<unknown> {

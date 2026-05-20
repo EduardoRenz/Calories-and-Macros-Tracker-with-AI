@@ -1,4 +1,4 @@
-import { FoodAnalysisReport, VitaminStatus } from '../../domain/entities/analysis';
+import { FoodAnalysisReport } from '../../domain/entities/analysis';
 import { FoodAnalysisInput, FoodAnalysisService } from '../../domain/services/FoodAnalysisService';
 import { DashboardData, Ingredient } from '../../domain/entities/dashboard';
 import { isProfileComplete } from '../../domain/entities/profile';

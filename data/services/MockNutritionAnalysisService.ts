@@ -2,6 +2,8 @@ import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services
 
 export class MockNutritionAnalysisService extends NutritionAnalysisService {
     async getNutritionalInfo(ingredientName: string, quantity: string, language: string): Promise<NutritionalInfo | null> {
+        void quantity;
+        void language;
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1000));
 

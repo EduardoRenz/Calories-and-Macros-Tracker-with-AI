@@ -3,16 +3,35 @@ import {
   ChatMessage,
   PendingAction,
   ActionDataType,
+  ActionData,
   AddIngredientActionData,
   UpdateIngredientActionData,
   RemoveIngredientActionData,
 } from "../../domain/entities/ChatMessage"
-import { Ingredient } from "../../domain/entities/dashboard"
+import { Ingredient, MealSummary } from "../../domain/entities/dashboard"
 
 type ActionArgs = {
   add_ingredient: { type: "add_ingredient"; data: Partial<AddIngredientActionData> }
   update_ingredient: { type: "update_ingredient"; data: Partial<UpdateIngredientActionData> }
   remove_ingredient: { type: "remove_ingredient"; data: Partial<RemoveIngredientActionData> }
+}
+
+type NutritionPayload = Partial<Omit<Ingredient, "id">>
+type RawActionData = {
+  meal_type?: keyof MealSummary
+  meal?: keyof MealSummary
+  ingredient?: unknown
+  updates?: unknown
+  [key: string]: unknown
+}
+
+type FormattedActionData = RawActionData & {
+  date: string
+  mealType?: keyof MealSummary
+  ingredientId?: string
+  name?: string
+  ingredient?: NutritionPayload
+  updates?: NutritionPayload
 }
 
 export abstract class BaseChatAssistantService implements ChatAssistantService {
@@ -37,9 +56,8 @@ export abstract class BaseChatAssistantService implements ChatAssistantService {
 
       // Add meals details
       Object.entries(context.dashboardData.meals).forEach(([key, meal]) => {
-        const m = meal as any // Cast for simplicity
-        dashboardContext += `- ${m.name} (${key}): ${m.calories}kcal. Ingredients: \n`
-        m.ingredients.forEach((ing: Ingredient) => {
+        dashboardContext += `- ${meal.name} (${key}): ${meal.calories}kcal. Ingredients: \n`
+        meal.ingredients.forEach((ing: Ingredient) => {
           dashboardContext += `  * [ID: ${ing.id}] ${ing.name} (${ing.quantity}g, ${ing.calories}kcal)\n`
         })
       })
@@ -143,17 +161,20 @@ ${this.getOutputInstructions()}
 `
   }
 
-  protected createPendingAction<T extends ActionDataType>(args: ActionArgs[T], context: ChatAssistantContextData): PendingAction {
+  protected createPendingAction(args: ActionArgs[ActionDataType], context: ChatAssistantContextData): PendingAction {
     const actionType = args.type
-    const actionData = args.data as any
-    let formattedData: any = { ...actionData }
+    const actionData = args.data as RawActionData
+    const formattedData = {
+      ...actionData,
+      date: context.currentDate || new Date().toISOString().split("T")[0],
+    } as FormattedActionData
 
     // Normalize all possible field name variations to standard format
-    const normalizeFieldName = (obj: any): any => {
-      if (!obj || typeof obj !== "object") return obj
-      const normalized: any = {}
+    const normalizeFieldName = (obj: unknown): Record<string, unknown> | undefined => {
+      if (!obj || typeof obj !== "object") return undefined
+      const normalized: Record<string, unknown> = {}
 
-      for (const [key, value] of Object.entries(obj)) {
+      for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
         // Remove all known suffixes: _g, _grams, _gram, _gal, _kcal
         const cleanKey = key
           .replace(/_g$/, "") // _g suffix
@@ -170,7 +191,7 @@ ${this.getOutputInstructions()}
 
     // Normalize ingredient/updates structure
     const normalizeNutritionData = (
-      raw: any,
+      raw: unknown,
     ):
       | {
           name?: string
@@ -185,15 +206,16 @@ ${this.getOutputInstructions()}
       if (!raw || typeof raw !== "object") return undefined
 
       const normalized = normalizeFieldName(raw)
+      if (!normalized) return undefined
 
       return {
-        ...(normalized.name && { name: normalized.name }),
-        ...(normalized.quantity && { quantity: String(normalized.quantity) }),
-        ...(normalized.calories != null && { calories: Number(normalized.calories) }),
-        ...(normalized.protein != null && { protein: Number(normalized.protein) }),
-        ...(normalized.carbs != null && { carbs: Number(normalized.carbs) }),
-        ...(normalized.fats != null && { fats: Number(normalized.fats) }),
-        ...(normalized.fiber != null && { fiber: Number(normalized.fiber) }),
+        ...(typeof normalized.name === "string" ? { name: normalized.name } : {}),
+        ...(normalized.quantity ? { quantity: String(normalized.quantity) } : {}),
+        ...(normalized.calories != null ? { calories: Number(normalized.calories) } : {}),
+        ...(normalized.protein != null ? { protein: Number(normalized.protein) } : {}),
+        ...(normalized.carbs != null ? { carbs: Number(normalized.carbs) } : {}),
+        ...(normalized.fats != null ? { fats: Number(normalized.fats) } : {}),
+        ...(normalized.fiber != null ? { fiber: Number(normalized.fiber) } : {}),
       }
     }
 
@@ -207,12 +229,8 @@ ${this.getOutputInstructions()}
     }
 
     // Ensure date
-    formattedData.date = context.currentDate || new Date().toISOString().split("T")[0]
-
     // Process each action type
     if (actionType === "add_ingredient") {
-      const addIngredientData = actionData as AddIngredientActionData & any
-
       // Normalize mealType
       if (!formattedData.mealType) {
         console.warn("AI missing mealType, defaulting to 'snacks'")
@@ -284,7 +302,7 @@ ${this.getOutputInstructions()}
     return {
       id: `action-${Date.now()}`,
       type: actionType,
-      data: formattedData,
+      data: formattedData as ActionData,
       description: description,
     }
   }

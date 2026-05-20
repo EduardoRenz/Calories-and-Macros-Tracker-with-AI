@@ -1,11 +1,11 @@
 import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
-import { getRemoteConfig, getValue, fetchAndActivate } from "firebase/remote-config";
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { RemoteConfig, getRemoteConfig, getValue, fetchAndActivate } from "firebase/remote-config";
+import { getApps, getApp } from "firebase/app";
 import { DEFAULT_MODEL_CONFIG } from '../config/DefaultModelConfig';
 
 export class FirebaseModelConfigRepository implements ModelConfigRepository {
     static instance: FirebaseModelConfigRepository;
-    private remoteConfig: any;
+    private remoteConfig: RemoteConfig | null = null;
     private cache: Record<string, Record<string, string>> | null = null;
     private cacheTimestamp: number = 0;
     private readonly CACHE_DURATION = 3600000; // 1 hour in milliseconds
@@ -16,7 +16,8 @@ export class FirebaseModelConfigRepository implements ModelConfigRepository {
             this.remoteConfig = getRemoteConfig(app);
             // Default configuration
             this.remoteConfig.settings = {
-                minimumFetchIntervalMillis: 1000000
+                minimumFetchIntervalMillis: 1000000,
+                fetchTimeoutMillis: 60000,
             };
             this.remoteConfig.defaultConfig = {
                 'enable_chatbot': true,

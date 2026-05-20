@@ -51,7 +51,7 @@ const createEmptyDashboard = (date: string, goals?: { calories: number; protein:
 });
 
 const recalculateTotals = (data: DashboardData): DashboardData => {
-  const newData = JSON.parse(JSON.stringify(data));
+  const newData = JSON.parse(JSON.stringify(data)) as DashboardData;
 
   let totalCalories = 0;
   let totalProtein = 0;
@@ -334,10 +334,10 @@ export class SupabaseDashboardRepository implements DashboardRepository {
       protein: ing.protein,
       carbs: ing.carbs,
       fats: ing.fats,
-      fiber: typeof (ing as any).fiber === 'number' ? (ing as any).fiber : 0,
+      fiber: typeof ing.fiber === 'number' ? ing.fiber : 0,
     }));
 
-    const { error, data } = await supabase.from('dashboard_ingredients').insert(rows);
+    const { error } = await supabase.from('dashboard_ingredients').insert(rows);
     if (error) {
       throw error;
     }
@@ -370,7 +370,7 @@ export class SupabaseDashboardRepository implements DashboardRepository {
       .delete()
       .eq('id', ingredientId)
       .eq('dashboard_day_id', day.id)
-      .eq('meal_type', mealType as any);
+      .eq('meal_type', mealType);
 
     if (error) throw error;
 

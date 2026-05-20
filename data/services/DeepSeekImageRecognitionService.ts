@@ -8,6 +8,9 @@ export class DeepSeekImageRecognitionService extends OpenAIImageRecognitionServi
     }
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
+        void image;
+        void language;
+        void prompt;
         // DeepSeek does not support image recognition - fail immediately
         // This allows the fallback service to skip to the next model
         throw new Error('DeepSeek does not support image recognition');

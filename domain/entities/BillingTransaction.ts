@@ -16,7 +16,7 @@ export interface BillingTransactionProps {
     currency: Currency;
     occurredAt: Date;
     receiptUrl?: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
 }
 
 export class BillingTransaction {
@@ -32,7 +32,7 @@ export class BillingTransaction {
     private readonly _currency: Currency;
     private readonly _occurredAt: Date;
     private readonly _receiptUrl?: string;
-    private readonly _metadata: Record<string, any>;
+    private readonly _metadata: Record<string, unknown>;
 
     private constructor(props: BillingTransactionProps) {
         this._id = props.id;
@@ -67,7 +67,7 @@ export class BillingTransaction {
     public get currency(): Currency { return this._currency; }
     public get occurredAt(): Date { return this._occurredAt; }
     public get receiptUrl(): string | undefined { return this._receiptUrl; }
-    public get metadata(): Record<string, any> { return { ...this._metadata }; }
+    public get metadata(): Record<string, unknown> { return { ...this._metadata }; }
 
     public toJSON(): BillingTransactionProps {
         return {

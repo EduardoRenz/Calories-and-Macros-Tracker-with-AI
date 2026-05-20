@@ -4,6 +4,35 @@ import { SubscriptionRepository } from "../../domain/repositories/SubscriptionRe
 import { UserApiKeysRepository } from "../../domain/repositories/UserApiKeysRepository";
 import { AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from "../../domain/exceptions/AiAccessException";
 
+type AiMinPlan = 'premium' | 'free_plan_api_keys' | 'open';
+type FeatureRequirementPayload = {
+    min_plan?: 'premium' | 'free_plan_api_keys' | 'free' | 'open';
+};
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+    typeof value === 'object' && value !== null;
+
+const normalizeMinPlan = (value: unknown): AiMinPlan | undefined => {
+    if (value === 'premium' || value === 'free_plan_api_keys') {
+        return value;
+    }
+    if (value === 'free' || value === 'open') {
+        return 'open';
+    }
+    return undefined;
+};
+
+const normalizeRequirements = (value: unknown): Partial<Record<AiAccessFeature, FeatureRequirementPayload>> => {
+    if (!isRecord(value)) {
+        return {};
+    }
+
+    if (isRecord(value.feature_requirements)) {
+        return value.feature_requirements as Partial<Record<AiAccessFeature, FeatureRequirementPayload>>;
+    }
+
+    return value as Partial<Record<AiAccessFeature, FeatureRequirementPayload>>;
+};
+
 export class DefaultAiAccessService implements AiAccessService {
     private static instance: DefaultAiAccessService;
 
@@ -61,8 +90,8 @@ export class DefaultAiAccessService implements AiAccessService {
         if (mode === 'free_plan_api_keys_only') {
             // If minPlan was already determined as 'open' by getMinPlan, it won't be 'free_plan_api_keys' here.
             // But we double check the global restriction if no specific config exists.
-            const requirements = await this.featureFlagRepo.getValue(FeatureFlags.FEATURE_REQUIREMENTS) as any;
-            const featureConfig = (requirements?.feature_requirements || requirements)?.[feature];
+            const requirements = normalizeRequirements(await this.featureFlagRepo.getValue(FeatureFlags.FEATURE_REQUIREMENTS));
+            const featureConfig = requirements[feature];
             
             if (!featureConfig?.min_plan) {
                 if (!this.userApiKeysRepo.hasApiKeys()) {
@@ -76,17 +105,13 @@ export class DefaultAiAccessService implements AiAccessService {
         const mode = await this.featureFlagRepo.getValue(FeatureFlags.AI_ACCESS_MODE) as string || 'premium_only';
 
         // Get specific feature requirements
-        let requirements = await this.featureFlagRepo.getValue(FeatureFlags.FEATURE_REQUIREMENTS) as any;
-        
-        // Robustness: handle nested structure
-        if (requirements && requirements.feature_requirements) {
-            requirements = requirements.feature_requirements;
-        }
+        const requirements = normalizeRequirements(await this.featureFlagRepo.getValue(FeatureFlags.FEATURE_REQUIREMENTS));
 
         const featureConfig = requirements?.[feature];
+        const minPlan = normalizeMinPlan(featureConfig?.min_plan);
 
-        if (featureConfig?.min_plan) {
-            return featureConfig.min_plan as any;
+        if (minPlan) {
+            return minPlan;
         }
 
         // Fallback logic

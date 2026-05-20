@@ -12,7 +12,7 @@ interface CacheEntry<T> {
  * fetching of unchanged resources. It supports Time-To-Live (TTL) strategies.
  */
 export class DataCacheManager {
-    private cache: Map<string, CacheEntry<any>> = new Map();
+    private cache: Map<string, CacheEntry<unknown>> = new Map();
     private readonly DEFAULT_TTL = 60 * 1000; // 1 minute in milliseconds
 
     /**
