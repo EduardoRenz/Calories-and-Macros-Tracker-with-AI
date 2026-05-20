@@ -6,6 +6,10 @@ const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, "./packag
 
 const nextConfig: NextConfig = {
     reactStrictMode: true,
+    outputFileTracingRoot: __dirname,
+    turbopack: {
+        root: __dirname,
+    },
     distDir: 'dist',
     images: {
         remotePatterns: [
