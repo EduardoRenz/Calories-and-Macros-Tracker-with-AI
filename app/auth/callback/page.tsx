@@ -3,6 +3,7 @@
 import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getSupabaseClient } from '@/data/supabaseClient';
+import { isValidRedirect } from '@/utils/security';
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -18,7 +19,13 @@ function AuthCallbackContent() {
 
     const handleCallback = async () => {
       const code = searchParams.get('code');
-      const next = searchParams.get('next') ?? '/dashboard';
+      let next = searchParams.get('next') ?? '/dashboard';
+
+      // Security check to prevent Open Redirect vulnerabilities
+      if (!isValidRedirect(next)) {
+        console.warn('[AuthCallback] Invalid redirect target detected, falling back to dashboard:', next);
+        next = '/dashboard';
+      }
 
       const supabase = getSupabaseClient();
 
