@@ -4,6 +4,7 @@ import { RepositoryFactory } from '../../../../data/RepositoryFactory';
 import { PaymentGatewayFactory } from '../../_gateways/PaymentGatewayFactory';
 import { verifyAuth } from '../../auth-middleware';
 import { env } from '../../../../env';
+import { isValidRedirect } from '@/utils/security';
 
 interface CheckoutRequestBody {
     planId?: string;
@@ -53,8 +54,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Plan is not available for this billing provider' }, { status: 409 });
         }
 
-        const successUrl = body.successUrl || getDefaultUrl(request, '/checkout?status=success');
-        const cancelUrl = body.cancelUrl || getDefaultUrl(request, `/checkout?planId=${encodeURIComponent(body.planId)}&status=cancelled`);
+        const successUrl = isValidRedirect(body.successUrl)
+            ? getDefaultUrl(request, body.successUrl)
+            : getDefaultUrl(request, '/checkout?status=success');
+
+        const cancelUrl = isValidRedirect(body.cancelUrl)
+            ? getDefaultUrl(request, body.cancelUrl)
+            : getDefaultUrl(request, `/checkout?planId=${encodeURIComponent(body.planId)}&status=cancelled`);
+
         const paymentGateway = PaymentGatewayFactory.getInstance();
 
         console.log(`[BillingCheckoutRoute] Creating: user_id=${user.uid} plan_id=${body.planId}`);
