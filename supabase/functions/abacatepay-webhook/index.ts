@@ -247,6 +247,7 @@ Deno.serve(async (request) => {
     const stack = error instanceof Error ? error.stack : '';
     console.error(`[abacatepay-webhook] CRITICAL FAILURE: ${message}\n${stack}`);
 
-    return jsonResponse({ error: message, detail: stack }, 500);
+    // SECURITY: Don't leak stack traces or internal error messages to the client
+    return jsonResponse({ error: 'Internal Server Error' }, 500);
   }
 });
