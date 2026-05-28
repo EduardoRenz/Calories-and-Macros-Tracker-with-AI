@@ -85,15 +85,14 @@ export default function CheckoutPage() {
 
             const paymentGateway = ClientGatewayFactory.getPaymentGateway();
 
-            const baseUrl = window.location.origin;
             const result = await paymentGateway.createHostedSubscriptionCheckout({
                 userId: user.uid,
                 planCode: plan.id,
                 providerProductId: mapping.providerProductId,
                 providerPriceAmount: mapping.providerPriceAmount,
                 currency: mapping.currency,
-                successUrl: `${baseUrl}/dashboard?payment_success=true`,
-                cancelUrl: `${baseUrl}/plans`,
+                successUrl: `/dashboard?payment_success=true`,
+                cancelUrl: `/plans`,
                 customerEmail: user.email || undefined,
             });
 
