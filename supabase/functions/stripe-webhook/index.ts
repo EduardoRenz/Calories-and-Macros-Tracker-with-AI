@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno';
+import Stripe from 'npm:stripe@14.21.0';
 import { StripeEventProcessor } from './processor.ts';
 
 type ProcessingState = 'received' | 'processing' | 'processed' | 'rejected' | 'failed';
@@ -103,7 +103,8 @@ Deno.serve(async (request) => {
 
     try {
         if (!signature) throw new Error('No signature found');
-        event = await stripe.webhooks.constructEventAsync(rawBody, signature, webhookSecret);
+        const cryptoProvider = Stripe.createSubtleCryptoProvider();
+        event = await stripe.webhooks.constructEventAsync(rawBody, signature, webhookSecret, undefined, cryptoProvider);
     } catch (err: any) {
         console.warn(`[stripe-webhook] Rejected: signature verification failed: ${err.message}`);
         
