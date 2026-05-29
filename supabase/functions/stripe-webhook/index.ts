@@ -81,8 +81,40 @@ async function updateProcessingState(id: string, processingState: ProcessingStat
   if (error) throw error;
 }
 
+async function markCheckoutSessionAsFailed(providerCheckoutId: string, errorMessage: string): Promise<void> {
+  const supabase = getSupabaseAdminClient();
+  const { data: existingSession, error: fetchError } = await supabase
+    .from('billing_checkout_sessions')
+    .select('metadata')
+    .eq('provider', PROVIDER)
+    .eq('provider_checkout_id', providerCheckoutId)
+    .maybeSingle();
+
+  if (fetchError) throw fetchError;
+
+  const existingMetadata = (existingSession?.metadata && typeof existingSession.metadata === 'object')
+    ? existingSession.metadata as Record<string, unknown>
+    : {};
+
+  const { error } = await supabase
+    .from('billing_checkout_sessions')
+    .update({
+      status: 'failed',
+      metadata: {
+        ...existingMetadata,
+        providerFailureMessage: errorMessage,
+        providerFailureAt: new Date().toISOString(),
+      },
+    })
+    .eq('provider', PROVIDER)
+    .eq('provider_checkout_id', providerCheckoutId);
+
+  if (error) throw error;
+}
+
 Deno.serve(async (request) => {
   let inboundEventId: string | null = null;
+  let providerCheckoutIdForFailure: string | null = null;
 
   try {
     if (request.method !== 'POST') {
@@ -124,6 +156,11 @@ Deno.serve(async (request) => {
 
     const providerEventId = event.id;
     const eventType = event.type;
+
+    if (eventType === 'checkout.session.completed') {
+      const object = event.data.object as Stripe.Checkout.Session;
+      providerCheckoutIdForFailure = object.id || null;
+    }
 
     console.log(`[stripe-webhook] Ingress: event_id=${providerEventId} type=${eventType}`);
 
@@ -171,6 +208,14 @@ Deno.serve(async (request) => {
         await updateProcessingState(inboundEventId, 'failed', message);
       } catch (stateError) {
         console.error('[stripe-webhook] Failed to mark inbound event as failed:', stateError);
+      }
+    }
+
+    if (providerCheckoutIdForFailure) {
+      try {
+        await markCheckoutSessionAsFailed(providerCheckoutIdForFailure, message);
+      } catch (checkoutStateError) {
+        console.error('[stripe-webhook] Failed to mark checkout session as failed:', checkoutStateError);
       }
     }
 

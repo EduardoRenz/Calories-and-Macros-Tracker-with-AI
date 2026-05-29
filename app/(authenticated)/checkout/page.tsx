@@ -26,6 +26,7 @@ export default function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const paymentProviderLabel = env.NEXT_PUBLIC_PAYMENT_PROVIDER === 'stripe' ? 'Stripe' : 'AbacatePay';
 
     useEffect(() => {
         // Only check feature flag after flags are loaded
@@ -174,7 +175,7 @@ export default function CheckoutPage() {
                         )}
 
                         <p className="text-gray-400 mb-8">
-                            {t('checkout.hosted_redirect_notice') || 'You will be redirected to a secure payment page provided by AbacatePay to complete your subscription.'}
+                            {t('checkout.hosted_redirect_notice', { provider: paymentProviderLabel }) || `You will be redirected to a secure payment page provided by ${paymentProviderLabel} to complete your subscription.`}
                         </p>
 
                         <form onSubmit={handleSubmit}>

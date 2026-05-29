@@ -306,7 +306,12 @@ const pt = {
     "processing_message": "Redirecionando para o pagamento seguro...",
     "payment_failed": "O pagamento falhou. Por favor, tente novamente.",
     "redirect_failed": "Não foi possível iniciar o pagamento. Por favor, tente novamente.",
-    "hosted_redirect_notice": "Você será redirecionado para uma página de pagamento segura fornecida pelo AbacatePay para completar sua assinatura.",
+    "hosted_redirect_notice": "Você será redirecionado para uma página de pagamento segura fornecida por {{provider}} para completar sua assinatura.",
+    "verification_pending": "Pagamento concluído. Estamos confirmando sua assinatura...",
+    "verification_processing": "Pagamento recebido. A assinatura ainda está sendo processada, atualize em alguns instantes.",
+    "verification_confirmed": "Assinatura confirmada com sucesso.",
+    "verification_failed": "O pagamento foi recebido, mas não conseguimos concluir a ativação da assinatura. Nossa equipe já pode investigar com os logs do checkout.",
+    "verification_unavailable": "Não foi possível confirmar o status da assinatura agora. Tente atualizar a página em alguns instantes.",
     "payment_methods": {
       "card": "Cartão",
       "paypal": "PayPal",

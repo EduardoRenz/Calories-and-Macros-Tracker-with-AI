@@ -15,6 +15,11 @@ export class StripePaymentGateway implements PaymentGateway {
 
   private static instance: StripePaymentGateway | null = null
 
+  private buildSuccessUrlWithCheckoutSessionId(baseSuccessUrl: string): string {
+    const separator = baseSuccessUrl.includes("?") ? "&" : "?"
+    return `${baseSuccessUrl}${separator}stripe_checkout_session_id={CHECKOUT_SESSION_ID}`
+  }
+
   private constructor() {
     if (!env.STRIPE_SECRET_KEY) {
       throw new Error("[StripePaymentGateway] Missing STRIPE_SECRET_KEY.")
@@ -58,7 +63,7 @@ export class StripePaymentGateway implements PaymentGateway {
             quantity: 1,
           },
         ],
-        success_url: input.successUrl,
+        success_url: this.buildSuccessUrlWithCheckoutSessionId(input.successUrl),
         cancel_url: input.cancelUrl,
         client_reference_id: input.userId,
         metadata: {

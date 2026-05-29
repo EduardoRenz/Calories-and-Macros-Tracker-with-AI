@@ -14,6 +14,34 @@ export interface InboundEvent {
 export class StripeEventProcessor {
   constructor(private supabase: SupabaseClient) {}
 
+  private getInvoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+    if (typeof invoice.subscription === "string" && invoice.subscription.length > 0) {
+      return invoice.subscription
+    }
+
+    const parent = invoice.parent as { subscription_details?: { subscription?: string } } | null
+    const nested = parent?.subscription_details?.subscription
+    if (typeof nested === "string" && nested.length > 0) {
+      return nested
+    }
+
+    return null
+  }
+
+  private getInvoiceMetadata(invoice: Stripe.Invoice): { userId: string | null; planCode: string | null } {
+    const fromParent = invoice.parent as { subscription_details?: { metadata?: Record<string, string> } } | null
+    const parentMetadata = fromParent?.subscription_details?.metadata || {}
+
+    // Fallback: some integrations store metadata on line items.
+    const firstLine = invoice.lines?.data?.[0]
+    const lineMetadata = (firstLine?.metadata || {}) as Record<string, string>
+
+    const userId = parentMetadata.userId || lineMetadata.userId || null
+    const planCode = parentMetadata.planCode || lineMetadata.planCode || null
+
+    return { userId, planCode }
+  }
+
   private mapSubscriptionStatus(status: Stripe.Subscription.Status): "pending" | "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "inactive" {
     switch (status) {
       case "trialing":
@@ -47,14 +75,21 @@ export class StripeEventProcessor {
         await this.handleCheckoutSessionCompleted(stripeEvent.data.object as Stripe.Checkout.Session)
         break
       case "invoice.paid":
+      case "invoice.payment_succeeded":
         await this.handleInvoicePaid(stripeEvent.data.object as Stripe.Invoice)
         break
       case "invoice.payment_failed":
         await this.handleInvoicePaymentFailed(stripeEvent.data.object as Stripe.Invoice)
         break
+      case "invoice.finalized":
+        await this.handleInvoiceFinalized(stripeEvent.data.object as Stripe.Invoice)
+        break
       case "customer.subscription.created":
       case "customer.subscription.updated":
         await this.handleSubscriptionUpdated(stripeEvent.data.object as Stripe.Subscription)
+        break
+      case "payment_intent.payment_failed":
+        await this.handlePaymentIntentFailed(stripeEvent.data.object as Stripe.PaymentIntent)
         break
       case "customer.subscription.deleted":
         await this.handleSubscriptionDeleted(stripeEvent.data.object as Stripe.Subscription)
@@ -103,41 +138,88 @@ export class StripeEventProcessor {
         { onConflict: "user_id,provider" },
       )
 
-      if (custError) console.error("[StripeEventProcessor] Customer upsert failed:", custError)
+      if (custError) {
+        console.error("[StripeEventProcessor] Customer upsert failed:", custError)
+        throw custError
+      }
     }
 
     // Note: We don't necessarily have full subscription details here to create billing_subscriptions
     // We will rely on invoice.paid or retrieve the subscription details.
     // However, if we don't fetch it, we might be missing dates. Let's create a pending sub.
-    console.log(`[StripeEventProcessor] Completing checkout session: ${session.id}`)
-    await this.supabase.from("billing_checkout_sessions").update({ status: "completed" }).eq("provider_checkout_id", session.id)
+    const checkoutStatus = session.payment_status === "paid" || session.payment_status === "no_payment_required" ? "completed" : "pending"
+    console.log(`[StripeEventProcessor] Updating checkout session: ${session.id} -> ${checkoutStatus}`)
+    const { error: checkoutUpdateError } = await this.supabase
+      .from("billing_checkout_sessions")
+      .update({ status: checkoutStatus })
+      .eq("provider_checkout_id", session.id)
+
+    if (checkoutUpdateError) {
+      console.error("[StripeEventProcessor] Failed to update checkout session to completed:", checkoutUpdateError)
+      throw checkoutUpdateError
+    }
   }
 
   private async handleInvoicePaid(invoice: Stripe.Invoice): Promise<void> {
-    if (!invoice.subscription) return
-    const subscriptionId = invoice.subscription as string
-
-    // We need to fetch the subscription metadata to know who this is for if it's the first time
-    // Or we could rely on existing billing_subscriptions record.
-
-    // We assume the subscription webhook handles the actual period update,
-    // but invoice paid is a good place to record the transaction.
-
-    const { data: sub, error: subError } = await this.supabase
-      .from("billing_subscriptions")
-      .select("id, user_id")
-      .eq("provider_subscription_id", subscriptionId)
-      .single()
-
-    if (subError || !sub) {
-      console.warn(`[StripeEventProcessor] Subscription not found for invoice: ${subscriptionId}. Will retry on next event.`)
-      // Could be out of order. We rely on customer.subscription.updated to create the sub if needed
+    const subscriptionId = this.getInvoiceSubscriptionId(invoice)
+    if (!subscriptionId) {
+      console.warn(`[StripeEventProcessor] Invoice ${invoice.id} has no subscription reference. Skipping premium activation.`)
       return
     }
 
+    const { userId, planCode } = this.getInvoiceMetadata(invoice)
+    if (!userId || !planCode) {
+      console.warn(`[StripeEventProcessor] Invoice ${invoice.id} missing userId/planCode metadata. Triggering retry.`)
+      throw new Error(`Missing metadata on invoice ${invoice.id}`)
+    }
+
+    const { data: plan, error: planError } = await this.supabase
+      .from("billing_plans")
+      .select("id")
+      .eq("plan_code", planCode)
+      .single()
+
+    if (planError || !plan) {
+      console.error(`[StripeEventProcessor] Plan resolution failed for invoice: ${planCode}`, planError)
+      throw new Error(`Plan not found: ${planCode}`)
+    }
+
+    const currentPeriodStart = invoice.lines?.data?.[0]?.period?.start
+      ? new Date(invoice.lines.data[0].period.start * 1000).toISOString()
+      : new Date(invoice.created * 1000).toISOString()
+    const currentPeriodEnd = invoice.lines?.data?.[0]?.period?.end
+      ? new Date(invoice.lines.data[0].period.end * 1000).toISOString()
+      : null
+
+    // Create or activate the subscription only when payment is confirmed.
+    const { data: upsertedSub, error: upsertError } = await this.supabase
+      .from("billing_subscriptions")
+      .upsert(
+        {
+          user_id: userId,
+          plan_id: plan.id,
+          provider: "stripe",
+          provider_subscription_id: subscriptionId,
+          status: "active",
+          access_status: "premium",
+          cancel_at_period_end: false,
+          current_period_start: currentPeriodStart,
+          current_period_end: currentPeriodEnd,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "provider,provider_subscription_id" },
+      )
+      .select("id, user_id")
+      .single()
+
+    if (upsertError || !upsertedSub) {
+      console.error("[StripeEventProcessor] Failed to upsert/activate subscription after invoice.paid:", upsertError)
+      throw upsertError || new Error("Failed to upsert subscription")
+    }
+
     await this.recordTransaction({
-      userId: sub.user_id,
-      subscriptionId: sub.id,
+      userId: upsertedSub.user_id,
+      subscriptionId: upsertedSub.id,
       providerTransactionId: (invoice.payment_intent as string) || (invoice.charge as string) || invoice.id,
       providerCheckoutId: invoice.id,
       type: invoice.billing_reason === "subscription_create" ? "charge" : "renewal",
@@ -148,56 +230,94 @@ export class StripeEventProcessor {
   }
 
   private async handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
-    if (!invoice.subscription) return
-    const subscriptionId = invoice.subscription as string
+    const subscriptionId = this.getInvoiceSubscriptionId(invoice)
+    if (!subscriptionId) {
+      console.warn(`[StripeEventProcessor] Invoice ${invoice.id} has no subscription reference for payment_failed.`)
+      return
+    }
 
     const { data: sub } = await this.supabase
       .from("billing_subscriptions")
-      .select("id")
+      .select("id, user_id")
       .eq("provider_subscription_id", subscriptionId)
-      .single()
+      .maybeSingle()
 
     if (sub) {
       const { error: updateError } = await this.supabase
         .from("billing_subscriptions")
-        .update({ status: "past_due", updated_at: new Date().toISOString() })
+        .update({ status: "past_due", access_status: "free", updated_at: new Date().toISOString() })
         .eq("id", sub.id)
-      if (updateError) console.error("[StripeEventProcessor] Failed to update subscription to past_due:", updateError)
+      if (updateError) {
+        console.error("[StripeEventProcessor] Failed to update subscription to past_due:", updateError)
+        throw updateError
+      }
+    }
+  }
+
+  private async handleInvoiceFinalized(invoice: Stripe.Invoice): Promise<void> {
+    // Some Stripe webhook configurations may deliver finalized but not invoice.paid/payment_succeeded.
+    // Only treat finalized as a paid confirmation when Stripe explicitly marks it as paid.
+    if (invoice.status === "paid" && invoice.status_transitions?.paid_at) {
+      await this.handleInvoicePaid(invoice)
+      return
+    }
+    console.log(`[StripeEventProcessor] Ignoring invoice.finalized without paid confirmation: ${invoice.id} status=${invoice.status}`)
+  }
+
+  private async handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent): Promise<void> {
+    const { data: tx } = await this.supabase
+      .from("billing_transactions")
+      .select("subscription_id")
+      .eq("provider_transaction_id", paymentIntent.id)
+      .maybeSingle()
+
+    if (!tx?.subscription_id) return
+
+    const { error } = await this.supabase
+      .from("billing_subscriptions")
+      .update({
+        status: "past_due",
+        access_status: "free",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", tx.subscription_id)
+
+    if (error) {
+      console.error("[StripeEventProcessor] Failed to update subscription after payment_intent.payment_failed:", error)
+      throw error
     }
   }
 
   private async handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
-    const metadata = subscription.metadata || {}
-    const userId = metadata.userId
-    const planCode = metadata.planCode
-
-    if (!userId || !planCode) {
-      console.warn("[StripeEventProcessor] Missing metadata on subscription. Skipping.")
-      return
-    }
-
-    const { data: plan, error: planError } = await this.supabase.from("billing_plans").select("id").eq("plan_code", planCode).single()
-
-    if (planError || !plan) {
-      console.warn(`[StripeEventProcessor] Plan not found for code ${planCode}:`, planError)
-      return
-    }
-
     const currentPeriodStart = subscription.current_period_start ? new Date(subscription.current_period_start * 1000).toISOString() : null
     const currentPeriodEnd = subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null
 
-    const mappedStatus = this.mapSubscriptionStatus(subscription.status)
-    const accessStatus =
-      mappedStatus === "active" || mappedStatus === "trialing" || (subscription.cancel_at_period_end && mappedStatus !== "canceled")
-        ? "premium"
-        : "free"
+    const { data: existingSub, error: existingSubError } = await this.supabase
+      .from("billing_subscriptions")
+      .select("id, access_status")
+      .eq("provider", "stripe")
+      .eq("provider_subscription_id", subscription.id)
+      .maybeSingle()
 
-    const { error: upsertError } = await this.supabase.from("billing_subscriptions").upsert(
+    if (existingSubError) {
+      console.error("[StripeEventProcessor] Failed to fetch existing subscription state:", existingSubError)
+      throw existingSubError
+    }
+
+    if (!existingSub) {
+      // Keep DB clean: ignore subscription-created/updated until a paid invoice creates the canonical row.
+      console.log(`[StripeEventProcessor] Skipping upsert for ${subscription.id} because no paid subscription row exists yet.`)
+      return
+    }
+
+    const mappedStatus = this.mapSubscriptionStatus(subscription.status)
+    const isTrialing = mappedStatus === "trialing"
+    const isActive = mappedStatus === "active"
+    const existingAccessStatus = existingSub?.access_status as "free" | "premium" | undefined
+    const accessStatus = isTrialing ? "premium" : isActive ? (existingAccessStatus === "premium" ? "premium" : "free") : "free"
+
+    const { error: updateError } = await this.supabase.from("billing_subscriptions").update(
       {
-        user_id: userId,
-        plan_id: plan.id,
-        provider: "stripe",
-        provider_subscription_id: subscription.id,
         status: mappedStatus,
         access_status: accessStatus,
         cancel_at_period_end: subscription.cancel_at_period_end,
@@ -207,14 +327,15 @@ export class StripeEventProcessor {
         ended_at: subscription.ended_at ? new Date(subscription.ended_at * 1000).toISOString() : null,
         updated_at: new Date().toISOString(),
       },
-      { onConflict: "provider,provider_subscription_id" },
     )
+    .eq("id", existingSub.id)
 
-    if (upsertError) {
-      console.error("[StripeEventProcessor] Failed to upsert subscription:", upsertError)
-    } else {
-      console.log(`[StripeEventProcessor] Upserted subscription ${subscription.id} for user ${userId}. Access: ${accessStatus}`)
+    if (updateError) {
+      console.error("[StripeEventProcessor] Failed to update existing subscription:", updateError)
+      throw updateError
     }
+
+    console.log(`[StripeEventProcessor] Updated subscription ${subscription.id}. Access: ${accessStatus}`)
   }
 
   private async handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
@@ -228,7 +349,7 @@ export class StripeEventProcessor {
 
     const now = new Date().toISOString()
 
-    await this.supabase
+    const { error: deleteUpdateError } = await this.supabase
       .from("billing_subscriptions")
       .update({
         status: "canceled",
@@ -239,6 +360,11 @@ export class StripeEventProcessor {
         updated_at: now,
       })
       .eq("id", sub.id)
+
+    if (deleteUpdateError) {
+      console.error("[StripeEventProcessor] Failed to apply subscription deletion update:", deleteUpdateError)
+      throw deleteUpdateError
+    }
   }
 
   private async handleChargeEvent(eventType: string, charge: Stripe.Charge): Promise<void> {
@@ -285,7 +411,7 @@ export class StripeEventProcessor {
     })
 
     if (status === "refunded") {
-      await this.supabase
+      const { error: updateError } = await this.supabase
         .from("billing_subscriptions")
         .update({
           access_status: "free",
@@ -293,6 +419,11 @@ export class StripeEventProcessor {
           updated_at: new Date().toISOString(),
         })
         .eq("id", tx.subscription_id)
+
+      if (updateError) {
+        console.error("[StripeEventProcessor] Failed to downgrade subscription after refund:", updateError)
+        throw updateError
+      }
     }
   }
 
@@ -323,8 +454,9 @@ export class StripeEventProcessor {
 
     if (txError) {
       console.error("[StripeEventProcessor] Failed to record transaction:", txError)
-    } else {
-      console.log(`[StripeEventProcessor] Recorded transaction ${input.providerTransactionId}`)
+      throw txError
     }
+
+    console.log(`[StripeEventProcessor] Recorded transaction ${input.providerTransactionId}`)
   }
 }

@@ -306,7 +306,12 @@ const es = {
     "processing_message": "Redirigiendo a la página de pago seguro...",
     "payment_failed": "El pago falló. Por favor, inténtalo de nuevo.",
     "redirect_failed": "No se pudo iniciar el pago. Por favor, inténtalo de nuevo.",
-    "hosted_redirect_notice": "Serás redirigido a una página de pago segura proporcionada por AbacatePay para completar tu suscripción.",
+    "hosted_redirect_notice": "Serás redirigido a una página de pago segura proporcionada por {{provider}} para completar tu suscripción.",
+    "verification_pending": "Pago completado. Estamos confirmando tu suscripción...",
+    "verification_processing": "Pago recibido. Tu suscripción aún se está procesando; actualiza en unos instantes.",
+    "verification_confirmed": "Suscripción confirmada con éxito.",
+    "verification_failed": "Se recibió el pago, pero no pudimos completar la activación de la suscripción. Nuestro equipo puede investigarlo con los registros del checkout.",
+    "verification_unavailable": "No pudimos confirmar el estado de tu suscripción ahora. Actualiza la página en unos instantes.",
     "payment_methods": {
       "card": "Tarjeta",
       "paypal": "PayPal",
