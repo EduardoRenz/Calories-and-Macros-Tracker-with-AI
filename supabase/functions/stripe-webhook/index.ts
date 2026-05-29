@@ -82,6 +82,8 @@ async function updateProcessingState(id: string, processingState: ProcessingStat
 }
 
 Deno.serve(async (request) => {
+  let inboundEventId: string | null = null;
+
   try {
     if (request.method !== 'POST') {
       return jsonResponse({ error: 'Method not allowed' }, 405);
@@ -139,6 +141,7 @@ Deno.serve(async (request) => {
     }
 
     if (inboundEvent.id) {
+      inboundEventId = inboundEvent.id;
       console.log(`[stripe-webhook] Processing: event_id=${providerEventId} internal_id=${inboundEvent.id}`);
       await updateProcessingState(inboundEvent.id, 'processing');
       
@@ -162,6 +165,14 @@ Deno.serve(async (request) => {
     const message = error instanceof Error ? error.message : 'Webhook processing failed';
     const stack = error instanceof Error ? error.stack : '';
     console.error(`[stripe-webhook] CRITICAL FAILURE: ${message}\n${stack}`);
+
+    if (inboundEventId) {
+      try {
+        await updateProcessingState(inboundEventId, 'failed', message);
+      } catch (stateError) {
+        console.error('[stripe-webhook] Failed to mark inbound event as failed:', stateError);
+      }
+    }
 
     return jsonResponse({ error: message, detail: stack }, 500);
   }

@@ -14,6 +14,28 @@ export interface InboundEvent {
 export class StripeEventProcessor {
   constructor(private supabase: SupabaseClient) {}
 
+  private mapSubscriptionStatus(status: Stripe.Subscription.Status): "pending" | "trialing" | "active" | "past_due" | "canceled" | "unpaid" | "inactive" {
+    switch (status) {
+      case "trialing":
+        return "trialing"
+      case "active":
+        return "active"
+      case "past_due":
+        return "past_due"
+      case "unpaid":
+        return "unpaid"
+      case "canceled":
+        return "canceled"
+      case "incomplete":
+        return "pending"
+      case "incomplete_expired":
+      case "paused":
+        return "inactive"
+      default:
+        return "pending"
+    }
+  }
+
   async process(event: InboundEvent): Promise<void> {
     const { event_type, payload } = event
     const stripeEvent = payload as Stripe.Event
@@ -51,7 +73,6 @@ export class StripeEventProcessor {
     const userId = metadata.userId || session.client_reference_id
     const planCode = metadata.planCode
     const customerId = session.customer as string
-    const subscriptionId = session.subscription as string
 
     console.log(`[StripeEventProcessor] handleCheckoutSessionCompleted: userId=${userId}, planCode=${planCode}`)
 
@@ -165,11 +186,11 @@ export class StripeEventProcessor {
     const currentPeriodStart = subscription.current_period_start ? new Date(subscription.current_period_start * 1000).toISOString() : null
     const currentPeriodEnd = subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null
 
-    const isPastDue = subscription.status === "past_due" || subscription.status === "unpaid"
-    const isCanceled = subscription.status === "canceled"
-
-    const mappedStatus = isCanceled ? "canceled" : isPastDue ? "past_due" : "active"
-    const accessStatus = mappedStatus === "active" || subscription.cancel_at_period_end ? "premium" : "free"
+    const mappedStatus = this.mapSubscriptionStatus(subscription.status)
+    const accessStatus =
+      mappedStatus === "active" || mappedStatus === "trialing" || (subscription.cancel_at_period_end && mappedStatus !== "canceled")
+        ? "premium"
+        : "free"
 
     const { error: upsertError } = await this.supabase.from("billing_subscriptions").upsert(
       {
@@ -234,11 +255,20 @@ export class StripeEventProcessor {
     const status = statusMap[eventType]
     const type = typeMap[eventType]
 
-    // Find original transaction to get user and sub
+    // Find original transaction to get user and subscription context.
+    // invoice.paid can be recorded using payment_intent, while charge events arrive with charge.id.
+    // We try both IDs to avoid dropping refund/dispute updates.
+    const candidateTransactionIds = [charge.id]
+    if (typeof charge.payment_intent === "string" && charge.payment_intent.length > 0) {
+      candidateTransactionIds.push(charge.payment_intent)
+    }
+
     const { data: tx } = await this.supabase
       .from("billing_transactions")
       .select("user_id, subscription_id")
-      .eq("provider_transaction_id", charge.id) // Or payment intent
+      .in("provider_transaction_id", candidateTransactionIds)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle()
 
     if (!tx) return
