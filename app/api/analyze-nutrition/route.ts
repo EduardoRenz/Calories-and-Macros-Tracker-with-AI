@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(info);
     } catch (error: unknown) {
         console.error('API Error:', error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
+        // Return generic error to avoid leaking internal details
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
