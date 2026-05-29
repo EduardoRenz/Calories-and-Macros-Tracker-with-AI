@@ -87,11 +87,13 @@ export async function GET(request: Request) {
         const hasPremiumAccess = isSubscriptionPremiumAndValid(typedSubscription);
 
         if (typedCheckout.status === 'failed') {
+            const planCode = typeof typedCheckout.metadata?.planCode === 'string' ? typedCheckout.metadata.planCode : null;
             return NextResponse.json({
                 paymentState: 'FAILED',
                 checkoutStatus: typedCheckout.status,
                 hasPremiumAccess,
                 providerFailureMessage: typedCheckout.metadata?.providerFailureMessage ?? null,
+                planCode,
             });
         }
 

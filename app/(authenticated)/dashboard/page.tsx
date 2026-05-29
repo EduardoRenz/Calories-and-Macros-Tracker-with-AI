@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMealType, setSelectedMealType] = useState<keyof MealSummary | null>(null);
-    const { showError, showInfo, showSuccess, showWarning } = useToast();
+    const { showError } = useToast();
 
     const dashboardRepository: DashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
 
@@ -144,9 +144,11 @@ export default function DashboardPage() {
         checkoutFeedbackHandledRef.current = true;
 
         const verifyCheckout = async () => {
+            let shouldClearParams = true;
             try {
                 if (!stripeCheckoutSessionIdParam) {
-                    showInfo(t('checkout.verification_pending'));
+                    shouldClearParams = false;
+                    router.replace('/checkout/error?reason=verification_unavailable');
                     return;
                 }
 
@@ -161,7 +163,8 @@ export default function DashboardPage() {
                 });
 
                 if (response.status === 404) {
-                    showWarning(t('checkout.verification_processing'));
+                    shouldClearParams = false;
+                    router.replace('/checkout/error?reason=verification_unavailable');
                     return;
                 }
 
@@ -169,24 +172,29 @@ export default function DashboardPage() {
                     throw new Error(await response.text());
                 }
 
-                const result = await response.json() as { paymentState?: string };
+                const result = await response.json() as { paymentState?: string; planCode?: string | null };
 
-                if (result.paymentState === 'CONFIRMED') {
-                    showSuccess(t('checkout.verification_confirmed'));
-                    return;
-                }
+                if (result.paymentState === 'CONFIRMED') return;
 
                 if (result.paymentState === 'FAILED') {
-                    showError(t('checkout.verification_failed'));
+                    shouldClearParams = false;
+                    const nextUrl = result.planCode
+                        ? `/checkout/error?reason=failed&planId=${encodeURIComponent(result.planCode)}`
+                        : '/checkout/error?reason=failed';
+                    router.replace(nextUrl);
                     return;
                 }
 
-                showWarning(t('checkout.verification_processing'));
+                shouldClearParams = false;
+                router.replace('/checkout/error?reason=verification_unavailable');
             } catch (error) {
                 console.error('Failed to verify checkout status after Stripe redirect', error);
-                showError(t('checkout.verification_unavailable'));
+                shouldClearParams = false;
+                router.replace('/checkout/error?reason=verification_unavailable');
             } finally {
-                clearCheckoutFeedbackParams();
+                if (shouldClearParams) {
+                    clearCheckoutFeedbackParams();
+                }
             }
         };
 
@@ -194,12 +202,9 @@ export default function DashboardPage() {
     }, [
         clearCheckoutFeedbackParams,
         paymentSuccessParam,
+        router,
         showError,
-        showInfo,
-        showSuccess,
-        showWarning,
         stripeCheckoutSessionIdParam,
-        t,
     ]);
 
     // Handle refresh event from layout
