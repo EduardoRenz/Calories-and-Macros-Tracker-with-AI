@@ -11,18 +11,20 @@ export class FirebaseModelConfigRepository implements ModelConfigRepository {
     private readonly CACHE_DURATION = 3600000; // 1 hour in milliseconds
 
     private constructor() {
-        const app = getApps().length > 0 ? getApp() : undefined;
-        if (app) {
-            this.remoteConfig = getRemoteConfig(app);
-            // Default configuration
-            this.remoteConfig.settings = {
-                minimumFetchIntervalMillis: 1000000,
-                fetchTimeoutMillis: 60000,
-            };
-            this.remoteConfig.defaultConfig = {
-                'enable_chatbot': true,
-                'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
-            };
+        if (typeof window !== 'undefined') {
+            const app = getApps().length > 0 ? getApp() : undefined;
+            if (app) {
+                this.remoteConfig = getRemoteConfig(app);
+                // Default configuration
+                this.remoteConfig.settings = {
+                    minimumFetchIntervalMillis: 1000000,
+                    fetchTimeoutMillis: 60000,
+                };
+                this.remoteConfig.defaultConfig = {
+                    'enable_chatbot': true,
+                    'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
+                };
+            }
         }
     }
 
@@ -42,6 +44,25 @@ export class FirebaseModelConfigRepository implements ModelConfigRepository {
         // Check cache validity
         if (this.cache && (Date.now() - this.cacheTimestamp) < this.CACHE_DURATION) {
             return this.cache;
+        }
+
+        if (typeof window === 'undefined') {
+            try {
+                const { ServerFeatureFlagRepository } = await import('@/app/api/repositories/ServerFeatureFlagRepository');
+                const ffRepo = ServerFeatureFlagRepository.getInstance();
+                const config = await ffRepo.getValue('ai_model_versions');
+                if (config) {
+                    const parsedConfig = typeof config === 'string' ? JSON.parse(config) : config;
+                    this.cache = parsedConfig;
+                    this.cacheTimestamp = Date.now();
+                    return this.cache!;
+                }
+            } catch (error) {
+                console.error('Error fetching model config from server remote config:', error);
+            }
+            this.cache = DEFAULT_MODEL_CONFIG;
+            this.cacheTimestamp = Date.now();
+            return this.cache!;
         }
 
         if (!this.remoteConfig) {

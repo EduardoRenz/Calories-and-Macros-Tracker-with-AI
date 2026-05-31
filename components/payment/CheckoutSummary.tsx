@@ -17,7 +17,7 @@ export const CheckoutSummary: React.FC<OrderSummaryProps> = ({ plan, taxRate = 0
     // Calculate subtotal (original price) automatically for annual plans
     let subtotal = totalDue;
     if (plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL) {
-        subtotal = totalDue * (1 + (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100));
+        subtotal = totalDue / (1 - (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100));
     } else if (plan.hasDiscount && plan.originalPrice) {
         subtotal = plan.originalPrice;
     }

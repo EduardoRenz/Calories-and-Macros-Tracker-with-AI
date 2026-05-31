@@ -21,6 +21,7 @@ import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { useToast } from '@/contexts/ToastContext';
 import { CalorieCalculationService } from '@/domain/services/CalorieCalculationService';
 import { isProfileComplete, UserProfile } from '@/domain/entities/profile';
+import { getSupabaseClient } from '@/data/supabaseClient';
 
 const getFormattedDate = (date: Date) => {
     const year = date.getFullYear();
@@ -70,9 +71,21 @@ export default function DashboardPage() {
     const dashboardRepository: DashboardRepository = useMemo(() => RepositoryFactory.getDashboardRepository(), []);
 
     const dateParam = useMemo(() => searchParams.get('date'), [searchParams]);
+    const paymentSuccessParam = useMemo(() => searchParams.get('payment_success'), [searchParams]);
+    const stripeCheckoutSessionIdParam = useMemo(() => searchParams.get('stripe_checkout_session_id'), [searchParams]);
     const initializedFromSearchParamsRef = useRef(false);
     const lastRequestedDateRef = useRef<string | null>(null);
     const inFlightRequestRef = useRef<Promise<void> | null>(null);
+    const checkoutFeedbackHandledRef = useRef(false);
+
+    const clearCheckoutFeedbackParams = useCallback(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('payment_success');
+        params.delete('stripe_checkout_session_id');
+
+        const query = params.toString();
+        router.replace(query ? `/dashboard?${query}` : '/dashboard');
+    }, [router, searchParams]);
 
     const fetchDashboardData = useCallback(async (date: Date) => {
         const dateString = getFormattedDate(date);
@@ -123,6 +136,76 @@ export default function DashboardPage() {
         if (dateParam && !initializedFromSearchParamsRef.current) return;
         fetchDashboardData(currentDate);
     }, [currentDate, fetchDashboardData, dateParam]);
+
+    useEffect(() => {
+        if (checkoutFeedbackHandledRef.current) return;
+        if (paymentSuccessParam !== 'true') return;
+
+        checkoutFeedbackHandledRef.current = true;
+
+        const verifyCheckout = async () => {
+            let shouldClearParams = true;
+            try {
+                if (!stripeCheckoutSessionIdParam) {
+                    shouldClearParams = false;
+                    router.replace('/checkout/error?reason=verification_unavailable');
+                    return;
+                }
+
+                const { data: { session } } = await getSupabaseClient().auth.getSession();
+                const token = session?.access_token;
+                const endpoint = `/api/billing/checkout-status?stripeCheckoutSessionId=${encodeURIComponent(stripeCheckoutSessionIdParam)}`;
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                    },
+                });
+
+                if (response.status === 404) {
+                    shouldClearParams = false;
+                    router.replace('/checkout/error?reason=verification_unavailable');
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+
+                const result = await response.json() as { paymentState?: string; planCode?: string | null };
+
+                if (result.paymentState === 'CONFIRMED') return;
+
+                if (result.paymentState === 'FAILED') {
+                    shouldClearParams = false;
+                    const nextUrl = result.planCode
+                        ? `/checkout/error?reason=failed&planId=${encodeURIComponent(result.planCode)}`
+                        : '/checkout/error?reason=failed';
+                    router.replace(nextUrl);
+                    return;
+                }
+
+                shouldClearParams = false;
+                router.replace('/checkout/error?reason=verification_unavailable');
+            } catch (error) {
+                console.error('Failed to verify checkout status after Stripe redirect', error);
+                shouldClearParams = false;
+                router.replace('/checkout/error?reason=verification_unavailable');
+            } finally {
+                if (shouldClearParams) {
+                    clearCheckoutFeedbackParams();
+                }
+            }
+        };
+
+        verifyCheckout();
+    }, [
+        clearCheckoutFeedbackParams,
+        paymentSuccessParam,
+        router,
+        showError,
+        stripeCheckoutSessionIdParam,
+    ]);
 
     // Handle refresh event from layout
     useEffect(() => {

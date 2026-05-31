@@ -1,11 +1,13 @@
 import { PaymentGateway } from '../../../domain/gateways/PaymentGateway';
 import { AbacatePayPaymentGateway } from './AbacatePayPaymentGateway';
+import { StripePaymentGateway } from './StripePaymentGateway';
 import { MockPaymentGateway } from './MockPaymentGateway';
 import { env } from '../../../env';
 
 
 const strategies: Record<string, () => PaymentGateway> = {
     'abacatepay': () => AbacatePayPaymentGateway.getInstance(),
+    'stripe': () => StripePaymentGateway.getInstance(),
     'mock': () => MockPaymentGateway.getInstance(),
 };
 

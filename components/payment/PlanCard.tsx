@@ -27,9 +27,9 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
         ? t(`plans.features.${plan.id}.discount_message`, { percentage: BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE })
         : plan.discountMessage;
 
-    // Calculate original price automatically: Current Price + Percentage
+    // Calculate original price automatically: Current Price / (1 - Discount Percentage)
     const originalPrice = plan.id === BILLING_CONSTANTS.PLAN_CODES.MEMBER_ANNUAL
-        ? plan.price * (1 + (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100))
+        ? plan.price / (1 - (BILLING_CONSTANTS.ANNUAL_DISCOUNT_PERCENTAGE / 100))
         : plan.originalPrice;
 
     const originalPriceLabel = originalPrice ? plan.currency.format(originalPrice) : null;

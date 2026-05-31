@@ -5,29 +5,30 @@ import { DEFAULT_MODEL_CONFIG } from '../config/DefaultModelConfig';
 
 export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
     static instance: FirebaseFeatureFlagRepository;
-    private remoteConfig: RemoteConfig;
+    private remoteConfig: RemoteConfig | null = null;
 
     constructor() {
-        this.remoteConfig = getRemoteConfig(getApp());
-        // Default configuration
-        this.remoteConfig.settings = {
-            minimumFetchIntervalMillis: 10000,
-            fetchTimeoutMillis: 60000,
-        };
-        this.remoteConfig.defaultConfig = {
-            [FeatureFlags.ENABLE_CHATBOT]: true,
-            [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
-            [FeatureFlags.ENABLE_PLANS]: true,
-            [FeatureFlags.AI_ACCESS_MODE]: 'premium_only',
-            [FeatureFlags.FEATURE_REQUIREMENTS]: JSON.stringify({
-                "chatbot": { "min_plan": "premium" },
-                "food_analysis": { "min_plan": "premium" },
-                "quick_meal_photo": { "min_plan": "free_plan_api_keys" },
-                "ingredient_search": { "min_plan": "open" }
-            }),
-            'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
-        };
-
+        if (typeof window !== 'undefined') {
+            this.remoteConfig = getRemoteConfig(getApp());
+            // Default configuration
+            this.remoteConfig.settings = {
+                minimumFetchIntervalMillis: 10000,
+                fetchTimeoutMillis: 60000,
+            };
+            this.remoteConfig.defaultConfig = {
+                [FeatureFlags.ENABLE_CHATBOT]: true,
+                [FeatureFlags.MANDATORY_USER_API_KEYS]: false,
+                [FeatureFlags.ENABLE_PLANS]: true,
+                [FeatureFlags.AI_ACCESS_MODE]: 'premium_only',
+                [FeatureFlags.FEATURE_REQUIREMENTS]: JSON.stringify({
+                    "chatbot": { "min_plan": "premium" },
+                    "food_analysis": { "min_plan": "premium" },
+                    "quick_meal_photo": { "min_plan": "free_plan_api_keys" },
+                    "ingredient_search": { "min_plan": "open" }
+                }),
+                'ai_model_versions': JSON.stringify(DEFAULT_MODEL_CONFIG)
+            };
+        }
     }
 
 
@@ -39,6 +40,20 @@ export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
     }
 
     async isEnabled(flagName: string): Promise<boolean> {
+        if (typeof window === 'undefined') {
+            try {
+                const { ServerFeatureFlagRepository } = await import('@/app/api/repositories/ServerFeatureFlagRepository');
+                return await ServerFeatureFlagRepository.getInstance().isEnabled(flagName);
+            } catch (error) {
+                console.error(`Error fetching server feature flag ${flagName}:`, error);
+                return true; // Safe fallback
+            }
+        }
+
+        if (!this.remoteConfig) {
+            return true;
+        }
+
         try {
             await fetchAndActivate(this.remoteConfig);
             return getValue(this.remoteConfig, flagName).asBoolean();
@@ -49,6 +64,20 @@ export class FirebaseFeatureFlagRepository implements FeatureFlagRepository {
     }
 
     async getValue(flagName: string): Promise<unknown> {
+        if (typeof window === 'undefined') {
+            try {
+                const { ServerFeatureFlagRepository } = await import('@/app/api/repositories/ServerFeatureFlagRepository');
+                return await ServerFeatureFlagRepository.getInstance().getValue(flagName);
+            } catch (error) {
+                console.error(`Error fetching server feature flag value ${flagName}:`, error);
+                return null;
+            }
+        }
+
+        if (!this.remoteConfig) {
+            return null;
+        }
+
         try {
             await fetchAndActivate(this.remoteConfig);
             const value = getValue(this.remoteConfig, flagName);
