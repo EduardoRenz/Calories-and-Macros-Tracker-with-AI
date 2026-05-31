@@ -45,7 +45,7 @@ export const env = createEnv({
         NEXT_PUBLIC_BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']),
 
         // Payment Provider (Client-side - for checkout provider selection)
-        NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'stripe', 'mock']).default('abacatepay'),
+        NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'stripe', 'mock']).default('stripe'),
 
         // OpenRouter Models (Public - client-side)
         NEXT_PUBLIC_OPENROUTER_DEFAULT_MODEL: z.string().default('openrouter/auto'),
