@@ -22,6 +22,8 @@ export const env = createEnv({
 
         // Payment Configuration
         ABACATE_PAY_API_KEY: z.string().optional(),
+        STRIPE_SECRET_KEY: z.string().optional(),
+        STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
         // Migration, Admin Credentials and backend service keys (server-only)
         FIREBASE_CLIENT_EMAIL: z.string(),
@@ -43,7 +45,7 @@ export const env = createEnv({
         NEXT_PUBLIC_BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']),
 
         // Payment Provider (Client-side - for checkout provider selection)
-        NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'mock']).default('abacatepay'),
+        NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'stripe', 'mock']).default('abacatepay'),
 
         // OpenRouter Models (Public - client-side)
         NEXT_PUBLIC_OPENROUTER_DEFAULT_MODEL: z.string().default('openrouter/auto'),
@@ -88,6 +90,8 @@ export const env = createEnv({
         OPENAI_API_KEY: process.env.OPENAI_API_KEY,
         DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
         ABACATE_PAY_API_KEY: process.env.ABACATE_PAY_API_KEY,
+        STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+        STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,

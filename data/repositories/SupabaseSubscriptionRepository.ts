@@ -150,11 +150,12 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                 const periodEndStr = subscription.current_period_end;
                 // NULL current_period_end means infinite/lifetime access (e.g., admin plans)
                 const isPeriodValid = periodEndStr === null || (!isNaN(new Date(periodEndStr).getTime()) && now <= new Date(periodEndStr));
+                const grantsPremiumByStatus = ['active', 'trialing', 'canceled'].includes(subscription.status);
 
                 // If period expired but access_status is still premium, force downgrade
-                const effectiveAccessStatus = (subscription.access_status === 'premium' && !isPeriodValid)
-                    ? 'free'
-                    : subscription.access_status;
+                const effectiveAccessStatus = (subscription.access_status === 'premium' && isPeriodValid && grantsPremiumByStatus)
+                    ? 'premium'
+                    : 'free';
 
                 return Subscription.create({
                     id: subscription.id,
