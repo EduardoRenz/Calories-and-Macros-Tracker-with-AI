@@ -39,3 +39,4 @@ cache
 
 # tsconfig
 tsconfig.tsbuildinfo
+next-env.d.ts
