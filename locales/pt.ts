@@ -265,7 +265,7 @@ const pt = {
         { "text": "Análise nutricional completa por foto", "included": true },
         { "text": "Histórico ilimitado", "included": true },
         { "text": "Relatórios de micronutrientes e saúde", "included": true },
-        { "text": "Lumi disponível 24/7", "included": true },
+        { "text": "Assistente Lumi disponível para conversar", "included": true },
       ],
       "member_annual": {
         "discount_message": "Economize {{percentage}}%",
@@ -274,7 +274,7 @@ const pt = {
           { "text": "Análise nutricional completa por foto", "included": true },
           { "text": "Histórico ilimitado", "included": true },
           { "text": "Relatórios de micronutrientes e saúde", "included": true },
-          { "text": "Assistente LeveMente disponível 24/7", "included": true },
+          { "text": "Assistente Lumi disponível para conversar", "included": true },
         ]
       },
     }
