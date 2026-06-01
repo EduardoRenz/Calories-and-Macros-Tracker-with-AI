@@ -11,6 +11,8 @@ import Modal from '@/components/ui/Modal';
 import { useFeatureFlags } from '../../../contexts/FeatureFlagContext';
 import { FeatureFlags } from '../../../domain/repositories/FeatureFlagRepository';
 import { ProviderId, ApiKey } from '@/hooks/useApiKeys';
+import { safeLocalStorageSetItem } from '@/utils/cookieConsent';
+import { useToast } from '@/contexts/ToastContext';
 
 const PROVIDERS: { id: ProviderId; name: string; icon: React.ReactNode }[] = [
     { id: 'gemini', name: 'Google Gemini', icon: <GoogleIcon className="w-6 h-6" /> },
@@ -50,6 +52,7 @@ const LanguageSelector: React.FC = () => {
 
 const ApiTokenManager: React.FC = () => {
     const { t } = useTranslation();
+    const { showToast } = useToast();
     const [keys, setKeys] = useState<ApiKey[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -65,8 +68,12 @@ const ApiTokenManager: React.FC = () => {
     }, []);
 
     const saveKeys = (newKeys: ApiKey[]) => {
-        setKeys(newKeys);
-        localStorage.setItem('ai_api_keys', JSON.stringify(newKeys));
+        const success = safeLocalStorageSetItem('ai_api_keys', JSON.stringify(newKeys));
+        if (success) {
+            setKeys(newKeys);
+        } else {
+            showToast(t('cookies.consent_required_to_save'), 'error');
+        }
         ServiceFactory.reset();
         // Notify other components/contexts (like FeatureFlagContext)
         window.dispatchEvent(new CustomEvent('ai-keys-updated'));

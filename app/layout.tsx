@@ -9,6 +9,7 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import SWRegistration from "@/components/SWRegistration";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { CookieConsent } from "@/components/CookieConsent";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-body" });
 const lexend = Lexend({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-label" });
@@ -77,6 +78,7 @@ export default function RootLayout({
                                 <SubscriptionProvider>
                                     <ToastProvider>
                                         {children}
+                                        <CookieConsent />
                                     </ToastProvider>
                                 </SubscriptionProvider>
                             </AuthProvider>

@@ -434,6 +434,14 @@ const pt = {
     "chatbot_premium_required": "Esta funcionalidade é exclusiva para membros Premium. Que tal dar um upgrade no seu plano para desbloquear todo o potencial da Lumi? Confira nossos [planos aqui](/plans).",
     "api_keys_required": "Este recurso requer uma assinatura [Premium](/plans) ou que você configure suas próprias [chaves de API nas configurações](/settings).",
     "feature_premium_only": "Este recurso é exclusivo para assinantes Premium. Visite nossa [página de planos](/plans) para saber mais."
+  },
+  "cookies": {
+    "title": "Uso de Cookies",
+    "message": "Utilizamos cookies para melhorar sua experiência e garantir a segurança dos seus dados. Não armazenamos informações sensíveis sem o seu consentimento.",
+    "accept": "Aceitar Todos",
+    "decline": "Recusar Todos",
+    "privacy_policy": "Política de Privacidade",
+    "consent_required_to_save": "O consentimento de cookies é necessário para salvar informações sensíveis como chaves de API."
   }
 }
 
