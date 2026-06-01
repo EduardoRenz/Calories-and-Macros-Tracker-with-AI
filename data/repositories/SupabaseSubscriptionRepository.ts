@@ -104,16 +104,40 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
         return this.concurrencyManager.run(key, async () => {
             try {
                 const supabase = getSupabaseClient();
-                const { data, error } = await supabase
+                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod();
+
+                // First, try to get only active/trialing subscriptions
+                let { data, error } = await supabase
                     .from('billing_subscriptions')
                     .select('*, billing_plans(plan_code)')
                     .eq('user_id', userId)
-                    .in('status', ['active', 'trialing', 'pending', 'canceled'])
+                    .in('status', ['active', 'trialing'])
                     .order('created_at', { ascending: false })
                     .limit(1)
                     .maybeSingle();
 
-                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod();
+                // If no active/trialing subscription, check for canceled with premium access (grace period)
+                if (!data) {
+                    const { data: canceledData, error: canceledError } = await supabase
+                        .from('billing_subscriptions')
+                        .select('*, billing_plans(plan_code)')
+                        .eq('user_id', userId)
+                        .eq('status', 'canceled')
+                        .eq('access_status', 'premium')
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+
+                    // Use canceled subscription if found and no error
+                    if (canceledData && !canceledError) {
+                        data = canceledData;
+                        error = null; // Clear any previous error since we found a valid subscription
+                    } else if (canceledError) {
+                        // Preserve the canceled error if the first query also had an error
+                        error = canceledError;
+                    }
+                    // If no canceled data and no canceled error, keep the original state (data = null, error = original error)
+                }
 
                 if (error || !data) {
                     if (isTrial && trialEndDate) {
@@ -144,8 +168,9 @@ export class SupabaseSubscriptionRepository implements SubscriptionRepository {
                     });
                 }
 
-                // Validate if subscription period has expired (fallback protection)
                 const subscription = data as BillingSubscriptionRow;
+
+                // Validate if subscription period has expired (fallback protection)
                 const now = new Date();
                 const periodEndStr = subscription.current_period_end;
                 // NULL current_period_end means infinite/lifetime access (e.g., admin plans)

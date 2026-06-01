@@ -171,6 +171,13 @@ export default function CheckoutPage() {
                                     <span>{t('common.error') || 'Error'}</span>
                                 </div>
                                 <p className="text-sm">{error}</p>
+                                <p className="text-sm mt-2">
+                                    Se o problema persistir, entre em contato através do email{' '}
+                                    <a href="mailto:contato@levemente.ia.br" className="underline hover:opacity-90">
+                                        contato@levemente.ia.br
+                                    </a>
+                                    .
+                                </p>
                             </div>
                         )}
 
