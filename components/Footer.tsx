@@ -9,17 +9,29 @@ export const Footer: React.FC = () => {
 
                 <div className="mt-8 pt-6 border-t border-neutral-border/50 text-center flex flex-col items-center gap-2">
                     <div className="flex gap-4">
-                        <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer">
-                            <p className="text-neutral-text-secondary text-xs cursor-pointer hover:underline">
-                                Política de Privacidade
-                            </p>
+                        <Link
+                            href="/privacy-policy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-text-secondary text-xs hover:underline"
+                        >
+                            Política de Privacidade
                         </Link>
-                        <Link href="/terms-of-use" target="_blank" rel="noopener noreferrer">
-                            <p className="text-neutral-text-secondary text-xs cursor-pointer hover:underline">
-                                Termos de Uso
-                            </p>
+                        <Link
+                            href="/terms-of-use"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-text-secondary text-xs hover:underline"
+                        >
+                            Termos de Uso
                         </Link>
                     </div>
+                    <address className="not-italic text-neutral-text-secondary text-xs">
+                        Suporte:{' '}
+                        <a href="mailto:contato@levemente.ia.br" className="hover:underline">
+                            contato@levemente.ia.br
+                        </a>
+                    </address>
                     <p className="text-neutral-text-secondary text-xs">
                         © {new Date().getFullYear()} LeveMente. All rights reserved.
                     </p>

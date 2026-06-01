@@ -34,7 +34,10 @@ const TermsOfUsePage = () => {
                     <p>Reservamo-nos o direito de modificar estes Termos de Uso a qualquer momento. Notificaremos sobre quaisquer alterações, publicando os novos termos nesta página. É sua responsabilidade revisar estes Termos periodicamente.</p>
 
                     <h2 className="text-xl font-semibold text-neutral-text-primary pt-4">7. Contato</h2>
-                    <p>Se você tiver alguma dúvida sobre estes Termos de Uso, entre em contato conosco.</p>
+                    <p>
+                        Se você tiver alguma dúvida sobre estes Termos de Uso, entre em contato conosco pelo email{' '}
+                        <a href="mailto:contato@levemente.ia.br">contato@levemente.ia.br</a>.
+                    </p>
                 </div>
 
                 <div className="mt-8 text-center">

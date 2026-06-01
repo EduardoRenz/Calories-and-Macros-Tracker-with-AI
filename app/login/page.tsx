@@ -59,7 +59,14 @@ export default function LoginPage() {
 
                     {error && (
                         <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg mb-4 text-sm">
-                            {error}
+                            <p>{error}</p>
+                            <p className="mt-2">
+                                Se o problema persistir, entre em contato através do email{' '}
+                                <a href="mailto:contato@levemente.ia.br" className="underline hover:opacity-90">
+                                    contato@levemente.ia.br
+                                </a>
+                                .
+                            </p>
                         </div>
                     )}
 
