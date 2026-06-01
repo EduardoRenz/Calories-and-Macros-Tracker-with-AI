@@ -441,7 +441,7 @@ const pt = {
     "accept": "Aceitar Todos",
     "decline": "Recusar Todos",
     "privacy_policy": "Política de Privacidade",
-    "consent_required_to_save": "O consentimento de cookies é necessário para salvar informações sensíveis como chaves de API."
+    "consent_required_to_save": "O consentimento de cookies é necessário para salvar chaves de API. Por favor, revise suas preferências no banner abaixo."
   }
 }
 

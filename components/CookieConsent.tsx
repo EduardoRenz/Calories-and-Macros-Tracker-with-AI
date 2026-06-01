@@ -15,6 +15,13 @@ export const CookieConsent: React.FC = () => {
         if (!consent) {
             setIsVisible(true);
         }
+
+        const handleShowBanner = () => {
+            setIsVisible(true);
+        };
+
+        window.addEventListener('show-cookie-consent', handleShowBanner);
+        return () => window.removeEventListener('show-cookie-consent', handleShowBanner);
     }, []);
 
     const handleAccept = () => {

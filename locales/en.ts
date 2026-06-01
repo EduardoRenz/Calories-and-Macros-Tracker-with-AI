@@ -441,7 +441,7 @@ const en = {
     "accept": "Accept All",
     "decline": "Decline All",
     "privacy_policy": "Privacy Policy",
-    "consent_required_to_save": "Cookie consent is required to save sensitive information like API keys."
+    "consent_required_to_save": "Cookie consent is required to save API keys. Please review your preferences in the banner below."
   }
 };
 

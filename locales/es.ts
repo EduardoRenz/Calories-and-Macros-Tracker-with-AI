@@ -436,7 +436,7 @@ const es = {
     "accept": "Aceptar Todo",
     "decline": "Rechazar Todo",
     "privacy_policy": "Política de Privacidad",
-    "consent_required_to_save": "Se requiere el consentimiento de cookies para guardar información sensible como las claves de API."
+    "consent_required_to_save": "Se requiere el consentimiento de cookies para guardar las claves de API. Por favor, revise sus preferencias en el banner de abajo."
   }
 }
 

@@ -73,6 +73,7 @@ const ApiTokenManager: React.FC = () => {
             setKeys(newKeys);
         } else {
             showToast(t('cookies.consent_required_to_save'), 'error');
+            window.dispatchEvent(new Event('show-cookie-consent'));
         }
         ServiceFactory.reset();
         // Notify other components/contexts (like FeatureFlagContext)
