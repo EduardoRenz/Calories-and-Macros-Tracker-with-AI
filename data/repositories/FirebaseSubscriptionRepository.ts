@@ -62,20 +62,32 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
 
         return this.concurrencyManager.run(key, async () => {
             try {
+                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod();
+
                 const db = getDb();
 
                 const subscriptionsRef = collection(db, 'subscriptions');
+                // First, try to get only active/trialing subscriptions
                 const q = query(
                     subscriptionsRef,
                     where('userId', '==', currentUser.uid),
-                    where('status', 'in', ['active', 'trialing', 'pending', 'canceled'])
+                    where('status', 'in', ['active', 'trialing'])
                 );
 
-                const querySnapshot = await getDocs(q);
+                let querySnapshot = await getDocs(q);
+
+                // If no active/trialing subscription, check for canceled with premium access (grace period)
+                if (querySnapshot.empty) {
+                    const qCanceled = query(
+                        subscriptionsRef,
+                        where('userId', '==', currentUser.uid),
+                        where('status', '==', 'canceled'),
+                        where('accessStatus', '==', 'premium')
+                    );
+                    querySnapshot = await getDocs(qCanceled);
+                }
 
                 console.log('[FirebaseSubscriptionRepository] Query snapshot empty:', querySnapshot.empty);
-
-                const { isTrial, trialEndDate } = await this.isUserInTrialPeriod();
 
                 if (querySnapshot.empty) {
                     if (isTrial && trialEndDate) {
@@ -107,10 +119,12 @@ export class FirebaseSubscriptionRepository implements SubscriptionRepository {
                 const now = new Date();
                 const periodEnd = data.currentPeriodEnd?.toDate() || new Date();
                 const isPeriodValid = now <= periodEnd;
+                const grantsPremiumByStatus = ['active', 'trialing', 'canceled'].includes(data.status);
 
-                const effectiveAccessStatus = (data.accessStatus === 'premium' && !isPeriodValid)
-                    ? 'free'
-                    : (data.accessStatus || (data.status === 'active' ? 'premium' : 'free'));
+                // If period expired but access_status is still premium, force downgrade
+                const effectiveAccessStatus = (data.accessStatus === 'premium' && isPeriodValid && grantsPremiumByStatus)
+                    ? 'premium'
+                    : 'free';
 
                 return Subscription.create({
                     id: doc.id,
