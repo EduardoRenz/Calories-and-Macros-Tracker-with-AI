@@ -11,8 +11,7 @@ import Modal from '@/components/ui/Modal';
 import { useFeatureFlags } from '../../../contexts/FeatureFlagContext';
 import { FeatureFlags } from '../../../domain/repositories/FeatureFlagRepository';
 import { ProviderId, ApiKey } from '@/hooks/useApiKeys';
-import { safeLocalStorageSetItem } from '@/utils/cookieConsent';
-import { useToast } from '@/contexts/ToastContext';
+import { safeLocalStorageSetItem, hasCookieConsent } from '@/utils/cookieConsent';
 
 const PROVIDERS: { id: ProviderId; name: string; icon: React.ReactNode }[] = [
     { id: 'gemini', name: 'Google Gemini', icon: <GoogleIcon className="w-6 h-6" /> },
@@ -52,9 +51,9 @@ const LanguageSelector: React.FC = () => {
 
 const ApiTokenManager: React.FC = () => {
     const { t } = useTranslation();
-    const { showToast } = useToast();
     const [keys, setKeys] = useState<ApiKey[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [hasConsent, setHasConsent] = useState<boolean>(false);
 
     useEffect(() => {
         const savedKeys = localStorage.getItem('ai_api_keys');
@@ -65,6 +64,10 @@ const ApiTokenManager: React.FC = () => {
                 console.error("Failed to parse api keys", e);
             }
         }
+        setHasConsent(hasCookieConsent());
+        if (!hasCookieConsent()) {
+            window.dispatchEvent(new Event('show-cookie-consent'));
+        }
     }, []);
 
     const saveKeys = (newKeys: ApiKey[]) => {
@@ -72,7 +75,6 @@ const ApiTokenManager: React.FC = () => {
         if (success) {
             setKeys(newKeys);
         } else {
-            showToast(t('cookies.consent_required_to_save'), 'error');
             window.dispatchEvent(new Event('show-cookie-consent'));
         }
         ServiceFactory.reset();
@@ -115,10 +117,18 @@ const ApiTokenManager: React.FC = () => {
                         <br />
                         If a provider fails, it will attempt to use the next one as a fallback.
                     </p>
+                    {!hasConsent && (
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                            <p className="text-sm text-red-400 font-medium">
+                                {t('cookies.consent_required_to_save')}
+                            </p>
+                        </div>
+                    )}
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-secondary text-on-secondary font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm"
+                    disabled={!hasConsent}
+                    className="flex items-center gap-2 bg-secondary text-on-secondary font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <PlusIcon className="w-5 h-5" />
                     <span>{t('settings.tokens.add_token')}</span>

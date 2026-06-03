@@ -1,5 +1,7 @@
 describe('Profile Diet Type Selection', () => {
     beforeEach(() => {
+        // Accept cookies to prevent banner interference
+        cy.acceptCookies();
         // Login and navigate
         cy.visit('/', {
             onBeforeLoad(win) {

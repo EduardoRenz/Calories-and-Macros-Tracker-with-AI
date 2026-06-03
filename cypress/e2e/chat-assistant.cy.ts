@@ -1,5 +1,7 @@
 describe('Chat Assistant', () => {
     beforeEach(() => {
+        // Accept cookies to prevent banner interference
+        cy.acceptCookies();
         cy.login();
         // Ensure AI features are accessible for functional testing
         cy.setAiAccessMode('open');

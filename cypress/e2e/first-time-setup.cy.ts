@@ -1,5 +1,7 @@
 describe('First Time Profile Setup', () => {
     const loginWithProfileState = (profileState: 'true' | 'false' | 'partial') => {
+        // Accept cookies to prevent banner interference
+        cy.acceptCookies();
         cy.visit('/', {
             onBeforeLoad(win) {
                 win.sessionStorage.setItem('mock_use_incomplete_profile', profileState);

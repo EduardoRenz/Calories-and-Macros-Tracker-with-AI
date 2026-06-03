@@ -1,5 +1,7 @@
 describe('Chat Back Button Behavior', () => {
     beforeEach(() => {
+        // Accept cookies to prevent banner interference
+        cy.acceptCookies();
         cy.session('login', () => {
             cy.login();
         });

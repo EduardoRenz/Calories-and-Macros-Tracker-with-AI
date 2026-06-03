@@ -1,6 +1,8 @@
 
 describe('Food Analysis Page', () => {
     beforeEach(() => {
+        // Accept cookies to prevent banner interference
+        cy.acceptCookies();
         // Login and navigate
         cy.visit('/', {
             onBeforeLoad(win) {

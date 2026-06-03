@@ -12,7 +12,7 @@
 //
 
 
-export {}
+export { }
 
 declare global {
   namespace Cypress {
@@ -21,18 +21,21 @@ declare global {
       upgradeSubscription(): Chainable
       setAiAccessMode(mode: 'disabled' | 'premium_only' | 'free_plan_api_keys_only' | 'open'): Chainable
       setFeatureRequirement(feature: string, minPlan: 'free' | 'free_plan_api_keys' | 'premium'): Chainable
+      acceptCookies(): Chainable
+      declineCookies(): Chainable
+      setCookieConsent(consent: 'accepted' | 'declined' | 'none'): Chainable
     }
   }
 }
 
 Cypress.Commands.add('login', (profileState = 'false') => {
-    cy.visit('/', {
-        onBeforeLoad(win) {
-            win.sessionStorage.setItem('mock_use_incomplete_profile', profileState);
-        },
-    });
-    cy.url().should('include', 'login');
-    cy.contains('Sign in with Google').click();
+  cy.visit('/', {
+    onBeforeLoad(win) {
+      win.sessionStorage.setItem('mock_use_incomplete_profile', profileState);
+    },
+  });
+  cy.url().should('include', 'login');
+  cy.contains('Sign in with Google').click();
 })
 
 Cypress.Commands.add('upgradeSubscription', () => {
@@ -70,6 +73,24 @@ Cypress.Commands.add('setFeatureRequirement', (feature, minPlan) => {
     current[feature] = { min_plan: minPlan };
     win.localStorage.setItem('feature_flag_feature_requirements', JSON.stringify(current));
   });
+});
+
+Cypress.Commands.add('setCookieConsent', (consent) => {
+  cy.window().then((win) => {
+    if (consent === 'none') {
+      win.localStorage.removeItem('levemente-cookie-consent');
+    } else {
+      win.localStorage.setItem('levemente-cookie-consent', consent);
+    }
+  });
+});
+
+Cypress.Commands.add('acceptCookies', () => {
+  cy.setCookieConsent('accepted');
+});
+
+Cypress.Commands.add('declineCookies', () => {
+  cy.setCookieConsent('declined');
 });
 //
 //
