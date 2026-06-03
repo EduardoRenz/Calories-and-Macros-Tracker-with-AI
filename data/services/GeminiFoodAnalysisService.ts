@@ -47,6 +47,7 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
 
         try {
             const currentModel = await this.getModelVersion();
+            console.log(`[GeminiFoodAnalysisService] Generating analysis with provider "gemini" using model "${currentModel}"`);
             const response = await this.ai.models.generateContent({
                 model: currentModel,
                 contents: { parts: [{ text: prompt }] },
