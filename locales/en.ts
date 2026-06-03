@@ -407,6 +407,7 @@ const en = {
     "thinking": "Thinking...",
     "action_success": "Action executed successfully!",
     "action_error": "Failed to execute action. Please try again.",
+    "error_generic": "Something went wrong while preparing the action. Please try again.",
     "action_cancelled": "Action cancelled.",
     "prepared_action": "I have prepared the action for you.",
     "welcome_message": "Say hello to Lumi, your personal health assistant!",

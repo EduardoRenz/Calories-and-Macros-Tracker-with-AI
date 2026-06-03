@@ -407,6 +407,7 @@ const pt = {
     "thinking": "Pensando...",
     "action_success": "Ação executada com sucesso!",
     "action_error": "Falha ao executar a ação. Por favor, tente novamente.",
+    "error_generic": "Ocorreu um erro ao preparar a ação. Por favor, tente novamente.",
     "action_cancelled": "Ação cancelada.",
     "prepared_action": "Preparei a ação para você.",
     "welcome_message": "Diga olá para o seu assistente de saúde pessoal!",

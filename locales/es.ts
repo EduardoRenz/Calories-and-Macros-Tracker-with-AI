@@ -402,6 +402,7 @@ const es = {
     "thinking": "Pensando...",
     "action_success": "¡Acción ejecutada con éxito!",
     "action_error": "Error al ejecutar la acción. Por favor, inténtelo de nuevo.",
+    "error_generic": "Ocurrió un error al preparar la acción. Por favor, inténtelo de nuevo.",
     "action_cancelled": "Acción cancelada.",
     "prepared_action": "He preparado la acción para ti.",
     "welcome_message": "¡Saluda a tu asistente personal de salud!",
