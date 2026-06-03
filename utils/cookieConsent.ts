@@ -1,4 +1,4 @@
-const COOKIE_CONSENT_KEY = 'levemente-cookie-consent';
+export const COOKIE_CONSENT_KEY = 'levemente-cookie-consent';
 
 export type CookieConsentStatus = 'accepted' | 'declined' | 'none';
 
@@ -7,10 +7,15 @@ export type CookieConsentStatus = 'accepted' | 'declined' | 'none';
  */
 export const getCookieConsentStatus = (): CookieConsentStatus => {
     if (typeof window === 'undefined') return 'none';
-    const status = localStorage.getItem(COOKIE_CONSENT_KEY);
-    if (status === 'accepted') return 'accepted';
-    if (status === 'declined') return 'declined';
-    return 'none';
+    try {
+        const status = localStorage.getItem(COOKIE_CONSENT_KEY);
+        if (status === 'accepted') return 'accepted';
+        if (status === 'declined') return 'declined';
+        return 'none';
+    } catch (error) {
+        console.error('Failed to read cookie consent status:', error);
+        return 'none';
+    }
 };
 
 /**
@@ -25,10 +30,16 @@ export const hasCookieConsent = (): boolean => {
  * If not granted, it returns false and does NOT store.
  */
 export const safeLocalStorageSetItem = (key: string, value: string): boolean => {
-    if (hasCookieConsent()) {
+    if (!hasCookieConsent()) {
+        console.warn(`Attempted to set ${key} in localStorage without cookie consent.`);
+        return false;
+    }
+
+    try {
         localStorage.setItem(key, value);
         return true;
+    } catch (error) {
+        console.error(`Failed to set ${key} in localStorage:`, error);
+        return false;
     }
-    console.warn(`Attempted to set ${key} in localStorage without cookie consent.`);
-    return false;
 };

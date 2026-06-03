@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import Link from 'next/link';
-
-const COOKIE_CONSENT_KEY = 'levemente-cookie-consent';
+import { COOKIE_CONSENT_KEY } from '@/utils/cookieConsent';
 
 export const CookieConsent: React.FC = () => {
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
+        if (typeof window === 'undefined') return;
+
         const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
         if (!consent) {
             setIsVisible(true);
@@ -25,12 +26,14 @@ export const CookieConsent: React.FC = () => {
     }, []);
 
     const handleAccept = () => {
+        if (typeof window === 'undefined') return;
+
         localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
         setIsVisible(false);
-        // Refresh the page or trigger state update for components that might have been waiting for consent
-        window.location.reload();
         // Trigger a custom event so other parts of the app can react
         window.dispatchEvent(new Event('cookie-consent-updated'));
+        // Refresh the page to ensure all components re-check consent status
+        window.location.reload();
     };
 
     const handleDecline = () => {

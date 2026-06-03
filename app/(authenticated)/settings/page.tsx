@@ -68,6 +68,13 @@ const ApiTokenManager: React.FC = () => {
         if (!hasCookieConsent()) {
             window.dispatchEvent(new Event('show-cookie-consent'));
         }
+
+        const handleConsentUpdated = () => {
+            setHasConsent(hasCookieConsent());
+        };
+
+        window.addEventListener('cookie-consent-updated', handleConsentUpdated);
+        return () => window.removeEventListener('cookie-consent-updated', handleConsentUpdated);
     }, []);
 
     const saveKeys = (newKeys: ApiKey[]) => {

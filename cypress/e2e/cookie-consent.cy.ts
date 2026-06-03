@@ -107,15 +107,12 @@ describe('Cookie Consent Banner', () => {
         // Banner should be hidden after accepting
         cy.contains('Uso de Cookies').should('not.exist');
 
-        // Wait a bit for component to be fully mounted and listening for events
-        cy.wait(500);
-
         // Dispatch event to show banner
         cy.window().then((win) => {
             win.dispatchEvent(new Event('show-cookie-consent'));
         });
 
-        // Banner should be visible again
-        cy.contains('Uso de Cookies').should('be.visible');
+        // Banner should be visible again with proper timeout
+        cy.contains('Uso de Cookies', { timeout: 5000 }).should('be.visible');
     });
 });
