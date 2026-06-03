@@ -452,6 +452,11 @@ const pt = {
     "consent_required_to_save": "O consentimento de cookies é necessário para salvar chaves de API. Por favor, revise suas preferências no banner abaixo.",
     "save_error": "Não foi possível salvar sua preferência de cookies. Por favor, verifique as configurações do seu navegador."
   },
+  "pwa_install": {
+    "title": "Instalar Levemente",
+    "description": "Adicionar à tela inicial para uma melhor experiência e acesso offline.",
+    "install_button": "Instalar App"
+  },
 }
 
 export default pt;

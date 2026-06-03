@@ -452,6 +452,11 @@ const en = {
     "consent_required_to_save": "Cookie consent is required to save API keys. Please review your preferences in the banner below.",
     "save_error": "Failed to save your cookie preference. Please check your browser settings."
   },
+  "pwa_install": {
+    "title": "Install Levemente",
+    "description": "Add to home screen for a better experience and offline access.",
+    "install_button": "Install App"
+  },
 };
 
 export default en;
