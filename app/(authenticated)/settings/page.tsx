@@ -11,6 +11,7 @@ import Modal from '@/components/ui/Modal';
 import { useFeatureFlags } from '../../../contexts/FeatureFlagContext';
 import { FeatureFlags } from '../../../domain/repositories/FeatureFlagRepository';
 import { ProviderId, ApiKey } from '@/hooks/useApiKeys';
+import { safeLocalStorageSetItem, hasCookieConsent, getCookieConsentStatus, COOKIE_CONSENT_KEY } from '@/utils/cookieConsent';
 
 const PROVIDERS: { id: ProviderId; name: string; icon: React.ReactNode }[] = [
     { id: 'gemini', name: 'Google Gemini', icon: <GoogleIcon className="w-6 h-6" /> },
@@ -18,6 +19,103 @@ const PROVIDERS: { id: ProviderId; name: string; icon: React.ReactNode }[] = [
     { id: 'deepseek', name: 'DeepSeek', icon: <RkIcon className="w-6 h-6" /> },
     { id: 'openrouter', name: 'OpenRouter', icon: <OpenRouterIcon className="w-6 h-6" /> },
 ];
+
+const CookieConsentManager: React.FC = () => {
+    const { t } = useTranslation();
+    const [consentStatus, setConsentStatus] = useState(() => {
+        if (typeof window === 'undefined') return 'none';
+        return getCookieConsentStatus();
+    });
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const handleAccept = () => {
+        try {
+            localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
+            setConsentStatus('accepted');
+            setErrorMessage(null);
+            window.dispatchEvent(new Event('cookie-consent-updated'));
+        } catch (error) {
+            console.error('Failed to save cookie consent:', error);
+            setErrorMessage(t('cookies.save_error'));
+        }
+    };
+
+    const handleDecline = () => {
+        try {
+            localStorage.setItem(COOKIE_CONSENT_KEY, 'declined');
+            setConsentStatus('declined');
+            setErrorMessage(null);
+            window.dispatchEvent(new Event('cookie-consent-updated'));
+        } catch (error) {
+            console.error('Failed to save cookie consent:', error);
+            setErrorMessage(t('cookies.save_error'));
+        }
+    };
+
+    const handleClear = () => {
+        try {
+            localStorage.removeItem(COOKIE_CONSENT_KEY);
+            setConsentStatus('none');
+            setErrorMessage(null);
+            window.dispatchEvent(new Event('show-cookie-consent'));
+        } catch (error) {
+            console.error('Failed to clear cookie consent:', error);
+            setErrorMessage(t('cookies.save_error'));
+        }
+    };
+
+    return (
+        <div className="bg-neutral-panel p-6 rounded-2xl flex items-center justify-between border border-neutral-border">
+            <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 className="font-semibold text-lg">{t('settings.cookies.title')}</h3>
+                    <p className="text-sm text-neutral-text-secondary">
+                        {t('settings.cookies.status')}: {' '}
+                        <span className={consentStatus === 'accepted' ? 'text-brand-green' : consentStatus === 'declined' ? 'text-red-400' : 'text-yellow-400'}>
+                            {consentStatus === 'accepted' ? t('settings.cookies.accepted') : consentStatus === 'declined' ? t('settings.cookies.declined') : t('settings.cookies.none')}
+                        </span>
+                    </p>
+                    {errorMessage && (
+                        <p className="text-sm text-red-400 mt-1">
+                            {errorMessage}
+                        </p>
+                    )}
+                </div>
+            </div>
+            <div className="flex gap-2">
+                {consentStatus !== 'accepted' && (
+                    <button
+                        onClick={handleAccept}
+                        className="px-4 py-2 text-sm font-bold text-white bg-brand-green hover:bg-brand-green-dark rounded-lg transition-colors"
+                    >
+                        {t('cookies.accept')}
+                    </button>
+                )}
+                {consentStatus !== 'declined' && (
+                    <button
+                        onClick={handleDecline}
+                        className="px-4 py-2 text-sm font-bold text-neutral-text-secondary hover:bg-neutral-surface-hover rounded-lg border border-neutral-border transition-colors"
+                    >
+                        {t('cookies.decline')}
+                    </button>
+                )}
+                {consentStatus !== 'none' && (
+                    <button
+                        onClick={handleClear}
+                        className="px-4 py-2 text-sm font-bold text-red-400 hover:bg-red-500/10 rounded-lg border border-red-500/30 transition-colors"
+                    >
+                        {t('settings.cookies.clear')}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
 
 const LanguageSelector: React.FC = () => {
     const { t } = useTranslation();
@@ -52,24 +150,61 @@ const ApiTokenManager: React.FC = () => {
     const { t } = useTranslation();
     const [keys, setKeys] = useState<ApiKey[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [hasConsent, setHasConsent] = useState<boolean>(false);
 
     useEffect(() => {
-        const savedKeys = localStorage.getItem('ai_api_keys');
-        if (savedKeys) {
-            try {
-                setKeys(JSON.parse(savedKeys));
-            } catch (e) {
-                console.error("Failed to parse api keys", e);
+        const consentStatus = hasCookieConsent();
+        setHasConsent(consentStatus);
+
+        if (consentStatus) {
+            const savedKeys = localStorage.getItem('ai_api_keys');
+            if (savedKeys) {
+                try {
+                    setKeys(JSON.parse(savedKeys));
+                } catch (e) {
+                    console.error("Failed to parse api keys", e);
+                }
             }
         }
+
+        if (!consentStatus) {
+            window.dispatchEvent(new Event('show-cookie-consent'));
+        }
+
+        const handleConsentUpdated = () => {
+            const newConsentStatus = hasCookieConsent();
+            setHasConsent(newConsentStatus);
+
+            // Load keys when consent is granted
+            if (newConsentStatus) {
+                const savedKeys = localStorage.getItem('ai_api_keys');
+                if (savedKeys) {
+                    try {
+                        setKeys(JSON.parse(savedKeys));
+                    } catch (e) {
+                        console.error("Failed to parse api keys", e);
+                    }
+                }
+            } else {
+                // Clear keys from memory when consent is revoked
+                setKeys([]);
+            }
+        };
+
+        window.addEventListener('cookie-consent-updated', handleConsentUpdated);
+        return () => window.removeEventListener('cookie-consent-updated', handleConsentUpdated);
     }, []);
 
     const saveKeys = (newKeys: ApiKey[]) => {
-        setKeys(newKeys);
-        localStorage.setItem('ai_api_keys', JSON.stringify(newKeys));
-        ServiceFactory.reset();
-        // Notify other components/contexts (like FeatureFlagContext)
-        window.dispatchEvent(new CustomEvent('ai-keys-updated'));
+        const success = safeLocalStorageSetItem('ai_api_keys', JSON.stringify(newKeys));
+        if (success) {
+            setKeys(newKeys);
+            ServiceFactory.reset();
+            // Notify other components/contexts (like FeatureFlagContext)
+            window.dispatchEvent(new CustomEvent('ai-keys-updated'));
+        } else {
+            window.dispatchEvent(new Event('show-cookie-consent'));
+        }
     };
 
     const handleDelete = (provider: ProviderId) => {
@@ -107,10 +242,18 @@ const ApiTokenManager: React.FC = () => {
                         <br />
                         If a provider fails, it will attempt to use the next one as a fallback.
                     </p>
+                    {!hasConsent && (
+                        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                            <p className="text-sm text-red-400 font-medium">
+                                {t('cookies.consent_required_to_save')}
+                            </p>
+                        </div>
+                    )}
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-secondary text-on-secondary font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm"
+                    disabled={!hasConsent}
+                    className="flex items-center gap-2 bg-secondary text-on-secondary font-bold py-2 px-4 rounded-lg hover:brightness-110 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <PlusIcon className="w-5 h-5" />
                     <span>{t('settings.tokens.add_token')}</span>
@@ -291,6 +434,10 @@ export default function SettingsPage() {
 
             <section className="space-y-4">
                 <LanguageSelector />
+            </section>
+
+            <section className="space-y-4">
+                <CookieConsentManager />
             </section>
 
             {plansEnabled && (

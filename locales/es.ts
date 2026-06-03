@@ -379,6 +379,14 @@ const es = {
       "add_token": "Añadir Token API",
       "remove": "Eliminar",
       "no_tokens": "Todavía no has añadido ningún token de API de IA."
+    },
+    "cookies": {
+      "title": "Preferencias de Cookies",
+      "status": "Estado Actual",
+      "accepted": "Aceptado",
+      "declined": "Rechazado",
+      "none": "No Establecido",
+      "clear": "Limpiar Preferencia"
     }
   },
   "assistant": {
@@ -429,7 +437,16 @@ const es = {
     "chatbot_premium_required": "Esta función es exclusiva para miembros Premium. ¿Qué tal mejorar tu plan para desbloquear todo el potencial de Lumi? Consulta nuestros [planes aquí](/plans).",
     "api_keys_required": "Esta función requiere una suscripción [Premium](/plans) o que configures tus propias [claves de API en la configuración](/settings).",
     "feature_premium_only": "Esta función es exclusiva para suscriptores Premium. Visita nuestra [página de planes](/plans) para obtener más información."
-  }
+  },
+  "cookies": {
+    "title": "Uso de Cookies",
+    "message": "Utilizamos cookies para mejorar su experiencia y garantizar la seguridad de sus datos. No almacenamos información sensible sin su consentimiento.",
+    "accept": "Aceptar Todo",
+    "decline": "Rechazar Todo",
+    "privacy_policy": "Política de Privacidad",
+    "consent_required_to_save": "Se requiere el consentimiento de cookies para guardar las claves de API. Por favor, revise sus preferencias en el banner de abajo.",
+    "save_error": "No se pudo guardar su preferencia de cookies. Por favor, verifique la configuración de su navegador."
+  },
 }
 
 export default es;

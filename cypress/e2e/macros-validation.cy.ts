@@ -10,6 +10,8 @@ describe('Macros Validation', () => {
   };
 
   beforeEach(() => {
+    // Accept cookies to prevent banner interference
+    cy.acceptCookies();
     // Login and navigate to dashboard
     login();
     cy.visit('/dashboard');

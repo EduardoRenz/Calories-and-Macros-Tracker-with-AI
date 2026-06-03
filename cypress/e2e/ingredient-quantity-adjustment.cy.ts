@@ -6,6 +6,8 @@ describe('Ingredient Quantity Adjustment', () => {
   };
 
   beforeEach(() => {
+    // Accept cookies to prevent banner interference
+    cy.acceptCookies();
     // Login and navigate to dashboard
     cy.upgradeSubscription()
     login();
