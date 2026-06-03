@@ -5,7 +5,7 @@ export class OpenAINutritionAnalysisService extends NutritionAnalysisService {
     private baseUrl: string;
     private model: string;
 
-    constructor(apiKey: string, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
+    constructor(apiKey: string, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-5.4-nano') {
         super();
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
