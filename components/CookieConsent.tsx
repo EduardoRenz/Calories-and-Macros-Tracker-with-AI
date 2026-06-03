@@ -8,12 +8,22 @@ import { COOKIE_CONSENT_KEY } from '@/utils/cookieConsent';
 export const CookieConsent: React.FC = () => {
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-        if (!consent) {
+        const checkConsent = () => {
+            try {
+                const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+                return !consent;
+            } catch (error) {
+                console.error('Failed to read cookie consent:', error);
+                return true; // Show banner if we can't read consent
+            }
+        };
+
+        if (checkConsent()) {
             setIsVisible(true);
         }
 
@@ -21,25 +31,48 @@ export const CookieConsent: React.FC = () => {
             setIsVisible(true);
         };
 
+        const handleConsentUpdated = () => {
+            const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+            if (consent) {
+                setIsVisible(false);
+            }
+        };
+
         window.addEventListener('show-cookie-consent', handleShowBanner);
-        return () => window.removeEventListener('show-cookie-consent', handleShowBanner);
+        window.addEventListener('cookie-consent-updated', handleConsentUpdated);
+        return () => {
+            window.removeEventListener('show-cookie-consent', handleShowBanner);
+            window.removeEventListener('cookie-consent-updated', handleConsentUpdated);
+        };
     }, []);
 
     const handleAccept = () => {
         if (typeof window === 'undefined') return;
 
-        localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
-        setIsVisible(false);
-        // Trigger a custom event so other parts of the app can react
-        window.dispatchEvent(new Event('cookie-consent-updated'));
-        // Refresh the page to ensure all components re-check consent status
-        window.location.reload();
+        try {
+            localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
+            setIsVisible(false);
+            setErrorMessage(null);
+            // Trigger a custom event so other parts of the app can react
+            window.dispatchEvent(new Event('cookie-consent-updated'));
+        } catch (error) {
+            console.error('Failed to save cookie consent:', error);
+            // Show error to user
+            setErrorMessage(t('cookies.save_error'));
+        }
     };
 
     const handleDecline = () => {
-        localStorage.setItem(COOKIE_CONSENT_KEY, 'declined');
-        setIsVisible(false);
-        window.dispatchEvent(new Event('cookie-consent-updated'));
+        try {
+            localStorage.setItem(COOKIE_CONSENT_KEY, 'declined');
+            setIsVisible(false);
+            setErrorMessage(null);
+            window.dispatchEvent(new Event('cookie-consent-updated'));
+        } catch (error) {
+            console.error('Failed to save cookie consent:', error);
+            // Show error to user
+            setErrorMessage(t('cookies.save_error'));
+        }
     };
 
     if (!isVisible) return null;
@@ -60,6 +93,11 @@ export const CookieConsent: React.FC = () => {
                             {t('cookies.privacy_policy')}
                         </Link>
                     </p>
+                    {errorMessage && (
+                        <p className="text-sm text-red-400 mt-2">
+                            {errorMessage}
+                        </p>
+                    )}
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <button

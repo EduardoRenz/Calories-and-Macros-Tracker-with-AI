@@ -384,6 +384,14 @@ const en = {
       "add_token": "Add API Token",
       "remove": "Remove",
       "no_tokens": "You haven't added any AI API tokens yet."
+    },
+    "cookies": {
+      "title": "Cookie Preferences",
+      "status": "Current Status",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "none": "Not Set",
+      "clear": "Clear Preference"
     }
   },
   "assistant": {
@@ -441,8 +449,9 @@ const en = {
     "accept": "Accept All",
     "decline": "Decline All",
     "privacy_policy": "Privacy Policy",
-    "consent_required_to_save": "Cookie consent is required to save API keys. Please review your preferences in the banner below."
-  }
+    "consent_required_to_save": "Cookie consent is required to save API keys. Please review your preferences in the banner below.",
+    "save_error": "Failed to save your cookie preference. Please check your browser settings."
+  },
 };
 
 export default en;

@@ -384,6 +384,14 @@ const pt = {
       "add_token": "Adicionar Token de API",
       "remove": "Remover",
       "no_tokens": "Você ainda não adicionou nenhum token de API de IA."
+    },
+    "cookies": {
+      "title": "Preferências de Cookies",
+      "status": "Status Atual",
+      "accepted": "Aceito",
+      "declined": "Recusado",
+      "none": "Não Definido",
+      "clear": "Limpar Preferência"
     }
   },
   "assistant": {
@@ -441,8 +449,9 @@ const pt = {
     "accept": "Aceitar Todos",
     "decline": "Recusar Todos",
     "privacy_policy": "Política de Privacidade",
-    "consent_required_to_save": "O consentimento de cookies é necessário para salvar chaves de API. Por favor, revise suas preferências no banner abaixo."
-  }
+    "consent_required_to_save": "O consentimento de cookies é necessário para salvar chaves de API. Por favor, revise suas preferências no banner abaixo.",
+    "save_error": "Não foi possível salvar sua preferência de cookies. Por favor, verifique as configurações do seu navegador."
+  },
 }
 
 export default pt;
