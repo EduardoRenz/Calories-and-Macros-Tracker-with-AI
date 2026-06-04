@@ -6,7 +6,7 @@ export class OpenAIImageRecognitionService extends ImageRecognitionService {
     private baseUrl: string;
     private model: string;
 
-    constructor(apiKey: string, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
+    constructor(apiKey: string, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-5.4-nano') {
         super();
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
@@ -16,6 +16,7 @@ export class OpenAIImageRecognitionService extends ImageRecognitionService {
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const base64Image = await this.blobToBase64(image);
         const defaultPrompt = this.buildDefaultPrompt(language);
+        console.log(`[OpenAIImageRecognitionService] Analyzing image using model "${this.model}"`);
 
         try {
             const response = await fetch(`${this.baseUrl}/chat/completions`, {

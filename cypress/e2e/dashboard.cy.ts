@@ -8,6 +8,8 @@ describe('Dashboard Meal Management', () => {
   };
 
   beforeEach(() => {
+    // Accept cookies to prevent banner interference
+    cy.acceptCookies();
     // Login and navigate to dashboard
     cy.visit('/', {
       onBeforeLoad(win) {
@@ -76,10 +78,10 @@ describe('Dashboard Meal Management', () => {
     // 6. Verify Ingredient Added to List
     // First, ensure lunch is expanded (it might be closed if we just added and it was previously empty)
     cy.get('body').then(($body) => {
-        const details = $body.find('#meal-details-lunch');
-        if (!details.is(':visible')) {
-            cy.get('[data-testid="meal-lunch"]').click();
-        }
+      const details = $body.find('#meal-details-lunch');
+      if (!details.is(':visible')) {
+        cy.get('[data-testid="meal-lunch"]').click();
+      }
     });
 
     cy.get('#meal-details-lunch').within(() => {

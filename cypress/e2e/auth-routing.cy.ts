@@ -1,5 +1,6 @@
 
 describe('Route Protection', () => {
+
   it('should redirect unauthenticated users to login from /dashboard', () => {
     cy.visit('/dashboard');
     cy.url().should('include', '/login');
@@ -51,6 +52,9 @@ describe('Authenticated User Access', () => {
 });
 
 describe('URL Navigation', () => {
+  beforeEach(() => {
+    cy.acceptCookies();
+  });
   it('should update URL when clicking navbar links', () => {
     cy.login();
 

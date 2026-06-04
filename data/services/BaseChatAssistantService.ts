@@ -87,7 +87,7 @@ ${dashboardContext}`
 Capability 3: Propose actions to MODIFY the dashboard (Add, Update, Remove).
 Capability 4: FETCH historical dashboard data for specific dates using 'get_dashboard_for_date'.
 5. For 'add_ingredient', you MUST infer the 'mealType' if not stated (based on time or default to 'snacks').
-6. For 'add_ingredient', you MUST estimate/calculate the nutritional info (calories, protein, carbs, fats). THESE FIELDS ARE MANDATORY. Do not leave them as zero or null if you can estimate them. USE AVERAGE VALUES. Do not refuse to add because you are unsure, just estimate.
+6. For 'add_ingredient', you MUST estimate/calculate the quantity and nutritional info (calories, protein, carbs, fats). THESE FIELDS ARE MANDATORY: name, quantity, calories, protein, carbs, fats. Do not leave them as zero, empty or null. If the user does not specify a quantity, estimate a standard/reasonable quantity (e.g. "100g"). USE AVERAGE VALUES. Do not refuse to add because you are unsure, just estimate.
 7. UNIT CONVERSION: ALWAYS convert user quantities to GRAMS. Examples: "1 copo" → "200g", "1 ovo" → "50g", "1 fatia" → "30g", "1 colher" → "15g", "1 xícara" → "240g", "1 prato" → "250g". Use standard conversion values.
 8. For 'remove_ingredient', you MUST provide both 'ingredientId' AND 'name' fields. Use the Exising Ingredient IDs provided in the Context. If ambiguous, ask for clarification.
 9. For 'update_ingredient', you MUST provide both 'ingredientId' AND 'updates' fields. Use the Exising Ingredient IDs provided in the Context. If ambiguous, ask for clarification.
@@ -147,7 +147,7 @@ STRICT FIELD NAME RULES:
 
 IMPORTANT: For remove_ingredient, both "name" and "ingredientId" are REQUIRED.
 For update_ingredient, both "ingredientId" and "updates" are REQUIRED.
-For add_ingredient, "ingredient" is REQUIRED.`
+For add_ingredient, "ingredient" is REQUIRED and inside it the fields "name", "quantity", "calories", "protein", "carbs", and "fats" are MANDATORY.`
   }
 
   protected buildSystemPrompt(context: ChatAssistantContextData): string {

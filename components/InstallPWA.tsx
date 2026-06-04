@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface BeforeInstallPromptEvent extends Event {
     readonly platforms: string[];
@@ -9,11 +10,20 @@ interface BeforeInstallPromptEvent extends Event {
     prompt(): Promise<void>;
 }
 
+const PWA_INSTALL_DECISION_KEY = 'calories-tracker-pwa-install-decision';
+
 const InstallPWA: React.FC = () => {
+    const { t } = useTranslation();
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [showInstallBanner, setShowInstallBanner] = useState(false);
 
     useEffect(() => {
+        // Check if user already made a decision
+        const decision = localStorage.getItem(PWA_INSTALL_DECISION_KEY);
+        if (decision) {
+            return;
+        }
+
         const handler = (e: Event) => {
             // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
@@ -40,12 +50,17 @@ const InstallPWA: React.FC = () => {
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User response to the install prompt: ${outcome}`);
 
+        // Save decision to localStorage
+        localStorage.setItem(PWA_INSTALL_DECISION_KEY, outcome);
+
         // We've used the prompt, and can't use it again, throw it away
         setDeferredPrompt(null);
         setShowInstallBanner(false);
     };
 
     const handleDismiss = () => {
+        // Save dismissal decision to localStorage
+        localStorage.setItem(PWA_INSTALL_DECISION_KEY, 'dismissed');
         setShowInstallBanner(false);
     };
 
@@ -63,10 +78,10 @@ const InstallPWA: React.FC = () => {
                         </div>
                         <div>
                             <h3 className="font-bold text-neutral-text-primary text-sm">
-                                Install CalorieCounter
+                                {t('pwa_install.title')}
                             </h3>
                             <p className="text-xs text-neutral-text-secondary mt-1">
-                                Add to home screen for a better experience and offline access.
+                                {t('pwa_install.description')}
                             </p>
                         </div>
                     </div>
@@ -83,7 +98,7 @@ const InstallPWA: React.FC = () => {
                     onClick={handleInstallClick}
                     className="w-full bg-brand-green hover:bg-brand-green/90 text-neutral-dark font-bold py-2 rounded-lg transition-all active:scale-95 text-sm"
                 >
-                    Install App
+                    {t('pwa_install.install_button')}
                 </button>
             </div>
         </div>

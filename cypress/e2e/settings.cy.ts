@@ -6,6 +6,8 @@ describe('Settings Page', () => {
     };
 
     beforeEach(() => {
+        // Accept cookies to prevent banner interference
+        cy.acceptCookies();
         login();
         cy.visit('/settings');
         // Ensure we start with a clean state for API keys if possible,

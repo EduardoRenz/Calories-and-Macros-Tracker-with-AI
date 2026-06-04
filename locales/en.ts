@@ -384,6 +384,14 @@ const en = {
       "add_token": "Add API Token",
       "remove": "Remove",
       "no_tokens": "You haven't added any AI API tokens yet."
+    },
+    "cookies": {
+      "title": "Cookie Preferences",
+      "status": "Current Status",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "none": "Not Set",
+      "clear": "Clear Preference"
     }
   },
   "assistant": {
@@ -399,6 +407,7 @@ const en = {
     "thinking": "Thinking...",
     "action_success": "Action executed successfully!",
     "action_error": "Failed to execute action. Please try again.",
+    "error_generic": "Something went wrong while preparing the action. Please try again.",
     "action_cancelled": "Action cancelled.",
     "prepared_action": "I have prepared the action for you.",
     "welcome_message": "Say hello to Lumi, your personal health assistant!",
@@ -434,7 +443,21 @@ const en = {
     "chatbot_premium_required": "This feature is exclusive for Premium members. How about upgrading your plan to unlock Lumi's full potential? Check out our [plans here](/plans).",
     "api_keys_required": "This feature requires a [Premium](/plans) subscription or that you configure your own [API keys in the settings](/settings).",
     "feature_premium_only": "This feature is exclusive for Premium subscribers. Visit our [plans page](/plans) to learn more."
-  }
+  },
+  "cookies": {
+    "title": "Cookie Consent",
+    "message": "We use cookies to improve your experience and ensure the security of your data. We do not store sensitive information unless you consent.",
+    "accept": "Accept All",
+    "decline": "Decline All",
+    "privacy_policy": "Privacy Policy",
+    "consent_required_to_save": "Cookie consent is required to save API keys. Please review your preferences in the banner below.",
+    "save_error": "Failed to save your cookie preference. Please check your browser settings."
+  },
+  "pwa_install": {
+    "title": "Install Levemente",
+    "description": "Add to home screen for a better experience and offline access.",
+    "install_button": "Install App"
+  },
 };
 
 export default en;

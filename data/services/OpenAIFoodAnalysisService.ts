@@ -1,21 +1,43 @@
 import { FoodAnalysisReport, VitaminStatus } from '../../domain/entities/analysis';
 import { FoodAnalysisInput } from '../../domain/services/FoodAnalysisService';
 import { BaseFoodAnalysisService } from './BaseFoodAnalysisService';
+import { ModelConfigRepository } from '../../domain/repositories/ModelConfigRepository';
+import { RepositoryFactory } from '../RepositoryFactory';
 
 export class OpenAIFoodAnalysisService extends BaseFoodAnalysisService {
     private apiKey: string;
     private baseUrl: string;
     private model: string;
+    private providerName: string;
+    private modelConfigRepo: ModelConfigRepository;
 
-    constructor(apiKey: string, baseUrl: string = 'https://api.openai.com/v1', model: string = 'gpt-4o') {
+    constructor(
+        apiKey: string,
+        baseUrl: string = 'https://api.openai.com/v1',
+        model: string = 'gpt-5.4-nano',
+        providerName: string = 'openai'
+    ) {
         super();
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
         this.model = model;
+        this.providerName = providerName;
+        this.modelConfigRepo = RepositoryFactory.getModelConfigRepository();
+    }
+
+    private async getModelVersion(): Promise<string> {
+        try {
+            return await this.modelConfigRepo.getModelVersion(this.providerName, 'food') || this.model;
+        } catch (error) {
+            console.warn(`Failed to get model version for ${this.providerName} from remote config, using fallback:`, error);
+            return this.model;
+        }
     }
 
     async generateAnalysis(input: FoodAnalysisInput): Promise<FoodAnalysisReport> {
         const prompt = this.buildPrompt(input);
+        const currentModel = await this.getModelVersion();
+        console.log(`[OpenAIFoodAnalysisService] Generating analysis with provider "${this.providerName}" using model "${currentModel}"`);
 
         try {
             const response = await fetch(`${this.baseUrl}/chat/completions`, {
@@ -25,7 +47,7 @@ export class OpenAIFoodAnalysisService extends BaseFoodAnalysisService {
                     'Authorization': `Bearer ${this.apiKey}`
                 },
                 body: JSON.stringify({
-                    model: this.model,
+                    model: currentModel,
                     messages: [
                         { role: 'system', content: 'You are a helpful nutrition assistant that outputs JSON.' },
                         { role: 'user', content: prompt }

@@ -1,5 +1,7 @@
 describe('Feature Flags', () => {
     const login = () => {
+        // Accept cookies to prevent banner interference
+        cy.acceptCookies();
         cy.visit('/');
         cy.url().should('include', 'login');
         cy.contains('Sign in with Google').click();

@@ -58,7 +58,7 @@ export class OpenAIChatAssistantService extends BaseChatAssistantService {
   }
 
   protected getDefaultModel(): string {
-    return "gpt-4o"
+    return "gpt-5.4-nano-2026-03-17"
   }
 
   async sendMessage(messages: ChatMessage[], context: ChatAssistantContextData): Promise<ChatMessage> {

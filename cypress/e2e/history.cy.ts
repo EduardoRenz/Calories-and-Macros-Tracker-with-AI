@@ -55,6 +55,8 @@ const daysAgo = (n: number) => {
 
 describe('History Page', () => {
   beforeEach(() => {
+    // Accept cookies to prevent banner interference
+    cy.acceptCookies();
     loginWithGoogle();
   });
 
