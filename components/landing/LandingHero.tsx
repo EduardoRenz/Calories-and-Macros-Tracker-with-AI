@@ -123,8 +123,8 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
               <span className="material-symbols-outlined">restaurant_menu</span>
             </div>
             <div>
-              <p className="font-label font-bold text-on-surface text-sm">{t('landing.hero.float_badge_title')}</p>
-              <p className="font-body text-xs text-on-surface-variant">{t('landing.hero.float_badge_desc')}</p>
+              <p className="font-label font-bold text-[#191c1d] text-sm">{t('landing.hero.float_badge_title')}</p>
+              <p className="font-body text-xs text-[#3e4948]">{t('landing.hero.float_badge_desc')}</p>
             </div>
           </div>
         </div>
