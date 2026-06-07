@@ -518,6 +518,8 @@ const pt = {
       "dashboard_calories_label": "Calorias",
       "dashboard_protein_label": "Proteína",
       "dashboard_carbs_label": "Carbos",
+      "dashboard_fats_label": "Gorduras",
+      "dashboard_fiber_label": "Fibras",
       "chat_title": "Registro Simples",
       "chat_subtitle": "Adicione refeições como se estivesse mandando mensagem.",
       "chat_user_meal": "Adicionar 1 filé de frango, 2 colheres de arroz e salada ao meu almoço.",

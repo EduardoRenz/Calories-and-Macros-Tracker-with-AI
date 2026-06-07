@@ -1,9 +1,16 @@
 'use client';
 
 import React from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useTranslation } from '../../hooks/useTranslation';
 import MacroProgressCard from '../MacroProgressCard';
 import { LumiIcon } from '../icons';
+
+const CHART_DATA = [
+  { name: 'Protein', value: 120, color: 'var(--brand-protein)' },
+  { name: 'Carbs', value: 150, color: 'var(--brand-carbs)' },
+  { name: 'Fats', value: 55, color: 'var(--brand-fats)' },
+];
 
 export const LandingVisualDemo: React.FC = () => {
   const { t } = useTranslation();
@@ -31,24 +38,47 @@ export const LandingVisualDemo: React.FC = () => {
               </div>
             </div>
             <div className="mt-auto bg-surface rounded-xl p-6 shadow-sm border border-surface-variant group-hover:scale-[1.02] transition-transform">
-              <div className="flex items-center justify-center gap-6">
-                <div className="relative w-24 h-24 shrink-0">
-                  <svg className="w-full h-full text-secondary stroke-current" viewBox="0 0 36 36">
-                    <path className="text-surface-variant" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeWidth="3" stroke="currentColor" />
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeDasharray="75, 100" strokeLinecap="round" strokeWidth="3" stroke="currentColor" className="text-secondary" />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="font-headline font-bold text-on-surface">75%</span>
-                    <span className="text-[10px] font-label text-on-surface-variant">{t('landing.demo.dashboard_calories_label')}</span>
+              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 items-start">
+                <div className="relative w-36 h-36 shrink-0 justify-self-center md:justify-self-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={CHART_DATA}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="65%"
+                        outerRadius="90%"
+                        paddingAngle={4}
+                        dataKey="value"
+                        cornerRadius={6}
+                      >
+                        {CHART_DATA.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-[10px] text-on-surface-variant font-label">Total</span>
+                    <span className="text-lg font-headline font-bold text-on-surface">1.350</span>
+                    <span className="text-[10px] text-on-surface-variant font-label">kcal</span>
                   </div>
                 </div>
-                <div className="flex-1 space-y-3">
+                <div className="flex-1 space-y-2">
+                  <MacroProgressCard
+                    title={t('landing.demo.dashboard_calories_label')}
+                    current={1350}
+                    goal={1800}
+                    unit="kcal"
+                    color="bg-secondary"
+                    className="!bg-transparent !p-0 !rounded-none"
+                  />
                   <MacroProgressCard
                     title={t('landing.demo.dashboard_protein_label')}
                     current={120}
                     goal={150}
                     unit="g"
-                    color="bg-primary"
+                    color="bg-brand-protein"
                     className="!bg-transparent !p-0 !rounded-none"
                     testId="landing-demo-protein-goal"
                   />
@@ -57,9 +87,17 @@ export const LandingVisualDemo: React.FC = () => {
                     current={150}
                     goal={250}
                     unit="g"
-                    color="bg-tertiary-fixed-dim"
+                    color="bg-brand-carbs"
                     className="!bg-transparent !p-0 !rounded-none"
                     testId="landing-demo-carbs-goal"
+                  />
+                  <MacroProgressCard
+                    title={t('landing.demo.dashboard_fats_label')}
+                    current={55}
+                    goal={75}
+                    unit="g"
+                    color="bg-brand-fats"
+                    className="!bg-transparent !p-0 !rounded-none"
                   />
                 </div>
               </div>

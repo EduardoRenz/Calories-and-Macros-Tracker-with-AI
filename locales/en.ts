@@ -518,6 +518,8 @@ const en = {
       "dashboard_calories_label": "Calories",
       "dashboard_protein_label": "Protein",
       "dashboard_carbs_label": "Carbs",
+      "dashboard_fats_label": "Fats",
+      "dashboard_fiber_label": "Fiber",
       "chat_title": "Simple Logging",
       "chat_subtitle": "Add meals like you're sending a message.",
       "chat_user_meal": "Add 1 chicken fillet, 2 scoops of rice and salad to my lunch.",
