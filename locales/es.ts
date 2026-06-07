@@ -531,7 +531,7 @@ const es = {
     },
     "cta": {
       "title": "¿Listo para transformar tu rutina?",
-      "subtitle": "Accede a tu cuenta o crea una ahora en menos de 1 minuto.",
+      "subtitle": "Accede a tu cuenta o crea una ahora mismo.",
       "check_instant": "Acceso instantáneo",
       "check_secure": "Datos seguros y privados",
       "button": "Comenzar Ahora",

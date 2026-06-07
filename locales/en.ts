@@ -536,7 +536,7 @@ const en = {
     },
     "cta": {
       "title": "Ready to transform your routine?",
-      "subtitle": "Access your account or create one now in less than 1 minute.",
+      "subtitle": "Access your account or create one right now.",
       "check_instant": "Instant access",
       "check_secure": "Secure and private data",
       "button": "Start Now",

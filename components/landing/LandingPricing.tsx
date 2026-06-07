@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useFeatureFlags } from '../../contexts/FeatureFlagContext';
 import { RepositoryFactory } from '../../data/RepositoryFactory';
-import { Plan } from '../../domain/entities/payment';
+import { Currency, Plan } from '../../domain/entities/payment';
 import { PlanCard } from '../payment/PlanCard';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { FeatureFlags } from '../../domain/repositories/FeatureFlagRepository';
@@ -33,7 +33,27 @@ export const LandingPricing: React.FC = () => {
         const plansRepository = RepositoryFactory.getPlansRepository();
         const result = await plansRepository.getPlans(language);
         if (!cancelled) {
-          setPlans(result);
+          const hasFree = result.some((p) => p.price === 0);
+          const plans = hasFree
+            ? result
+            : [
+                Plan.create({
+                  id: 'free',
+                  name: language === 'pt' ? 'Básico' : 'Basic',
+                  description: language === 'pt'
+                    ? 'Para desenvolvedores e entusiastas que querem testar o motor.'
+                    : 'For developers and enthusiasts who want to test the engine.',
+                  price: 0,
+                  currency: language === 'pt' ? Currency.BRL() : Currency.USD(),
+                  interval: 'month',
+                  features: [],
+                  isPopular: false,
+                  provider: 'internal',
+                  externalPlanId: 'free',
+                }),
+                ...result,
+              ];
+          setPlans(plans);
         }
       } catch (err) {
         if (!cancelled) {
