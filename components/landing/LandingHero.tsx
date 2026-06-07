@@ -29,6 +29,26 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
           <p className="text-lg text-on-surface-variant max-w-lg leading-relaxed">
             {t('landing.hero.subtitle')}
           </p>
+          <div className="flex flex-col gap-2">
+            <span className="flex items-center gap-3 text-sm text-on-surface-variant font-label">
+              <span className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-on-secondary text-sm">check</span>
+              </span>
+              {t('landing.hero.check_auto_macros')}
+            </span>
+            <span className="flex items-center gap-3 text-sm text-on-surface-variant font-label">
+              <span className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-on-secondary text-sm">check</span>
+              </span>
+              {t('landing.hero.check_instant_analysis')}
+            </span>
+            <span className="flex items-center gap-3 text-sm text-on-surface-variant font-label">
+              <span className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-on-secondary text-sm">check</span>
+              </span>
+              {t('landing.hero.check_goals_tracking')}
+            </span>
+          </div>
           <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
             <KineticButton href={primaryCtaHref} size="md">
               {primaryCtaLabel}
