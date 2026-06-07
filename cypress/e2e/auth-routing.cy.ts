@@ -176,8 +176,18 @@ describe('Root Path Redirect', () => {
     cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should('be.visible');
   });
 
-  it('should show login page for unauthenticated user at /', () => {
+  it('should show landing page for unauthenticated user at /', () => {
     cy.visit('/');
+    // After the Landing Page rollout, '/' renders the Landing Page for
+    // unauthenticated visitors instead of redirecting to /login.
+    cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should('be.visible');
+  });
+
+  it('should reach /login from the landing page via a CTA when unauthenticated', () => {
+    cy.visit('/');
+    cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should('be.visible');
+    // Follow any CTA pointing to /login (e.g. Navbar "Login" or "Começar").
+    cy.get('a[href="/login"]').first().click();
     cy.url().should('include', '/login');
     cy.get('[data-testid="google-signin-button"]').should('be.visible');
   });

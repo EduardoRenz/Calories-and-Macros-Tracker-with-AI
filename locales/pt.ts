@@ -458,6 +458,94 @@ const pt = {
     "description": "Adicionar à tela inicial para uma melhor experiência e acesso offline.",
     "install_button": "Instalar App"
   },
+  "landing": {
+    "navbar": {
+      "features": "Recursos",
+      "benefits": "Benefícios",
+      "pricing": "Preços",
+      "login": "Login",
+      "start": "Começar",
+      "dashboard": "Ir para o Dashboard"
+    },
+    "hero": {
+      "badge": "IA NUTRICIONAL",
+      "title": "Nutrição Inteligente em 1 Minuto",
+      "title_accent": "1 Minuto",
+      "subtitle": "Acompanhe sua dieta sem planilhas complexas. Nossa IA analisa seus macros e necessidades médicas quase instantaneamente.",
+      "cta_start": "Começar Agora",
+      "cta_dashboard": "Ir para o Dashboard",
+      "cta_how": "Ver Como Funciona",
+      "check_no_forms": "Sem questionários longos",
+      "check_setup": "Setup em 60s",
+      "float_badge_title": "Almoço Registrado",
+      "float_badge_desc": "Macros calculados em 1.2s"
+    },
+    "benefits": {
+      "title": "Setup Rápido, Foco nos Resultados",
+      "stat_1_title": "60 Segundos",
+      "stat_1_desc": "Pule os formulários intermináveis. Nosso onboarding captura apenas o essencial para a IA começar a trabalhar.",
+      "stat_2_title": "Zero Planilhas",
+      "stat_2_desc": "Esqueça a contagem manual de calorias. Tire uma foto ou digite sua refeição, e nós fazemos o resto instantaneamente.",
+      "stat_3_title": "Insights Diretos",
+      "stat_3_desc": "Receba feedback claro sobre o que importa: seus macros diários e adequação aos seus objetivos de saúde."
+    },
+    "ai_features": {
+      "eyebrow": "Motor de Inteligência",
+      "title": "Análise de Macros em Segundos",
+      "description": "Nossa IA avançada foi treinada para reconhecer alimentos e porções, traduzindo descrições simples em dados nutricionais precisos sem a necessidade de buscar em bancos de dados extensos.",
+      "natural_input_title": "Entrada Natural",
+      "natural_input_desc": "Apenas diga \"Comi 2 ovos mexidos e meio abacate\" e o sistema entende.",
+      "instant_calc_title": "Cálculo Imediato",
+      "instant_calc_desc": "Proteínas, carboidratos e gorduras calculados na hora, atualizando seu dashboard."
+    },
+    "clinical": {
+      "badge": "Saúde Clínica",
+      "title": "Foco em Condições Médicas",
+      "description": "O LeveMente vai além do fitness. Nossa plataforma é otimizada para auxiliar quem precisa de controle rigoroso devido a condições de saúde.",
+      "diabetes_title": "Diabetes",
+      "diabetes_desc": "Controle preciso de índice glicêmico.",
+      "intolerances_title": "Intolerâncias",
+      "intolerances_desc": "Alertas automáticos de ingredientes."
+    },
+    "demo": {
+      "title": "Tudo que você precisa, nada que não precise",
+      "subtitle": "Design limpo e focado na ação. Seu diário alimentar reimaginado para a velocidade.",
+      "dashboard_title": "Dashboard Diário",
+      "dashboard_subtitle": "Visão geral instantânea do seu progresso.",
+      "dashboard_calories_label": "Calorias",
+      "dashboard_protein_label": "Proteína",
+      "dashboard_carbs_label": "Carbos",
+      "chat_title": "Registro Simples",
+      "chat_subtitle": "Adicione refeições como se estivesse mandando mensagem.",
+      "chat_prompt": "O que você comeu no almoço?",
+      "chat_user_meal": "1 filé de frango, 2 colheres de arroz e salada.",
+      "chat_success": "Registrado! (350 kcal)",
+      "chat_macros": "30g Prot | 40g Carb | 8g Gord"
+    },
+    "pricing": {
+      "title": "Planos Simples e Transparentes",
+      "subtitle": "Escolha o plano ideal para a sua jornada de bem-estar.",
+      "cta_free": "Começar Grátis",
+      "cta_member": "Assinar Agora",
+      "loading": "Carregando planos...",
+      "error": "Não conseguimos carregar os planos agora. Tente novamente em instantes.",
+      "recommended": "Recomendado"
+    },
+    "cta": {
+      "title": "Pronto para transformar sua rotina?",
+      "subtitle": "Acesse sua conta ou crie uma agora em menos de 1 minuto.",
+      "check_instant": "Acesso instantâneo",
+      "check_secure": "Dados seguros e privados",
+      "button": "Começar Agora",
+      "button_dashboard": "Ir para o Dashboard"
+    },
+    "footer": {
+      "copyright": "© 2024 Levemente. All rights reserved.",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Contact Support"
+    }
+  }
 }
 
 export default pt;

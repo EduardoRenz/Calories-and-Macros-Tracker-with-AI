@@ -453,6 +453,94 @@ const es = {
     "description": "Añadir a la pantalla de inicio para una mejor experiencia y acceso sin conexión.",
     "install_button": "Instalar App"
   },
+  "landing": {
+    "navbar": {
+      "features": "Características",
+      "benefits": "Beneficios",
+      "pricing": "Precios",
+      "login": "Iniciar Sesión",
+      "start": "Comenzar",
+      "dashboard": "Ir al Panel"
+    },
+    "hero": {
+      "badge": "IA NUTRICIONAL",
+      "title": "Nutrición Inteligente en 1 Minuto",
+      "title_accent": "1 Minuto",
+      "subtitle": "Realiza un seguimiento de tu dieta sin hojas de cálculo complejas. Nuestra IA analiza tus macros y necesidades médicas casi al instante.",
+      "cta_start": "Comenzar Ahora",
+      "cta_dashboard": "Ir al Panel",
+      "cta_how": "Ver Cómo Funciona",
+      "check_no_forms": "Sin cuestionarios largos",
+      "check_setup": "Configuración en 60s",
+      "float_badge_title": "Almuerzo Registrado",
+      "float_badge_desc": "Macros calculados en 1.2s"
+    },
+    "benefits": {
+      "title": "Configuración Rápida, Enfócate en Resultados",
+      "stat_1_title": "60 Segundos",
+      "stat_1_desc": "Salta los formularios interminables. Nuestra incorporación captura solo lo esencial para que la IA empiece a trabajar.",
+      "stat_2_title": "Cero Hojas de Cálculo",
+      "stat_2_desc": "Olvídate del conteo manual de calorías. Toma una foto o escribe tu comida, y nosotros hacemos el resto al instante.",
+      "stat_3_title": "Información Directa",
+      "stat_3_desc": "Recibe comentarios claros sobre lo que importa: tus macros diarios y su adecuación a tus objetivos de salud."
+    },
+    "ai_features": {
+      "eyebrow": "Motor de Inteligencia",
+      "title": "Análisis de Macros en Segundos",
+      "description": "Nuestra IA avanzada está entrenada para reconocer alimentos y porciones, convirtiendo descripciones simples en datos nutricionales precisos sin necesidad de buscar en extensas bases de datos.",
+      "natural_input_title": "Entrada Natural",
+      "natural_input_desc": "Solo di \"Comí 2 huevos revueltos y medio aguacate\" y el sistema lo entiende.",
+      "instant_calc_title": "Cálculo Inmediato",
+      "instant_calc_desc": "Proteínas, carbohidratos y grasas calculados al instante, actualizando tu panel."
+    },
+    "clinical": {
+      "badge": "Salud Clínica",
+      "title": "Enfoque en Condiciones Médicas",
+      "description": "LeveMente va más allá del fitness. Nuestra plataforma está optimizada para ayudar a quienes necesitan un control riguroso debido a condiciones de salud.",
+      "diabetes_title": "Diabetes",
+      "diabetes_desc": "Control preciso del índice glucémico.",
+      "intolerances_title": "Intolerancias",
+      "intolerances_desc": "Alertas automáticas de ingredientes."
+    },
+    "demo": {
+      "title": "Todo lo que necesitas, nada que no necesites",
+      "subtitle": "Diseño limpio y enfocado en la acción. Tu diario de alimentos rediseñado para la velocidad.",
+      "dashboard_title": "Panel Diario",
+      "dashboard_subtitle": "Visión general instantánea de tu progreso.",
+      "dashboard_calories_label": "Calorías",
+      "dashboard_protein_label": "Proteína",
+      "dashboard_carbs_label": "Carbos",
+      "chat_title": "Registro Simple",
+      "chat_subtitle": "Añade comidas como si estuvieras enviando un mensaje.",
+      "chat_prompt": "¿Qué comiste en el almuerzo?",
+      "chat_user_meal": "1 filete de pollo, 2 cucharadas de arroz y ensalada.",
+      "chat_success": "¡Registrado! (350 kcal)",
+      "chat_macros": "30g Prot | 40g Carb | 8g Gord"
+    },
+    "pricing": {
+      "title": "Planes Simples y Transparentes",
+      "subtitle": "Elige el plan ideal para tu viaje de bienestar.",
+      "cta_free": "Comenzar Gratis",
+      "cta_member": "Suscribirse Ahora",
+      "loading": "Cargando planes...",
+      "error": "No pudimos cargar los planes ahora. Inténtalo de nuevo en un momento.",
+      "recommended": "Recomendado"
+    },
+    "cta": {
+      "title": "¿Listo para transformar tu rutina?",
+      "subtitle": "Accede a tu cuenta o crea una ahora en menos de 1 minuto.",
+      "check_instant": "Acceso instantáneo",
+      "check_secure": "Datos seguros y privados",
+      "button": "Comenzar Ahora",
+      "button_dashboard": "Ir al Panel"
+    },
+    "footer": {
+      "copyright": "© 2024 Levemente. All rights reserved.",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Contact Support"
+    }
+  }
 }
 
 export default es;
