@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import MacroProgressCard from '../MacroProgressCard';
+import { LumiIcon } from '../icons';
 
 export const LandingVisualDemo: React.FC = () => {
   const { t } = useTranslation();
@@ -75,27 +76,53 @@ export const LandingVisualDemo: React.FC = () => {
               </div>
             </div>
             <div className="mt-auto bg-surface rounded-xl p-6 shadow-sm border border-surface-variant group-hover:scale-[1.02] transition-transform flex flex-col gap-4">
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-primary text-sm">robot_2</span>
-                </div>
-                <div className="bg-surface-container-low p-3 rounded-2xl rounded-tl-sm text-sm text-on-surface">
-                  {t('landing.demo.chat_prompt')}
-                </div>
-              </div>
               <div className="flex gap-3 justify-end">
                 <div className="bg-primary text-on-primary p-3 rounded-2xl rounded-tr-sm text-sm">
                   {t('landing.demo.chat_user_meal')}
                 </div>
               </div>
-              <div className="flex gap-3 mt-2">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0">
+                  <LumiIcon className="w-full h-full" />
                 </div>
-                <div className="bg-surface-container-low p-3 rounded-2xl rounded-tl-sm text-sm text-on-surface border border-secondary/30">
-                  <span className="font-bold text-secondary block mb-1">{t('landing.demo.chat_success')}</span>
-                  <div className="flex gap-2 text-xs text-on-surface-variant">
-                    <span>{t('landing.demo.chat_macros')}</span>
+                <div className="flex-1 bg-surface rounded-xl p-4 border border-outline-variant/40 shadow-sm">
+                  <h4 className="font-bold text-sm mb-1 text-on-surface">
+                    {t('landing.demo.chat_card_title')}
+                  </h4>
+                  <p className="text-sm text-on-surface-variant mb-3">
+                    {t('landing.demo.chat_card_desc')}
+                  </p>
+                  <div className="bg-surface-container-low rounded-lg p-3 border border-outline-variant/30">
+                    <div className="grid grid-cols-2 gap-2 text-center">
+                      <div>
+                        <p className="text-on-surface-variant text-xs">{t('landing.demo.chat_card_label_protein')}</p>
+                        <p className="font-bold text-brand-protein">{t('landing.demo.chat_card_protein')}</p>
+                      </div>
+                      <div>
+                        <p className="text-on-surface-variant text-xs">{t('landing.demo.chat_card_label_carbs')}</p>
+                        <p className="font-bold text-brand-carbs">{t('landing.demo.chat_card_carbs')}</p>
+                      </div>
+                      <div>
+                        <p className="text-on-surface-variant text-xs">{t('landing.demo.chat_card_label_fats')}</p>
+                        <p className="font-bold text-brand-fats">{t('landing.demo.chat_card_fats')}</p>
+                      </div>
+                      <div>
+                        <p className="text-on-surface-variant text-xs">{t('landing.demo.chat_card_label_fiber')}</p>
+                        <p className="font-bold text-brand-fiber">{t('landing.demo.chat_card_fiber')}</p>
+                      </div>
+                    </div>
+                    <div className="text-center border-t border-outline-variant/30 pt-2 mt-2">
+                      <p className="text-on-surface-variant text-xs">{t('landing.demo.chat_card_label_calories')}</p>
+                      <p className="font-bold text-on-surface text-lg">{t('landing.demo.chat_card_calories')} kcal</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <span className="flex-1 py-2 px-3 rounded-lg bg-surface-container-high text-on-surface text-sm font-semibold text-center opacity-60">
+                      {t('landing.demo.chat_card_cancel')}
+                    </span>
+                    <span className="flex-1 py-2 px-3 rounded-lg bg-primary text-on-primary text-sm font-semibold text-center">
+                      {t('landing.demo.chat_card_confirm')}
+                    </span>
                   </div>
                 </div>
               </div>
