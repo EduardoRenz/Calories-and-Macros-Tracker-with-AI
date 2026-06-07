@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import { ChatBubbleLeftRightIcon, SpeedIcon } from '../icons';
 
 export const LandingAIFeatures: React.FC = () => {
   const { t } = useTranslation();
@@ -64,7 +65,7 @@ export const LandingAIFeatures: React.FC = () => {
             <ul className="space-y-6">
               <li className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center shrink-0 shadow-sm">
-                  <span className="material-symbols-outlined text-primary">chat</span>
+                  <ChatBubbleLeftRightIcon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <h4 className="font-headline font-semibold text-on-surface text-lg">{t('landing.ai_features.natural_input_title')}</h4>
@@ -73,7 +74,7 @@ export const LandingAIFeatures: React.FC = () => {
               </li>
               <li className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center shrink-0 shadow-sm">
-                  <span className="material-symbols-outlined text-primary">speed</span>
+                  <SpeedIcon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <h4 className="font-headline font-semibold text-on-surface text-lg">{t('landing.ai_features.instant_calc_title')}</h4>

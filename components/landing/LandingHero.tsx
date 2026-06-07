@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { KineticButton } from './KineticButton';
+import { BoltIcon, CheckIcon, PlayCircleIcon, CheckCircleIcon, RestaurantMenuIcon } from '../icons';
 
 export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthenticated = false }) => {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
       <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
         <div className="z-10 flex flex-col items-start gap-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-label text-sm font-semibold">
-            <span className="material-symbols-outlined text-sm">bolt</span>
+            <BoltIcon className="w-4 h-4" />
             {t('landing.hero.badge')}
           </div>
           <h1 className="text-5xl lg:text-6xl font-headline font-bold text-primary leading-tight tracking-tight">
@@ -32,19 +33,19 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
           <div className="flex flex-col gap-2">
             <span className="flex items-center gap-3 text-sm text-on-surface-variant font-label">
               <span className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-on-secondary text-sm">check</span>
+                <CheckIcon className="w-4 h-4 text-on-secondary" />
               </span>
               {t('landing.hero.check_auto_macros')}
             </span>
             <span className="flex items-center gap-3 text-sm text-on-surface-variant font-label">
               <span className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-on-secondary text-sm">check</span>
+                <CheckIcon className="w-4 h-4 text-on-secondary" />
               </span>
               {t('landing.hero.check_instant_analysis')}
             </span>
             <span className="flex items-center gap-3 text-sm text-on-surface-variant font-label">
               <span className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-on-secondary text-sm">check</span>
+                <CheckIcon className="w-4 h-4 text-on-secondary" />
               </span>
               {t('landing.hero.check_goals_tracking')}
             </span>
@@ -57,17 +58,17 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
               href="#how-it-works"
               className="flex items-center justify-center gap-2 px-8 py-4 border-2 border-outline-variant text-on-surface font-label font-semibold rounded-full hover:border-primary hover:text-primary transition-colors"
             >
-              <span className="material-symbols-outlined">play_circle</span>
+              <PlayCircleIcon className="w-5 h-5" />
               {t('landing.hero.cta_how')}
             </a>
           </div>
           <div className="flex items-center gap-4 mt-6 text-sm text-on-surface-variant font-label flex-wrap">
             <span className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <CheckCircleIcon className="w-5 h-5 text-secondary" />
               {t('landing.hero.check_no_forms')}
             </span>
             <span className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <CheckCircleIcon className="w-5 h-5 text-secondary" />
               {t('landing.hero.check_setup')}
             </span>
           </div>
@@ -120,7 +121,7 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
           </svg>
           <div className="absolute bottom-8 left-8 glass-card p-4 rounded-2xl flex items-center gap-4 animate-bounce" style={{ animationDuration: '3s' }}>
             <div className="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container">
-              <span className="material-symbols-outlined">restaurant_menu</span>
+              <RestaurantMenuIcon className="w-6 h-6" />
             </div>
             <div>
               <p className="font-label font-bold text-[#191c1d] text-sm">{t('landing.hero.float_badge_title')}</p>

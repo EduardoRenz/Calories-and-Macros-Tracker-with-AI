@@ -277,3 +277,75 @@ export const LumiIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
         <path d="M 38 65 Q 50 74 62 65" stroke="#00E676" strokeWidth="3.5" strokeLinecap="round" fill="none" />
     </svg>
 );
+
+export const EcoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M17.33 2.5c-3.75 0-7.08 2.42-8.33 6-.33 1-.5 2-.5 3 0 .17 0 .33.01.5C5.7 12.55 3 15.62 3 19.5c0 .28.02.55.05.83 2.03-.33 3.78-1.67 4.77-3.38.68.55 1.52.88 2.43.88 2.2 0 4-1.8 4-4v-.5c.22-.09.43-.18.65-.29C17.42 11.19 19 8.55 19 5.5v-1c0-.83-.67-1.5-1.5-1.5H17.33z" />
+    </svg>
+);
+
+export const BoltIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M11 2L3 14h6l-1 8 10-14h-6l1-8z" />
+    </svg>
+);
+
+export const PlayCircleIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+    </svg>
+);
+
+export const RestaurantMenuIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M8.1 13.34l-4.24 4.24c-.2.2-.2.51 0 .71.2.2.51.2.71 0l4.24-4.24-1.43-1.42-.72.71zm7.49-6.51c-1.06-1.06-2.48-1.57-3.89-1.52-.66.02-1.3.19-1.88.47l-4.5 2.6c-.43.25-.43.87 0 1.12l7.29 4.2c.43.25.96.09 1.12-.35l1.34-2.33c.28-.58.45-1.22.47-1.88.05-1.41-.46-2.83-1.52-3.89l.47-.42zM19.5 3.5c-.83 0-1.5.67-1.5 1.5v5.5c0 .28.22.5.5.5s.5-.22.5-.5V7.09c.57.45 1.09.98 1.5 1.58.41.6.71 1.26.88 1.96.06.23.27.38.5.38.16 0 .32-.08.4-.21.18-.3.3-.63.37-.97.17-1.06.06-2.16-.36-3.17-.42-1.01-1.04-1.89-1.84-2.57-.32-.27-.7-.49-1.1-.64-.13-.05-.28-.08-.43-.08z" />
+    </svg>
+);
+
+export const DonutLargeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 2c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8zm0 4c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+    </svg>
+);
+
+export const LockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z" />
+    </svg>
+);
+
+export const WaterDropIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 2c-3.31 0-6 2.69-6 6 0 5.18 5 12 6 12s6-6.82 6-12c0-3.31-2.69-6-6-6zm0 14c-.83 0-1.5-.67-1.5-1.5S11.17 13 12 13s1.5.67 1.5 1.5S12.83 16 12 16z" />
+    </svg>
+);
+
+export const NoMealsIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z" />
+    </svg>
+);
+
+export const SpeedIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 2C6.48 2 2 6.48 2 12c0 2.15.7 4.13 1.87 5.74l1.49-1.49C4.57 15.38 4 13.77 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.77-.57 3.38-1.36 4.75l1.49 1.49C21.3 16.13 22 14.15 22 12c0-5.52-4.48-10-10-10zm.5 5.5v4.17c0 .41-.34.75-.75.75s-.75-.34-.75-.75V7.5c0-.28.22-.5.5-.5s.5.22.5.5zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+    </svg>
+);
+
+export const TimerIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" />
+    </svg>
+);
+
+export const CenterFocusStrongIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-9 5v3c0 1.1.9 2 2 2h3v-2H5v-3H3zM5 5h3V3H5c-1.1 0-2 .9-2 2v3h2V5zm14-2h-3v2h3v3h2V5c0-1.1-.9-2-2-2zm0 14h-3v2h3c1.1 0 2-.9 2-2v-3h-2v3z" />
+    </svg>
+);
+
+export const InsightsIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M21 8c-1.45 0-2.26 1.44-1.93 2.51l-3.55 3.56c-.3-.08-.68-.08-1 0l-2.55-2.55c.36-.66.09-1.53-.55-1.93-.64-.4-1.49-.17-1.93.55l-3.62 3.62.1-.08C5.37 14.76 5 15.53 5 16.38c0 .9.5 1.68 1.23 2.08.73.4 1.63.34 2.3-.17l4.23-4.23c.3.08.68.08 1 0l2.55 2.55c-.36.66-.09 1.53.55 1.93.64.4 1.49.17 1.93-.55l3.55-3.56C22.56 13.26 24 12.45 24 11c0-1.66-1.34-3-3-3zM7 20c-1.66 0-3 1.34-3 3h14c0-1.66-1.34-3-3-3H7z" />
+    </svg>
+);

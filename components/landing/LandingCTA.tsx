@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { KineticButton } from './KineticButton';
+import { BoltIcon, LockIcon } from '../icons';
 
 export const LandingCTA: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthenticated = false }) => {
   const { t } = useTranslation();
@@ -22,11 +23,11 @@ export const LandingCTA: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthenti
             </p>
             <div className="hidden md:block">
               <div className="flex items-center gap-4 text-sm font-label text-on-surface-variant mb-2">
-                <span className="material-symbols-outlined text-secondary text-lg">bolt</span>
+                <BoltIcon className="w-5 h-5 text-secondary" />
                 {t('landing.cta.check_instant')}
               </div>
               <div className="flex items-center gap-4 text-sm font-label text-on-surface-variant">
-                <span className="material-symbols-outlined text-secondary text-lg">lock</span>
+                <LockIcon className="w-5 h-5 text-secondary" />
                 {t('landing.cta.check_secure')}
               </div>
             </div>

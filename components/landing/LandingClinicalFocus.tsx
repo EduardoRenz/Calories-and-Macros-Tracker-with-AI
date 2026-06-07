@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
+import { WaterDropIcon, NoMealsIcon } from '../icons';
 
 export const LandingClinicalFocus: React.FC = () => {
   const { t } = useTranslation();
@@ -23,12 +24,12 @@ export const LandingClinicalFocus: React.FC = () => {
               </p>
               <div className="grid grid-cols-2 gap-4 mt-8">
                 <div className="bg-surface p-4 rounded-2xl shadow-sm border border-surface-variant">
-                  <span className="material-symbols-outlined text-secondary mb-2 text-3xl">water_drop</span>
+                  <WaterDropIcon className="w-8 h-8 text-secondary mb-2" />
                   <h4 className="font-label font-bold text-on-surface">{t('landing.clinical.diabetes_title')}</h4>
                   <p className="text-xs text-on-surface-variant mt-1">{t('landing.clinical.diabetes_desc')}</p>
                 </div>
                 <div className="bg-surface p-4 rounded-2xl shadow-sm border border-surface-variant">
-                  <span className="material-symbols-outlined text-secondary mb-2 text-3xl">no_meals</span>
+                  <NoMealsIcon className="w-8 h-8 text-secondary mb-2" />
                   <h4 className="font-label font-bold text-on-surface">{t('landing.clinical.intolerances_title')}</h4>
                   <p className="text-xs text-on-surface-variant mt-1">{t('landing.clinical.intolerances_desc')}</p>
                 </div>

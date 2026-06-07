@@ -4,7 +4,7 @@ import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useTranslation } from '../../hooks/useTranslation';
 import MacroProgressCard from '../MacroProgressCard';
-import { LumiIcon } from '../icons';
+import { LumiIcon, DonutLargeIcon, EditIcon } from '../icons';
 
 const CHART_DATA = [
   { name: 'Protein', value: 120, color: 'var(--brand-protein)' },
@@ -34,7 +34,7 @@ export const LandingVisualDemo: React.FC = () => {
                 <p className="text-on-surface-variant mt-2">{t('landing.demo.dashboard_subtitle')}</p>
               </div>
               <div className="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container">
-                <span className="material-symbols-outlined">donut_large</span>
+                <DonutLargeIcon className="w-6 h-6" />
               </div>
             </div>
             <div className="mt-auto bg-surface rounded-xl p-6 shadow-sm border border-surface-variant group-hover:scale-[1.02] transition-transform">
@@ -110,7 +110,7 @@ export const LandingVisualDemo: React.FC = () => {
                 <p className="text-on-surface-variant mt-2">{t('landing.demo.chat_subtitle')}</p>
               </div>
               <div className="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container">
-                <span className="material-symbols-outlined">edit_note</span>
+                <EditIcon className="w-6 h-6" />
               </div>
             </div>
             <div className="mt-auto bg-surface rounded-xl p-6 shadow-sm border border-surface-variant group-hover:scale-[1.02] transition-transform flex flex-col gap-4">
