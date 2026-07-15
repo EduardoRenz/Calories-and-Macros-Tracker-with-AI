@@ -15,7 +15,7 @@ export const LandingCTA: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthenti
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         <div className="bg-surface rounded-[3rem] p-10 md:p-16 shadow-lg border border-outline-variant/20 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-headline font-bold text-primary mb-4">
+            <h2 className="text-3xl font-headline-landing font-bold text-primary mb-4">
               {t('landing.cta.title')}
             </h2>
             <p className="text-on-surface-variant mb-8">

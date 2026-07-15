@@ -16,7 +16,7 @@ export const LandingClinicalFocus: React.FC = () => {
               <span className="inline-block py-1 px-3 rounded-full bg-error-container text-on-error-container font-label text-xs font-bold mb-4">
                 {t('landing.clinical.badge')}
               </span>
-              <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-6">
+              <h2 className="text-3xl md:text-4xl font-headline-landing font-bold text-primary mb-6">
                 {t('landing.clinical.title')}
               </h2>
               <p className="text-lg text-on-surface-variant mb-6 leading-relaxed">
@@ -80,7 +80,7 @@ export const LandingClinicalFocus: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="absolute -bottom-24 -right-24 text-[300px] text-surface font-headline font-black opacity-40 select-none pointer-events-none">
+          <div className="absolute -bottom-24 -right-24 text-[300px] text-surface font-headline-landing font-black opacity-40 select-none pointer-events-none">
             +
           </div>
         </div>

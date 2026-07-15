@@ -23,7 +23,7 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
             <BoltIcon className="w-4 h-4" />
             {t('landing.hero.badge')}
           </div>
-          <h1 className="text-5xl lg:text-6xl font-headline font-bold text-primary leading-tight tracking-tight">
+          <h1 className="text-5xl lg:text-6xl font-headline-landing font-bold text-primary leading-tight tracking-tight">
             {heroPrefix}
             <span className="text-secondary">{heroAccent}</span>
           </h1>

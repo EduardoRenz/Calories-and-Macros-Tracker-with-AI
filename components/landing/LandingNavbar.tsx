@@ -33,7 +33,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
         <Link
           href="/"
-          className="text-headline-md font-headline font-bold text-primary dark:text-primary-fixed flex items-center gap-2 shrink-0"
+          className="text-headline-md font-headline-landing font-bold text-primary dark:text-primary-fixed flex items-center gap-2 shrink-0"
         >
           <EcoIcon className="w-6 h-6" />
           Levemente

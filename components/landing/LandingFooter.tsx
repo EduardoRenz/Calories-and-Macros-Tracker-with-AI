@@ -17,7 +17,7 @@ export const LandingFooter: React.FC = () => {
         <div className="flex items-center gap-3">
           <EcoIcon className="w-8 h-8 text-primary" aria-hidden="true" />
           <div>
-            <p className="font-headline font-bold text-primary text-lg leading-none">
+            <p className="font-headline-landing font-bold text-primary text-lg leading-none">
               Levemente
             </p>
             <p className="text-on-surface-variant text-xs mt-1">

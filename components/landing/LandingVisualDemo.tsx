@@ -19,7 +19,7 @@ export const LandingVisualDemo: React.FC = () => {
     <section className="py-24 bg-surface" id="features">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">
+          <h2 className="text-3xl md:text-4xl font-headline-landing font-bold text-primary mb-4">
             {t('landing.demo.title')}
           </h2>
           <p className="text-lg text-on-surface-variant max-w-2xl mx-auto">
@@ -30,7 +30,7 @@ export const LandingVisualDemo: React.FC = () => {
           <div className="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h3 className="text-2xl font-headline font-bold text-on-surface">{t('landing.demo.dashboard_title')}</h3>
+                <h3 className="text-2xl font-headline-landing font-bold text-on-surface">{t('landing.demo.dashboard_title')}</h3>
                 <p className="text-on-surface-variant mt-2">{t('landing.demo.dashboard_subtitle')}</p>
               </div>
               <div className="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container">
@@ -60,7 +60,7 @@ export const LandingVisualDemo: React.FC = () => {
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                     <span className="text-[10px] text-on-surface-variant font-label">Total</span>
-                    <span className="text-lg font-headline font-bold text-on-surface">1.350</span>
+                    <span className="text-lg font-headline-landing font-bold text-on-surface">1.350</span>
                     <span className="text-[10px] text-on-surface-variant font-label">kcal</span>
                   </div>
                 </div>
@@ -106,7 +106,7 @@ export const LandingVisualDemo: React.FC = () => {
           <div className="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h3 className="text-2xl font-headline font-bold text-on-surface">{t('landing.demo.chat_title')}</h3>
+                <h3 className="text-2xl font-headline-landing font-bold text-on-surface">{t('landing.demo.chat_title')}</h3>
                 <p className="text-on-surface-variant mt-2">{t('landing.demo.chat_subtitle')}</p>
               </div>
               <div className="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container">

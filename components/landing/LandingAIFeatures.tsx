@@ -56,7 +56,7 @@ export const LandingAIFeatures: React.FC = () => {
             <span className="text-secondary font-label font-bold tracking-wider uppercase text-sm mb-2 block">
               {t('landing.ai_features.eyebrow')}
             </span>
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-6">
+            <h2 className="text-3xl md:text-4xl font-headline-landing font-bold text-primary mb-6">
               {t('landing.ai_features.title')}
             </h2>
             <p className="text-lg text-on-surface-variant mb-8 leading-relaxed">
@@ -68,7 +68,7 @@ export const LandingAIFeatures: React.FC = () => {
                   <ChatBubbleLeftRightIcon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-headline font-semibold text-on-surface text-lg">{t('landing.ai_features.natural_input_title')}</h4>
+                  <h4 className="font-headline-landing font-semibold text-on-surface text-lg">{t('landing.ai_features.natural_input_title')}</h4>
                   <p className="text-on-surface-variant mt-1">{t('landing.ai_features.natural_input_desc')}</p>
                 </div>
               </li>
@@ -77,7 +77,7 @@ export const LandingAIFeatures: React.FC = () => {
                   <SpeedIcon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-headline font-semibold text-on-surface text-lg">{t('landing.ai_features.instant_calc_title')}</h4>
+                  <h4 className="font-headline-landing font-semibold text-on-surface text-lg">{t('landing.ai_features.instant_calc_title')}</h4>
                   <p className="text-on-surface-variant mt-1">{t('landing.ai_features.instant_calc_desc')}</p>
                 </div>
               </li>
