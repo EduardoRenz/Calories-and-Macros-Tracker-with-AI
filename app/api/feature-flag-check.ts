@@ -84,6 +84,20 @@ async function checkFeatureAccess(
     return null;
 }
 
+async function resolvePremiumAccess(authHeader: string | null): Promise<{ isPremium: boolean; response: NextResponse | null }> {
+    const premiumCheck = await checkPremiumAccess(authHeader);
+
+    if (premiumCheck === null) {
+        return { isPremium: true, response: null };
+    }
+
+    if (premiumCheck.status !== 403) {
+        return { isPremium: false, response: premiumCheck };
+    }
+
+    return { isPremium: false, response: null };
+}
+
 /**
  * Main AI access check function.
  * Checks the AI_ACCESS_MODE and returns appropriate response.
@@ -115,7 +129,8 @@ export async function checkAiAccess(
         if (featureName) {
             try {
                 const user = await verifyAuth(authHeader);
-                const isPremium = (await checkPremiumAccess(authHeader)) === null;
+                const { isPremium, response } = await resolvePremiumAccess(authHeader);
+                if (response) return response;
                 const featureCheck = await checkFeatureAccess(featureName, user.uid, isPremium);
                 if (featureCheck) return featureCheck;
             } catch {
@@ -129,8 +144,11 @@ export async function checkAiAccess(
     let isPremium: boolean;
     try {
         await verifyAuth(authHeader);
-        // checkPremiumAccess returns null if premium, response if not
-        isPremium = (await checkPremiumAccess(authHeader)) === null;
+        const premiumResult = await resolvePremiumAccess(authHeader);
+        if (premiumResult.response) {
+            return premiumResult.response;
+        }
+        isPremium = premiumResult.isPremium;
     } catch {
         return NextResponse.json(
             { error: 'Authentication required' },

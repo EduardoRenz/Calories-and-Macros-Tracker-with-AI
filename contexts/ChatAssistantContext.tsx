@@ -256,6 +256,9 @@ export const ChatAssistantProvider: React.FC<{ children: React.ReactNode }> = ({
                 let errorMessage = t('assistant.action_error');
                 let role: 'assistant' | 'system' = 'system';
 
+                if (message.includes('contact support') || message.includes('internal configuration error')) {
+                    errorMessage = message;
+                } else
                 if (message.includes('Premium') || message.includes('premium') || 
                     message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
                     
