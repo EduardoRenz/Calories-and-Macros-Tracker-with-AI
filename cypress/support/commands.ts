@@ -34,7 +34,10 @@ Cypress.Commands.add('login', (profileState = 'false') => {
       win.sessionStorage.setItem('mock_use_incomplete_profile', profileState);
     },
   });
-  cy.url().should('include', 'login');
+  // Landing Page is rendered at '/' for unauthenticated users.
+  // Follow the first available "Login" link/button to reach the /login route.
+  cy.get('a[href="/login"]', { timeout: 10000 }).first().click();
+  cy.url().should('include', '/login');
   cy.contains('Sign in with Google').click();
 })
 

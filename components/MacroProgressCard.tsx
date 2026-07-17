@@ -7,17 +7,20 @@ interface MacroProgressCardProps {
   goal: number;
   unit: string;
   color: string;
+  className?: string;
+  testId?: string;
 }
 
-const MacroProgressCard: React.FC<MacroProgressCardProps> = ({ title, current, goal, unit, color }) => {
+const MacroProgressCard: React.FC<MacroProgressCardProps> = ({ title, current, goal, unit, color, className, testId }) => {
   const percentage = goal > 0 ? (current / goal) * 100 : 0;
+  const goalTestId = testId ?? `macro-goal-${title.toLowerCase()}`;
 
   return (
-    <div className="bg-neutral-card p-6 rounded-2xl">
+    <div className={`bg-neutral-card p-6 rounded-2xl${className ? ` ${className}` : ''}`}>
       <div className="flex justify-between items-baseline mb-3">
         <h3 className="font-bold text-neutral-text-primary">{title}</h3>
         <p className="text-sm text-neutral-text-secondary">
-          <span className="font-semibold text-neutral-text-primary">{current}</span> / <span data-testid={`macro-goal-${title.toLowerCase()}`}>{goal}</span> {unit}
+          <span className="font-semibold text-neutral-text-primary">{current}</span> / <span data-testid={goalTestId}>{goal}</span> {unit}
         </p>
       </div>
       <div className="w-full bg-neutral-panel h-2.5 rounded-full">

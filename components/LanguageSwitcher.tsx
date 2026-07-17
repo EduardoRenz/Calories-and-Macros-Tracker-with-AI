@@ -5,7 +5,11 @@ import { useLanguage, Language } from '../contexts/LanguageContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { BaseSwitcher, SwitcherOption } from './ui/BaseSwitcher';
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+    showBorder?: boolean;
+}
+
+export default function LanguageSwitcher({ showBorder = true }: LanguageSwitcherProps) {
     const { language, setLanguage } = useLanguage();
     const { t } = useTranslation();
 
@@ -25,6 +29,7 @@ export default function LanguageSwitcher() {
             options={options}
             selectedValue={language}
             onChange={(value) => setLanguage(value)}
+            showBorder={showBorder}
         />
     );
 }

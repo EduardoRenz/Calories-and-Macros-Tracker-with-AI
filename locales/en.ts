@@ -458,6 +458,116 @@ const en = {
     "description": "Add to home screen for a better experience and offline access.",
     "install_button": "Install App"
   },
+  "landing": {
+    "navbar": {
+      "features": "Features",
+      "benefits": "Benefits",
+      "pricing": "Pricing",
+      "login": "Login",
+      "start": "Get Started",
+      "dashboard": "Go to Dashboard"
+    },
+    "hero": {
+      "badge": "AI NUTRITION",
+      "title": "Smart Nutrition in 1 Minute",
+      "title_accent": "1 Minute",
+      "subtitle": "Your smart macronutrient calculator that does the heavy lifting for you.",
+      "cta_start": "Start Now",
+      "cta_dashboard": "Go to Dashboard",
+      "cta_how": "See How It Works",
+      "check_auto_macros": "Automatic macro and calorie calculation via AI",
+      "check_instant_analysis": "Instant meal analysis by text or photo",
+      "check_goals_tracking": "Focused tracking on your goals and medical conditions",
+      "check_no_forms": "No lengthy questionnaires",
+      "check_setup": "Setup in 60s",
+      "float_badge_title": "Lunch Logged",
+      "float_badge_desc": "Macros calculated in 1.2s",
+      "tab_dashboard": "Dashboard",
+      "tab_chat": "AI Chat",
+      "mock_chat_1": "Hi! What did you eat today?",
+      "mock_chat_2": "Grilled chicken 200g and brown rice",
+      "mock_chat_3": "✅ Added to lunch! 630 kcal, 48g of protein.",
+      "mock_chat_placeholder": "Describe your meal..."
+    },
+    "benefits": {
+      "title": "Quick Setup, Focus on Results",
+      "stat_1_title": "60 Seconds",
+      "stat_1_desc": "Skip the endless forms. Our onboarding captures only what's essential for the AI to start working.",
+      "stat_2_title": "Zero Spreadsheets",
+      "stat_2_desc": "Forget manual calorie counting. Take a photo or type your meal, and we handle the rest instantly.",
+      "stat_3_title": "Direct Insights",
+      "stat_3_desc": "Get clear feedback on what matters: your daily macros and how they align with your health goals."
+    },
+    "ai_features": {
+      "eyebrow": "Intelligence Engine",
+      "title": "Macro Analysis in Seconds",
+      "description": "Our advanced AI is trained to recognize foods and portions, turning simple descriptions into accurate nutritional data without the need to search through extensive databases.",
+      "natural_input_title": "Natural Input",
+      "natural_input_desc": "Just say \"I ate 2 scrambled eggs and half an avocado\" and the system understands.",
+      "instant_calc_title": "Instant Calculation",
+      "instant_calc_desc": "Proteins, carbs, and fats calculated on the spot, updating your dashboard immediately."
+    },
+    "clinical": {
+      "badge": "Clinical Health",
+      "title": "Focus on Medical Conditions",
+      "description": "LeveMente goes beyond fitness. Our platform is optimized to help those who need rigorous control due to health conditions.",
+      "diabetes_title": "Diabetes",
+      "diabetes_desc": "Precise glycemic index control.",
+      "intolerances_title": "Intolerances",
+      "intolerances_desc": "Automatic ingredient alerts."
+    },
+    "demo": {
+      "title": "Everything you need, nothing you don't",
+      "subtitle": "Clean design focused on action. Your food diary reimagined for speed.",
+      "dashboard_title": "Daily Dashboard",
+      "dashboard_subtitle": "Instant overview of your progress.",
+      "dashboard_calories_label": "Calories",
+      "dashboard_protein_label": "Protein",
+      "dashboard_carbs_label": "Carbs",
+      "dashboard_fats_label": "Fats",
+      "dashboard_fiber_label": "Fiber",
+      "chat_title": "Simple Logging",
+      "chat_subtitle": "Add meals like you're sending a message.",
+      "chat_user_meal": "Add 1 chicken fillet, 2 scoops of rice and salad to my lunch.",
+      "chat_card_title": "Confirm Meal",
+      "chat_card_desc": "1 chicken fillet, 2 scoops of rice and salad",
+      "chat_card_confirm": "Confirm",
+      "chat_card_cancel": "Cancel",
+      "chat_card_protein": "30g",
+      "chat_card_carbs": "40g",
+      "chat_card_fats": "8g",
+      "chat_card_fiber": "2g",
+      "chat_card_calories": "350",
+      "chat_card_label_protein": "Protein",
+      "chat_card_label_carbs": "Carbs",
+      "chat_card_label_fats": "Fats",
+      "chat_card_label_fiber": "Fiber",
+      "chat_card_label_calories": "Calories"
+    },
+    "pricing": {
+      "title": "Simple and Transparent Plans",
+      "subtitle": "Choose the ideal plan for your wellness journey.",
+      "cta_free": "Start Free",
+      "cta_member": "Subscribe Now",
+      "loading": "Loading plans...",
+      "error": "We couldn't load the plans right now. Please try again in a moment.",
+      "recommended": "Recommended"
+    },
+    "cta": {
+      "title": "Ready to transform your routine?",
+      "subtitle": "Access your account or create one right now.",
+      "check_instant": "Instant access",
+      "check_secure": "Secure and private data",
+      "button": "Start Now",
+      "button_dashboard": "Go to Dashboard"
+    },
+    "footer": {
+      "copyright": "© 2024 Levemente. All rights reserved.",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Contact Support"
+    }
+  }
 };
 
 export default en;

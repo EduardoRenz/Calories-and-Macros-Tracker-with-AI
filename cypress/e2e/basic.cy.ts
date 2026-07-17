@@ -1,17 +1,23 @@
 
 describe('Basic Application Flow', () => {
-  it('should show login page when not authenticated', () => {
+  const loginFromLanding = () => {
     cy.visit('/');
-    // Should be on login page
+    // Landing Page is rendered at '/' for unauthenticated users.
+    cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should('be.visible');
+    // Follow a CTA to reach /login.
+    cy.get('a[href="/login"]').first().click();
     cy.url().should('include', '/login');
-    cy.contains('Sign in with Google');
+    cy.contains('Sign in with Google').click();
+  };
+
+  it('should show landing page when not authenticated', () => {
+    cy.visit('/');
+    // Should be on landing page, not /login.
+    cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should('be.visible');
   });
 
   it('should allow login with mock credentials', () => {
-    cy.visit('/');
-    
-    // Click the "Sign in with Google" button
-    cy.contains('Sign in with Google').click();
+    loginFromLanding();
 
     // The app should redirect to dashboard
     cy.url().should('include', '/dashboard');
@@ -25,8 +31,7 @@ describe('Basic Application Flow', () => {
   });
 
   it('should navigate to different pages and update URL', () => {
-    cy.visit('/');
-    cy.contains('Sign in with Google').click();
+    loginFromLanding();
     
     // Should be at dashboard
     cy.url().should('include', '/dashboard');

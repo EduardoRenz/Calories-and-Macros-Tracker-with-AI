@@ -5,7 +5,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import { BaseSwitcher, SwitcherOption } from './ui/BaseSwitcher';
 
-export default function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+    showBorder?: boolean;
+}
+
+export default function ThemeSwitcher({ showBorder = true }: ThemeSwitcherProps) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const { t } = useTranslation();
@@ -57,6 +61,7 @@ export default function ThemeSwitcher() {
             options={options}
             selectedValue={theme || 'system'}
             onChange={(value) => setTheme(value)}
+            showBorder={showBorder}
         />
     );
 }
