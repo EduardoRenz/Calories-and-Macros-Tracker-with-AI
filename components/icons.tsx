@@ -278,12 +278,6 @@ export const LumiIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     </svg>
 );
 
-export const EcoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path d="M17.33 2.5c-3.75 0-7.08 2.42-8.33 6-.33 1-.5 2-.5 3 0 .17 0 .33.01.5C5.7 12.55 3 15.62 3 19.5c0 .28.02.55.05.83 2.03-.33 3.78-1.67 4.77-3.38.68.55 1.52.88 2.43.88 2.2 0 4-1.8 4-4v-.5c.22-.09.43-.18.65-.29C17.42 11.19 19 8.55 19 5.5v-1c0-.83-.67-1.5-1.5-1.5H17.33z" />
-    </svg>
-);
-
 export const BoltIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
         <path d="M11 2L3 14h6l-1 8 10-14h-6l1-8z" />

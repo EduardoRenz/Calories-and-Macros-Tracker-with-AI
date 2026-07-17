@@ -476,7 +476,13 @@ const es = {
       "check_no_forms": "Sin cuestionarios largos",
       "check_setup": "Configuración en 60s",
       "float_badge_title": "Almuerzo Registrado",
-      "float_badge_desc": "Macros calculados en 1.2s"
+      "float_badge_desc": "Macros calculados en 1.2s",
+      "tab_dashboard": "Dashboard",
+      "tab_chat": "Chat IA",
+      "mock_chat_1": "¡Hola! ¿Qué comiste hoy?",
+      "mock_chat_2": "Pollo a la plancha 200g y arroz integral",
+      "mock_chat_3": "✅ ¡Agregado al almuerzo! 630 kcal, 48g de proteína.",
+      "mock_chat_placeholder": "Describe tu comida..."
     },
     "benefits": {
       "title": "Configuración Rápida, Enfócate en Resultados",

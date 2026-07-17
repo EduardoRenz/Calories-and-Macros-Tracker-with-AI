@@ -6,7 +6,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import LanguageSwitcher from '../LanguageSwitcher';
 import ThemeSwitcher from '../ThemeSwitcher';
 import { KineticButton } from './KineticButton';
-import { EcoIcon, SettingsIcon, MenuIcon, XMarkIcon } from '../icons';
+import { SettingsIcon, MenuIcon, XMarkIcon } from '../icons';
 
 interface LandingNavbarProps {
   isAuthenticated?: boolean;
@@ -35,7 +35,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
           href="/"
           className="text-headline-md font-headline-landing font-bold text-primary dark:text-primary-fixed flex items-center gap-2 shrink-0"
         >
-          <EcoIcon className="w-6 h-6" />
+          <img src="/Icon.svg" alt="Levemente Logo" className="w-6 h-6 object-contain" />
           Levemente
         </Link>
 

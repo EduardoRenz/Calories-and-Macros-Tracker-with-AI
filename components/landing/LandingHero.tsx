@@ -3,7 +3,8 @@
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { KineticButton } from './KineticButton';
-import { BoltIcon, CheckIcon, PlayCircleIcon, CheckCircleIcon, RestaurantMenuIcon } from '../icons';
+import { BoltIcon, CheckIcon, PlayCircleIcon, CheckCircleIcon } from '../icons';
+import { HeroAppPreview } from './HeroAppPreview';
 
 export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthenticated = false }) => {
   const { t } = useTranslation();
@@ -74,60 +75,7 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
           </div>
         </div>
         <div className="relative z-10 w-full h-[500px] lg:h-[600px] rounded-[3rem] overflow-hidden shadow-2xl bg-gradient-to-br from-primary-container via-surface to-secondary-container flex items-center justify-center">
-          <svg
-            role="img"
-            aria-label="Levemente app dashboard preview"
-            viewBox="0 0 280 520"
-            className="h-[92%] w-auto drop-shadow-2xl"
-          >
-            <defs>
-              <linearGradient id="phone-bezel" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="var(--primary, #006664)" />
-                <stop offset="100%" stopColor="var(--secondary, #00bd7b)" />
-              </linearGradient>
-              <linearGradient id="phone-screen" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--surface-container-lowest, #ffffff)" />
-                <stop offset="100%" stopColor="var(--surface-container, #eceeee)" />
-              </linearGradient>
-            </defs>
-            <rect x="6" y="6" width="268" height="508" rx="42" ry="42" fill="url(#phone-bezel)" />
-            <rect x="18" y="22" width="244" height="476" rx="32" ry="32" fill="url(#phone-screen)" />
-            <rect x="110" y="34" width="60" height="14" rx="7" ry="7" fill="var(--on-surface, #191c1d)" opacity="0.85" />
-            <rect x="34" y="68" width="80" height="10" rx="5" fill="var(--on-surface-variant, #3e4948)" opacity="0.5" />
-            <rect x="34" y="86" width="140" height="20" rx="6" fill="var(--on-surface, #191c1d)" />
-            <g transform="translate(140 188)">
-              <circle r="60" fill="none" stroke="var(--surface-variant, #e1e3e3)" strokeWidth="10" />
-              <circle r="60" fill="none" stroke="var(--secondary, #00bd7b)" strokeWidth="10" strokeLinecap="round" strokeDasharray="283 377" transform="rotate(-90)" />
-              <text textAnchor="middle" y="6" fontSize="22" fontWeight="700" fill="var(--on-surface, #191c1d)">75%</text>
-              <text textAnchor="middle" y="26" fontSize="9" fill="var(--on-surface-variant, #3e4948)">Calories</text>
-            </g>
-            <rect x="34" y="276" width="212" height="44" rx="14" fill="var(--surface-container, #eceeee)" />
-            <rect x="44" y="288" width="80" height="8" rx="4" fill="var(--on-surface, #191c1d)" />
-            <rect x="44" y="302" width="40" height="6" rx="3" fill="var(--on-surface-variant, #3e4948)" opacity="0.6" />
-            <rect x="148" y="290" width="86" height="6" rx="3" fill="var(--surface-variant, #e1e3e3)" />
-            <rect x="148" y="290" width="68" height="6" rx="3" fill="var(--brand-protein, #ef4444)" />
-            <rect x="34" y="332" width="212" height="44" rx="14" fill="var(--surface-container, #eceeee)" />
-            <rect x="44" y="344" width="60" height="8" rx="4" fill="var(--on-surface, #191c1d)" />
-            <rect x="44" y="358" width="40" height="6" rx="3" fill="var(--on-surface-variant, #3e4948)" opacity="0.6" />
-            <rect x="148" y="346" width="86" height="6" rx="3" fill="var(--surface-variant, #e1e3e3)" />
-            <rect x="148" y="346" width="52" height="6" rx="3" fill="var(--brand-carbs, #ff8c42)" />
-            <rect x="34" y="388" width="212" height="44" rx="14" fill="var(--surface-container, #eceeee)" />
-            <rect x="44" y="400" width="50" height="8" rx="4" fill="var(--on-surface, #191c1d)" />
-            <rect x="44" y="414" width="40" height="6" rx="3" fill="var(--on-surface-variant, #3e4948)" opacity="0.6" />
-            <rect x="148" y="402" width="86" height="6" rx="3" fill="var(--surface-variant, #e1e3e3)" />
-            <rect x="148" y="402" width="35" height="6" rx="3" fill="var(--brand-fats, #ffc107)" />
-            <rect x="34" y="450" width="212" height="32" rx="16" fill="var(--primary, #006664)" />
-            <rect x="118" y="461" width="44" height="10" rx="5" fill="var(--on-primary, #ffffff)" />
-          </svg>
-          <div className="absolute bottom-8 left-8 glass-card p-4 rounded-2xl flex items-center gap-4 animate-bounce" style={{ animationDuration: '3s' }}>
-            <div className="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container">
-              <RestaurantMenuIcon className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="font-label font-bold text-[#191c1d] text-sm">{t('landing.hero.float_badge_title')}</p>
-              <p className="font-body text-xs text-[#3e4948]">{t('landing.hero.float_badge_desc')}</p>
-            </div>
-          </div>
+          <HeroAppPreview />
         </div>
       </div>
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-fixed-dim/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>

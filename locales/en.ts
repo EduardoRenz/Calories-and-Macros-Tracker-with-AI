@@ -481,7 +481,13 @@ const en = {
       "check_no_forms": "No lengthy questionnaires",
       "check_setup": "Setup in 60s",
       "float_badge_title": "Lunch Logged",
-      "float_badge_desc": "Macros calculated in 1.2s"
+      "float_badge_desc": "Macros calculated in 1.2s",
+      "tab_dashboard": "Dashboard",
+      "tab_chat": "AI Chat",
+      "mock_chat_1": "Hi! What did you eat today?",
+      "mock_chat_2": "Grilled chicken 200g and brown rice",
+      "mock_chat_3": "✅ Added to lunch! 630 kcal, 48g of protein.",
+      "mock_chat_placeholder": "Describe your meal..."
     },
     "benefits": {
       "title": "Quick Setup, Focus on Results",

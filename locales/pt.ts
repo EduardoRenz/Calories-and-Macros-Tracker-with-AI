@@ -481,7 +481,13 @@ const pt = {
       "check_no_forms": "Sem questionários longos",
       "check_setup": "Setup em 60s",
       "float_badge_title": "Almoço Registrado",
-      "float_badge_desc": "Macros calculados em 1.2s"
+      "float_badge_desc": "Macros calculados em 1.2s",
+      "tab_dashboard": "Dashboard",
+      "tab_chat": "Chat IA",
+      "mock_chat_1": "Olá! O que você comeu hoje?",
+      "mock_chat_2": "Frango grelhado 200g e arroz integral",
+      "mock_chat_3": "✅ Adicionado ao almoço! 630 kcal, 48g de proteína.",
+      "mock_chat_placeholder": "Descreva sua refeição..."
     },
     "benefits": {
       "title": "Setup Rápido, Foco nos Resultados",
