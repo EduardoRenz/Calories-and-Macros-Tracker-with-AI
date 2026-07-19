@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { KineticButton } from './KineticButton';
-import { BoltIcon, CheckIcon, PlayCircleIcon, CheckCircleIcon } from '../icons';
+import { BoltIcon, CheckIcon, CheckCircleIcon } from '../icons';
 import { HeroAppPreview } from './HeroAppPreview';
 
 export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthenticated = false }) => {
@@ -55,6 +55,7 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
             <KineticButton href={primaryCtaHref} size="md">
               {primaryCtaLabel}
             </KineticButton>
+            {/*
             <a
               href="#how-it-works"
               className="flex items-center justify-center gap-2 px-8 py-4 border-2 border-outline-variant text-on-surface font-label font-semibold rounded-full hover:border-primary hover:text-primary transition-colors"
@@ -62,6 +63,7 @@ export const LandingHero: React.FC<{ isAuthenticated?: boolean }> = ({ isAuthent
               <PlayCircleIcon className="w-5 h-5" />
               {t('landing.hero.cta_how')}
             </a>
+            */}
           </div>
           <div className="flex items-center gap-4 mt-6 text-sm text-on-surface-variant font-label flex-wrap">
             <span className="flex items-center gap-1">

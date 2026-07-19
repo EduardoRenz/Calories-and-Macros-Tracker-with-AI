@@ -16,7 +16,7 @@ describe("Landing Page", () => {
       cy.contains("AI NUTRITION").should("be.visible")
       cy.contains("Smart Nutrition in").should("be.visible")
       cy.contains("Start Now").should("be.visible")
-      cy.contains("See How It Works").should("be.visible")
+      // cy.contains("See How It Works").should("be.visible")
       cy.get("span.material-symbols-outlined").contains("restaurant_menu").should("be.visible")
     })
 
@@ -92,11 +92,13 @@ describe("Landing Page", () => {
       cy.get("section#pricing", { timeout: 10000 }).should("be.visible")
     })
 
+    /*
     it("should scroll to #how-it-works when clicking the hero secondary CTA", () => {
       cy.visit("/")
       cy.contains("See How It Works").click()
       cy.get("section#how-it-works").should("be.visible")
     })
+    */
   })
 
   describe("CTA button redirects", () => {
