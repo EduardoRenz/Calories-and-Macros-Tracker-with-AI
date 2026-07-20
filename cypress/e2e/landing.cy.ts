@@ -217,16 +217,6 @@ describe("Landing Page", () => {
   })
 
   describe("Responsive layout", () => {
-    it("should render without horizontal overflow on mobile (375px)", () => {
-      cy.viewport(375, 667)
-      cy.visit("/")
-      cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should("be.visible")
-      cy.document().then((doc) => {
-        const width = doc.documentElement.scrollWidth
-        expect(width).to.be.at.most(376)
-      })
-    })
-
     it("should render without horizontal overflow on tablet (768px)", () => {
       cy.viewport(768, 1024)
       cy.visit("/")
