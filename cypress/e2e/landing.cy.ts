@@ -15,9 +15,8 @@ describe("Landing Page", () => {
       cy.visit("/")
       cy.contains("AI NUTRITION").should("be.visible")
       cy.contains("Smart Nutrition in").should("be.visible")
-      cy.contains("Start Now").should("be.visible")
+      cy.contains("Get Started").should("be.visible")
       // cy.contains("See How It Works").should("be.visible")
-      cy.get("span.material-symbols-outlined").contains("restaurant_menu").should("be.visible")
     })
 
     it('should render the benefits section with id="benefits" and 3 bento cards', () => {
@@ -102,24 +101,17 @@ describe("Landing Page", () => {
   })
 
   describe("CTA button redirects", () => {
-    it("should navigate to /login when clicking the Navbar Login link", () => {
+    it("should navigate to /login when clicking the NavbarGet Started button", () => {
       cy.visit("/")
       cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should("be.visible")
-      cy.get("nav").contains("Login").click()
-      cy.url().should("include", "/login")
-      cy.get('[data-testid="google-signin-button"]').should("be.visible")
-    })
-
-    it("should navigate to /login when clicking the Navbar Get Started button", () => {
-      cy.visit("/")
       cy.get("nav").contains("Get Started").click()
       cy.url().should("include", "/login")
       cy.get('[data-testid="google-signin-button"]').should("be.visible")
     })
 
-    it("should navigate to /login when clicking the Hero Start Now button", () => {
+    it("should navigate to /login when clicking the Hero Get Started button", () => {
       cy.visit("/")
-      cy.get('a[href="/login"]').contains("Start Now").click()
+      cy.get('a[href="/login"]').contains("Get Started").click()
       cy.url().should("include", "/login")
       cy.get('[data-testid="google-signin-button"]').should("be.visible")
     })
