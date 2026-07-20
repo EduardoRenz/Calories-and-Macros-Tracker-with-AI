@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslation } from '../../hooks/useTranslation';
 import LanguageSwitcher from '../LanguageSwitcher';
 import ThemeSwitcher from '../ThemeSwitcher';
@@ -35,8 +36,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
           href="/"
           className="text-headline-md font-headline-landing font-bold text-primary dark:text-primary-fixed flex items-center gap-2 shrink-0"
         >
-          <img src="/Icon.svg" alt="Levemente Logo" className="w-6 h-6 object-contain" />
-          Levemente
+          <Image src="/LogoHorizontal.svg" alt="Levemente Logo" width={200} height={48} className="h-11 w-auto object-contain -mt-1" />
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
