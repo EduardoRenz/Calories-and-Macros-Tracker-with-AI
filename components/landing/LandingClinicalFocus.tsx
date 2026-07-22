@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useTranslation } from '../../hooks/useTranslation';
 import { WaterDropIcon, NoMealsIcon } from '../icons';
 
@@ -36,47 +37,14 @@ export const LandingClinicalFocus: React.FC = () => {
               </div>
             </div>
             <div className="flex justify-center lg:justify-end">
-              <div className="w-full max-w-sm aspect-square bg-surface rounded-full shadow-lg p-6 border-4 border-surface flex items-center justify-center">
-                <svg
-                  role="img"
-                  aria-label="Medical wellness bowl logo"
-                  viewBox="0 0 200 200"
-                  className="w-full h-full"
-                >
-                  <defs>
-                    <linearGradient id="bowl-grad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="var(--secondary, #00bd7b)" />
-                      <stop offset="100%" stopColor="var(--primary, #006664)" />
-                    </linearGradient>
-                  </defs>
-                  <ellipse cx="100" cy="160" rx="70" ry="10" fill="var(--primary, #006664)" opacity="0.12" />
-                  <path
-                    d="M40 100c0 33 27 60 60 60s60-27 60-60z"
-                    fill="url(#bowl-grad)"
-                    opacity="0.9"
-                  />
-                  <ellipse cx="100" cy="100" rx="60" ry="14" fill="var(--surface-container-lowest, #ffffff)" opacity="0.5" />
-                  <g transform="translate(100 90)">
-                    <path
-                      d="M0 -22c-12 0-22 10-22 22 0 14 22 30 22 30s22-16 22-30c0-12-10-22-22-22z"
-                      fill="var(--primary, #006664)"
-                    />
-                    <path
-                      d="M0 -10c-6 0-10 4-10 10 0 6 10 14 10 14s10-8 10-14c0-6-4-10-10-10z"
-                      fill="var(--secondary, #00bd7b)"
-                    />
-                    <path
-                      d="M-20 0c-8 0-14 6-14 14 0 8 14 18 14 18s14-10 14-18c0-8-6-14-14-14z"
-                      fill="var(--secondary, #00bd7b)"
-                      opacity="0.7"
-                    />
-                    <path
-                      d="M20 0c-8 0-14 6-14 14 0 8 14 18 14 18s14-10 14-18c0-8-6-14-14-14z"
-                      fill="var(--primary, #006664)"
-                      opacity="0.7"
-                    />
-                  </g>
-                </svg>
+              <div className="w-full max-w-sm aspect-square rounded-full overflow-hidden shadow-lg">
+                <Image
+                  src="/images/Levemente_app.webp"
+                  alt="A Bowl with a salad and healthy food"
+                  width={1254}
+                  height={1254}
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
