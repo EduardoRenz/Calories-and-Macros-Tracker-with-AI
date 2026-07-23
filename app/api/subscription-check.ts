@@ -39,8 +39,9 @@ export async function checkPremiumAccess(authHeader: string | null): Promise<Nex
         const now = new Date()
         const periodEndStr = subscription.current_period_end
         const grantsPremiumByStatus = ["active", "trialing", "canceled"].includes(subscription.status)
+        const isPeriodValid = periodEndStr === null || (!isNaN(new Date(periodEndStr).getTime()) && now <= new Date(periodEndStr))
 
-        if (grantsPremiumByStatus && (periodEndStr === null || (!isNaN(new Date(periodEndStr).getTime()) && now <= new Date(periodEndStr)))) {
+        if (grantsPremiumByStatus && isPeriodValid) {
           console.log("[SubscriptionCheck] User has active premium subscription")
           return null
         }
@@ -74,6 +75,9 @@ export async function checkPremiumAccess(authHeader: string | null): Promise<Nex
     return null
   } catch (error) {
     console.error("[SubscriptionCheck] Error checking premium access:", error)
-    return NextResponse.json({ error: "Failed to verify subscription status" }, { status: 500 })
+    return NextResponse.json(
+      { error: "We couldn't verify your premium access due to an internal configuration error. Please contact support." },
+      { status: 500 }
+    )
   }
 }

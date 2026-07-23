@@ -9,6 +9,9 @@ describe('Food Analysis Page', () => {
                 win.sessionStorage.setItem('mock_use_incomplete_profile', 'false');
             },
         });
+        // Landing Page is rendered at '/' for unauthenticated users.
+        cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should('be.visible');
+        cy.get('a[href="/login"]').first().click();
         cy.contains('Sign in with Google').click();
         cy.url().should('include', '/dashboard');
 

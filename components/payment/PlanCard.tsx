@@ -9,9 +9,10 @@ interface PlanCardProps {
     onSelect: (plan: Plan) => void;
     isLoading?: boolean;
     isCurrentPlan?: boolean;
+    ctaLabel?: string;
 }
 
-export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = false, isCurrentPlan = false }) => {
+export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = false, isCurrentPlan = false, ctaLabel }) => {
     const { t, to } = useTranslation();
     const isPopular = plan.isPopular;
     const isFree = plan.id === 'free' || plan.price === 0;
@@ -105,11 +106,11 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
                 fullWidth
                 isLoading={isLoading}
             >
-                {isCurrentPlan
+                {ctaLabel ?? (isCurrentPlan
                     ? (plan.currency.code === 'BRL' ? 'Plano Atual' : 'Current Plan')
                     : shouldUseGreenStyle
                         ? (plan.currency.code === 'BRL' ? 'Atualizar para Membro' : 'Upgrade to Member')
-                        : (plan.currency.code === 'BRL' ? 'Começar' : 'Get Started')
+                        : (plan.currency.code === 'BRL' ? 'Começar' : 'Get Started'))
                 }
             </Button>
         </div>

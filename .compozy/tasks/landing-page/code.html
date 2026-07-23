@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>LeveMente - Nutrição Inteligente em 1 Minuto</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Lexend:wght@500;600&amp;family=Montserrat:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Material Symbols -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-surface": "#303130",
+              "surface-tint": "#096967",
+              "primary-container": "#006664",
+              "on-tertiary-container": "#a2e700",
+              error: "#ba1a1a",
+              "on-tertiary-fixed-variant": "#344e00",
+              "primary-fixed-dim": "#86d4d1",
+              "on-error-container": "#93000a",
+              "tertiary-container": "#446400",
+              "surface-bright": "#faf9f8",
+              "on-surface-variant": "#3e4948",
+              outline: "#6f7978",
+              "error-container": "#ffdad6",
+              "surface-dim": "#dbdad9",
+              "on-primary": "#ffffff",
+              background: "#faf9f8",
+              "surface-container": "#efeded",
+              "on-secondary-fixed": "#002112",
+              "primary-fixed": "#a2f0ed",
+              "on-tertiary-fixed": "#131f00",
+              "on-background": "#1b1c1c",
+              "secondary-fixed": "#69fdb4",
+              "outline-variant": "#bec9c7",
+              primary: "#004c4b",
+              "secondary-fixed-dim": "#47df9a",
+              "surface-container-lowest": "#ffffff",
+              "on-primary-fixed": "#00201f",
+              "inverse-on-surface": "#f2f0f0",
+              "on-primary-fixed-variant": "#00504e",
+              surface: "#faf9f8",
+              "secondary-container": "#69fdb4",
+              "on-tertiary": "#ffffff",
+              "on-error": "#ffffff",
+              "tertiary-fixed-dim": "#98da00",
+              secondary: "#006c45",
+              "on-secondary": "#ffffff",
+              "surface-container-highest": "#e3e2e2",
+              "surface-container-high": "#e9e8e7",
+              "tertiary-fixed": "#b0f820",
+              "inverse-primary": "#86d4d1",
+              tertiary: "#324a00",
+              "on-primary-container": "#93e1de",
+              "surface-container-low": "#f5f3f3",
+              "on-surface": "#1b1c1c",
+              "on-secondary-fixed-variant": "#005233",
+              "surface-variant": "#e3e2e2",
+              "on-secondary-container": "#007349",
+            },
+            borderRadius: {
+              DEFAULT: "1rem",
+              lg: "2rem",
+              xl: "3rem",
+              full: "9999px",
+            },
+            spacing: {},
+            fontFamily: {
+              headline: ["Epilogue"],
+              display: ["Epilogue"],
+              body: ["Montserrat"],
+              label: ["Lexend"],
+            },
+            fontSize: {},
+          },
+        },
+      }
+    </script>
+    <style>
+      .kinetic-gradient {
+        background: linear-gradient(135deg, #004c4b 0%, #006c45 100%);
+      }
+      .kinetic-gradient-hover:hover {
+        background: linear-gradient(135deg, #006664 0%, #03be7c 100%);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-background font-body antialiased">
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-sm">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-8">
+          <a class="text-headline-md font-headline font-bold text-primary dark:text-primary-fixed flex items-center gap-2" href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">eco</span>
+            Levemente
+          </a>
+          <div class="hidden md:flex items-center gap-6">
+            <a
+              class="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+              href="#features"
+              >Features</a
+            >
+            <a
+              class="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+              href="#benefits"
+              >Benefits</a
+            >
+            <a
+              class="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+              href="#pricing"
+              >Pricing</a
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <a class="text-primary font-label font-semibold px-4 py-2 hover:bg-surface-container rounded-full transition-colors" href="#login"
+            >Login</a
+          >
+          <a
+            class="kinetic-gradient text-on-primary font-label font-semibold px-6 py-2 rounded-full kinetic-gradient-hover shadow-sm transition-all hover:scale-105"
+            href="#signup"
+            >Começar</a
+          >
+        </div>
+      </div>
+    </nav>
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <div class="z-10 flex flex-col items-start gap-6">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-label text-sm font-semibold"
+          >
+            <span class="material-symbols-outlined text-sm">bolt</span>
+            IA Nutricional
+          </div>
+          <h1 class="text-5xl lg:text-6xl font-headline font-bold text-primary leading-tight tracking-tight">
+            Nutrição Inteligente em <span class="text-secondary">1 Minuto</span>
+          </h1>
+          <p class="text-lg text-on-surface-variant max-w-lg leading-relaxed">
+            Acompanhe sua dieta sem planilhas complexas. Nossa Inteligência Artificial analisa seus macros e necessidades médicas quase
+            instantaneamente.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
+            <a
+              class="kinetic-gradient text-on-primary font-label font-semibold px-8 py-4 rounded-full text-center hover:shadow-lg transition-all hover:-translate-y-1"
+              href="#signup"
+            >
+              Começar Agora
+            </a>
+            <a
+              class="flex items-center justify-center gap-2 px-8 py-4 border-2 border-outline-variant text-on-surface font-label font-semibold rounded-full hover:border-primary hover:text-primary transition-colors"
+              href="#how-it-works"
+            >
+              <span class="material-symbols-outlined">play_circle</span>
+              Ver Como Funciona
+            </a>
+          </div>
+          <div class="flex items-center gap-4 mt-6 text-sm text-on-surface-variant font-label">
+            <span class="flex items-center gap-1"
+              ><span class="material-symbols-outlined text-secondary" style="font-variation-settings: &quot;FILL&quot; 1"
+                >check_circle</span
+              >
+              Sem questionários longos</span
+            >
+            <span class="flex items-center gap-1"
+              ><span class="material-symbols-outlined text-secondary" style="font-variation-settings: &quot;FILL&quot; 1"
+                >check_circle</span
+              >
+              Setup em 60s</span
+            >
+          </div>
+        </div>
+        <div class="relative z-10 w-full h-[500px] lg:h-[600px] rounded-[3rem] overflow-hidden shadow-2xl">
+          <img
+            alt="LeveMente App Interface"
+            class="w-full h-full object-cover object-center"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzGVLhJ-fpROWk1AuBaW2KlYxu8PwB_5VIw3n4aqszUSdzL8C7OVtm1DOBbXGa_pkq8a2LQ5MWoIaZlHTrDXkstT7x8kIEvoLO-hgsUhM0_nt5C1dLvzCEDd4Fs0QX5B96-egwoH9oJQjUM7YKMr2Njo6bTuT0bIB5-BSxql-5rB7HYOt_OvFwa863s-myXmYUl1yrsOOHSNoQ03CEjsf81m-Z7-I9a2sADaGle7QFeXWa3KNxSkhjYRVuau6olpH078_1BLjwyGc"
+          />
+          <!-- Floating Glass Card -->
+          <div
+            class="absolute bottom-8 left-8 glass-card p-4 rounded-2xl flex items-center gap-4 animate-bounce"
+            style="animation-duration: 3s"
+          >
+            <div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container">
+              <span class="material-symbols-outlined">restaurant_menu</span>
+            </div>
+            <div>
+              <p class="font-label font-bold text-on-surface text-sm">Almoço Registrado</p>
+              <p class="font-body text-xs text-on-surface-variant">Macros calculados em 1.2s</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Background decoration -->
+      <div
+        class="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-fixed-dim/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"
+      ></div>
+      <div
+        class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary-fixed/20 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/4"
+      ></div>
+    </section>
+    <!-- Core Value Prop (No-Nonsense) -->
+    <section class="py-24 bg-surface-container-lowest relative" id="benefits">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl md:text-4xl font-headline font-bold text-primary mb-16">Setup Rápido, Foco nos Resultados</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Bento Box 1 -->
+          <div
+            class="bg-surface rounded-[2rem] p-8 shadow-sm border border-surface-variant flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300 hover:scale-[1.02]"
+          >
+            <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container mb-6">
+              <span class="material-symbols-outlined text-3xl">timer</span>
+            </div>
+            <h3 class="text-xl font-headline font-semibold text-on-surface mb-3">60 Segundos</h3>
+            <p class="text-on-surface-variant text-body-md">
+              Pule os formulários intermináveis. Nosso onboarding captura apenas o essencial para a IA começar a trabalhar.
+            </p>
+          </div>
+          <!-- Bento Box 2 -->
+          <div
+            class="bg-surface rounded-[2rem] p-8 shadow-sm border border-surface-variant flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300 hover:scale-[1.02]"
+          >
+            <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container mb-6">
+              <span class="material-symbols-outlined text-3xl">center_focus_strong</span>
+            </div>
+            <h3 class="text-xl font-headline font-semibold text-on-surface mb-3">Zero Planilhas</h3>
+            <p class="text-on-surface-variant text-body-md">
+              Esqueça a contagem manual de calorias. Tire uma foto ou digite sua refeição, e nós fazemos o resto instantaneamente.
+            </p>
+          </div>
+          <!-- Bento Box 3 -->
+          <div
+            class="bg-surface rounded-[2rem] p-8 shadow-sm border border-surface-variant flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300 hover:scale-[1.02]"
+          >
+            <div class="w-16 h-16 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container mb-6">
+              <span class="material-symbols-outlined text-3xl">insights</span>
+            </div>
+            <h3 class="text-xl font-headline font-semibold text-on-surface mb-3">Insights Diretos</h3>
+            <p class="text-on-surface-variant text-body-md">
+              Receba feedback claro sobre o que importa: seus macros diários e adequação aos seus objetivos de saúde.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- AI-Powered Tracking -->
+    <section class="py-24 bg-surface-container relative overflow-hidden" id="how-it-works">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div class="order-2 lg:order-1 relative">
+            <div
+              class="w-full max-w-md mx-auto aspect-square bg-surface rounded-[3rem] shadow-xl overflow-hidden p-8 flex items-center justify-center relative z-10 border border-outline-variant/30"
+            >
+              <img
+                alt="AI Nutrition Brain Logo"
+                class="w-full h-full object-contain"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9s5NdjYG-1-hP5Ng6-bWyOlrgtDFepT3lgFz0ymSDvB9HqYIKhpGHuKTL2xL8lf86pdrO1VjEBzvQH55ARKinJ3pqAfNxnDXmytFYVBqeTKllofkIT0fT3L9d07NRzFT7iHFmCuLD1JdA86qlWl13-aoL9N7JA0RBNDbYZTL-juo1Q8uJ5nKL2krMPKD76onSFR2WPO13DDkq07tM2uN9YITK3WXYzy_sUPsOxmkNqxZdpEYDU-iThW7Na8ObEwrOSV2sc5jtg6M"
+              />
+            </div>
+            <!-- Decorative elements -->
+            <div
+              class="absolute top-10 -left-10 w-24 h-24 bg-secondary rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"
+            ></div>
+            <div class="absolute bottom-10 -right-10 w-32 h-32 bg-primary rounded-full mix-blend-multiply filter blur-xl opacity-50"></div>
+          </div>
+          <div class="order-1 lg:order-2">
+            <span class="text-secondary font-label font-bold tracking-wider uppercase text-sm mb-2 block">Motor de Inteligência</span>
+            <h2 class="text-3xl md:text-4xl font-headline font-bold text-primary mb-6">Análise de Macros em Segundos</h2>
+            <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">
+              Nossa IA avançada foi treinada para reconhecer alimentos e porções, traduzindo descrições simples em dados nutricionais
+              precisos sem a necessidade de buscar em bancos de dados extensos.
+            </p>
+            <ul class="space-y-6">
+              <li class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center shrink-0 shadow-sm">
+                  <span class="material-symbols-outlined text-primary">chat</span>
+                </div>
+                <div>
+                  <h4 class="font-headline font-semibold text-on-surface text-lg">Entrada Natural</h4>
+                  <p class="text-on-surface-variant mt-1">Apenas diga "Comi 2 ovos mexidos e meio abacate" e o sistema entende.</p>
+                </div>
+              </li>
+              <li class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center shrink-0 shadow-sm">
+                  <span class="material-symbols-outlined text-primary">speed</span>
+                </div>
+                <div>
+                  <h4 class="font-headline font-semibold text-on-surface text-lg">Cálculo Imediato</h4>
+                  <p class="text-on-surface-variant mt-1">
+                    Proteínas, carboidratos e gorduras calculados na hora, atualizando seu dashboard.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Medical-Based Wellness -->
+    <section class="py-24 bg-surface-container-lowest">
+      <div class="max-w-7xl mx-auto px-6">
+        <div
+          class="bg-surface-container-low rounded-[3rem] p-10 md:p-16 overflow-hidden relative shadow-sm border border-outline-variant/20"
+        >
+          <div class="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+            <div>
+              <span class="inline-block py-1 px-3 rounded-full bg-error-container text-on-error-container font-label text-xs font-bold mb-4"
+                >Saúde Clínica</span
+              >
+              <h2 class="text-3xl md:text-4xl font-headline font-bold text-primary mb-6">Foco em Condições Médicas</h2>
+              <p class="text-lg text-on-surface-variant mb-6 leading-relaxed">
+                O LeveMente vai além do fitness. Nossa plataforma é otimizada para auxiliar quem precisa de controle rigoroso devido a
+                condições de saúde.
+              </p>
+              <div class="grid grid-cols-2 gap-4 mt-8">
+                <div class="bg-surface p-4 rounded-2xl shadow-sm border border-surface-variant">
+                  <span class="material-symbols-outlined text-secondary mb-2 text-3xl">water_drop</span>
+                  <h4 class="font-label font-bold text-on-surface">Diabetes</h4>
+                  <p class="text-xs text-on-surface-variant mt-1">Controle preciso de índice glicêmico.</p>
+                </div>
+                <div class="bg-surface p-4 rounded-2xl shadow-sm border border-surface-variant">
+                  <span class="material-symbols-outlined text-secondary mb-2 text-3xl">no_meals</span>
+                  <h4 class="font-label font-bold text-on-surface">Intolerâncias</h4>
+                  <p class="text-xs text-on-surface-variant mt-1">Alertas automáticos de ingredientes.</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-center lg:justify-end">
+              <div
+                class="w-full max-w-sm aspect-square bg-surface rounded-full shadow-lg p-6 border-4 border-surface flex items-center justify-center"
+              >
+                <img
+                  alt="Medical Wellness Bowl Logo"
+                  class="w-full h-full object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGPNppAxkPnL2bvDBXsGlcZuFXdN-iycAt8-Jp5XuBlbtCfFLZBTR6dNnmCtKqgY1nj4WrR73D6pa4ea_SrHHOV-Sg9aqmqqIliqHREilUQljBN6aIEIpkKj8fEWjw7qT24PHcAyh1FXhamiORYlDU9NxQSq6uCiIKAoOWO8vL0t4-5mMrtYhLHtzxcV0zpmcQn0OT2pTvGVE2Ume29mEgzOpIy3IZVvhL5ewzD0MWXyFSDRDiZAbwacqlfxjQiYwUlGrcUhlSlk8"
+                />
+              </div>
+            </div>
+          </div>
+          <!-- Background decoration -->
+          <div class="absolute -bottom-24 -right-24 text-[300px] text-surface font-headline font-black opacity-40 select-none">+</div>
+        </div>
+      </div>
+    </section>
+    <!-- Features Gallery -->
+    <section class="py-24 bg-surface" id="features">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Tudo que você precisa, nada que não precise</h2>
+          <p class="text-lg text-on-surface-variant max-w-2xl mx-auto">
+            Design limpo e focado na ação. Seu diário alimentar reimaginado para a velocidade.
+          </p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Feature 1 -->
+          <div
+            class="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors"
+          >
+            <div class="flex justify-between items-start mb-8">
+              <div>
+                <h3 class="text-2xl font-headline font-bold text-on-surface">Dashboard Diário</h3>
+                <p class="text-on-surface-variant mt-2">Visão geral instantânea do seu progresso.</p>
+              </div>
+              <div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container">
+                <span class="material-symbols-outlined">donut_large</span>
+              </div>
+            </div>
+            <!-- Abstract UI Representation -->
+            <div
+              class="mt-auto bg-surface rounded-xl p-6 shadow-sm border border-surface-variant group-hover:scale-[1.02] transition-transform"
+            >
+              <div class="flex items-center justify-center gap-6 mb-6">
+                <div class="relative w-24 h-24">
+                  <svg class="w-full h-full text-secondary stroke-current" viewBox="0 0 36 36">
+                    <path
+                      class="text-surface-variant"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke-width="3"
+                    ></path>
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke-dasharray="75, 100"
+                      stroke-linecap="round"
+                      stroke-width="3"
+                    ></path>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="font-headline font-bold text-on-surface">75%</span>
+                    <span class="text-[10px] font-label text-on-surface-variant">Calorias</span>
+                  </div>
+                </div>
+                <div class="space-y-3 flex-1">
+                  <div>
+                    <div class="flex justify-between text-xs font-label mb-1">
+                      <span class="text-on-surface-variant">Proteína</span>
+                      <span class="text-on-surface font-semibold">120g</span>
+                    </div>
+                    <div class="w-full bg-surface-variant rounded-full h-1.5">
+                      <div class="bg-primary h-1.5 rounded-full" style="width: 80%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-xs font-label mb-1">
+                      <span class="text-on-surface-variant">Carbos</span>
+                      <span class="text-on-surface font-semibold">150g</span>
+                    </div>
+                    <div class="w-full bg-surface-variant rounded-full h-1.5">
+                      <div class="bg-tertiary-fixed-dim h-1.5 rounded-full" style="width: 60%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Feature 2 -->
+          <div
+            class="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors"
+          >
+            <div class="flex justify-between items-start mb-8">
+              <div>
+                <h3 class="text-2xl font-headline font-bold text-on-surface">Registro Simples</h3>
+                <p class="text-on-surface-variant mt-2">Adicione refeições como se estivesse mandando mensagem.</p>
+              </div>
+              <div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container">
+                <span class="material-symbols-outlined">edit_note</span>
+              </div>
+            </div>
+            <!-- Abstract UI Representation -->
+            <div
+              class="mt-auto bg-surface rounded-xl p-6 shadow-sm border border-surface-variant group-hover:scale-[1.02] transition-transform flex flex-col gap-4"
+            >
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-primary text-sm">robot_2</span>
+                </div>
+                <div class="bg-surface-container-low p-3 rounded-2xl rounded-tl-sm text-sm text-on-surface">
+                  O que você comeu no almoço?
+                </div>
+              </div>
+              <div class="flex gap-3 justify-end">
+                <div class="bg-primary text-on-primary p-3 rounded-2xl rounded-tr-sm text-sm">
+                  1 filé de frango, 2 colheres de arroz e salada.
+                </div>
+              </div>
+              <div class="flex gap-3 mt-2">
+                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: &quot;FILL&quot; 1"
+                    >check_circle</span
+                  >
+                </div>
+                <div class="bg-surface-container-low p-3 rounded-2xl rounded-tl-sm text-sm text-on-surface border border-secondary/30">
+                  <span class="font-bold text-secondary block mb-1">Registrado! (350 kcal)</span>
+                  <div class="flex gap-2 text-xs text-on-surface-variant">
+                    <span>30g Prot</span> • <span>40g Carb</span> • <span>8g Gord</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Pricing / Plans -->
+    <section class="py-24 bg-surface-container-lowest relative" id="pricing">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Planos Simples e Transparentes</h2>
+          <p class="text-lg text-on-surface-variant">Escolha o plano ideal para a sua jornada de bem-estar.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <!-- Free Tier -->
+          <div
+            class="bg-surface rounded-[2rem] p-8 border border-outline-variant flex flex-col hover:shadow-lg transition-shadow duration-300"
+          >
+            <h3 class="text-2xl font-headline font-bold text-on-surface mb-2">Básico</h3>
+            <p class="text-on-surface-variant mb-6 h-12">Para desenvolvedores e entusiastas que querem testar o motor.</p>
+            <div class="mb-8">
+              <span class="text-4xl font-headline font-bold text-primary">Grátis</span>
+            </div>
+            <ul class="space-y-4 mb-8 flex-1">
+              <li class="flex items-center gap-3 text-on-surface">
+                <span class="material-symbols-outlined text-secondary" style="font-variation-settings: &quot;FILL&quot; 1"
+                  >check_circle</span
+                >
+                <span>Registro de refeições base</span>
+              </li>
+              <li class="flex items-center gap-3 text-on-surface">
+                <span class="material-symbols-outlined text-secondary" style="font-variation-settings: &quot;FILL&quot; 1"
+                  >check_circle</span
+                >
+                <span>Dashboard diário</span>
+              </li>
+              <li class="flex items-center gap-3 text-on-surface-variant opacity-70">
+                <span class="material-symbols-outlined text-outline">info</span>
+                <span>Requer chave API própria (OpenAI)</span>
+              </li>
+              <li class="flex items-center gap-3 text-on-surface-variant opacity-50">
+                <span class="material-symbols-outlined text-outline">cancel</span>
+                <span class="line-through">Análise Médica Avançada</span>
+              </li>
+            </ul>
+            <button
+              class="w-full py-4 rounded-full border-2 border-primary text-primary font-label font-bold hover:bg-primary/5 transition-colors"
+            >
+              Começar Grátis
+            </button>
+          </div>
+          <!-- Premium Tier -->
+          <div
+            class="bg-primary-container rounded-[2rem] p-8 border border-primary-container flex flex-col relative transform md:-translate-y-4 shadow-xl"
+          >
+            <div class="absolute top-0 right-8 transform -translate-y-1/2">
+              <span
+                class="bg-tertiary-fixed text-on-tertiary-fixed font-label text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider"
+              >
+                Recomendado
+              </span>
+            </div>
+            <h3 class="text-2xl font-headline font-bold text-on-primary mb-2">Membro</h3>
+            <p class="text-on-primary-container mb-6 h-12">Experiência completa, sem complicações técnicas.</p>
+            <div class="mb-8">
+              <span class="text-4xl font-headline font-bold text-on-primary">R$ 29</span>
+              <span class="text-on-primary-container">/mês</span>
+            </div>
+            <ul class="space-y-4 mb-8 flex-1">
+              <li class="flex items-center gap-3 text-on-primary">
+                <span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: &quot;FILL&quot; 1"
+                  >check_circle</span
+                >
+                <span>Tudo do plano Básico</span>
+              </li>
+              <li class="flex items-center gap-3 text-on-primary">
+                <span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: &quot;FILL&quot; 1"
+                  >check_circle</span
+                >
+                <span><b>Sem necessidade de API</b> (Nós cuidamos)</span>
+              </li>
+              <li class="flex items-center gap-3 text-on-primary">
+                <span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: &quot;FILL&quot; 1"
+                  >check_circle</span
+                >
+                <span>Análise de condições médicas</span>
+              </li>
+              <li class="flex items-center gap-3 text-on-primary">
+                <span class="material-symbols-outlined text-secondary-fixed" style="font-variation-settings: &quot;FILL&quot; 1"
+                  >check_circle</span
+                >
+                <span>Suporte prioritário</span>
+              </li>
+            </ul>
+            <button
+              class="w-full py-4 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label font-bold hover:bg-secondary-fixed-dim transition-colors shadow-md"
+            >
+              Assinar Agora
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Bottom Login/CTA Section -->
+    <section class="py-24 bg-surface-container relative overflow-hidden" id="login">
+      <div class="max-w-4xl mx-auto px-6 relative z-10">
+        <div
+          class="bg-surface rounded-[3rem] p-10 md:p-16 shadow-lg border border-outline-variant/20 grid md:grid-cols-2 gap-12 items-center"
+        >
+          <div>
+            <h2 class="text-3xl font-headline font-bold text-primary mb-4">Pronto para transformar sua rotina?</h2>
+            <p class="text-on-surface-variant mb-8">Acesse sua conta ou crie uma agora em menos de 1 minuto.</p>
+            <div class="hidden md:block">
+              <div class="flex items-center gap-4 text-sm font-label text-on-surface-variant mb-2">
+                <span class="material-symbols-outlined text-secondary text-lg">bolt</span>
+                Acesso instantâneo
+              </div>
+              <div class="flex items-center gap-4 text-sm font-label text-on-surface-variant">
+                <span class="material-symbols-outlined text-secondary text-lg">lock</span>
+                Dados seguros e privados
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-8 rounded-2xl border border-surface-variant shadow-sm">
+            <form class="space-y-4">
+              <div>
+                <label class="block text-sm font-label font-medium text-on-surface mb-1">E-mail</label>
+                <input
+                  class="w-full rounded-2xl bg-surface-container-lowest border border-outline-variant/50 focus:border-primary focus:ring-1 focus:ring-primary px-4 py-3 text-on-surface placeholder-on-surface-variant/50"
+                  placeholder="seu@email.com"
+                  type="email"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-label font-medium text-on-surface mb-1">Senha</label>
+                <input
+                  class="w-full rounded-2xl bg-surface-container-lowest border border-outline-variant/50 focus:border-primary focus:ring-1 focus:ring-primary px-4 py-3 text-on-surface"
+                  placeholder="••••••••"
+                  type="password"
+                />
+              </div>
+              <div class="flex justify-between items-center text-sm font-label mt-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input class="rounded text-primary focus:ring-primary border-outline-variant" type="checkbox" />
+                  <span class="text-on-surface-variant">Lembrar-me</span>
+                </label>
+                <a class="text-primary hover:underline" href="#">Esqueceu a senha?</a>
+              </div>
+              <button
+                class="w-full kinetic-gradient text-on-primary font-label font-bold py-4 rounded-full mt-6 hover:shadow-lg transition-all hover:-translate-y-0.5"
+                type="button"
+              >
+                Entrar
+              </button>
+            </form>
+            <p class="text-center text-sm text-on-surface-variant mt-6 font-label">
+              Não tem uma conta? <a class="text-primary font-bold hover:underline" href="#">Cadastre-se</a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Decoration -->
+      <div
+        class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"
+      ></div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-surface-container-highest dark:bg-inverse-surface w-full py-12">
+      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div class="flex flex-col gap-4">
+          <a class="text-headline-sm font-headline font-bold text-primary dark:text-primary-fixed flex items-center gap-2" href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">eco</span>
+            Levemente
+          </a>
+          <p class="font-body text-body-md text-on-surface-variant dark:text-outline-variant">© 2026 Levemente. All rights reserved.</p>
+        </div>
+        <div class="flex flex-wrap gap-6 md:justify-end font-label text-label-sm">
+          <a
+            class="text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors"
+            href="#"
+            >Privacy Policy</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors"
+            href="#"
+            >Terms of Service</a
+          >
+          <a
+            class="text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors"
+            href="#"
+            >Contact Support</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
