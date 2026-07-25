@@ -20,7 +20,7 @@ export class RateLimitService {
         return RateLimitService.instance;
     }
 
-    check(userId: string, category: string): RateLimitResult {
+    consume(userId: string, category: string): RateLimitResult {
         const config = RATE_LIMIT_CONFIG[category];
         if (!config) {
             return { allowed: true, remaining: Infinity, resetMs: 0, maxRequests: Infinity };

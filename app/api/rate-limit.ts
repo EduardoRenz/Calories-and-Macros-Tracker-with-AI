@@ -8,7 +8,7 @@ export async function checkRateLimit(
 ): Promise<NextResponse | null> {
     const user = await verifyAuth(authHeader);
     const service = RateLimitService.getInstance();
-    const result = service.check(user.uid, category);
+    const result = service.consume(user.uid, category);
 
     if (result.allowed) {
         return null;
