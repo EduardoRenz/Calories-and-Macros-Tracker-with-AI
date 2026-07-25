@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Create RateLimitService singleton
 type: backend
 complexity: medium

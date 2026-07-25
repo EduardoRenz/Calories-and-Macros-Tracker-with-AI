@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Integrate rate limiting into billing routes
 type: backend
 complexity: medium

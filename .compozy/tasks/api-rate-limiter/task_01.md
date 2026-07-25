@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Create rate limit constants
 type: backend
 complexity: low

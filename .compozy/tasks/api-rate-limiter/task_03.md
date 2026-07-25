@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Create checkRateLimit function
 type: backend
 complexity: medium

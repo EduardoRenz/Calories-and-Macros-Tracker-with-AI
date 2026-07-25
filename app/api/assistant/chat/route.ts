@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkAiAccess } from '@/app/api/feature-flag-check';
+import { checkRateLimit } from '../../rate-limit';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
@@ -8,6 +9,9 @@ export async function POST(req: NextRequest) {
         const authHeader = req.headers.get('Authorization');
         const accessCheck = await checkAiAccess(authHeader, 'chatbot');
         if (accessCheck) return accessCheck;
+
+        const rateLimitCheck = await checkRateLimit(authHeader, 'chatbot');
+        if (rateLimitCheck) return rateLimitCheck;
 
         const { messages, context } = await req.json();
 

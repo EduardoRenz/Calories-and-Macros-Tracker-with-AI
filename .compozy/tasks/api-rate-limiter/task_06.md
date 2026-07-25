@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Cypress E2E test for rate limiting
 type: test
 complexity: medium
