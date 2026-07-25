@@ -43,17 +43,10 @@ export class RateLimitService {
         }
 
         validTimestamps.push(now);
-
-        if (validTimestamps.length === 0) {
-            this.requests.delete(key);
-        } else {
-            this.requests.set(key, validTimestamps);
-        }
+        this.requests.set(key, validTimestamps);
 
         const remaining = config.maxRequests - validTimestamps.length;
-        const resetMs = validTimestamps.length > 0
-            ? config.windowMs - (now - validTimestamps[0])
-            : config.windowMs;
+        const resetMs = config.windowMs - (now - validTimestamps[0]);
 
         return { allowed: true, remaining, resetMs, maxRequests: config.maxRequests };
     }

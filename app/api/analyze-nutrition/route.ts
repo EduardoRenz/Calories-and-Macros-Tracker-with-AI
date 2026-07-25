@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
         const accessCheck = await checkAiAccess(authHeader, 'food_analysis');
         if (accessCheck) return accessCheck;
 
-        const rateLimitCheck = await checkRateLimit(authHeader, 'food_analysis');
+        const rateLimitCheck = await checkRateLimit(authHeader, 'nutrition_analysis');
         if (rateLimitCheck) return rateLimitCheck;
 
         const { ingredientName, quantity, language } = await req.json();

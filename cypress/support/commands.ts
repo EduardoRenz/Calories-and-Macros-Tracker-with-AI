@@ -11,90 +11,89 @@
 //
 //
 
-
-export { }
+export {}
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      login(profileState?: 'false' | 'true' | 'partial'): Chainable
+      login(profileState?: "false" | "true" | "partial"): Chainable
       upgradeSubscription(): Chainable
-      setAiAccessMode(mode: 'disabled' | 'premium_only' | 'free_plan_api_keys_only' | 'open'): Chainable
-      setFeatureRequirement(feature: string, minPlan: 'free' | 'free_plan_api_keys' | 'premium'): Chainable
+      setAiAccessMode(mode: "disabled" | "premium_only" | "free_plan_api_keys_only" | "open"): Chainable
+      setFeatureRequirement(feature: string, minPlan: "free" | "free_plan_api_keys" | "premium"): Chainable
       acceptCookies(): Chainable
       declineCookies(): Chainable
-      setCookieConsent(consent: 'accepted' | 'declined' | 'none'): Chainable
+      setCookieConsent(consent: "accepted" | "declined" | "none"): Chainable
     }
   }
 }
 
-Cypress.Commands.add('login', (profileState = 'false') => {
-  cy.visit('/', {
+Cypress.Commands.add("login", (profileState = "false") => {
+  cy.visit("/", {
     onBeforeLoad(win) {
-      win.sessionStorage.setItem('mock_use_incomplete_profile', profileState);
+      win.sessionStorage.setItem("mock_use_incomplete_profile", profileState)
     },
-  });
+  })
   // Landing Page is rendered at '/' for unauthenticated users.
   // Follow the first available "Login" link/button to reach the /login route.
-  cy.get('a[href="/login"]', { timeout: 10000 }).first().click();
-  cy.url().should('include', '/login');
-  cy.contains('Sign in with Google').click();
+  cy.get('a[href="/login"]', { timeout: 10000 }).first().click({ force: true })
+  cy.url().should("include", "/login")
+  cy.contains("Sign in with Google").click()
 })
 
-Cypress.Commands.add('upgradeSubscription', () => {
-  const now = new Date();
-  const oneMonthLater = new Date();
-  oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+Cypress.Commands.add("upgradeSubscription", () => {
+  const now = new Date()
+  const oneMonthLater = new Date()
+  oneMonthLater.setMonth(oneMonthLater.getMonth() + 1)
 
   const subscription = {
-    id: 'premium',
-    userId: 'mock-user-id',
-    planId: 'premium',
-    planCode: 'premium_monthly',
-    status: 'active',
-    accessStatus: 'premium',
+    id: "premium",
+    userId: "mock-user-id",
+    planId: "premium",
+    planCode: "premium_monthly",
+    status: "active",
+    accessStatus: "premium",
     currentPeriodStart: now.toISOString(),
     currentPeriodEnd: oneMonthLater.toISOString(),
     cancelAtPeriodEnd: false,
     isTrial: false,
-  };
+  }
 
   cy.window().then((win) => {
-    win.localStorage.setItem('mock_subscription_upgraded', JSON.stringify(subscription));
-  });
-});
+    win.localStorage.setItem("mock_subscription_upgraded", JSON.stringify(subscription))
+  })
+})
 
-Cypress.Commands.add('setAiAccessMode', (mode) => {
+Cypress.Commands.add("setAiAccessMode", (mode) => {
   cy.window().then((win) => {
-    win.localStorage.setItem('feature_flag_ai_access_mode', `"${mode}"`);
-  });
-});
+    win.localStorage.setItem("feature_flag_ai_access_mode", `"${mode}"`)
+  })
+})
 
-Cypress.Commands.add('setFeatureRequirement', (feature, minPlan) => {
+Cypress.Commands.add("setFeatureRequirement", (feature, minPlan) => {
   cy.window().then((win) => {
-    const current = JSON.parse(win.localStorage.getItem('feature_flag_feature_requirements') || '{}');
-    current[feature] = { min_plan: minPlan };
-    win.localStorage.setItem('feature_flag_feature_requirements', JSON.stringify(current));
-  });
-});
+    const current = JSON.parse(win.localStorage.getItem("feature_flag_feature_requirements") || "{}")
+    current[feature] = { min_plan: minPlan }
+    win.localStorage.setItem("feature_flag_feature_requirements", JSON.stringify(current))
+  })
+})
 
-Cypress.Commands.add('setCookieConsent', (consent) => {
+Cypress.Commands.add("setCookieConsent", (consent) => {
   cy.window().then((win) => {
-    if (consent === 'none') {
-      win.localStorage.removeItem('levemente-cookie-consent');
+    if (consent === "none") {
+      win.localStorage.removeItem("levemente-cookie-consent")
     } else {
-      win.localStorage.setItem('levemente-cookie-consent', consent);
+      win.localStorage.setItem("levemente-cookie-consent", consent)
     }
-  });
-});
+  })
+})
 
-Cypress.Commands.add('acceptCookies', () => {
-  cy.setCookieConsent('accepted');
-});
+Cypress.Commands.add("acceptCookies", () => {
+  cy.setCookieConsent("accepted")
+})
 
-Cypress.Commands.add('declineCookies', () => {
-  cy.setCookieConsent('declined');
-});
+Cypress.Commands.add("declineCookies", () => {
+  cy.setCookieConsent("declined")
+})
 //
 //
 // -- This is a child command --
