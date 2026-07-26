@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { checkAiAccess } from '../feature-flag-check';
+import { checkRateLimit } from '../rate-limit';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
@@ -8,6 +9,9 @@ export async function POST(req: NextRequest) {
         const authHeader = req.headers.get('Authorization');
         const accessCheck = await checkAiAccess(authHeader, 'quick_meal_photo');
         if (accessCheck) return accessCheck;
+
+        const rateLimitCheck = await checkRateLimit(authHeader, 'image_recognition');
+        if (rateLimitCheck) return rateLimitCheck;
 
         const formData = await req.formData();
         const image = formData.get('image') as File;

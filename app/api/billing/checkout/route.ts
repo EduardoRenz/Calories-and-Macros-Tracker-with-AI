@@ -3,6 +3,7 @@ import { getSupabaseAdminClient } from '../../../../data/supabaseServer';
 import { RepositoryFactory } from '../../../../data/RepositoryFactory';
 import { PaymentGatewayFactory } from '../../_gateways/PaymentGatewayFactory';
 import { verifyAuth } from '../../auth-middleware';
+import { checkRateLimit } from '../../rate-limit';
 import { env } from '../../../../env';
 
 interface CheckoutRequestBody {
@@ -35,6 +36,9 @@ function getDefaultUrl(request: Request, path: string): string {
 
 export async function POST(request: Request) {
     try {
+        const rateLimitCheck = await checkRateLimit(request.headers.get('authorization'), 'billing');
+        if (rateLimitCheck) return rateLimitCheck;
+
         const user = await verifyAuth(request.headers.get('authorization'));
         const body = parseCheckoutRequestBody(await request.json().catch(() => null));
 

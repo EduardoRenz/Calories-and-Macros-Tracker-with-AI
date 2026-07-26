@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FoodAnalysisInput } from '@/domain/services/FoodAnalysisService';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { checkAiAccess } from '../feature-flag-check';
+import { checkRateLimit } from '../rate-limit';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 
 export async function POST(req: NextRequest) {
@@ -11,6 +12,9 @@ export async function POST(req: NextRequest) {
         // Unified AI access check for food analysis feature
         const accessCheck = await checkAiAccess(authHeader, 'food_analysis');
         if (accessCheck) return accessCheck;
+
+        const rateLimitCheck = await checkRateLimit(authHeader, 'food_analysis');
+        if (rateLimitCheck) return rateLimitCheck;
 
         const input: FoodAnalysisInput = await req.json();
 

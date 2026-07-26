@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslation } from '../../hooks/useTranslation';
 export const LandingFooter: React.FC = () => {
   const { t } = useTranslation();
@@ -13,7 +14,7 @@ export const LandingFooter: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8 items-center">
         <div className="flex items-center gap-3">
-          <img src="/Icon.svg" alt="" className="w-8 h-8 object-contain" aria-hidden="true" />
+          <Image src="/Icon.svg" alt="" className="w-8 h-8 object-contain" aria-hidden="true" />
           <div>
             <p className="font-headline-landing font-bold text-primary text-lg leading-none">
               Levemente
