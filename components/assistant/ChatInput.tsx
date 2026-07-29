@@ -60,7 +60,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                     onKeyDown={handleKeyDown}
                     placeholder={t('assistant.input_placeholder')}
                     disabled={isSending || disabled}
-                    className="w-full bg-transparent border-0 focus:ring-0 text-neutral-text-primary p-2 resize-none max-h-[120px] min-h-[44px] disabled:opacity-50"
+                    className="w-full bg-transparent border-0 focus:ring-0 focus:outline-none text-neutral-text-primary p-2 resize-none max-h-[120px] min-h-[44px] disabled:opacity-50"
                     rows={1}
                     id="chat-input"
                 />
@@ -68,7 +68,7 @@ const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
                 <button
                     onClick={onSend}
                     disabled={!value.trim() || isSending || disabled}
-                    className="p-2.5 rounded-lg bg-brand-primary text-black font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-opacity-90 transition-all flex-shrink-0 mb-0.5"
+                    className="p-2.5 rounded-lg bg-primary text-on-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 active:scale-95 transition-all flex-shrink-0 mb-0.5"
                     aria-label={t('assistant.send')}
                 >
                     {isSending ? (

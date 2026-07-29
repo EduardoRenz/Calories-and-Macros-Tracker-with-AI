@@ -58,7 +58,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                     ),
 
                     // Customize strong/bold
-                    strong: ({ ...props }) => <strong className="font-bold text-white select-text" {...props} />,
+                    strong: ({ ...props }) => <strong className="font-bold text-neutral-text-primary select-text" {...props} />,
 
                     // Customize emphasis/italic
                     em: ({ ...props }) => <em className="italic select-text" {...props} />,

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSupabaseAdminClient } from '../../../../data/supabaseServer';
 import { PaymentGatewayFactory } from '../../_gateways/PaymentGatewayFactory';
 import { verifyAuth } from '../../auth-middleware';
+import { checkRateLimit } from '../../rate-limit';
 
 interface CancelRequestBody {
     subscriptionId?: string;
@@ -37,6 +38,9 @@ function canCancel(subscription: BillingSubscriptionRow): boolean {
 
 export async function POST(request: Request) {
     try {
+        const rateLimitCheck = await checkRateLimit(request.headers.get('authorization'), 'billing');
+        if (rateLimitCheck) return rateLimitCheck;
+
         const user = await verifyAuth(request.headers.get('authorization'));
         const body = parseCancelRequestBody(await request.json().catch(() => null));
 

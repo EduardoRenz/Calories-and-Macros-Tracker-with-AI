@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdminClient } from '../../../../data/supabaseServer';
 import { verifyAuth } from '../../auth-middleware';
+import { checkRateLimit } from '../../rate-limit';
 
 type CheckoutSessionStatus = 'created' | 'pending' | 'completed' | 'expired' | 'cancelled' | 'failed';
 
@@ -46,6 +47,9 @@ function isSubscriptionPremiumAndValid(subscription: BillingSubscriptionRow | nu
 
 export async function GET(request: Request) {
     try {
+        const rateLimitCheck = await checkRateLimit(request.headers.get('authorization'), 'billing');
+        if (rateLimitCheck) return rateLimitCheck;
+
         const user = await verifyAuth(request.headers.get('authorization'));
         const url = new URL(request.url);
         const providerCheckoutId = getCheckoutSessionId(url.searchParams);

@@ -45,7 +45,7 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                         </div>
                         <div className="text-center border-t border-neutral-border pt-2 mt-2">
                             <p className="text-neutral-text-secondary text-xs">{t('assistant.calories')}</p>
-                            <p className="font-bold text-white text-lg">{ing.calories} kcal</p>
+                            <p className="font-bold text-neutral-text-primary text-lg">{ing.calories} kcal</p>
                         </div>
                     </div>
                 );
@@ -87,19 +87,19 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
                         {updates.calories !== undefined && (
                             <div className="text-center border-t border-neutral-border pt-2 mt-2">
                                 <p className="text-neutral-text-secondary text-xs">{t('assistant.calories')}</p>
-                                <p className="font-bold text-white text-lg">{updates.calories} kcal</p>
+                                <p className="font-bold text-neutral-text-primary text-lg">{updates.calories} kcal</p>
                             </div>
                         )}
                         {updates.quantity !== undefined && (
                             <div className="text-center mt-1">
                                 <p className="text-neutral-text-secondary text-xs">{t('assistant.new_quantity')}</p>
-                                <p className="font-bold text-white">{updates.quantity}</p>
+                                <p className="font-bold text-neutral-text-primary">{updates.quantity}</p>
                             </div>
                         )}
                         {updates.name && (
                             <div className="text-center mt-1">
                                 <p className="text-neutral-text-secondary text-xs">{t('assistant.name')}</p>
-                                <p className="font-bold text-white">{updates.name}</p>
+                                <p className="font-bold text-neutral-text-primary">{updates.name}</p>
                             </div>
                         )}
                     </div>
@@ -134,14 +134,14 @@ const PendingActionCard: React.FC<PendingActionCardProps> = ({
             <div className="flex gap-2 mt-3">
                 <button
                     onClick={() => onCancel(action.id)}
-                    className="flex-1 py-2 px-3 rounded-lg bg-neutral-card text-white text-sm font-semibold hover:bg-neutral-border transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-2 px-3 rounded-lg border border-neutral-border text-neutral-text-primary text-sm font-semibold hover:bg-neutral-panel transition-colors flex items-center justify-center gap-2"
                 >
                     <XMarkIcon className="w-4 h-4" />
                     {t('assistant.cancel')}
                 </button>
                 <button
                     onClick={() => onConfirm(action.id)}
-                    className="flex-1 py-2 px-3 rounded-lg bg-brand-primary text-black text-sm font-semibold hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-2 px-3 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:brightness-110 transition-colors flex items-center justify-center gap-2"
                 >
                     <CheckIcon className="w-4 h-4" />
                     {t('assistant.confirm')}

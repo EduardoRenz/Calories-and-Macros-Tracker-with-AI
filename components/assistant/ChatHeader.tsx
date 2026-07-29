@@ -33,7 +33,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onClose }) => {
 
             <button
                 onClick={onClose}
-                className="p-2 text-neutral-text-secondary hover:text-white transition-colors rounded-full hover:bg-neutral-border"
+                className="p-2 text-neutral-text-secondary hover:text-neutral-text-primary transition-colors rounded-full hover:bg-neutral-border"
                 aria-label={t('assistant.close')}
             >
                 <XMarkIcon className="w-5 h-5" />
