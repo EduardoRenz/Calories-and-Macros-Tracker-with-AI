@@ -6,7 +6,7 @@ Canonical behavior catalog for SEO, Core Web Vitals, Technical Metadata, Schema.
 
 - **Organic Visitor / Search User** — A potential user looking for quick calorie tracking, macro calculation, or diet insights via Google/Bing/AI Search without a friction-filled onboarding.
 - **Search Engine Crawler / AI Bot** — Googlebot, Bingbot, Perplexity/ChatGPT crawler indexing pages, parsing JSON-LD microdata, evaluating Core Web Vitals, and discovering URLs.
-- **Existing User (Sharing)** — A registered user sharing their meal analysis, macro report, or progress link publicly to social media or messaging apps.
+
 
 ## Story Index
 
@@ -17,11 +17,8 @@ Canonical behavior catalog for SEO, Core Web Vitals, Technical Metadata, Schema.
 | US-003 | Technical SEO | Search Crawler | Dynamic Sitemap.xml, Robots.txt & Internationalized URLs |
 | US-004 | Technical SEO | Search Engine | Rich Snippet Structured Data (SoftwareApplication, WebApplication, FAQ) |
 | US-005 | Core Web Vitals | Organic Visitor | LCP, CLS, INP, and TTFB Optimization for 95+ Lighthouse Score |
-| US-006 | Content Engine | Organic Visitor | Public Calorie/Macro Calculators & High-Intent Landing Pages |
+| US-006 | Content Engine | Organic Visitor | Public Macro Calculator with charts, domain logic reuse & conversion CTA |
 | US-007 | Content Engine | Organic Visitor | Public Diet & Macro Glossary with Evergreen Articles |
-| US-008 | AI + SEO Features | Shared Visitor | Shareable Public AI Meal Insights & Public Nutritional Reports |
-| US-009 | Conversion Engine | Organic Visitor | High-Converting Landing Page with Social Proof, FAQ & Rich Rich Snippets |
-| US-010 | Digital PR & Backlinks| Organic Visitor | Public Free Tools & Embeddable Macro Calculator Widget |
 | US-011 | Analytics & Monitoring| Product Team | Search Console, GA4, Plausible & Webmaster Tracking Integration |
 | US-012 | Accessibility (a11y) | Organic Visitor / Screen Reader | Localized Image Alt Attributes, ARIA Labels & Focus Management |
 
@@ -111,30 +108,21 @@ Edge cases:
 
 ---
 
-## AI Features & Virality Engine
+## Public Macro Calculator
 
-### US-008: Shareable Public AI Meal Insights & Reports
+### US-006: Public Calorie/Macro Calculator with Charts & Conversion CTA
 
-**As a** Registered User / Visitor, **I want** to create and view public shareable links of meal AI analyses and macro summaries, **so that** I can share insights with friends and search engine crawlers can index user-generated nutritional queries.
+**As an** Organic Visitor, **I want** to instantly calculate my daily calorie needs and macro split without creating an account, **so that** I can evaluate the product's core value proposition before registering.
 
 Acceptance criteria:
-- AC-1: Given a user who clicks "Share Insights", when generated, then a public URL `/share/meal/[id]` is created containing structured macro data, AI breakdown, and OpenGraph share card.
-- AC-2: Given a crawler requesting `/share/meal/[id]`, when rendered, then the page delivers indexable HTML with `Recipe` / `NutritionInformation` JSON-LD schema without requiring login.
+- AC-1: Given a new visitor on `/calculadora-macros`, when they fill in age, weight, height, gender, activity level, and goal (lose/maintain/gain), then the page displays their daily calorie target and macro split (protein, carbs, fats) in a clear visual chart.
+- AC-2: Given a visitor with calculated results, when they see the macro breakdown, then a CTA button "Salvar dieta no Levemente AI" is prominently displayed linking to `/login`.
+- AC-3: Given a search engine crawler requesting `/calculadora-macros`, when the page loads, then the HTML contains `<title>`, `<meta name="description">`, and `<link rel="canonical">` for SEO indexing.
 
 Edge cases:
-- EC-1: User revokes share permissions or deletes meal → Page displays friendly 404 response with CTA to try free meal scan.
+- EC-1: Invalid or missing inputs → Show inline validation errors and disable calculation until all required fields are valid.
+- EC-2: Extreme values (e.g., weight < 20kg or > 500kg) → Clamp or show a friendly message asking the user to verify their inputs.
 
 ---
 
-## Conversion & Landing Page Optimization
 
-### US-009: Conversion-Driven Public Landing Pages
-
-**As an** Organic Visitor, **I want** transparent social proof, immediate AI meal log previews, and zero-friction CTA buttons, **so that** I can try the product instantly without upfront onboarding walls.
-
-Acceptance criteria:
-- AC-1: Given the hero section of `/landing-page`, when viewed, then a clear H1, immediate photo/text AI meal simulation, and 1-click CTA "Testar Grátis Agora" are rendered above the fold.
-- AC-2: Given the FAQ section, when opened, then accordions toggle smoothly without shifting surrounding elements and mirror the `FAQPage` microdata.
-
-Edge cases:
-- EC-1: Slow network on mobile landing page → Pre-render hero image assets with Next.js image priority and fallback SVG placeholders.

@@ -19,7 +19,7 @@ In alignment with **ADR-001** and **ADR-002**, all SEO metadata, canonical link 
                            Next.js 16 App Router (RSC)
      ┌───────────────────┬───────────────────┬───────────────────┐
      │                   │                   │                   │
-  app/page.tsx     app/sitemap.ts     app/robots.ts   app/share/meal/[id]
+   app/page.tsx     app/sitemap.ts     app/robots.ts   app/calculadora-macros
      │                   │                   │                   │
      └───────────────────┴─────────┬─────────┴───────────────────┘
                                    │
@@ -43,7 +43,7 @@ In alignment with **ADR-001** and **ADR-002**, all SEO metadata, canonical link 
 3. **`utils/seo/canonical.ts`**: Strips query params (`utm_*`, etc.) while retaining language prefixes to enforce canonical indexing.
 4. **`app/sitemap.ts` & `app/robots.ts`**: Native Next.js App Router dynamic route generators returning XML and text directives.
 5. **`components/seo/JsonLd.tsx`**: Lightweight React Server Component rendering validated JSON-LD scripts into document heads.
-6. **`app/share/meal/[id]/page.tsx`**: Public, unauthenticated Server Component displaying user-shared AI meal analyses and macro breakdowns with auto-generated OG images.
+6. **`app/calculadora-macros/page.tsx`**: Public, unauthenticated client component with form inputs, instant macro calculation, visual charts, and conversion CTA.
 
 ---
 
@@ -88,30 +88,12 @@ export function buildFaqJsonLd(faqs: FaqItemSchema[]): object;
 export function buildCanonicalUrl(rawPath: string, locale?: string): string;
 ```
 
-### Data Models
-
-```typescript
-// Domain representation for shareable public meals (domain/entities/PublicSharedMeal.ts)
-export interface PublicSharedMeal {
-    id: string;
-    name: string;
-    calories: number;
-    proteinGrams: number;
-    carbsGrams: number;
-    fatGrams: number;
-    aiAdvice?: string;
-    createdAt: string;
-    imageUrl?: string;
-}
-```
-
 ### API Endpoints
 
 | Method | Path | Description | Access | Response Format |
 |---|---|---|---|---|
 | `GET` | `/sitemap.xml` | Dynamic XML sitemap generator (`app/sitemap.ts`) | Public | `application/xml` |
 | `GET` | `/robots.txt` | Crawler directives generator (`app/robots.ts`) | Public | `text/plain` |
-| `GET` | `/share/meal/[id]` | Public indexable shared AI meal report | Public | `text/html` |
 | `GET` | `/calculadora-macros` | Public interactive macro calculator | Public | `text/html` |
 
 ---
@@ -126,17 +108,17 @@ export interface PublicSharedMeal {
 | [app/robots.ts](file:///home/eduardo/Projects/Calories-and-Macros-Tracker-with-AI/app/robots.ts) | New | Crawler disallow directives for protected routes | Implement file under `app/robots.ts` |
 | `utils/seo/` | New | Pure utility functions for metadata, canonicals, and JSON-LD schemas | Create utility modules with 100% unit test coverage |
 | `components/seo/JsonLd.tsx` | New | React Server Component for rendering structured data scripts | Build reusable JSON-LD component |
-| `app/share/meal/[id]/` | New | Public unauthenticated route for shareable AI meal insights | Build RSC page + OpenGraph image endpoint |
+
 
 ---
 
 ## Testing Approach
 
-- **Unit Testing (Jest / Vitest)**: Test pure functions in `utils/seo/` for deterministic outputs, canonical URL query stripping, fallback titles, and JSON-LD schema compliance.
-- **Integration Testing (Cypress / Next.js Test Runner)**: Test `/sitemap.xml` and `/robots.txt` endpoints for correct HTTP 200 headers, XML node structures, and disallow rules.
+- **Pure function assertions (Cypress)**: Directly import and assert on `utils/seo/` pure functions inside Cypress E2E specs for deterministic outputs, canonical URL query stripping, fallback titles, and JSON-LD schema compliance.
+- **Integration Testing (Cypress)**: Test `/sitemap.xml` and `/robots.txt` endpoints for correct HTTP 200 headers, XML node structures, and disallow rules.
 - **End-to-End Testing (Cypress)**:
   - Verify public landing page renders `<title>`, `<meta>`, canonical `<link>`, and JSON-LD script tags.
-  - Test `/share/meal/[id]` flow: generate share link, access link in incognito mode without logging in, verify macro visualization.
+  - Test `/calculadora-macros` flow: visitor fills inputs, calculates macros, sees results, clicks CTA.
 - **Performance Assertions (Lighthouse CI)**: Assert Mobile Performance score >= 95 and SEO score = 100 in Cypress CI pipeline.
 
 ---
@@ -149,8 +131,9 @@ export interface PublicSharedMeal {
 2. **Next.js App Infrastructure**: Implement `app/sitemap.ts`, `app/robots.ts`, and update [app/layout.tsx](file:///home/eduardo/Projects/Calories-and-Macros-Tracker-with-AI/app/layout.tsx).
 3. **Structured Data Components**: Implement `components/seo/JsonLd.tsx` and attach to landing pages.
 4. **Core Web Vitals Font Optimization**: Apply `adjustFontFallback` and `display: "swap"` to Nearo/Montserrat/Lexend fonts.
-5. **Public Shareable AI Routes**: Implement `app/share/meal/[id]/page.tsx` and public `/calculadora-macros` route.
-6. **Lighthouse CI & Verification**: Add Cypress performance test assertions.
+5. **Public Macro Calculator**: Implement `/calculadora-macros` route reusing `CalorieCalculationService` and domain types.
+6. **Analytics & Webmaster Tools**: Add Search Console and Bing verification meta tags to root metadata.
+7. **Lighthouse CI & Verification**: Add Cypress performance test assertions and Lighthouse CI gate.
 
 ### Technical Dependencies
 

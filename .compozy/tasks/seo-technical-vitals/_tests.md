@@ -5,9 +5,9 @@ Derived from `_user_stories.md` (behavior) and `_techspec.md` (components).
 
 ## Strategy
 
-- **Frameworks and harnesses**: Jest/Vitest for unit tests; Cypress for integration, E2E user journeys, and Lighthouse performance CI assertions.
-- **Execution**: Run `pnpm test` for unit tests; run `pnpm cy:run` for Cypress tests using `pnpm dev:mock`.
-- **Conventions**: Pure function unit tests in `tests/unit/seo/`; Cypress tests in `cypress/e2e/seo/`.
+- **Frameworks and harnesses**: Cypress (E2E) for all tests — pure function assertions, integration route checks, and Lighthouse performance CI.
+- **Execution**: Start `pnpm dev:mock` in one terminal, then run `pnpm cy:run`.
+- **Conventions**: SEO utility tests in `cypress/e2e/seo/seo-utils.cy.ts`; specialized integration/E2E tests in `cypress/e2e/seo/`.
 
 ---
 
@@ -16,12 +16,11 @@ Derived from `_user_stories.md` (behavior) and `_techspec.md` (components).
 | Source | Behavior | Unit | Integration | E2E |
 |---|---|---|---|---|
 | US-001 | Audit Pipeline & Lighthouse | — | IT-001 | E2E-001 |
-| US-002 | Dynamic Metadata & Canonicals | UT-001, UT-002 | IT-002 | E2E-002 |
+| US-002 | Dynamic Metadata & Canonicals | UT-001, UT-002 | IT-002 | — |
 | US-003 | Dynamic Sitemap & Robots.txt | UT-003 | IT-003 | E2E-003 |
 | US-004 | JSON-LD Structured Data | UT-004, UT-005 | IT-004 | — |
 | US-005 | Core Web Vitals 95+ Score | — | IT-005 | E2E-004 |
 | US-006 | Public Macro Calculators | UT-006 | — | E2E-005 |
-| US-008 | Shareable Public AI Meals | UT-007 | IT-006 | E2E-006 |
 | US-012 | Accessibility (a11y) | UT-009 | IT-007 | E2E-007 |
 | `utils/seo/metadata.ts` | Dynamic metadata builder | UT-001, UT-002 | — | — |
 | `utils/seo/canonical.ts` | Canonical URL formatting | UT-008 | — | — |
@@ -60,7 +59,6 @@ Derived from `_user_stories.md` (behavior) and `_techspec.md` (components).
 - **IT-003**: Dynamic `sitemap.xml` & `robots.txt` — fetch `/sitemap.xml` and `/robots.txt` endpoints and assert HTTP 200 OK headers and correct disallow directives (`/dashboard`, `/historico`, `/settings`, `/checkout`).
 - **IT-004**: JSON-LD Component — verify `<script type="application/ld+json">` renders valid un-escaped JSON string in Document Head.
 - **IT-005**: Core Web Vitals layout shift — verify custom local fonts load without causing element shifts (CLS = 0.00).
-- **IT-006**: Shareable AI Meal route — fetch `/share/meal/sample-id` and verify public HTML renders macro values without requiring auth cookies.
 - **IT-007**: Accessibility audit — inspect DOM across all public routes and assert 100% of `<img>` and `<Image>` tags have non-empty `alt` attributes and interactive controls have valid `aria-label` / `aria-expanded` attributes.
 
 ## End-to-End Tests
@@ -68,9 +66,7 @@ Derived from `_user_stories.md` (behavior) and `_techspec.md` (components).
 ### User & Crawler Journeys
 
 - **E2E-001**: Search crawler visits `/` → parses page → finds valid canonical link, sitemap reference, and 0 broken links.
-- **E2E-002**: Visitor navigates to `/landing-page` → sees localized dynamic metadata and social share cards.
 - **E2E-003**: Crawler requests `/sitemap.xml` → parses all indexed URLs → confirms all return 200 OK.
 - **E2E-004**: Visitor loads mobile view on 4G throttle → Lighthouse audit executes and returns Performance score >= 95.
-- **E2E-005**: Unauthenticated visitor visits `/calculadora-macros` → fills age, weight, height → calculates macros → clicks CTA to register.
-- **E2E-006**: Registered user clicks "Compartilhar Refeição" → copies public link `/share/meal/123` → opens link in new Incognito browser window → views meal analysis and macro cards cleanly.
+- **E2E-005**: Unauthenticated visitor visits `/calculadora-macros` → fills age, weight, height, activity, goal → calculates macros → sees chart with calorie target and macro split → clicks CTA to register.
 - **E2E-007**: Screen reader user navigates public landing page → all image alt texts render translated text according to active locale (`pt-BR`, `en`, `es`).

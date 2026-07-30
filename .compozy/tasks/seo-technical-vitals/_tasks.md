@@ -32,5 +32,5 @@ Manifest graph of execution tasks for `seo-technical-vitals`.
 
 - **task_01**: Módulo Puro de SEO, Metadata Dinâmica, Canonicais e JSON-LD (`task_01.md`)
 - **task_02**: Infraestrutura Next.js App Router (Sitemap.xml, Robots.txt, Fontes e Layout A11y) (`task_02.md`)
-- **task_03**: Páginas Públicas, Calculadoras de Nutrição e Relatórios de Refeições Compartilháveis (`task_03.md`)
-- **task_04**: Landing Page Hero com Simulador IA, Widget Incorporável, Analytics e Auditoria CI/Lighthouse (`task_04.md`)
+- **task_03**: Calculadora Pública de Macros com Gráficos e SEO (`task_03.md`)
+- **task_04**: Analytics, Search Console Verification e Pipeline de Auditoria Lighthouse CI (`task_04.md`)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Levemente AI** is an AI-powered meal tracking and macro calculation web application built with Next.js 16 (App Router), React 19, TypeScript, and Clean Architecture. While 95% of the core meal-logging application resides behind authentication (`/dashboard`, `/food-analysis`, `/historico`), the primary organic user acquisition surface relies on public marketing pages, landing pages, dynamic public tools, shareable AI meal insights, and evergreen content.
+**Levemente AI** is an AI-powered meal tracking and macro calculation web application built with Next.js 16 (App Router), React 19, TypeScript, and Clean Architecture. While 95% of the core meal-logging application resides behind authentication (`/dashboard`, `/food-analysis`, `/historico`), the primary organic user acquisition surface relies on public marketing pages, landing pages, dynamic public tools, and evergreen content.
 
 This PRD details a comprehensive, production-ready specification structured into **10 Epics** to transform Levemente AI into a high-authority, search-optimized platform with sub-second Core Web Vitals (LCP < 1.8s, CLS < 0.05, INP < 100ms, TTFB < 400ms, Lighthouse 95+), rich JSON-LD microdata, AI Overview (GEO) optimization, and conversion-focused landing pages.
 
@@ -13,8 +13,8 @@ This PRD details a comprehensive, production-ready specification structured into
 1. **Complete Technical SEO & Crawler Infrastructure**: 100% crawlability, dynamic Next.js metadata, automated `sitemap.xml`, `robots.txt`, clean canonical URLs, and zero broken internal links or redirect loops.
 2. **Schema.org Rich Snippet & GEO Dominance**: Complete JSON-LD microdata integration (`SoftwareApplication`, `WebApplication`, `FAQPage`, `Organization`, `Recipe`/`NutritionInformation`).
 3. **Core Web Vitals & Performance (Lighthouse 95+)**: Achieve sub-second page rendering for public routes, zero cumulative layout shifts (CLS < 0.05), fast interaction response (INP < 100ms), and optimized font/asset loading.
-4. **Public AI Features & Virality Flywheel**: Indexable public shareable AI meal reports (`/share/meal/[id]`) and free nutrition calculators (`/calculadora-macros`, `/calculadora-tdee`) driving organic backlinks and social shares.
-5. **High-Converting Landing Pages & Content Clusters**: Transparent landing page hero sections, interactive AI meal simulators, rich FAQs, and comparative content clusters (e.g., *Levemente AI vs Manual Macro Counting*).
+4. **Public Nutrition Calculators**: Indexable free nutrition calculators (`/calculadora-macros`) driving organic traffic, backlinks, and visitor-to-user conversion.
+5. **Content Clusters**: Rich FAQs, comparative content clusters (e.g., *Levemente AI vs Manual Macro Counting*), and organic acquisition content.
 
 ---
 
@@ -29,9 +29,6 @@ Index into [`_user_stories.md`](_user_stories.md), the canonical story catalog:
 - **US-005**: Core Web Vitals 95+ Optimization Engine — [Details](_user_stories.md#us-005-core-web-vitals-95-optimization-engine)
 - **US-006**: Public Calorie/Macro Calculators & High-Intent Landing Pages — [Details](_user_stories.md#us-006-public-caloriemacro-calculators--high-intent-landing-pages)
 - **US-007**: Public Diet & Macro Glossary with Evergreen Articles — [Details](_user_stories.md#us-007-public-diet--macro-glossary-with-evergreen-articles)
-- **US-008**: Shareable Public AI Meal Insights & Reports — [Details](_user_stories.md#us-008-shareable-public-ai-meal-insights--reports)
-- **US-009**: Conversion-Driven Public Landing Pages — [Details](_user_stories.md#us-009-conversion-driven-public-landing-pages)
-- **US-010**: Digital PR & Embeddable Macro Widget — [Details](_user_stories.md#us-010-digital-pr--embeddable-macro-widget)
 - **US-011**: Analytics, Search Console & Monitoring — [Details](_user_stories.md#us-011-analytics-search-console--monitoring)
 
 ---
@@ -48,21 +45,15 @@ Epic 2 — SEO Técnico
 Epic 3 — Estratégia de Conteúdo & Hubs Publicos
  ├── Feature 3.1: Programmatic Free Nutrition & Macro Calculators
  └── Feature 3.2: High-Intent Keyword Content Cluster & Glossary System
-Epic 4 — IA + SEO Virality Flywheel
- └── Feature 4.1: Public Indexable AI Meal Insights & Shared Reports
-Epic 5 — Core Web Vitals & Performance (Lighthouse 95+)
- ├── Feature 5.1: Asset & Font Optimization Engine (Nearo, Montserrat, Lexend)
- └── Feature 5.2: Server Component Rendering & Cache Optimization (RSC + ISR)
-Epic 6 — Conversão & UX de Landing Page
- └── Feature 6.1: High-Converting Public Hero, Social Proof & Interactive Simulator
-Epic 7 — Digital PR & Backlinks Engine
- └── Feature 7.1: Embeddable Macro Calculator Widget & Free Tool Directory Distribution
-Epic 8 — Analytics, Monitoring & Search Console
- └── Feature 8.1: Multi-Provider Webmaster & Conversion Tracking (Plausible / GA4)
-Epic 9 — Roadmap & Priorização Impacto x Esforço
- └── Feature 9.1: Eisenhower Matrix Roadmap (High Impact / Low Effort First)
-Epic 10 — Checklist Final de Implementação
- └── Feature 10.1: Production Readiness Verification Gate
+Epic 4 — Core Web Vitals & Performance (Lighthouse 95+)
+ ├── Feature 4.1: Asset & Font Optimization Engine (Nearo, Montserrat, Lexend)
+ └── Feature 4.2: Server Component Rendering & Cache Optimization (RSC + ISR)
+Epic 5 — Analytics, Monitoring & Search Console
+ └── Feature 5.1: Multi-Provider Webmaster & Conversion Tracking (Plausible / GA4)
+Epic 6 — Roadmap & Priorização Impacto x Esforço
+ └── Feature 6.1: Eisenhower Matrix Roadmap (High Impact / Low Effort First)
+Epic 7 — Checklist Final de Implementação
+ └── Feature 7.1: Production Readiness Verification Gate
 ```
 
 ---
@@ -126,13 +117,18 @@ Epic 10 — Checklist Final de Implementação
 
 ### Epic 3 — Conteúdo & Hubs Públicos
 
-#### Feature 3.1: Programmatic Free Nutrition & Macro Calculators
-- **Description**: Build public, unauthenticated calculation tools (`/calculadora-macros`, `/calculadora-tdee`).
-- **Justification**: Captures high-volume organic search queries (*"calculadora de macros grátis"*, *"como calcular TDEE"*) and converts visitors to registered users.
+#### Feature 3.1: Public Macro Calculator with Charts & Conversion CTA
+- **Description**: Build a public, unauthenticated macro calculation page (`/calculadora-macros`) that reuses existing domain entities (`PersonalInfo`, `FitnessGoals`) and the pure `CalorieCalculationService` for TDEE/macro calculation.
+- **Justification**: Captures high-volume organic search queries (*"calculadora de macros grátis"*, *"como calcular meus macros"*) and converts visitors to registered users by letting them experience the product's core value instantly.
 - **Tasks**:
-  - `Task 3.1.1`: Create `/calculadora-macros` public page with instant client-side calculation.
-    - *Subtasks*: Input age, weight, height, activity level, and goal (weight loss, muscle gain); compute calories/macros with visual charts; display CTA "Salvar dieta no Levemente AI".
-    - *Acceptance Criteria*: Visitor can calculate macros in 3 clicks without registering; CTA links directly to free instant signup.
+  - `Task 3.1.1`: Create `/calculadora-macros` as a public client component page with:
+    - Input fields for age, weight, height, gender, activity level, and goal (lose/maintain/gain)
+    - Instant client-side calculation using `CalorieCalculationService.calculateGoals()`
+    - Visual charts (reusing `MacroSplitChart` or similar) displaying calorie target and macro split (protein, carbs, fats)
+    - Prominent CTA "Salvar dieta no Levemente AI" linking to `/login`
+    - Dynamic SEO metadata via `generateMetadata()` + `buildSeoMetadata()`
+    - Server-side rendered shell with client island for the interactive form
+    - *Acceptance Criteria*: Visitor can calculate macros in 3 clicks without registering; page is indexable by search engines with proper meta tags; CTA links to free signup.
 
 #### Feature 3.2: High-Intent Keyword Content Cluster & Glossary System
 - **Description**: Build a lightweight markdown/JSON-driven content cluster (`/glossario/[term]`, `/blog/[slug]`).
@@ -144,86 +140,50 @@ Epic 10 — Checklist Final de Implementação
 
 ---
 
-### Epic 4 — IA + SEO Virality Flywheel
+### Epic 4 — Performance (Core Web Vitals 95+)
 
-#### Feature 4.1: Public Indexable AI Meal Insights & Shared Reports
-- **Description**: Allow logged-in users to share an AI meal breakdown publicly via a share link (`/share/meal/[id]`).
-- **Justification**: Creates a organic viral loop where users share AI meal scans on social media, while search engines index public nutritional insights.
-- **Tasks**:
-  - `Task 4.1.1`: Implement public `/share/meal/[id]` route with `Recipe` & `NutritionInformation` JSON-LD.
-    - *Subtasks*: Fetch meal data via `MealRepository`; render image, calories, protein, carbs, fats, and AI dietary advice; generate dynamic OpenGraph preview image with meal summary.
-    - *Acceptance Criteria*: Unauthenticated visitors and crawlers see full meal breakdown and OG share preview image.
-
----
-
-### Epic 5 — Performance (Core Web Vitals 95+)
-
-#### Feature 5.1: Asset & Font Optimization Engine
+#### Feature 4.1: Asset & Font Optimization Engine
 - **Description**: Optimize font loading (Montserrat, Lexend, Nearo) and image asset delivery using `next/font` and `next/image`.
 - **Justification**: Eliminates Cumulative Layout Shift (CLS) and reduces Largest Contentful Paint (LCP) under 1.8 seconds.
 - **Tasks**:
-  - `Task 5.1.1`: Optimize custom local font loading (`Nearo-*.ttf`) in `app/layout.tsx`.
+  - `Task 4.1.1`: Optimize custom local font loading (`Nearo-*.ttf`) in `app/layout.tsx`.
     - *Subtasks*: Apply `display: "swap"` and fallback metrics (`adjustFontFallback`); reserve CSS box dimensions for dynamic elements.
     - *Acceptance Criteria*: CLS score measures strictly 0.00 on initial page load.
 
-#### Feature 5.2: Server Component Rendering & Edge Caching
+#### Feature 4.2: Server Component Rendering & Edge Caching
 - **Description**: Leverage Next.js App Router Server Components (RSC) for all public marketing pages.
 - **Justification**: Achieves sub-400ms Time-To-First-Byte (TTFB) and zero JavaScript payload for initial text rendering.
 - **Tasks**:
-  - `Task 5.2.1`: Refactor `/landing-page` and `/plans` into zero-client JS Server Components where applicable.
+  - `Task 4.2.1`: Refactor `/landing-page` and `/plans` into zero-client JS Server Components where applicable.
     - *Subtasks*: Move interactive components (accordions, modals) into isolated client boundaries (`'use client'`).
     - *Acceptance Criteria*: Initial HTML bundle size reduced by > 40%.
 
 ---
 
-### Epic 6 — Conversão & UX de Landing Page
+### Epic 5 — Analytics, Monitoring & Search Console
 
-#### Feature 6.1: High-Converting Public Hero, Social Proof & Interactive Simulator
-- **Description**: Redesign public hero section on `/landing-page` with instant AI meal simulation, user trust badges, and zero-friction CTA.
-- **Justification**: Converts organic search traffic into active users without long onboarding walls.
-- **Tasks**:
-  - `Task 6.1.1`: Create interactive AI Meal Demo widget on landing page hero.
-    - *Subtasks*: Allow visitors to type a sample meal (e.g., *"2 ovos mexidos e 1 fatia de pão integral"*) and see instant simulated AI macro response.
-    - *Acceptance Criteria*: Demo responds in < 300ms visually; includes prominent CTA "Registrar Minha Refeição Agora Grátis".
-
----
-
-### Epic 7 — Estratégia de Backlinks
-
-#### Feature 7.1: Embeddable Macro Calculator Widget & Digital PR
-- **Description**: Build an embeddable `<iframe>` widget (`/widget/calculadora-macros`) for fitness blogs and personal trainers.
-- **Justification**: Generates passive, high-authority do-follow backlinks pointing to `https://levemente.ia.br`.
-- **Tasks**:
-  - `Task 7.1.1`: Create `/widget/calculadora-macros` route with backlink attribution badge ("Powered by Levemente AI").
-    - *Subtasks*: Provide HTML snippet generator on public calculator page for 1-click copy-paste embedding.
-    - *Acceptance Criteria*: Embedded widget functions seamlessly on external sites with working canonical backlink.
-
----
-
-### Epic 8 — Analytics, Monitoring & Search Console
-
-#### Feature 8.1: Multi-Provider Webmaster & Conversion Tracking
+#### Feature 5.1: Multi-Provider Webmaster & Conversion Tracking
 - **Description**: Integrate Google Search Console, Bing Webmaster Tools, and lightweight privacy-friendly analytics (Plausible / GA4).
 - **Justification**: Provides real-time visibility into keyword impressions, organic CTR, and search conversion rates.
 - **Tasks**:
-  - `Task 8.1.1`: Add meta verification tags for Google Search Console and Bing Webmaster Tools in root metadata.
+  - `Task 5.1.1`: Add meta verification tags for Google Search Console and Bing Webmaster Tools in root metadata.
     - *Subtasks*: Inject `verification: { google: "...", yandex: "...", bing: "..." }` via Next.js metadata config.
     - *Acceptance Criteria*: Verification meta tags present in `<head>` output.
 
 ---
 
-## Epic 9 — Roadmap & Prioritization (Eisenhower Matrix)
+## Epic 6 — Roadmap & Prioritization (Eisenhower Matrix)
 
 | Priority Tier | Impact | Effort | Features / Tasks | Target Milestone |
-|---|---|---|---|---|
-| **P0 (Critical)** | High | Low | Dynamic Metadata, Canonical URLs, Sitemap.xml, Robots.txt, Font CLS Fixes (`Task 2.1.1`, `Task 2.2.1`, `Task 5.1.1`) | Sprint 1 |
-| **P1 (High)** | High | Medium | JSON-LD Schemas (`SoftwareApplication`, `FAQPage`), Interactive Landing Page Hero Demo (`Task 2.3.1`, `Task 6.1.1`) | Sprint 2 |
-| **P2 (Medium)** | High | Medium | Free Public Macro & TDEE Calculators, Shareable Public AI Meal Insights (`Task 3.1.1`, `Task 4.1.1`) | Sprint 3 |
-| **P3 (Growth)** | Medium | Low | Embeddable Calculator Widget, Glossario Cluster (`Task 3.2.1`, `Task 7.1.1`) | Sprint 4 |
+|---|---|---|---|---|---|
+| **P0 (Critical)** | High | Low | Dynamic Metadata, Canonical URLs, Sitemap.xml, Robots.txt, Font CLS Fixes (`Task 2.1.1`, `Task 2.2.1`, `Task 4.1.1`) | Sprint 1 |
+| **P1 (High)** | High | Medium | JSON-LD Schemas (`SoftwareApplication`, `FAQPage`), Search Console Verification (`Task 2.3.1`, `Task 5.1.1`) | Sprint 2 |
+| **P2 (Medium)** | High | Medium | Free Public Macro Calculator with Charts, Lighthouse CI Pipeline (`Task 3.1.1`, `Task 4.x`) | Sprint 3 |
+| **P3 (Growth)** | Medium | Low | Glossario Cluster (`Task 3.2.1`) | Sprint 4 |
 
 ---
 
-## Epic 10 — Final Implementation Checklist
+## Epic 7 — Final Implementation Checklist
 
 - [ ] **SEO Técnico & Crawler Checklist**
   - [ ] Canonical tag present on all public routes without UTM parameters
@@ -235,7 +195,7 @@ Epic 10 — Checklist Final de Implementação
 - [ ] **Structured Data (JSON-LD) Checklist**
   - [ ] `SoftwareApplication` & `WebApplication` schema present on `/` and `/landing-page`
   - [ ] `FAQPage` schema injected on `/landing-page` and `/plans`
-  - [ ] `Recipe` & `NutritionInformation` schema present on public shared meal pages (`/share/meal/[id]`)
+  - [ ] `DefinedTerm` schema present on glossary pages
 
 - [ ] **Core Web Vitals Checklist**
   - [ ] Mobile Lighthouse Performance Score >= 95
@@ -244,10 +204,10 @@ Epic 10 — Checklist Final de Implementação
   - [ ] Interaction to Next Paint (INP) < 100ms
   - [ ] Time-To-First-Byte (TTFB) < 400ms
 
-- [ ] **Conversion & Virality Checklist**
-  - [ ] Hero CTA above the fold with 1-click free registration
-  - [ ] Interactive AI meal simulator operational on landing page
-  - [ ] OpenGraph image previews render accurately on WhatsApp, Twitter, and LinkedIn
+- [ ] **Conversion & Analytics Checklist**
+- [ ] Search Console verification meta tags present in `<head>`
+- [ ] `/calculadora-macros` indexed by search engines and converting visitors
+- [ ] Lighthouse CI pipeline gating builds at 95+ scores
 
 ---
 

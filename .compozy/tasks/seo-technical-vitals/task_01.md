@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Módulo Puro de SEO, Metadata Dinâmica, Canonicais e JSON-LD
 type: backend
 complexity: medium
@@ -26,11 +26,11 @@ Implement stateless, pure utility functions under `utils/seo/` to handle dynamic
 </requirements>
 
 ## Subtasks
-- [ ] 1.1 Create `utils/seo/canonical.ts` for clean canonical URL construction and query parameter stripping.
-- [ ] 1.2 Create `utils/seo/metadata.ts` for dynamic Next.js Metadata creation with fallback titles, descriptions, and OpenGraph configurations.
-- [ ] 1.3 Create `utils/seo/jsonld.ts` for `SoftwareApplication`, `WebApplication`, and `FAQPage` JSON-LD schema objects.
-- [ ] 1.4 Create `components/seo/JsonLd.tsx` React Server Component for rendering `<script type="application/ld+json">`.
-- [ ] 1.5 Write unit tests for metadata, canonical, and JSON-LD utilities under `tests/unit/seo/`.
+- [x] 1.1 Create `utils/seo/canonical.ts` for clean canonical URL construction and query parameter stripping.
+- [x] 1.2 Create `utils/seo/metadata.ts` for dynamic Next.js Metadata creation with fallback titles, descriptions, and OpenGraph configurations.
+- [x] 1.3 Create `utils/seo/jsonld.ts` for `SoftwareApplication`, `WebApplication`, and `FAQPage` JSON-LD schema objects.
+- [x] 1.4 Create `components/seo/JsonLd.tsx` React Server Component for rendering `<script type="application/ld+json">`.
+- [x] 1.5 Write unit tests for metadata, canonical, and JSON-LD utilities under `tests/unit/seo/`.
 
 ## Implementation Details
 
@@ -49,17 +49,17 @@ Implement stateless, pure utility functions under `utils/seo/` to handle dynamic
 
 ## Deliverables
 - `utils/seo/metadata.ts`, `utils/seo/canonical.ts`, `utils/seo/jsonld.ts`, and `components/seo/JsonLd.tsx`.
-- Unit tests in `tests/unit/seo/` implemented and passing for `UT-001`, `UT-002`, `UT-004`, `UT-005`, `UT-008`, `UT-009`.
+- Tests in `cypress/e2e/seo/seo-utils.cy.ts` implemented for `UT-001`, `UT-002`, `UT-004`, `UT-005`, `UT-008`, `UT-009`.
 - Every test case assigned in `## Tests` implemented and passing **(REQUIRED)**.
 
 ## Tests
 
-- [ ] **UT-001** — `buildSeoMetadata`: given valid inputs, produces absolute metadata object with canonical URL.
-- [ ] **UT-002** — `buildSeoMetadata`: applies fallback title when given empty/missing title.
-- [ ] **UT-004** — `buildSoftwareAppJsonLd`: produces valid Schema.org `SoftwareApplication` JSON object.
-- [ ] **UT-005** — `buildFaqJsonLd`: produces valid `FAQPage` JSON object.
-- [ ] **UT-008** — `buildCanonicalUrl`: strips tracking query parameters from URL.
-- [ ] **UT-009** — `buildSeoMetadata`: validates image alt attributes and localized fallback strings.
+- [x] **UT-001** — `buildSeoMetadata`: given valid inputs, produces absolute metadata object with canonical URL.
+- [x] **UT-002** — `buildSeoMetadata`: applies fallback title when given empty/missing title.
+- [x] **UT-004** — `buildSoftwareAppJsonLd`: produces valid Schema.org `SoftwareApplication` JSON object.
+- [x] **UT-005** — `buildFaqJsonLd`: produces valid `FAQPage` JSON object.
+- [x] **UT-008** — `buildCanonicalUrl`: strips tracking query parameters from URL.
+- [x] **UT-009** — `buildSeoMetadata`: validates image alt attributes and localized fallback strings.
 
 ## Success Criteria
 - Every assigned test case implemented and passing

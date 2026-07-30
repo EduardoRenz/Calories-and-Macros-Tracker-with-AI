@@ -1,14 +1,14 @@
 ---
 status: pending
-title: Páginas Públicas, Calculadoras de Nutrição e Relatórios de Refeições Compartilháveis
+title: Calculadora Pública de Macros com Gráficos e SEO
 type: frontend
-complexity: high
+complexity: medium
 ---
 
-# Task 3: Páginas Públicas, Calculadoras de Nutrição e Relatórios de Refeições Compartilháveis
+# Task 3: Calculadora Pública de Macros com Gráficos e SEO
 
 ## Overview
-Build the public-facing content routes that drive organic acquisition: an interactive macro/TDEE calculator (`/calculadora-macros`), a shareable AI meal report page (`/share/meal/[id]`), and accessibility-compliant localized image alt attributes across all public components. These routes are server-rendered with dynamic metadata and JSON-LD schemas from the utilities built in Task 1, wired into the infrastructure from Task 2.
+Build a public, unauthenticated macro calculator page (`/calculadora-macros`) that lets visitors calculate their daily calorie target and macro split (protein, carbs, fats) instantly. The page reuses existing domain entities (`PersonalInfo`, `FitnessGoals` from `domain/entities/profile.ts`) and the pure `CalorieCalculationService.calculateGoals()` for TDEE/macro computation. It renders visual charts and a conversion CTA, and is fully indexable by search engines via dynamic SEO metadata.
 
 <critical>
 - ALWAYS READ the PRD, the TechSpec, and their catalogs (`_user_stories.md`, `_tests.md`) before starting
@@ -19,60 +19,52 @@ Build the public-facing content routes that drive organic acquisition: an intera
 </critical>
 
 <requirements>
-- MUST create `/calculadora-macros` as a public, unauthenticated page with instant client-side macro/calorie calculation and a CTA linking to free registration.
-- MUST create `/share/meal/[id]` as a public Server Component route rendering meal macro data, AI advice, and `Recipe`/`NutritionInformation` JSON-LD without requiring authentication.
-- MUST generate dynamic OpenGraph preview images for shared meal pages.
-- MUST add localized i18n translation keys for all image `alt` attributes and ARIA labels on public pages using `locales/*.json`.
-- SHOULD use `generateMetadata()` and `buildSeoMetadata()` for per-route dynamic metadata on both new routes.
+- MUST create `/calculadora-macros` as a public, unauthenticated page with instant client-side macro/calorie calculation.
+- MUST reuse existing domain types (`PersonalInfo`, `FitnessGoals`) and `CalorieCalculationService.calculateGoals()` — do not duplicate calculation logic.
+- MUST provide a clean form with fields: age, weight, height, gender, activity level, and goal (lose/maintain/gain).
+- MUST display results with visual charts showing calorie target and macro split (protein, carbs, fats).
+- MUST include a prominent CTA "Salvar dieta no Levemente AI" linking to `/login`.
+- MUST use `generateMetadata()` + `buildSeoMetadata()` for per-route dynamic metadata and JSON-LD structured data.
+- MUST be indexable by search engines — server-rendered shell with client island for the interactive form.
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Create `app/calculadora-macros/page.tsx` with age/weight/height/activity inputs and instant macro calculation.
-- [ ] 3.2 Add `generateMetadata()` to `/calculadora-macros` using `buildSeoMetadata()` with localized title/description.
-- [ ] 3.3 Create `app/share/meal/[id]/page.tsx` as a public Server Component fetching meal data via `MealRepository`.
-- [ ] 3.4 Inject `Recipe` and `NutritionInformation` JSON-LD schema into `/share/meal/[id]` using `buildFaqJsonLd`-style builder.
-- [ ] 3.5 Generate dynamic OpenGraph preview image for shared meals (using Next.js `opengraph-image.tsx` or equivalent).
-- [ ] 3.6 Handle revoked/deleted meal shares with a friendly 404 page and CTA to try free meal scan.
-- [ ] 3.7 Add i18n translation keys for all image `alt` texts and ARIA labels in `locales/pt.json`, `locales/en.json`, `locales/es.json`.
-- [ ] 3.8 Write Cypress E2E tests for calculator flow, shared meal flow, and localized alt text verification.
+- [ ] 3.1 Create `app/calculadora-macros/page.tsx` as a server component shell with `generateMetadata()` using `buildSeoMetadata()`.
+- [ ] 3.2 Create `app/calculadora-macros/CalculatorForm.tsx` as a client component with inputs for age, weight, height, gender, activity level, and goal.
+- [ ] 3.3 Integrate `CalorieCalculationService.calculateGoals()` for instant client-side results.
+- [ ] 3.4 Render result charts (calorie target and macro split) — reuse `MacroSplitChart` or a lightweight inline chart.
+- [ ] 3.5 Add prominent CTA linking to `/login` with "Salvar dieta no Levemente AI".
+- [ ] 3.6 Write Cypress tests for UT-006 and E2E-005.
 
 ## Implementation Details
 
 ### Relevant Files
-- `app/calculadora-macros/page.tsx` — Public macro calculator page (new).
-- `app/share/meal/[id]/page.tsx` — Public shareable meal report (new).
-- `app/share/meal/[id]/opengraph-image.tsx` — Dynamic OG image generator (new).
-- `locales/pt.json`, `locales/en.json`, `locales/es.json` — i18n translation files (modified).
+- `app/calculadora-macros/page.tsx` — Server component with `generateMetadata()` (new).
+- `app/calculadora-macros/CalculatorForm.tsx` — Client component with form + chart (new).
+- `domain/entities/profile.ts` — Reuses `PersonalInfo`, `FitnessGoals` types and `isProfileComplete()`.
+- `domain/services/CalorieCalculationService.ts` — Reuses pure `calculateGoals()` function.
+- `components/MacroSplitChart.tsx` — Existing chart component for macro visualization.
 
 ### Dependent Files
-- `utils/seo/metadata.ts` — Consumed by `generateMetadata()` in both routes.
-- `utils/seo/jsonld.ts` — Consumed for `Recipe`/`NutritionInformation` schema.
+- `utils/seo/metadata.ts` — Consumed by `generateMetadata()`.
+- `utils/seo/jsonld.ts` — JSON-LD schema builders.
 - `components/seo/JsonLd.tsx` — Renders JSON-LD script tags.
-- `domain/repositories/MealRepository` — Fetches meal data for shared reports.
 
 ### Related ADRs
 - [ADR-002: Pure Utility Functions for SEO](../adrs/adr-002.md) — Pure function consumption in route metadata.
 
 ## Deliverables
-- `app/calculadora-macros/page.tsx` with interactive macro calculator and CTA.
-- `app/share/meal/[id]/page.tsx` with public meal breakdown and JSON-LD.
-- Dynamic OpenGraph image generation for shared meals.
-- Localized i18n keys for image `alt` attributes across all public components.
+- `app/calculadora-macros/page.tsx` with SEO metadata and server shell.
+- `app/calculadora-macros/CalculatorForm.tsx` with form inputs, instant calculation, charts, and CTA.
 - Every test case assigned in `## Tests` implemented and passing **(REQUIRED)**.
 
 ## Tests
 
-- [ ] **UT-006** — Macro calculator: given valid age/weight/height/activity inputs, computes correct calorie/macro values.
-- [ ] **UT-007** — Shared meal page: given valid meal entity, renders macro breakdown data.
-- [ ] **IT-006** — Shareable AI Meal route: fetch `/share/meal/sample-id` returns public HTML with macro values without auth cookies.
-- [ ] **E2E-002** — Visitor navigates to `/landing-page` → sees localized dynamic metadata and social share cards.
-- [ ] **E2E-003** — Crawler requests `/sitemap.xml` → parses all indexed URLs → confirms all return 200 OK.
-- [ ] **E2E-005** — Unauthenticated visitor visits `/calculadora-macros` → fills inputs → calculates macros → clicks CTA.
-- [ ] **E2E-006** — User copies public link `/share/meal/123` → opens in incognito → views meal analysis cleanly.
-- [ ] **E2E-007** — Screen reader navigates public landing page → all image alt texts render translated text per active locale.
+- [ ] **UT-006** — `CalorieCalculationService.calculateGoals`: given valid personal info and fitness goals, returns correct calorie/macro values with Mifflin-St Jeor formula.
+- [ ] **E2E-005** — Unauthenticated visitor visits `/calculadora-macros` → fills age, weight, height, activity, goal → calculates macros → sees chart with calorie target and macro split → clicks CTA to register.
 
 ## Success Criteria
 - Every assigned test case implemented and passing
 - `/calculadora-macros` usable in 3 clicks without registration
-- `/share/meal/[id]` renders full meal breakdown to unauthenticated visitors
-- 100% of public images have non-empty localized `alt` attributes
+- Page is indexable by search engines (meta tags, JSON-LD, no login wall)
+- Macro results include calories, protein, carbs, and fats with visual chart
