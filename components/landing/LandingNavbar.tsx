@@ -52,6 +52,12 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
           >
             {t('landing.navbar.benefits')}
           </a>
+          <Link
+            href="/calculadora-macros"
+            className="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+          >
+            {t('landing.navbar.calculator')}
+          </Link>
           <a
             href="#pricing"
             className="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
@@ -127,6 +133,13 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
             >
               {t('landing.navbar.benefits')}
             </a>
+            <Link
+              href="/calculadora-macros"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="py-3 px-4 text-on-surface-variant font-medium font-label rounded-xl hover:bg-surface-container transition-colors"
+            >
+              {t('landing.navbar.calculator')}
+            </Link>
             <a
               href="#pricing"
               onClick={() => setIsMobileMenuOpen(false)}
