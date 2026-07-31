@@ -475,6 +475,7 @@ const pt = {
     navbar: {
       features: "Recursos",
       benefits: "Benefícios",
+      calculator: "Calculadora de Macros",
       pricing: "Preços",
       login: "Login",
       start: "Começar",
@@ -567,6 +568,11 @@ const pt = {
       loading: "Carregando planos...",
       error: "Não conseguimos carregar os planos agora. Tente novamente em instantes.",
       recommended: "Recomendado",
+    },
+    calculator_cta: {
+      title: "Calculadora de Macros Grátis",
+      subtitle: "Calcule sua meta diária de calorias e macronutrientes em segundos — sem cadastro.",
+      cta: "Calcular Meus Macros",
     },
     cta: {
       title: "Pronto para transformar sua rotina?",

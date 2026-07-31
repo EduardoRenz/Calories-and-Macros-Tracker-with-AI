@@ -470,6 +470,7 @@ const es = {
     navbar: {
       features: "Características",
       benefits: "Beneficios",
+      calculator: "Calculadora de Macros",
       pricing: "Precios",
       login: "Iniciar Sesión",
       start: "Comenzar",
@@ -562,6 +563,11 @@ const es = {
       loading: "Cargando planes...",
       error: "No pudimos cargar los planes ahora. Inténtalo de nuevo en un momento.",
       recommended: "Recomendado",
+    },
+    calculator_cta: {
+      title: "Calculadora de Macros Gratis",
+      subtitle: "Calcula tu meta diaria de calorías y macronutrientes en segundos — sin registro.",
+      cta: "Calcular Mis Macros",
     },
     cta: {
       title: "¿Listo para transformar tu rutina?",

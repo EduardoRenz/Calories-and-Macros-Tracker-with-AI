@@ -472,6 +472,7 @@ const en = {
     navbar: {
       features: "Features",
       benefits: "Benefits",
+      calculator: "Macro Calculator",
       pricing: "Pricing",
       login: "Login",
       start: "Get Started",
@@ -564,6 +565,11 @@ const en = {
       loading: "Loading plans...",
       error: "We couldn't load the plans right now. Please try again in a moment.",
       recommended: "Recommended",
+    },
+    calculator_cta: {
+      title: "Free Macro Calculator",
+      subtitle: "Calculate your daily calorie target and macro split in seconds — no signup needed.",
+      cta: "Calculate My Macros",
     },
     cta: {
       title: "Ready to transform your routine?",
