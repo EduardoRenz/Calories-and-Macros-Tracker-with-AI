@@ -1,4 +1,4 @@
-const PUBLIC_PAGES = ['/', '/landing-page', '/plans', '/privacy-policy', '/terms-of-use'];
+const PUBLIC_PAGES = ['/', '/landing-page', '/plans', '/privacy-policy', '/terms-of-use', '/calculadora-macros'];
 
 describe('IT-001: Heading hierarchy', () => {
   PUBLIC_PAGES.forEach((path) => {
@@ -55,6 +55,19 @@ describe('IT-005: Font CLS optimization', () => {
   it('loads Montserrat as body font', () => {
     cy.visit('/');
     cy.get('body').should('have.css', 'font-family').and('match', /Montserrat/i);
+  });
+});
+
+describe('E2E-001: Crawler visit', () => {
+  it('finds canonical link and 0 broken links on /', () => {
+    cy.visit('/');
+    cy.get('link[rel="canonical"]').should('have.attr', 'href');
+    cy.get('a').each(($a) => {
+      const href = $a.attr('href');
+      if (href && href.startsWith('/') && !href.startsWith('//')) {
+        cy.request({ url: href, failOnStatusCode: false }).its('status').should('not.eq', 404);
+      }
+    });
   });
 });
 
