@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { buildSeoMetadata } from '@/utils/seo/metadata';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import CalculatorHeader from './CalculatorHeader';
 import CalculatorForm from './CalculatorForm';
 
@@ -15,6 +16,11 @@ export default function CalculadoraMacrosPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-2xl px-4 py-12">
+        <div className="mb-4 flex justify-center">
+          <div className="w-full max-w-xs">
+            <LanguageSwitcher showBorder={false} />
+          </div>
+        </div>
         <CalculatorHeader />
         <CalculatorForm />
       </div>
