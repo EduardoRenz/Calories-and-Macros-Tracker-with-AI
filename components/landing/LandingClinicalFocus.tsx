@@ -36,7 +36,7 @@ export const LandingClinicalFocus: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center lg:justify-end">
+            <div className="hidden lg:flex justify-center lg:justify-end">
               <div className="w-full max-w-sm aspect-square rounded-full overflow-hidden shadow-lg">
                 <Image
                   src="/images/Levemente_app.webp"
