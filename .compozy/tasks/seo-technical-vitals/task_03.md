@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 title: Calculadora Pública de Macros com Gráficos e SEO
 type: frontend
 complexity: medium
@@ -29,12 +29,12 @@ Build a public, unauthenticated macro calculator page (`/calculadora-macros`) th
 </requirements>
 
 ## Subtasks
-- [ ] 3.1 Create `app/calculadora-macros/page.tsx` as a server component shell with `generateMetadata()` using `buildSeoMetadata()`.
-- [ ] 3.2 Create `app/calculadora-macros/CalculatorForm.tsx` as a client component with inputs for age, weight, height, gender, activity level, and goal.
-- [ ] 3.3 Integrate `CalorieCalculationService.calculateGoals()` for instant client-side results.
-- [ ] 3.4 Render result charts (calorie target and macro split) — reuse `MacroSplitChart` or a lightweight inline chart.
-- [ ] 3.5 Add prominent CTA linking to `/login` with "Salvar dieta no Levemente AI".
-- [ ] 3.6 Write Cypress tests for UT-006 and E2E-005.
+- [x] 3.1 Create `app/calculadora-macros/page.tsx` as a server component shell with `generateMetadata()` using `buildSeoMetadata()`.
+- [x] 3.2 Create `app/calculadora-macros/CalculatorForm.tsx` as a client component with inputs for age, weight, height, gender, activity level, and goal.
+- [x] 3.3 Integrate `CalorieCalculationService.calculateGoals()` for instant client-side results.
+- [x] 3.4 Render result charts (calorie target and macro split) with inline macro bars.
+- [x] 3.5 Add prominent CTA linking to `/login` with "Salvar dieta no LeveMente AI".
+- [x] 3.6 Write Cypress tests for UT-006 and E2E-005.
 
 ## Implementation Details
 
@@ -60,8 +60,8 @@ Build a public, unauthenticated macro calculator page (`/calculadora-macros`) th
 
 ## Tests
 
-- [ ] **UT-006** — `CalorieCalculationService.calculateGoals`: given valid personal info and fitness goals, returns correct calorie/macro values with Mifflin-St Jeor formula.
-- [ ] **E2E-005** — Unauthenticated visitor visits `/calculadora-macros` → fills age, weight, height, activity, goal → calculates macros → sees chart with calorie target and macro split → clicks CTA to register.
+- [x] **UT-006** — `CalorieCalculationService.calculateGoals`: given valid personal info and fitness goals, returns correct calorie/macro values with Mifflin-St Jeor formula.
+- [x] **E2E-005** — Unauthenticated visitor visits `/calculadora-macros` → fills age, weight, height, activity, goal → calculates macros → sees chart with calorie target and macro split → clicks CTA to register.
 
 ## Success Criteria
 - Every assigned test case implemented and passing

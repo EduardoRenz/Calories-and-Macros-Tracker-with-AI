@@ -42,25 +42,25 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
         <div className="hidden md:flex items-center gap-6">
           <a
             href="#features"
-            className="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+            className="text-on-surface-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
           >
             {t('landing.navbar.features')}
           </a>
           <a
             href="#benefits"
-            className="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+            className="text-on-surface-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
           >
             {t('landing.navbar.benefits')}
           </a>
           <Link
             href="/calculadora-macros"
-            className="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+            className="text-on-surface-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
           >
             {t('landing.navbar.calculator')}
           </Link>
           <a
             href="#pricing"
-            className="text-on-surface-variant dark:text-outline-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+            className="text-on-surface-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
           >
             {t('landing.navbar.pricing')}
           </a>

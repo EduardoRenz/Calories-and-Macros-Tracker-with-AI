@@ -237,6 +237,7 @@ export default function CalculatorForm() {
               ref={genderRef}
               value={form.gender}
               onChange={updateField('gender')}
+              aria-label={t('calculator.gender')}
               className={fieldErrors.gender ? ERROR_SELECT_CLASS : SELECT_CLASS}
             >
               <option value="">{t('calculator.select')}</option>
@@ -254,6 +255,7 @@ export default function CalculatorForm() {
               ref={activityRef}
               value={form.activityLevel}
               onChange={updateField('activityLevel')}
+              aria-label={t('calculator.activity_level')}
               className={fieldErrors.activityLevel ? ERROR_SELECT_CLASS : SELECT_CLASS}
             >
               <option value="">{t('calculator.select')}</option>
@@ -271,6 +273,7 @@ export default function CalculatorForm() {
               ref={goalRef}
               value={form.goal}
               onChange={updateField('goal')}
+              aria-label={t('calculator.goal')}
               className={fieldErrors.goal ? ERROR_SELECT_CLASS : SELECT_CLASS}
             >
               <option value="">{t('calculator.select')}</option>
@@ -286,7 +289,7 @@ export default function CalculatorForm() {
 
         <button
           onClick={handleCalculate}
-          className="mt-6 w-full rounded-xl bg-brand-primary py-3 font-semibold text-white transition-opacity hover:opacity-90"
+          className="mt-6 w-full rounded-xl bg-brand-primary py-3 font-semibold text-on-primary transition-opacity hover:opacity-90"
         >
           {t('calculator.calculate')}
         </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
@@ -16,10 +16,18 @@ export default function LoginPage() {
     const router = useRouter();
     const { isFeatureEnabled, loading: flagsLoading } = useFeatureFlags();
     const plansEnabled = !flagsLoading && isFeatureEnabled(FeatureFlags.ENABLE_PLANS);
+    const redirectRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (user && !loading) {
-            router.push('/dashboard');
+            if (redirectRef.current) {
+                router.push(redirectRef.current);
+                return;
+            }
+            const redirect = sessionStorage.getItem('login_redirect') || '/dashboard';
+            sessionStorage.removeItem('login_redirect');
+            redirectRef.current = redirect;
+            router.push(redirect);
         }
     }, [user, loading, router]);
 
