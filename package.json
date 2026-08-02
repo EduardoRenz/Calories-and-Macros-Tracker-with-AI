@@ -1,7 +1,7 @@
 {
   "name": "caloriecounter-profile-goals",
   "private": true,
-  "version": "1.16.1",
+  "version": "1.16.2",
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "eslint app/ components/ contexts/ data/ domain/ hooks/ locales/ utils/",
     "cy:open": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress open",
-    "cy:run": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress run"
+    "cy:run": "NEXT_PUBLIC_BACKEND_PROVIDER=mock PAYMENT_PROVIDER=mock cypress run",
+    "lighthouse:ci": "lhci autorun"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -31,6 +32,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.0.2",

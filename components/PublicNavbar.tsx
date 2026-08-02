@@ -22,6 +22,7 @@ const PublicNavbar: React.FC = () => {
                         <select
                             value={language}
                             onChange={(e) => setLanguage(e.target.value as Language)}
+                            aria-label="Language selector"
                             className="bg-neutral-card border border-neutral-border rounded-lg px-3 py-2 text-sm text-neutral-text-primary focus:ring-2 focus:ring-brand-green focus:border-transparent outline-none cursor-pointer"
                             style={{ colorScheme: 'dark' }}
                         >

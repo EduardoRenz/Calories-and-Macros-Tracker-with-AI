@@ -23,20 +23,20 @@ export const LandingClinicalFocus: React.FC = () => {
               <p className="text-lg text-on-surface-variant mb-6 leading-relaxed">
                 {t('landing.clinical.description')}
               </p>
-              <div className="grid grid-cols-2 gap-4 mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
                 <div className="bg-surface p-4 rounded-2xl shadow-sm border border-surface-variant">
                   <WaterDropIcon className="w-8 h-8 text-secondary mb-2" />
-                  <h4 className="font-label font-bold text-on-surface">{t('landing.clinical.diabetes_title')}</h4>
+                  <h3 className="font-label font-bold text-on-surface">{t('landing.clinical.diabetes_title')}</h3>
                   <p className="text-xs text-on-surface-variant mt-1">{t('landing.clinical.diabetes_desc')}</p>
                 </div>
                 <div className="bg-surface p-4 rounded-2xl shadow-sm border border-surface-variant">
                   <NoMealsIcon className="w-8 h-8 text-secondary mb-2" />
-                  <h4 className="font-label font-bold text-on-surface">{t('landing.clinical.intolerances_title')}</h4>
+                  <h3 className="font-label font-bold text-on-surface">{t('landing.clinical.intolerances_title')}</h3>
                   <p className="text-xs text-on-surface-variant mt-1">{t('landing.clinical.intolerances_desc')}</p>
                 </div>
               </div>
             </div>
-            <div className="flex justify-center lg:justify-end">
+            <div className="hidden lg:flex justify-center lg:justify-end">
               <div className="w-full max-w-sm aspect-square rounded-full overflow-hidden shadow-lg">
                 <Image
                   src="/images/Levemente_app.webp"
