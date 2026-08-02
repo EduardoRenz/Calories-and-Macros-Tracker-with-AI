@@ -64,10 +64,6 @@ export const metadata: Metadata = {
         icon: "/Icon.svg",
         apple: "/pwa-solid-192x192.png",
     },
-    verification: {
-        google: "SEU_CODIGO_GOOGLE",
-        yandex: "SEU_CODIGO_YANDEX",
-    },
 };
 
 export const viewport: Viewport = {

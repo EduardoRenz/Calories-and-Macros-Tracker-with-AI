@@ -6,6 +6,7 @@ import {
   buildFaqJsonLd,
 } from '../../../utils/seo/jsonld';
 import { buildSitemapEntries } from '../../../utils/seo/sitemap-builder';
+import { shouldIndexHost } from '../../../utils/seo/index-gating';
 
 describe('buildSitemapEntries', () => {
   it('UT-003: generates correct sitemap items array from public routes', () => {
@@ -204,5 +205,29 @@ describe('buildFaqJsonLd', () => {
   it('handles empty FAQ array', () => {
     const result = buildFaqJsonLd([]);
     expect(result.mainEntity).to.deep.equal([]);
+  });
+});
+
+describe('shouldIndexHost', () => {
+  it('UT-009: returns true for the production host', () => {
+    expect(shouldIndexHost('levemente.ia.br')).to.equal(true);
+  });
+
+  it('UT-010: returns true for the production host with port', () => {
+    expect(shouldIndexHost('levemente.ia.br:3000')).to.equal(true);
+  });
+
+  it('UT-011: returns true for the www production host', () => {
+    expect(shouldIndexHost('www.levemente.ia.br')).to.equal(true);
+  });
+
+  it('UT-012: returns false for the dev subdomain', () => {
+    expect(shouldIndexHost('dev.levemente.ia.br')).to.equal(false);
+  });
+
+  it('UT-013: returns false for unknown hosts and missing host', () => {
+    expect(shouldIndexHost('preview.levemente.vercel.app')).to.equal(false);
+    expect(shouldIndexHost(null)).to.equal(false);
+    expect(shouldIndexHost(undefined)).to.equal(false);
   });
 });

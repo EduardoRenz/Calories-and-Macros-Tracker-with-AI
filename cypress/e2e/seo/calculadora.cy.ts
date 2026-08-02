@@ -62,6 +62,10 @@ describe('UT-006: CalorieCalculationService.calculateGoals', () => {
 });
 
 describe('E2E-005: Macro calculator flow', () => {
+  beforeEach(() => {
+    cy.acceptCookies();
+  });
+
   it('fills form, calculates macros and sees CTA', () => {
     cy.visit('/calculadora-macros');
     cy.get('h1').should('contain.text', 'Macro Calculator');
@@ -82,6 +86,10 @@ describe('E2E-005: Macro calculator flow', () => {
 });
 
 describe('E2E-005b: Per-field validation', () => {
+  beforeEach(() => {
+    cy.acceptCookies();
+  });
+
   it('shows per-field error messages when submitting empty form', () => {
     cy.visit('/calculadora-macros');
     cy.contains('button', 'Calculate Macros').click();
@@ -112,6 +120,10 @@ describe('E2E-005b: Per-field validation', () => {
 });
 
 describe('E2E-005c: Login redirect via sessionStorage', () => {
+  beforeEach(() => {
+    cy.acceptCookies();
+  });
+
   it('sets login_redirect=/profile and calculator_form_data when CTA is clicked', () => {
     cy.visit('/calculadora-macros');
 
@@ -144,6 +156,10 @@ describe('E2E-005c: Login redirect via sessionStorage', () => {
 });
 
 describe('E2E-005d: Full calculator → login → profile flow', () => {
+  beforeEach(() => {
+    cy.acceptCookies();
+  });
+
   it('fills calculator, signs in via mock Google, lands on profile with pre-filled data', () => {
     cy.visit('/calculadora-macros');
 
