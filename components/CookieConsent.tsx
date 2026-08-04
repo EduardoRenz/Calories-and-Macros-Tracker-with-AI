@@ -108,7 +108,7 @@ export const CookieConsent: React.FC = () => {
                     </button>
                     <button
                         onClick={handleAccept}
-                        className="px-6 py-2.5 text-sm font-bold text-white bg-brand-green hover:bg-brand-green-dark rounded-xl shadow-lg shadow-brand-green/20 transition-all active:scale-95"
+                        className="px-6 py-2.5 text-sm font-bold text-on-primary bg-brand-green hover:bg-brand-green-dark rounded-xl shadow-lg shadow-brand-green/20 transition-all active:scale-95"
                     >
                         {t('cookies.accept')}
                     </button>

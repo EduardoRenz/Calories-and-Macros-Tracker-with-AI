@@ -16,7 +16,7 @@ export const LandingVisualDemo: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="py-24 bg-surface" id="features">
+    <section className="py-24 bg-surface overflow-hidden" id="features">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-headline-landing font-bold text-primary mb-4">
@@ -27,7 +27,7 @@ export const LandingVisualDemo: React.FC = () => {
           </p>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors">
+          <div className="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors min-w-0">
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h3 className="text-2xl font-headline-landing font-bold text-on-surface">{t('landing.demo.dashboard_title')}</h3>
@@ -103,7 +103,7 @@ export const LandingVisualDemo: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors">
+          <div className="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/30 flex flex-col h-full group hover:bg-surface-container transition-colors min-w-0">
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h3 className="text-2xl font-headline-landing font-bold text-on-surface">{t('landing.demo.chat_title')}</h3>
@@ -119,14 +119,14 @@ export const LandingVisualDemo: React.FC = () => {
                   {t('landing.demo.chat_user_meal')}
                 </div>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-3">
                 <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shrink-0">
                   <LumiIcon className="w-full h-full" />
                 </div>
-                <div className="flex-1 bg-surface rounded-xl p-4 border border-outline-variant/40 shadow-sm">
-                  <h4 className="font-bold text-sm mb-1 text-on-surface">
+                <div className="flex-1 bg-surface rounded-xl p-4 border border-outline-variant/40 shadow-sm min-w-0">
+                  <h3 className="font-bold text-sm mb-1 text-on-surface">
                     {t('landing.demo.chat_card_title')}
-                  </h4>
+                  </h3>
                   <p className="text-sm text-on-surface-variant mb-3">
                     {t('landing.demo.chat_card_desc')}
                   </p>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { useTranslation } from '@/hooks/useTranslation';
@@ -93,6 +93,30 @@ export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('settings');
     const [isSaving, setIsSaving] = useState(false);
     const [showSaveMessage, setShowSaveMessage] = useState(false);
+
+    useEffect(() => {
+        if (loading || !profile) return;
+        try {
+            const raw = sessionStorage.getItem('calculator_form_data');
+            if (!raw) return;
+            sessionStorage.removeItem('calculator_form_data');
+            const form = JSON.parse(raw);
+            editProfile({
+                personalInfo: {
+                    ...profile.personalInfo,
+                    age: form.age ? Number(form.age) : profile.personalInfo.age,
+                    weight: form.weight ? Number(form.weight) : profile.personalInfo.weight,
+                    height: form.height ? Number(form.height) : profile.personalInfo.height,
+                    gender: form.gender || profile.personalInfo.gender,
+                },
+                fitnessGoals: {
+                    ...profile.fitnessGoals,
+                    activityLevel: form.activityLevel || profile.fitnessGoals.activityLevel,
+                    primaryGoal: form.goal || profile.fitnessGoals.primaryGoal,
+                },
+            });
+        } catch { /* ignore parse errors */ }
+    }, [loading, profile, editProfile]);
 
     const healthConditionOptions: HealthConditionOption[] = useMemo(() => {
         return [

@@ -32,6 +32,11 @@ trigger: always_on
 - Always create tests for new features pages and components.
 - When a bug is found and fixed, also create a test to avoid regressions
 
+### Quality Criteria
+
+- Todos os testes devem passar. Se algum falhar, resolver na raiz do problema — nunca esconder ou pular falhas
+- Lighthouse sempre deve passar com bons scores (performance ≥0.90, accessibility ≥0.95, SEO ≥1.0). Se algum score cair, investigar e corrigir antes de fazer merge
+
 ### Reusable components
 
 - Always try to create pure and reusable components wich receive data as props and callback, for example: QuickMealModal.tsx

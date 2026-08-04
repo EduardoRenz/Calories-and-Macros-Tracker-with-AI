@@ -49,9 +49,9 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSelect, isLoading = 
             )}
 
             <div className="mb-4">
-                <h3 className={`text-lg font-semibold ${shouldUseGreenStyle ? 'text-primary' : 'text-neutral-text-primary'}`}>
+                <h2 className={`text-lg font-semibold ${shouldUseGreenStyle ? 'text-primary' : 'text-neutral-text-primary'}`}>
                     {plan.name}
-                </h3>
+                </h2>
                 <div className="mt-2 flex items-baseline gap-2">
                     <span className="text-4xl font-bold text-neutral-text-primary">
                         {plan.formattedPrice}

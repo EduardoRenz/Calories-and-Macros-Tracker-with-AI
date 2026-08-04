@@ -33,6 +33,9 @@ dist-ssr
 cypress/videos
 cypress/screenshots
 
+# lighthouse
+.lighthouseci
+
 # next
 cache
 .next
