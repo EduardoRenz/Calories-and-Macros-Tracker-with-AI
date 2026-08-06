@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useTranslation } from '../../hooks/useTranslation';
 import { ChatBubbleLeftRightIcon, SpeedIcon } from '../icons';
 
@@ -13,9 +14,11 @@ export const LandingAIFeatures: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="order-2 lg:order-1 relative">
             <div className="w-full max-w-md mx-auto aspect-square bg-surface rounded-[3rem] shadow-xl overflow-hidden p-0 flex items-center justify-center relative z-10 border-2 border-secondary">
-              <img
+              <Image
                 src="/images/table.webp"
                 alt="Nutritional table analysis preview"
+                width={400}
+                height={400}
                 className="w-full h-full object-cover rounded-[2.85rem]"
               />
             </div>

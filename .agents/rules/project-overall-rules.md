@@ -43,3 +43,4 @@ trigger: always_on
 - **Componentize UI sections** that can be reused or that make the page code cleaner and more maintainable. Avoid huge files with a lot of sections without split in small components.
 - Extract navigation, headers, forms, and any repeating UI patterns into separate components
 - Components should be small, focused on a single responsibility, and easy to test
+- Always use Next.js `<Image />` component from `next/image` instead of native `<img>` tags for automatic image optimization, layout shift prevention, and LCP score compliance
