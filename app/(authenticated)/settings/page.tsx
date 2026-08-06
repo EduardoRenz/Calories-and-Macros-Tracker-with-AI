@@ -65,9 +65,9 @@ const CookieConsentManager: React.FC = () => {
     };
 
     return (
-        <div className="bg-neutral-panel p-6 rounded-2xl flex items-center justify-between border border-neutral-border">
+        <div className="bg-neutral-panel p-6 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-neutral-border">
             <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
@@ -87,11 +87,11 @@ const CookieConsentManager: React.FC = () => {
                     )}
                 </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-row flex-wrap sm:flex-nowrap gap-2 justify-start sm:justify-end w-full sm:w-auto">
                 {consentStatus !== 'accepted' && (
                     <button
                         onClick={handleAccept}
-                        className="px-4 py-2 text-sm font-bold text-white bg-brand-green hover:bg-brand-green-dark rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-white bg-brand-green hover:bg-brand-green-dark rounded-lg transition-colors whitespace-nowrap"
                     >
                         {t('cookies.accept')}
                     </button>
@@ -99,7 +99,7 @@ const CookieConsentManager: React.FC = () => {
                 {consentStatus !== 'declined' && (
                     <button
                         onClick={handleDecline}
-                        className="px-4 py-2 text-sm font-bold text-neutral-text-secondary hover:bg-neutral-surface-hover rounded-lg border border-neutral-border transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-neutral-text-secondary hover:bg-neutral-surface-hover rounded-lg border border-neutral-border transition-colors whitespace-nowrap"
                     >
                         {t('cookies.decline')}
                     </button>
@@ -107,7 +107,7 @@ const CookieConsentManager: React.FC = () => {
                 {consentStatus !== 'none' && (
                     <button
                         onClick={handleClear}
-                        className="px-4 py-2 text-sm font-bold text-red-400 hover:bg-red-500/10 rounded-lg border border-red-500/30 transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-red-400 hover:bg-red-500/10 rounded-lg border border-red-500/30 transition-colors whitespace-nowrap"
                     >
                         {t('settings.cookies.clear')}
                     </button>
