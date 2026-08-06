@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { UserIcon, LogoutIcon } from './icons';
+import { UserIcon, SettingsIcon, LogoutIcon } from './icons';
 import { useTranslation } from '../hooks/useTranslation';
 import ThemeSwitcher from './ThemeSwitcher';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -90,6 +90,18 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                         <UserIcon className="w-5 h-5 text-brand-green" />
                     </div>
                     <span className="flex-1 text-left">{t('navbar.profile')}</span>
+                </Link>
+
+                <Link
+                    href="/settings"
+                    onClick={onClose}
+                    className="group w-full flex items-center gap-4 px-4 py-3 text-sm font-semibold text-neutral-text-secondary hover:text-neutral-text-primary hover:bg-neutral-card transition-all rounded-2xl border border-transparent hover:border-neutral-border mt-2"
+                    data-testid="settings-link"
+                >
+                    <div className="w-10 h-10 rounded-xl bg-neutral-card group-hover:bg-neutral-panel flex items-center justify-center border border-neutral-border transition-colors shadow-sm">
+                        <SettingsIcon className="w-5 h-5 text-brand-green" />
+                    </div>
+                    <span className="flex-1 text-left">{t('navbar.settings')}</span>
                 </Link>
                 
                 <button

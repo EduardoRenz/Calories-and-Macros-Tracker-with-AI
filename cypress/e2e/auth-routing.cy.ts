@@ -85,6 +85,12 @@ describe("URL Navigation", () => {
     cy.url().should("include", "/profile")
     cy.get("h2").contains("My Profile").should("be.visible")
 
+    // Click Settings in avatar menu (Top Navbar)
+    cy.get('[data-testid="user-menu-button"]').click()
+    cy.get('[data-testid="settings-link"]').click()
+    cy.url().should("include", "/settings")
+    cy.get("h2").contains("App Settings").should("be.visible")
+
     // Click Dashboard in bottom navbar
     cy.get('[data-testid="mobile-bottom-nav"]').contains("Dashboard").click()
     cy.url().should("include", "/dashboard")
