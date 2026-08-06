@@ -12,6 +12,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '@/domain/exceptions/AiAccessException';
 import MarkdownRenderer from '@/components/assistant/MarkdownRenderer';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
+import { ReportTabs } from '@/components/ReportTabs';
 
 
 // Cache TTL: 24 hours in milliseconds
@@ -94,6 +95,7 @@ export default function FoodAnalysisPage() {
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [retryCount, setRetryCount] = useState(0);
+    const [activeTab, setActiveTab] = useState<string>('common-foods');
 
     const foodAnalysisRepository: FoodAnalysisRepository = useMemo(
         () => RepositoryFactory.getFoodAnalysisRepository(), []
@@ -102,6 +104,13 @@ export default function FoodAnalysisPage() {
         () => RepositoryFactory.getProfileRepository(), []
     );
     const dateRange = useMemo(() => getDateRange(dateRangeOption), [dateRangeOption]);
+
+    const tabs = useMemo(() => [
+        { id: 'common-foods', label: t('food_analysis.common_foods.title') },
+        { id: 'vitamins', label: t('food_analysis.vitamins.title') },
+        { id: 'attention-points', label: t('food_analysis.attention.title') },
+        { id: 'suggestions', label: t('food_analysis.suggestions.title') }
+    ] as const, [t]);
 
     // Check cache on mount and date range change
     useEffect(() => {
@@ -121,6 +130,7 @@ export default function FoodAnalysisPage() {
             }
         } else {
             setReport(null);
+            setActiveTab('common-foods');
         }
     }, [dateRange]);
 
@@ -164,6 +174,7 @@ export default function FoodAnalysisPage() {
 
             setProgress(100);
             setReport(analysisReport);
+            setActiveTab('common-foods');
             setRetryCount(0);
         } catch (err) {
             console.error('Error generating food analysis:', err);
@@ -317,274 +328,286 @@ export default function FoodAnalysisPage() {
 
             {/* Report Content */}
             {report && !isLoading && (
-                <div className="space-y-8">
-                    {/* Common Foods Section */}
-                    <section id="common-foods-section">
-                        <h2 className="text-2xl font-bold mb-2">{t('food_analysis.common_foods.title')}</h2>
-                        <p className="text-neutral-text-secondary mb-4">
-                            {t('food_analysis.common_foods.subtitle')}
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {(['breakfast', 'lunch', 'dinner', 'snacks'] as const).map(meal => {
-                                const mealData = report.commonFoods[meal];
-                                return (
-                                    <div
-                                        key={meal}
-                                        className="bg-neutral-card p-6 rounded-2xl"
-                                    >
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <MealIcon meal={meal} />
-                                            <h3 className="font-bold text-lg capitalize">
-                                                {t(`meals.${meal}`)}
-                                            </h3>
-                                        </div>
-                                        <p className="text-neutral-text-secondary text-sm mb-2">
-                                            {mealData.foods.join(', ')}
-                                        </p>
-                                        <p className="text-xs text-neutral-text-secondary">
-                                            {mealData.consistency}% {t('food_analysis.common_foods.consistency')}
-                                        </p>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </section>
+                <div className="space-y-8 animate-fadeIn">
+                    {/* Tab Navigation */}
+                    <ReportTabs
+                        tabs={tabs}
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                    />
 
-                    {/* Vitamins Overview Section */}
-                    <section id="vitamins-section">
-                        <h2 className="text-2xl font-bold mb-2">{t('food_analysis.vitamins.title')}</h2>
-                        <p className="text-neutral-text-secondary mb-4">
-                            {t('food_analysis.vitamins.subtitle')}
-                        </p>
-
-                        {/* Group vitamins by status */}
-                        {(() => {
-                            const sufficientVitamins = report.vitamins.filter(v => v.status === 'good' || v.status === 'low');
-                            const deficientVitamins = report.vitamins.filter(v => v.status === 'deficient');
-
-                            return (
-                                <div className="space-y-6">
-                                    {/* Sufficient & Moderate Group */}
-                                    {sufficientVitamins.length > 0 && (
-                                        <div>
-                                            <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3">
-                                                {t('food_analysis.vitamins.sufficient_moderate')}
-                                            </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                {sufficientVitamins.map((vitamin, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        className="bg-neutral-card p-5 rounded-2xl"
-                                                    >
-                                                        <div className="flex items-start gap-3">
-                                                            <span className="text-3xl">{vitamin.emoji || '💊'}</span>
-                                                            <div className="min-w-0">
-                                                                <div className="flex items-start justify-between gap-2">
-                                                                    <p className="font-bold">{vitamin.name}</p>
-                                                                    <VitaminStatusBadge status={vitamin.status} />
-                                                                </div>
-                                                                <div className="flex items-center gap-1 mt-1">
-                                                                    <span className={`w-2 h-2 rounded-full ${vitamin.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'
-                                                                        }`}></span>
-                                                                    <span className={`text-xs uppercase ${vitamin.status === 'good' ? 'text-green-400' : 'text-yellow-400'
-                                                                        }`}>
-                                                                        {t(`food_analysis.vitamins.status.${vitamin.status}`)}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {vitamin.positiveReason && (
-                                                            <div className="mt-3 pt-3 border-t border-neutral-border">
-                                                                <p className="text-xs text-neutral-text-secondary uppercase mb-2">
-                                                                    {t('food_analysis.vitamins.positive_reason')}:
-                                                                </p>
-                                                                <p className="text-sm text-neutral-text-secondary">
-                                                                    {vitamin.positiveReason}
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
+                    {/* Active Section Content */}
+                    <div className="transition-all duration-200">
+                        {activeTab === 'common-foods' && (
+                            <section id="common-foods-section" className="animate-fadeIn">
+                                <h2 className="text-2xl font-bold mb-2">{t('food_analysis.common_foods.title')}</h2>
+                                <p className="text-neutral-text-secondary mb-4">
+                                    {t('food_analysis.common_foods.subtitle')}
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    {(['breakfast', 'lunch', 'dinner', 'snacks'] as const).map(meal => {
+                                        const mealData = report.commonFoods[meal];
+                                        return (
+                                            <div
+                                                key={meal}
+                                                className="bg-neutral-card p-6 rounded-2xl"
+                                            >
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <MealIcon meal={meal} />
+                                                    <h3 className="font-bold text-lg capitalize">
+                                                        {t(`meals.${meal}`)}
+                                                    </h3>
+                                                </div>
+                                                <p className="text-neutral-text-secondary text-sm mb-2">
+                                                    {mealData.foods.join(', ')}
+                                                </p>
+                                                <p className="text-xs text-neutral-text-secondary">
+                                                    {mealData.consistency}% {t('food_analysis.common_foods.consistency')}
+                                                </p>
                                             </div>
-                                        </div>
-                                    )}
-
-                                    {/* Deficient - Needs Action Group */}
-                                    {deficientVitamins.length > 0 && (
-                                        <div>
-                                            <h3 className="text-sm font-bold text-red-400 uppercase mb-3">
-                                                {t('food_analysis.vitamins.deficient_action')}
-                                            </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                {deficientVitamins.map((vitamin, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        className="bg-neutral-card p-5 rounded-2xl border border-red-500/30"
-                                                    >
-                                                        <div className="flex items-center gap-3 mb-3">
-                                                            <span className="text-3xl">{vitamin.emoji || '💊'}</span>
-                                                            <div>
-                                                                <div className="flex items-start justify-between gap-2">
-                                                                    <p className="font-bold">{vitamin.name}</p>
-                                                                    <VitaminStatusBadge status={vitamin.status} />
-                                                                </div>
-                                                                <div className="flex items-center gap-1">
-                                                                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                                                    <span className="text-xs text-red-400 uppercase">
-                                                                        {t('food_analysis.vitamins.status.deficient')}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        {vitamin.recommendations && vitamin.recommendations.length > 0 && (
-                                                            <div className="mt-3 pt-3 border-t border-neutral-border">
-                                                                <p className="text-xs text-neutral-text-secondary uppercase mb-2">
-                                                                    {t('food_analysis.vitamins.recommendations')}:
-                                                                </p>
-                                                                <ul className="space-y-1">
-                                                                    {vitamin.recommendations.map((rec, recIdx) => (
-                                                                        <li key={recIdx} className="flex items-start gap-2 text-sm text-neutral-text-secondary">
-                                                                            <span className="text-green-400">✓</span>
-                                                                            <span>{rec}</span>
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
+                                        );
+                                    })}
                                 </div>
-                            );
-                        })()}
-                    </section>
+                            </section>
+                        )}
 
-                    {/* Two-column layout for Attention Points and Suggestions */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Attention Points Section */}
-                        <section id="attention-points-section">
-                            <h2 className="text-2xl font-bold mb-2">{t('food_analysis.attention.title')}</h2>
-                            <p className="text-neutral-text-secondary mb-4">
-                                {t('food_analysis.attention.subtitle')}
-                            </p>
-                            <div className="space-y-4">
-                                {report.attentionPoints.map((point, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={`p-4 rounded-xl border-l-4 ${point.severity === 'alert'
-                                            ? 'bg-red-500/10 border-red-500'
-                                            : 'bg-yellow-500/10 border-yellow-500'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span>{point.severity === 'alert' ? '🔴' : '🟡'}</span>
-                                            <h3 className="font-bold">{point.title}</h3>
-                                        </div>
-                                        <p className="text-sm text-neutral-text-secondary">
-                                            {point.description}
-                                        </p>
-                                    </div>
-                                ))}
-                                {report.attentionPoints.length === 0 && (
-                                    <p className="text-neutral-text-secondary text-center py-4">
-                                        {t('food_analysis.attention.no_issues')}
-                                    </p>
-                                )}
-                            </div>
-                        </section>
+                        {activeTab === 'vitamins' && (
+                            <section id="vitamins-section" className="animate-fadeIn">
+                                <h2 className="text-2xl font-bold mb-2">{t('food_analysis.vitamins.title')}</h2>
+                                <p className="text-neutral-text-secondary mb-4">
+                                    {t('food_analysis.vitamins.subtitle')}
+                                </p>
 
-                        {/* Suggestions Section */}
-                        <section id="suggestions-section">
-                            <h2 className="text-2xl font-bold mb-2">{t('food_analysis.suggestions.title')}</h2>
-                            <p className="text-neutral-text-secondary mb-4">
-                                {t('food_analysis.suggestions.subtitle')}
-                            </p>
-                            <div className="space-y-6">
-                                {report.macroSuggestions.map((suggestion, idx) => {
-                                    const isExceeded = suggestion.current > suggestion.goal;
-                                    const percentage = (suggestion.current / suggestion.goal) * 100;
+                                {/* Group vitamins by status */}
+                                {(() => {
+                                    const sufficientVitamins = report.vitamins.filter(v => v.status === 'good' || v.status === 'low');
+                                    const deficientVitamins = report.vitamins.filter(v => v.status === 'deficient');
 
                                     return (
-                                        <div
-                                            key={idx}
-                                            className={`bg-neutral-card p-4 rounded-xl ${isExceeded ? 'border border-red-500/30' : ''}`}
-                                        >
-                                            {/* Macro Progress Header */}
-                                            <div className="flex justify-between items-center mb-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold">{suggestion.macro}</span>
-                                                    {isExceeded && (
-                                                        <span className="text-red-400 text-xl">🔴</span>
-                                                    )}
-                                                </div>
-                                                <span className={`font-bold ${isExceeded ? 'text-red-400' : `text-${getMacroColor(suggestion.macro)}`}`}>
-                                                    {suggestion.current}g / {suggestion.goal}g
-                                                </span>
-                                            </div>
+                                        <div className="space-y-6">
+                                            {/* Sufficient & Moderate Group */}
+                                            {sufficientVitamins.length > 0 && (
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-neutral-text-secondary uppercase mb-3">
+                                                        {t('food_analysis.vitamins.sufficient_moderate')}
+                                                    </h3>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                        {sufficientVitamins.map((vitamin, idx) => (
+                                                            <div
+                                                                key={idx}
+                                                                className="bg-neutral-card p-5 rounded-2xl"
+                                                            >
+                                                                <div className="flex items-start gap-3">
+                                                                    <span className="text-3xl">{vitamin.emoji || '💊'}</span>
+                                                                    <div className="min-w-0">
+                                                                        <div className="flex items-start justify-between gap-2">
+                                                                            <p className="font-bold">{vitamin.name}</p>
+                                                                            <VitaminStatusBadge status={vitamin.status} />
+                                                                        </div>
+                                                                        <div className="flex items-center gap-1 mt-1">
+                                                                            <span className={`w-2 h-2 rounded-full ${vitamin.status === 'good' ? 'bg-green-500' : 'bg-yellow-500'
+                                                                                }`}></span>
+                                                                            <span className={`text-xs uppercase ${vitamin.status === 'good' ? 'text-green-400' : 'text-yellow-400'
+                                                                                }`}>
+                                                                                {t(`food_analysis.vitamins.status.${vitamin.status}`)}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
 
-                                            {/* Progress bar */}
-                                            <div className="w-full bg-neutral-panel rounded-full h-2 mb-4">
-                                                <div
-                                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : `bg-${getMacroColor(suggestion.macro)}`}`}
-                                                    style={{
-                                                        width: `${Math.min(100, percentage)}%`
-                                                    }}
-                                                />
-                                            </div>
-
-                                            {/* Recommendations header */}
-                                            <p className="text-xs text-neutral-text-secondary uppercase mb-2">
-                                                {isExceeded
-                                                    ? t('food_analysis.suggestions.adjustments_required')
-                                                    : t('food_analysis.suggestions.recommended')}
-                                            </p>
-
-                                            {/* Recommendations */}
-                                            <div className="space-y-2">
-                                                {suggestion.recommendations.map((rec, recIdx) => (
-                                                    <div
-                                                        key={recIdx}
-                                                        className="flex items-center justify-between bg-neutral-panel p-3 rounded-lg"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <span className={`text-lg ${rec.type === 'reduce' ? 'text-red-400' : rec.type === 'substitute' ? 'text-green-400' : ''}`}>
-                                                                {rec.type === 'reduce' ? '🚫' :
-                                                                    rec.type === 'substitute' ? '🔄' : (
-                                                                        rec.meal.toLowerCase().includes('breakfast') ? '☕' :
-                                                                            rec.meal.toLowerCase().includes('lunch') || rec.meal.toLowerCase().includes('almoço') || rec.meal.toLowerCase().includes('almuerzo') ? '🍴' :
-                                                                                rec.meal.toLowerCase().includes('dinner') || rec.meal.toLowerCase().includes('jantar') || rec.meal.toLowerCase().includes('cena') ? '🍽️' :
-                                                                                    '🥜'
-                                                                    )}
-                                                            </span>
-                                                            <div>
-                                                                <p className="font-medium">{rec.food}</p>
-                                                                <p className="text-xs text-neutral-text-secondary">
-                                                                    {rec.meal}
-                                                                </p>
+                                                                {vitamin.positiveReason && (
+                                                                    <div className="mt-3 pt-3 border-t border-neutral-border">
+                                                                        <p className="text-xs text-neutral-text-secondary uppercase mb-2">
+                                                                            {t('food_analysis.vitamins.positive_reason')}:
+                                                                        </p>
+                                                                        <p className="text-sm text-neutral-text-secondary">
+                                                                            {vitamin.positiveReason}
+                                                                        </p>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        </div>
-                                                        <span className={`text-sm font-medium ${isExceeded ? 'text-neutral-text-secondary' : `text-${getMacroColor(suggestion.macro)}`}`}>
-                                                            {rec.benefit}
-                                                        </span>
+                                                        ))}
                                                     </div>
-                                                ))}
-                                            </div>
+                                                </div>
+                                            )}
+
+                                            {/* Deficient - Needs Action Group */}
+                                            {deficientVitamins.length > 0 && (
+                                                <div>
+                                                    <h3 className="text-sm font-bold text-red-400 uppercase mb-3">
+                                                        {t('food_analysis.vitamins.deficient_action')}
+                                                    </h3>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                        {deficientVitamins.map((vitamin, idx) => (
+                                                            <div
+                                                                key={idx}
+                                                                className="bg-neutral-card p-5 rounded-2xl border border-red-500/30"
+                                                            >
+                                                                <div className="flex items-center gap-3 mb-3">
+                                                                    <span className="text-3xl">{vitamin.emoji || '💊'}</span>
+                                                                    <div>
+                                                                        <div className="flex items-start justify-between gap-2">
+                                                                            <p className="font-bold">{vitamin.name}</p>
+                                                                            <VitaminStatusBadge status={vitamin.status} />
+                                                                        </div>
+                                                                        <div className="flex items-center gap-1">
+                                                                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                                                            <span className="text-xs text-red-400 uppercase">
+                                                                                {t('food_analysis.vitamins.status.deficient')}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {vitamin.recommendations && vitamin.recommendations.length > 0 && (
+                                                                    <div className="mt-3 pt-3 border-t border-neutral-border">
+                                                                        <p className="text-xs text-neutral-text-secondary uppercase mb-2">
+                                                                            {t('food_analysis.vitamins.recommendations')}:
+                                                                        </p>
+                                                                        <ul className="space-y-1">
+                                                                            {vitamin.recommendations.map((rec, recIdx) => (
+                                                                                <li key={recIdx} className="flex items-start gap-2 text-sm text-neutral-text-secondary">
+                                                                                    <span className="text-green-400">✓</span>
+                                                                                    <span>{rec}</span>
+                                                                                </li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     );
-                                })}
-                            </div>
-                        </section>
+                                })()}
+                            </section>
+                        )}
+
+                        {activeTab === 'attention-points' && (
+                            <section id="attention-points-section" className="animate-fadeIn">
+                                <h2 className="text-2xl font-bold mb-2">{t('food_analysis.attention.title')}</h2>
+                                <p className="text-neutral-text-secondary mb-4">
+                                    {t('food_analysis.attention.subtitle')}
+                                </p>
+                                <div className="space-y-4">
+                                    {report.attentionPoints.map((point, idx) => (
+                                        <div
+                                            key={idx}
+                                            className={`p-4 rounded-xl border-l-4 ${point.severity === 'alert'
+                                                ? 'bg-red-500/10 border-red-500'
+                                                : 'bg-yellow-500/10 border-yellow-500'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span>{point.severity === 'alert' ? '🔴' : '🟡'}</span>
+                                                <h3 className="font-bold">{point.title}</h3>
+                                            </div>
+                                            <p className="text-sm text-neutral-text-secondary">
+                                                {point.description}
+                                            </p>
+                                        </div>
+                                    ))}
+                                    {report.attentionPoints.length === 0 && (
+                                        <p className="text-neutral-text-secondary text-center py-4">
+                                            {t('food_analysis.attention.no_issues')}
+                                        </p>
+                                    )}
+                                </div>
+                            </section>
+                        )}
+
+                        {activeTab === 'suggestions' && (
+                            <section id="suggestions-section" className="animate-fadeIn">
+                                <h2 className="text-2xl font-bold mb-2">{t('food_analysis.suggestions.title')}</h2>
+                                <p className="text-neutral-text-secondary mb-4">
+                                    {t('food_analysis.suggestions.subtitle')}
+                                </p>
+                                <div className="space-y-6">
+                                    {report.macroSuggestions.map((suggestion, idx) => {
+                                        const isExceeded = suggestion.current > suggestion.goal;
+                                        const percentage = (suggestion.current / suggestion.goal) * 100;
+
+                                        return (
+                                            <div
+                                                key={idx}
+                                                className={`bg-neutral-card p-4 rounded-xl ${isExceeded ? 'border border-red-500/30' : ''}`}
+                                            >
+                                                {/* Macro Progress Header */}
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-bold">{suggestion.macro}</span>
+                                                        {isExceeded && (
+                                                            <span className="text-red-400 text-xl">🔴</span>
+                                                        )}
+                                                    </div>
+                                                    <span className={`font-bold ${isExceeded ? 'text-red-400' : `text-${getMacroColor(suggestion.macro)}`}`}>
+                                                        {suggestion.current}g / {suggestion.goal}g
+                                                    </span>
+                                                </div>
+
+                                                {/* Progress bar */}
+                                                <div className="w-full bg-neutral-panel rounded-full h-2 mb-4">
+                                                    <div
+                                                        className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : `bg-${getMacroColor(suggestion.macro)}`}`}
+                                                        style={{
+                                                            width: `${Math.min(100, percentage)}%`
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                {/* Recommendations header */}
+                                                <p className="text-xs text-neutral-text-secondary uppercase mb-2">
+                                                    {isExceeded
+                                                        ? t('food_analysis.suggestions.adjustments_required')
+                                                        : t('food_analysis.suggestions.recommended')}
+                                                </p>
+
+                                                {/* Recommendations */}
+                                                <div className="space-y-2">
+                                                    {suggestion.recommendations.map((rec, recIdx) => (
+                                                        <div
+                                                            key={recIdx}
+                                                            className="flex items-center justify-between bg-neutral-panel p-3 rounded-lg"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={`text-lg ${rec.type === 'reduce' ? 'text-red-400' : rec.type === 'substitute' ? 'text-green-400' : ''}`}>
+                                                                    {rec.type === 'reduce' ? '🚫' :
+                                                                        rec.type === 'substitute' ? '🔄' : (
+                                                                            rec.meal.toLowerCase().includes('breakfast') ? '☕' :
+                                                                                rec.meal.toLowerCase().includes('lunch') || rec.meal.toLowerCase().includes('almoço') || rec.meal.toLowerCase().includes('almuerzo') ? '🍴' :
+                                                                                    rec.meal.toLowerCase().includes('dinner') || rec.meal.toLowerCase().includes('jantar') || rec.meal.toLowerCase().includes('cena') ? '🍽️' :
+                                                                                        '🥜'
+                                                                        )}
+                                                                </span>
+                                                                <div>
+                                                                    <p className="font-medium">{rec.food}</p>
+                                                                    <p className="text-xs text-neutral-text-secondary">
+                                                                        {rec.meal}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <span className={`text-sm font-medium ${isExceeded ? 'text-neutral-text-secondary' : `text-${getMacroColor(suggestion.macro)}`}`}>
+                                                                {rec.benefit}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+                        )}
                     </div>
 
                     {/* Regenerate button */}
-                    <div className="text-center pt-4">
+                    <div className="text-center pt-4 border-t border-neutral-border">
                         <button
                             onClick={() => {
                                 localStorage.removeItem(getCacheKey(dateRange.start, dateRange.end));
                                 setReport(null);
+                                setActiveTab('common-foods');
                             }}
                             className="text-neutral-text-secondary hover:text-brand-green underline text-sm"
                         >
