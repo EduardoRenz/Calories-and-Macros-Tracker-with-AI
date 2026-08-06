@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { getCookieConsentStatus } from '@/utils/cookieConsent';
 
-// Declare global window properties for TypeScript
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-wrapper-object-types */
 declare global {
     interface Window {
         dataLayer?: Object[];
@@ -16,12 +16,12 @@ export default function GoogleAnalyticsConsent() {
         if (typeof window === 'undefined') return;
 
         // Helper to safely access window.gtag
-        const gtag = (...args: any[]) => {
+        const gtag = (...args: unknown[]) => {
             window.dataLayer = window.dataLayer || [];
             if (window.gtag) {
                 window.gtag(...args);
             } else {
-                window.dataLayer.push(args);
+                window.dataLayer.push(args as unknown as object);
             }
         };
 

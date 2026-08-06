@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { BreakfastIcon, LunchIcon, DinnerIcon } from '../FoodIcons';
 import { LumiIcon, CheckCircleIcon } from '../icons';
@@ -220,7 +221,7 @@ const PhoneScreen: React.FC<PhoneScreenProps> = ({ activeTab, onTabChange }) => 
       {/* App header */}
       <div className="flex justify-between items-center px-4 py-1.5 bg-surface flex-shrink-0 border-b border-neutral-border/10">
         <div className="flex items-center gap-1.5">
-          <img src="/Icon.svg" alt="Levemente Logo" className="w-4 h-4 object-contain" />
+          <Image src="/Icon.svg" alt="Levemente Logo" width={16} height={16} className="w-4 h-4 object-contain" />
           <span className="text-xs font-bold text-primary">Levemente</span>
         </div>
         <div className="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center">

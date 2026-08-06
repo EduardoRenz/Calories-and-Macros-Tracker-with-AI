@@ -196,6 +196,15 @@
     background: var(--outline);
 }
 
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
 .kinetic-gradient {
     background: linear-gradient(135deg, #004c4b 0%, #006c45 100%);
     color: #ffffff;

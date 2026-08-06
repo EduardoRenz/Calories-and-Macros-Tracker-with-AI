@@ -216,6 +216,8 @@ const es = {
     error_generating: "Ocurrió un error al generar el informe. Reintentando...",
     retry: "Intentar de nuevo",
     regenerate: "Limpiar caché y regenerar informe",
+    report_label: "Informe {period}",
+    detailed_view: "Vista Detallada",
     common_foods: {
       title: "Alimentos Más Comunes",
       subtitle: "Un resumen de lo que comes con más frecuencia en diferentes momentos del día.",

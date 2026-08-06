@@ -50,7 +50,7 @@ describe('Food Analysis Page', () => {
         cy.contains('button', 'Last 3 Months').should('be.visible');
     });
 
-    it('should generate report and display all sections', () => {
+    it('should generate report and display all sections via tabs', () => {
         cy.visit('/food-analysis');
 
         // Click generate report
@@ -61,9 +61,16 @@ describe('Food Analysis Page', () => {
         cy.get('#progress-bar').should('exist');
 
         // Wait for report to be generated (mock service has 1.5s delay)
-        cy.get('#common-foods-section', { timeout: 10000 }).should('be.visible');
+        cy.get('[data-testid="tab-button-common-foods"]:visible').should('be.visible');
+        cy.get('#common-foods-section').should('be.visible');
+
+        cy.get('[data-testid="tab-button-vitamins"]:visible').click();
         cy.get('#vitamins-section').should('be.visible');
+
+        cy.get('[data-testid="tab-button-attention-points"]:visible').click();
         cy.get('#attention-points-section').should('be.visible');
+
+        cy.get('[data-testid="tab-button-suggestions"]:visible').click();
         cy.get('#suggestions-section').should('be.visible');
     });
 
@@ -72,6 +79,7 @@ describe('Food Analysis Page', () => {
         cy.get('#generate-report-btn').click();
 
         // Wait for common foods section
+        cy.get('[data-testid="tab-button-common-foods"]:visible').should('be.visible');
         cy.get('#common-foods-section', { timeout: 10000 }).within(() => {
             // Verify meal cards exist
             cy.contains('Breakfast').should('be.visible');
@@ -87,6 +95,9 @@ describe('Food Analysis Page', () => {
     it('should display vitamin status indicators', () => {
         cy.visit('/food-analysis');
         cy.get('#generate-report-btn').click();
+
+        // Click on Vitamins tab
+        cy.get('[data-testid="tab-button-vitamins"]:visible').click();
 
         cy.get('#vitamins-section', { timeout: 10000 }).within(() => {
             // Verify sufficient & moderate group vitamins exist
@@ -110,6 +121,9 @@ describe('Food Analysis Page', () => {
         cy.visit('/food-analysis');
         cy.get('#generate-report-btn').click();
 
+        // Click on Attention Points tab
+        cy.get('[data-testid="tab-button-attention-points"]:visible').click();
+
         cy.get('#attention-points-section', { timeout: 10000 }).within(() => {
             // Verify attention point cards exist with mock data
             cy.contains('Sodium').should('be.visible');
@@ -120,6 +134,9 @@ describe('Food Analysis Page', () => {
     it('should display macro suggestions with recommendations', () => {
         cy.visit('/food-analysis');
         cy.get('#generate-report-btn').click();
+
+        // Click on Suggestions tab
+        cy.get('[data-testid="tab-button-suggestions"]:visible').click();
 
         cy.get('#suggestions-section', { timeout: 10000 }).within(() => {
             // Verify macro suggestion with goal

@@ -216,6 +216,8 @@ const pt = {
     error_generating: "Ocorreu um erro ao gerar o relatório. Tentando novamente...",
     retry: "Tentar novamente",
     regenerate: "Limpar cache e regenerar relatório",
+    report_label: "Relatório {period}",
+    detailed_view: "Visão Detalhada",
     common_foods: {
       title: "Alimentos Mais Comuns",
       subtitle: "Um resumo do que você come com mais frequência em diferentes momentos do dia.",
