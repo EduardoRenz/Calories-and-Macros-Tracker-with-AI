@@ -216,6 +216,8 @@ const en = {
     error_generating: "An error occurred while generating the report. Retrying...",
     retry: "Try again",
     regenerate: "Clear cache and regenerate report",
+    report_label: "{period} Report",
+    detailed_view: "Detailed View",
     common_foods: {
       title: "Most Common Foods",
       subtitle: "A summary of what you eat most frequently during different times of the day.",

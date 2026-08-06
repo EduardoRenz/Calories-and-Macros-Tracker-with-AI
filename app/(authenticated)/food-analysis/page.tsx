@@ -121,6 +121,7 @@ export default function FoodAnalysisPage() {
                 const parsed: CachedFoodAnalysisReport = JSON.parse(cached);
                 if (Date.now() - parsed.cachedAt < CACHE_TTL) {
                     setReport(parsed.report);
+                    setActiveTab('common-foods');
                     setError(null);
                 } else {
                     localStorage.removeItem(cacheKey);
@@ -329,6 +330,16 @@ export default function FoodAnalysisPage() {
             {/* Report Content */}
             {report && !isLoading && (
                 <div className="space-y-8 animate-fadeIn">
+                    {/* Report Section Header */}
+                    <div className="mb-2">
+                        <p className="text-xs font-bold uppercase tracking-widest text-neutral-text-secondary mb-1">
+                            {t('food_analysis.report_label').replace('{period}', dateRangeOptions.find(o => o.value === dateRangeOption)?.label ?? '')}
+                        </p>
+                        <h2 className="text-2xl font-body font-bold text-neutral-text-primary">
+                            {t('food_analysis.detailed_view')}
+                        </h2>
+                    </div>
+
                     {/* Tab Navigation */}
                     <ReportTabs
                         tabs={tabs}
