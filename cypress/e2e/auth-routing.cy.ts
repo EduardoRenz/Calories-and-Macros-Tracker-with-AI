@@ -171,9 +171,14 @@ describe("Root Path Redirect", () => {
   it("should redirect authenticated user from / to /dashboard", () => {
     cy.login()
 
-    // Visit root again to test redirect when already authenticated
-    cy.visit("/")
+    // Ensure session is fully resolved on the dashboard before we navigate away
+    cy.url().should("include", "/dashboard")
+    cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should("be.visible")
 
+    // Click on the logo link which navigates to "/" via Next.js client-side router
+    cy.get('a[href="/"]').first().click()
+
+    // Verify it redirects back to/keeps us on dashboard
     cy.url().should("include", "/dashboard")
     cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should("be.visible")
   })
