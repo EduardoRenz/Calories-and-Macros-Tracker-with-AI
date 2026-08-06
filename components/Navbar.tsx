@@ -101,13 +101,6 @@ const Navbar: React.FC<NavbarProps> = ({ onQuickMealClick }) => {
                     {isMobileMenuOpen ? <XMarkIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
                 </button>
 
-                <Link
-                    href="/settings"
-                    className="p-2 rounded-full md:hidden text-neutral-text-secondary hover:bg-neutral-card"
-                    aria-label={t('navbar.settings')}
-                >
-                    <SettingsIcon className="w-6 h-6" />
-                </Link>
                 <div className="relative" ref={avatarMenuRef}>
                     <button
                         onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
