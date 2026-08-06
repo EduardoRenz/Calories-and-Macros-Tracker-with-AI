@@ -13,6 +13,9 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { buildSeoMetadata } from "@/utils/seo/metadata";
 import { buildSoftwareAppJsonLd } from "@/utils/seo/jsonld";
 import JsonLd from "@/components/seo/JsonLd";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import GoogleAnalyticsConsent from "@/components/seo/GoogleAnalyticsConsent";
+import Script from "next/script";
 
 const APP_URL = "https://levemente.ia.br";
 
@@ -81,6 +84,18 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={`${montserrat.variable} ${lexend.variable} ${nearo.variable} font-body bg-background text-on-surface`}>
+                <Script id="google-consent-default" strategy="beforeInteractive">
+                    {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('consent', 'default', {
+                            'ad_storage': 'denied',
+                            'ad_user_data': 'denied',
+                            'ad_personalization': 'denied',
+                            'analytics_storage': 'denied'
+                        });
+                    `}
+                </Script>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                     <JsonLd
                         data={buildSoftwareAppJsonLd({
@@ -106,7 +121,9 @@ export default function RootLayout({
                             </AuthProvider>
                         </FeatureFlagProvider>
                     </LanguageProvider>
+                    <GoogleAnalyticsConsent />
                 </ThemeProvider>
+                <GoogleAnalytics gaId="G-R4STDHDWL8" />
             </body>
         </html>
     );
