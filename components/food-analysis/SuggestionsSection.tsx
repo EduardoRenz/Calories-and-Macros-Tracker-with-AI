@@ -1,19 +1,29 @@
 import React from 'react';
-import { MacroSuggestion } from '@/domain/entities/analysis';
+import { MacroSuggestion, MacroType, MealType } from '@/domain/entities/analysis';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface SuggestionsSectionProps {
     macroSuggestions: MacroSuggestion[];
 }
 
-const getMacroColor = (macro: string) => {
-    const lower = macro.toLowerCase();
-    if (lower.includes('protein') || lower.includes('proteína')) return 'brand-protein';
-    if (lower.includes('carb') || lower.includes('carboidrato')) return 'brand-carbs';
-    if (lower.includes('fat') || lower.includes('gordura')) return 'brand-fats';
-    if (lower.includes('fiber') || lower.includes('fibra')) return 'brand-fiber';
-    return 'brand-green';
+const MACRO_COLORS: Record<MacroType, string> = {
+    protein: 'brand-protein',
+    carbs: 'brand-carbs',
+    fats: 'brand-fats',
+    fiber: 'brand-fiber',
+    other: 'brand-green',
 };
+
+const MEAL_ICONS: Record<MealType, string> = {
+    breakfast: '☕',
+    lunch: '🍴',
+    dinner: '🍽️',
+    snacks: '🥜',
+};
+
+const getMacroColor = (macroType?: MacroType): string => MACRO_COLORS[macroType ?? 'other'];
+
+const getMealIcon = (mealType?: MealType): string => MEAL_ICONS[mealType ?? 'snacks'];
 
 export const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({ macroSuggestions }) => {
     const { t } = useTranslation();
@@ -28,6 +38,7 @@ export const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({ macroSug
                 {macroSuggestions.map((suggestion, idx) => {
                     const isExceeded = suggestion.current > suggestion.goal;
                     const percentage = (suggestion.current / suggestion.goal) * 100;
+                    const macroColor = getMacroColor(suggestion.macroType);
 
                     return (
                         <div
@@ -42,7 +53,7 @@ export const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({ macroSug
                                         <span className="text-red-400 text-xl">🔴</span>
                                     )}
                                 </div>
-                                <span className={`font-bold ${isExceeded ? 'text-red-400' : `text-${getMacroColor(suggestion.macro)}`}`}>
+                                <span className={`font-bold ${isExceeded ? 'text-red-400' : `text-${macroColor}`}`}>
                                     {suggestion.current}g / {suggestion.goal}g
                                 </span>
                             </div>
@@ -50,7 +61,7 @@ export const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({ macroSug
                             {/* Progress bar */}
                             <div className="w-full bg-neutral-panel rounded-full h-2 mb-4">
                                 <div
-                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : `bg-${getMacroColor(suggestion.macro)}`}`}
+                                    className={`h-2 rounded-full ${isExceeded ? 'bg-red-500' : `bg-${macroColor}`}`}
                                     style={{
                                         width: `${Math.min(100, percentage)}%`
                                     }}
@@ -74,12 +85,8 @@ export const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({ macroSug
                                         <div className="flex items-center gap-3">
                                             <span className={`text-lg ${rec.type === 'reduce' ? 'text-red-400' : rec.type === 'substitute' ? 'text-green-400' : ''}`}>
                                                 {rec.type === 'reduce' ? '🚫' :
-                                                    rec.type === 'substitute' ? '🔄' : (
-                                                        rec.meal.toLowerCase().includes('breakfast') ? '☕' :
-                                                            rec.meal.toLowerCase().includes('lunch') || rec.meal.toLowerCase().includes('almoço') || rec.meal.toLowerCase().includes('almuerzo') ? '🍴' :
-                                                                rec.meal.toLowerCase().includes('dinner') || rec.meal.toLowerCase().includes('jantar') || rec.meal.toLowerCase().includes('cena') ? '🍽️' :
-                                                                    '🥜'
-                                                    )}
+                                                    rec.type === 'substitute' ? '🔄' :
+                                                        getMealIcon(rec.mealType)}
                                             </span>
                                             <div>
                                                 <p className="font-medium">{rec.food}</p>
@@ -88,7 +95,7 @@ export const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({ macroSug
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className={`text-sm font-medium ${isExceeded ? 'text-neutral-text-secondary' : `text-${getMacroColor(suggestion.macro)}`}`}>
+                                        <span className={`text-sm font-medium ${isExceeded ? 'text-neutral-text-secondary' : `text-${macroColor}`}`}>
                                             {rec.benefit}
                                         </span>
                                     </div>

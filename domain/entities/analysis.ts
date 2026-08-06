@@ -27,8 +27,13 @@ export interface AttentionPoint {
     description: string;
 }
 
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snacks';
+
+export type MacroType = 'protein' | 'carbs' | 'fats' | 'fiber' | 'other';
+
 export interface FoodSuggestion {
     meal: string;
+    mealType?: MealType; // Structured meal enum consumed by the UI
     food: string;
     benefit: string;
     type?: 'reduce' | 'substitute'; // For exceeded macros: reduce (🚫) or substitute (🔄)
@@ -36,6 +41,7 @@ export interface FoodSuggestion {
 
 export interface MacroSuggestion {
     macro: string;
+    macroType?: MacroType; // Structured macro enum consumed by the UI
     current: number;
     goal: number;
     recommendations: FoodSuggestion[];

@@ -78,6 +78,7 @@ const pt = {
     carbs_short: "Carbs",
     fats: "Gorduras",
     fats_short: "Gord.",
+    fats_abbr: "g",
     fiber_short: "Fibras",
     calories_short: "kcal",
     no_items_logged: "Nenhum item registrado",
