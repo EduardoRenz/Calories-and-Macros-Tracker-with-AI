@@ -126,6 +126,7 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
                                     type: Type.OBJECT,
                                     properties: {
                                         macro: { type: Type.STRING },
+                                        macroType: { type: Type.STRING, enum: ["protein", "carbs", "fats", "fiber", "other"] },
                                         current: { type: Type.NUMBER },
                                         goal: { type: Type.NUMBER },
                                         recommendations: {
@@ -134,14 +135,15 @@ export class GeminiFoodAnalysisService extends BaseFoodAnalysisService {
                                                 type: Type.OBJECT,
                                                 properties: {
                                                     meal: { type: Type.STRING },
+                                                    mealType: { type: Type.STRING, enum: ["breakfast", "lunch", "dinner", "snacks"] },
                                                     food: { type: Type.STRING },
                                                     benefit: { type: Type.STRING }
                                                 },
-                                                required: ["meal", "food", "benefit"]
+                                                required: ["meal", "mealType", "food", "benefit"]
                                             }
                                         }
                                     },
-                                    required: ["macro", "current", "goal", "recommendations"]
+                                    required: ["macro", "macroType", "current", "goal", "recommendations"]
                                 }
                             }
                         },

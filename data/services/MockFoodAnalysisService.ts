@@ -152,21 +152,25 @@ export class MockFoodAnalysisService implements FoodAnalysisService {
             macroSuggestions: [
                 {
                     macro: isPortuguese ? 'Proteína' : isSpanish ? 'Proteína' : 'Protein',
+                    macroType: 'protein',
                     current: 80,
                     goal: 140,
                     recommendations: [
                         {
                             meal: isPortuguese ? 'Café da manhã' : isSpanish ? 'Desayuno' : 'Breakfast',
+                            mealType: 'breakfast',
                             food: isPortuguese ? 'Iogurte Grego' : isSpanish ? 'Yogur Griego' : 'Greek Yogurt',
                             benefit: '+10g Protein'
                         },
                         {
                             meal: isPortuguese ? 'Jantar' : isSpanish ? 'Cena' : 'Dinner',
+                            mealType: 'dinner',
                             food: isPortuguese ? 'Carne Magra' : isSpanish ? 'Carne Magra' : 'Lean Beef',
                             benefit: '+28g Protein'
                         },
                         {
                             meal: isPortuguese ? 'Lanche' : isSpanish ? 'Merienda' : 'Snack',
+                            mealType: 'snacks',
                             food: isPortuguese ? 'Whey Protein' : isSpanish ? 'Proteína de Suero' : 'Whey Protein',
                             benefit: '+24g Protein'
                         }
@@ -174,17 +178,20 @@ export class MockFoodAnalysisService implements FoodAnalysisService {
                 },
                 {
                     macro: isPortuguese ? 'Gorduras' : isSpanish ? 'Grasas' : 'Fat Intake',
+                    macroType: 'fats',
                     current: 78,
                     goal: 65,
                     recommendations: [
                         {
                             meal: isPortuguese ? 'Almoço' : isSpanish ? 'Almuerzo' : 'Lunch',
+                            mealType: 'lunch',
                             food: isPortuguese ? 'Reduzir Carnes Processadas' : isSpanish ? 'Reducir Carnes Procesadas' : 'Reduce Processed Meats',
                             benefit: isPortuguese ? 'Salame/Bacon' : isSpanish ? 'Salami/Tocino' : 'Salami/Bacon',
                             type: 'reduce' as const
                         },
                         {
                             meal: isPortuguese ? 'Jantar' : isSpanish ? 'Cena' : 'Dinner',
+                            mealType: 'dinner',
                             food: isPortuguese ? 'Substituir com Proteína Magra' : isSpanish ? 'Sustituir con Proteína Magra' : 'Substitute with Lean Protein',
                             benefit: isPortuguese ? 'Frango/Peixe' : isSpanish ? 'Pollo/Pescado' : 'Chicken Breast',
                             type: 'substitute' as const

@@ -136,6 +136,8 @@ User's Daily Macro Averages (period ${dateRange.start} to ${dateRange.end}):
 Meal Data for the period:
 ${mealSummary}
 
+CRITICAL LANGUAGE RULE: The user's language is ${languageName}. EVERY text value in the response MUST be written entirely in ${languageName} — this includes: meal names in "commonFoods", vitamin names, recommendations and positiveReason, attentionPoints titles and descriptions, and ALL fields in "macroSuggestions" (macro, meal, food, benefit). Never use English meal labels like "Breakfast", "Lunch", "Dinner" or "Snack"; always translate them to ${languageName} (e.g. "Café da manhã", "Almoço", "Jantar", "Lanche" in Portuguese). Do not mix languages anywhere in the output. EXCEPTION: the fields "status" (only "good", "low", "deficient"), "severity" (only "warning", "alert"), "macroType" and "mealType" are enum literals consumed by the app — they MUST remain exactly as the English values listed in the schema and MUST NOT be translated.
+
 Please respond in ${languageName} with:
 1. Most common foods for each meal (breakfast, lunch, dinner, snacks) with consistency percentage
 2. Vitamin status analysis (A, C, D, Iron, Calcium, B12 and all other important vitamins) - rate as 'good', 'low', or 'deficient'
@@ -151,6 +153,8 @@ Please respond in ${languageName} with:
    - The 'current' field MUST be the daily average (${macroAverages.calories.toFixed(0)}, ${macroAverages.protein.toFixed(1)}, ${macroAverages.carbs.toFixed(1)}, ${macroAverages.fats.toFixed(1)})
    - The 'goal' field MUST be the user's daily goal (${macroGoals.calories}, ${macroGoals.protein}, ${macroGoals.carbs}, ${macroGoals.fats})
    - Use these EXACT numbers in your response
+   - 'macroType' MUST be one of: "protein", "carbs", "fats", "fiber", "other" (which macro the suggestion refers to)
+   - 'mealType' of each recommendation MUST be one of: "breakfast", "lunch", "dinner", "snacks" (which meal the suggestion applies to)
 
 Respond ONLY with a valid JSON object (no markdown formatting, no code blocks) matching the following schema:
 {
@@ -175,10 +179,11 @@ Respond ONLY with a valid JSON object (no markdown formatting, no code blocks) m
     "macroSuggestions": [
         {
             "macro": "string",
+            "macroType": "protein" | "carbs" | "fats" | "fiber" | "other",
             "current": number,
             "goal": number,
             "recommendations": [
-                { "meal": "string", "food": "string", "benefit": "string" }
+                { "meal": "string", "mealType": "breakfast" | "lunch" | "dinner" | "snacks", "food": "string", "benefit": "string" }
             ]
         }
     ]

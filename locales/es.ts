@@ -78,6 +78,7 @@ const es = {
     carbs_short: "Carbs",
     fats: "Grasas",
     fats_short: "Grasas",
+    fats_abbr: "g",
     fiber_short: "Fibra",
     calories_short: "kcal",
     no_items_logged: "No hay alimentos registrados",
