@@ -581,10 +581,10 @@ const es = {
       button_dashboard: "Ir al Panel",
     },
     footer: {
-      copyright: "© 2026 Levemente. All rights reserved.",
-      privacy: "Privacy Policy",
-      terms: "Terms of Service",
-      support: "Contact Support",
+      copyright: "© 2026 Levemente. Todos los derechos reservados.",
+      privacy: "Política de Privacidad",
+      terms: "Términos de Uso",
+      support: "Soporte",
     },
   },
   calculator: {

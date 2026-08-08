@@ -586,10 +586,10 @@ const pt = {
       button_dashboard: "Ir para o Dashboard",
     },
     footer: {
-      copyright: "© 2026 Levemente. All rights reserved.",
-      privacy: "Privacy Policy",
-      terms: "Terms of Service",
-      support: "Contact Support",
+      copyright: "© 2026 Levemente. Todos os direitos reservados.",
+      privacy: "Política de Privacidade",
+      terms: "Termos de Uso",
+      support: "Suporte",
     },
   },
   calculator: {
