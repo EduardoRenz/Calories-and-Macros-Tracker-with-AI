@@ -132,7 +132,7 @@ export const IngredientItem: React.FC<IngredientItemProps> = ({ ingredient, onRe
                 </div>
                 <div className="flex flex-col items-center min-w-[3ch]">
                     <span className="text-brand-fats font-bold text-sm">{ingredient.fats}g</span>
-                    <span className="text-[10px] text-neutral-text-secondary uppercase">F</span>
+                    <span className="text-[10px] text-neutral-text-secondary uppercase">{t('meals.fats_abbr')}</span>
                 </div>
 
                 {/* Calories hidden to match screenshot, but can be added back if needed */}

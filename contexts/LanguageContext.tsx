@@ -10,30 +10,26 @@ interface LanguageContextType {
 
 const LANGUAGE_STORAGE_KEY = 'calories-tracker-language';
 
+const getSystemLanguage = (): Language | null => {
+  if (typeof window === 'undefined') return null;
+  const system = window.navigator.language.toLowerCase();
+  if (system.startsWith('pt')) return 'pt';
+  if (system.startsWith('es')) return 'es';
+  if (system.startsWith('en')) return 'en';
+  return null;
+};
+
 const getStoredLanguage = (): Language => {
-  if (typeof window === 'undefined') return 'en';
+  if (typeof window === 'undefined') return 'pt';
   const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  return (stored as Language) || 'en';
+  if (stored) return stored as Language;
+  return getSystemLanguage() || 'pt';
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
-
-  useEffect(() => {
-    const stored = getStoredLanguage();
-    if (stored !== 'en') {
-      setLanguage(stored);
-    }
-  }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (saved) {
-      setLanguage(saved as Language);
-    }
-  }, []);
+  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
 
   useEffect(() => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
