@@ -3,7 +3,7 @@ describe('Cookie Consent Banner', () => {
         // Clear localStorage to remove any existing consent
         cy.window().then((win) => {
             win.localStorage.clear();
-            win.localStorage.setItem('calories-tracker-language', 'pt');
+            win.localStorage.setItem('calories-tracker-language', 'en');
         });
         cy.login();
         // Clear cookie consent after login to test banner behavior
@@ -14,34 +14,34 @@ describe('Cookie Consent Banner', () => {
 
     it('should show cookie consent banner when no consent is given', () => {
         // Banner should be visible
-        cy.contains('Uso de Cookies').should('be.visible');
-        cy.contains('Aceitar Todos').should('be.visible');
-        cy.contains('Recusar Todos').should('be.visible');
+        cy.contains('Cookie Consent').should('be.visible');
+        cy.contains('Accept All').should('be.visible');
+        cy.contains('Decline All').should('be.visible');
     });
 
     it('should hide banner after accepting cookies', () => {
         // Banner should be visible initially
-        cy.contains('Uso de Cookies').should('be.visible');
+        cy.contains('Cookie Consent').should('be.visible');
 
         // Click accept (this triggers page reload)
-        cy.contains('Aceitar Todos').click();
+        cy.contains('Accept All').click();
 
         // Wait for reload to complete
         cy.url().should('include', '/dashboard');
 
         // Banner should be hidden after reload
-        cy.contains('Uso de Cookies').should('not.exist');
+        cy.contains('Cookie Consent').should('not.exist');
     });
 
     it('should hide banner after declining cookies', () => {
         // Banner should be visible initially
-        cy.contains('Uso de Cookies').should('be.visible');
+        cy.contains('Cookie Consent').should('be.visible');
 
         // Click decline
-        cy.contains('Recusar Todos').click();
+        cy.contains('Decline All').click();
 
         // Banner should be hidden
-        cy.contains('Uso de Cookies').should('not.exist');
+        cy.contains('Cookie Consent').should('not.exist');
     });
 
     it('should not show banner when cookies are already accepted', () => {
@@ -52,7 +52,7 @@ describe('Cookie Consent Banner', () => {
         cy.reload();
 
         // Banner should not be visible
-        cy.contains('Uso de Cookies').should('not.exist');
+        cy.contains('Cookie Consent').should('not.exist');
     });
 
     it('should not show banner when cookies are already declined', () => {
@@ -63,7 +63,7 @@ describe('Cookie Consent Banner', () => {
         cy.reload();
 
         // Banner should not be visible
-        cy.contains('Uso de Cookies').should('not.exist');
+        cy.contains('Cookie Consent').should('not.exist');
     });
 
     it('should show alert in settings page when cookies are declined', () => {
@@ -74,10 +74,10 @@ describe('Cookie Consent Banner', () => {
         cy.visit('/settings');
 
         // Alert should be visible
-        cy.contains('O consentimento de cookies é necessário para salvar chaves de API').should('be.visible');
+        cy.contains('Cookie consent is required to save API keys').should('be.visible');
 
         // Add token button should be disabled
-        cy.contains('Adicionar Token').should('be.disabled');
+        cy.contains('Add API Token').should('be.disabled');
     });
 
     it('should not show alert in settings page when cookies are accepted', () => {
@@ -88,24 +88,24 @@ describe('Cookie Consent Banner', () => {
         cy.visit('/settings');
 
         // Alert should not be visible
-        cy.contains('O consentimento de cookies é necessário para salvar chaves de API').should('not.exist');
+        cy.contains('Cookie consent is required to save API keys').should('not.exist');
 
         // Add token button should be enabled
-        cy.contains('Adicionar Token').should('not.be.disabled');
+        cy.contains('Add API Token').should('not.be.disabled');
     });
 
     it('should re-show banner when show-cookie-consent event is dispatched', () => {
         // Banner should be visible initially (beforeEach removed consent)
-        cy.contains('Uso de Cookies').should('be.visible');
+        cy.contains('Cookie Consent').should('be.visible');
 
         // Accept cookies to hide banner
-        cy.contains('Aceitar Todos').click();
+        cy.contains('Accept All').click();
 
         // Wait for reload to complete
         cy.url().should('include', '/dashboard');
 
         // Banner should be hidden after accepting
-        cy.contains('Uso de Cookies').should('not.exist');
+        cy.contains('Cookie Consent').should('not.exist');
 
         // Dispatch event to show banner
         cy.window().then((win) => {
@@ -113,6 +113,6 @@ describe('Cookie Consent Banner', () => {
         });
 
         // Banner should be visible again with proper timeout
-        cy.contains('Uso de Cookies', { timeout: 5000 }).should('be.visible');
+        cy.contains('Cookie Consent', { timeout: 5000 }).should('be.visible');
     });
 });

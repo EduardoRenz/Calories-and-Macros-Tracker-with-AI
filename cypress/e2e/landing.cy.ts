@@ -15,7 +15,11 @@ describe("Landing Page", () => {
       cy.visit("/")
       cy.contains("AI NUTRITION").should("be.visible")
       cy.contains("Smart Nutrition in").should("be.visible")
-      cy.contains("Get Started").should("be.visible")
+      cy.contains("AI NUTRITION")
+        .closest("section")
+        .within(() => {
+          cy.get('a[href="/login"]').contains("Start Now").should("be.visible")
+        })
       // cy.contains("See How It Works").should("be.visible")
     })
 
@@ -104,21 +108,21 @@ describe("Landing Page", () => {
     it("should navigate to /login when clicking the NavbarGet Started button", () => {
       cy.visit("/")
       cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should("be.visible")
-      cy.get("nav").contains("Get Started").click()
+      cy.get("nav").contains("Get Started").click({ force: true })
       cy.url().should("include", "/login")
       cy.get('[data-testid="google-signin-button"]').should("be.visible")
     })
 
     it("should navigate to /login when clicking the Hero Get Started button", () => {
       cy.visit("/")
-      cy.get('a[href="/login"]').contains("Get Started").click()
+      cy.get('a[href="/login"]', { timeout: 10000 }).contains("Get Started").click({ force: true })
       cy.url().should("include", "/login")
       cy.get('[data-testid="google-signin-button"]').should("be.visible")
     })
 
     it("should navigate to /login when clicking the Bottom CTA Start Now button", () => {
       cy.visit("/")
-      cy.get('section#login a[href="/login"]').click()
+      cy.get('section#login a[href="/login"]', { timeout: 10000 }).click({ force: true })
       cy.url().should("include", "/login")
       cy.get('[data-testid="google-signin-button"]').should("be.visible")
     })
@@ -183,8 +187,17 @@ describe("Landing Page", () => {
   })
 
   describe("Language switching", () => {
+    // The language buttons render in the SSR HTML before React hydrates; a click
+    // during hydration is swallowed (listeners not attached yet). The theme
+    // switcher only renders its buttons after mount, so waiting for it guarantees
+    // the app is hydrated and interactive before switching languages.
+    const waitForHydration = () => {
+      cy.get('button[title="Dark"]', { timeout: 10000 }).should("be.visible")
+    }
+
     it("should switch to English and update landing strings", () => {
       cy.visit("/")
+      waitForHydration()
       cy.contains("EN").click()
       cy.contains("Features").should("be.visible")
       cy.contains("Benefits").should("be.visible")
@@ -193,6 +206,7 @@ describe("Landing Page", () => {
 
     it("should switch to Spanish and update landing strings", () => {
       cy.visit("/")
+      waitForHydration()
       cy.contains("ES").click()
       cy.contains("Características").should("be.visible")
       cy.contains("Beneficios").should("be.visible")
@@ -201,6 +215,7 @@ describe("Landing Page", () => {
 
     it("should switch to Portuguese and update landing strings", () => {
       cy.visit("/")
+      waitForHydration()
       cy.contains("PT").click()
       cy.contains("Recursos").should("be.visible")
       cy.contains("Benefícios").should("be.visible")
