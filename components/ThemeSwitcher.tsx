@@ -7,9 +7,10 @@ import { BaseSwitcher, SwitcherOption } from './ui/BaseSwitcher';
 
 interface ThemeSwitcherProps {
     showBorder?: boolean;
+    compact?: boolean;
 }
 
-export default function ThemeSwitcher({ showBorder = true }: ThemeSwitcherProps) {
+export default function ThemeSwitcher({ showBorder = true, compact = false }: ThemeSwitcherProps) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const { t } = useTranslation();
@@ -19,7 +20,11 @@ export default function ThemeSwitcher({ showBorder = true }: ThemeSwitcherProps)
     }, []);
 
     if (!mounted) {
-        return <div className="h-[48px]" />; // Placeholder to avoid layout shift
+        return compact ? (
+            <div className="h-9 w-[136px]" />
+        ) : (
+            <div className="h-[48px]" />
+        );
     }
 
     const options: SwitcherOption<string>[] = [
@@ -62,6 +67,7 @@ export default function ThemeSwitcher({ showBorder = true }: ThemeSwitcherProps)
             selectedValue={theme || 'system'}
             onChange={(value) => setTheme(value)}
             showBorder={showBorder}
+            compact={compact}
         />
     );
 }

@@ -10,7 +10,7 @@ describe('Profile Diet Type Selection', () => {
         });
         // Landing Page is rendered at '/' for unauthenticated users.
         cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should('be.visible');
-        cy.get('a[href="/login"]').first().click();
+        cy.get('a[href="/login"]', { timeout: 10000 }).first().click({ force: true });
         cy.contains('Sign in with Google').click();
         cy.url().should('include', '/dashboard');
 

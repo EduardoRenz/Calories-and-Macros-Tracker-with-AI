@@ -5,7 +5,7 @@ describe('AI Access Control', () => {
         // Reset state before each test
         cy.window().then((win) => {
             win.localStorage.clear();
-            win.localStorage.setItem('calories-tracker-language', 'pt');
+            win.localStorage.setItem('calories-tracker-language', 'en');
         });
         // Re-accept cookies after clearing localStorage
         cy.acceptCookies();
@@ -15,10 +15,10 @@ describe('AI Access Control', () => {
     it('should block a free user from chat when mode is premium_only', () => {
         cy.get('#floating-chat-button').should('be.visible').click();
         cy.get('textarea').type('Oi Lumi');
-        cy.get('[aria-label="Enviar"]').click();
+        cy.get('[aria-label="Send"]').click();
 
         // When clicked, it should show premium requirement error in the chat
-        cy.contains('funcionalidade é exclusiva para membros Premium').should('be.visible');
+        cy.contains('This feature is exclusive for Premium members').should('be.visible');
     });
 
     it('should allow access to chat after upgrading to premium', () => {
@@ -34,7 +34,7 @@ describe('AI Access Control', () => {
         cy.get('#chat-header').should('be.visible');
 
         cy.get('textarea').type('Hello Lumi');
-        cy.get('[aria-label="Enviar"]').click(); // 'Send' is 'Enviar' in pt
+        cy.get('[aria-label="Send"]').click();
         cy.contains('Hello Lumi').should('be.visible');
     });
 
@@ -44,8 +44,8 @@ describe('AI Access Control', () => {
         // Button should be visible
         cy.get('#generate-report-btn').should('be.visible').click();
 
-        // Should show premium required message (using the PT string from locales)
-        cy.contains('funcionalidade é exclusiva para membros Premium').should('be.visible');
+        // Should show premium required message (using the EN string from locales)
+        cy.contains('This feature is exclusive for Premium members').should('be.visible');
 
         // Upgrade
         cy.upgradeSubscription();
@@ -84,6 +84,6 @@ describe('AI Access Control', () => {
         // Food analysis should show disabled message instead of generate button
         cy.visit('/food-analysis');
         cy.get('#generate-report-btn').should('not.exist');
-        cy.contains('recursos de IA estão desativados').should('be.visible');
+        cy.contains('AI features are currently disabled').should('be.visible');
     });
 });

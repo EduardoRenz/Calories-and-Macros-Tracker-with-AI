@@ -7,9 +7,10 @@ import { BaseSwitcher, SwitcherOption } from './ui/BaseSwitcher';
 
 interface LanguageSwitcherProps {
     showBorder?: boolean;
+    compact?: boolean;
 }
 
-export default function LanguageSwitcher({ showBorder = true }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({ showBorder = true, compact = false }: LanguageSwitcherProps) {
     const { language, setLanguage } = useLanguage();
     const { t } = useTranslation();
 
@@ -30,6 +31,7 @@ export default function LanguageSwitcher({ showBorder = true }: LanguageSwitcher
             selectedValue={language}
             onChange={(value) => setLanguage(value)}
             showBorder={showBorder}
+            compact={compact}
         />
     );
 }
