@@ -1,5 +1,6 @@
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
+import { TelemetryFactory } from '../TelemetryFactory';
 
 export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
     private services: NutritionAnalysisService[];
@@ -42,6 +43,13 @@ export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);
                 console.warn(`[FallbackNutritionService] Service ${serviceName} failed:`, error);
+
+                TelemetryFactory.getTelemetryService().captureError(error, {
+                    action: 'nutrition_analysis',
+                    category: 'ai_analysis',
+                    provider: serviceName,
+                    extras: { attempt: index + 1, totalServices: this.services.length },
+                });
                 
                 // If it's a permission/access error, throw immediately to inform the UI
                 if (message.includes('Premium') || message.includes('premium') || 

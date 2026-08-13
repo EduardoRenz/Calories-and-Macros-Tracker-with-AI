@@ -3,6 +3,7 @@ import { ServiceFactory } from '@/data/ServiceFactory';
 import { checkAiAccess } from '../feature-flag-check';
 import { checkRateLimit } from '../rate-limit';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
+import { captureServerError } from '../_telemetry';
 
 export async function POST(req: NextRequest) {
     try {
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(ingredients);
     } catch (error: unknown) {
         console.error('API Error:', error);
+        void captureServerError(error, 'recognize_image_api', req.headers.get('Authorization'));
         return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }

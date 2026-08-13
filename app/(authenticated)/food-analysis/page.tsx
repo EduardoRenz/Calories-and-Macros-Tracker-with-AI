@@ -8,6 +8,7 @@ import { FoodAnalysisRepository } from '@/domain/repositories/FoodAnalysisReposi
 import { ProfileRepository } from '@/domain/repositories/ProfileRepository';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
 import { ServiceFactory } from '@/data/ServiceFactory';
+import { TelemetryFactory } from '@/data/TelemetryFactory';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '@/domain/exceptions/AiAccessException';
 import MarkdownRenderer from '@/components/assistant/MarkdownRenderer';
@@ -150,6 +151,16 @@ export default function FoodAnalysisPage() {
             setRetryCount(0);
         } catch (err) {
             console.error('Error generating food analysis:', err);
+            const telemetry = TelemetryFactory.getTelemetryService();
+            if (err instanceof AiAccessException) {
+                // Expected business outcome (premium/disabled/api keys) - measure frequency only
+                telemetry.trackEvent({
+                    name: 'user_error',
+                    params: { error_action: 'food_analysis', error_category: 'ai_access' },
+                });
+            } else {
+                telemetry.captureError(err, { action: 'food_analysis', category: 'ai_analysis' });
+            }
 
             if (err instanceof AiAccessException) {
                 if (err instanceof AiDisabledException) {

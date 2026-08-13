@@ -1,6 +1,7 @@
 import { FoodAnalysisReport } from '../../domain/entities/analysis';
 import { FoodAnalysisInput, FoodAnalysisService } from '../../domain/services/FoodAnalysisService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
+import { TelemetryFactory } from '../TelemetryFactory';
 
 export class FallbackFoodAnalysisService implements FoodAnalysisService {
     private services: FoodAnalysisService[];
@@ -33,6 +34,12 @@ export class FallbackFoodAnalysisService implements FoodAnalysisService {
                 return result;
             } catch (error) {
                 console.warn(`[FallbackService] Service ${serviceName} failed:`, error);
+                TelemetryFactory.getTelemetryService().captureError(error, {
+                    action: 'food_analysis',
+                    category: 'ai_analysis',
+                    provider: serviceName,
+                    extras: { attempt: index + 1, totalServices: this.services.length },
+                });
                 errors.push(error as Error);
                 // Record failure to trigger cooldown
                 this.cooldownManager.recordFailure(serviceName);

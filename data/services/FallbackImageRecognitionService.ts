@@ -1,6 +1,7 @@
 import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
+import { TelemetryFactory } from '../TelemetryFactory';
 
 export class FallbackImageRecognitionService extends ImageRecognitionService {
     private services: ImageRecognitionService[];
@@ -43,6 +44,13 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);
                 console.warn(`[FallbackImageService] Service ${serviceName} failed:`, error);
+
+                TelemetryFactory.getTelemetryService().captureError(error, {
+                    action: 'image_analysis',
+                    category: 'ai_analysis',
+                    provider: serviceName,
+                    extras: { attempt: index + 1, totalServices: this.services.length },
+                });
                 
                 // If it's a permission/access error, throw immediately to inform the UI
                 if (message.includes('Premium') || message.includes('premium') || 

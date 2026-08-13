@@ -3,6 +3,7 @@ import { checkAiAccess } from '@/app/api/feature-flag-check';
 import { checkRateLimit } from '../../rate-limit';
 import { ServiceFactory } from '@/data/ServiceFactory';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
+import { captureServerError } from '../../_telemetry';
 
 export async function POST(req: NextRequest) {
     try {
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(response);
     } catch (error: unknown) {
         console.error('API Error:', error);
+        void captureServerError(error, 'assistant_chat_api', req.headers.get('Authorization'));
         return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }

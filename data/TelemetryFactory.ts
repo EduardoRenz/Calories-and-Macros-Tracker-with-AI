@@ -1,0 +1,34 @@
+import { TelemetryService } from '../domain/services/TelemetryService';
+import { env } from '../env';
+import { CompositeTelemetryService } from './services/CompositeTelemetryService';
+import { ConsoleTelemetryService } from './services/ConsoleTelemetryService';
+import { GoogleAnalyticsTelemetryService } from './services/GoogleAnalyticsTelemetryService';
+import { NoopTelemetryService } from './services/NoopTelemetryService';
+import { SentryTelemetryService } from './services/SentryTelemetryService';
+
+export class TelemetryFactory {
+    private static telemetryService: TelemetryService | null = null;
+
+    public static getTelemetryService(): TelemetryService {
+        if (!this.telemetryService) {
+            const trackers: TelemetryService[] = [];
+
+            if (env.NEXT_PUBLIC_ERROR_TRACKING_PROVIDER !== 'none') {
+                trackers.push(SentryTelemetryService.getInstance());
+            }
+
+            if (env.NEXT_PUBLIC_ANALYTICS_PROVIDER !== 'none') {
+                trackers.push(GoogleAnalyticsTelemetryService.getInstance());
+            }
+
+            if (process.env.NODE_ENV !== 'production') {
+                trackers.push(ConsoleTelemetryService.getInstance());
+            }
+
+            this.telemetryService = trackers.length === 0
+                ? NoopTelemetryService.getInstance()
+                : new CompositeTelemetryService(trackers);
+        }
+        return this.telemetryService;
+    }
+}

@@ -453,6 +453,11 @@ const es = {
     feature_premium_only:
       "Esta función es exclusiva para suscriptores Premium. Visita nuestra [página de planes](/plans) para obtener más información.",
   },
+  error_boundary: {
+    title: "Algo salió mal",
+    description: "Ocurrió un error inesperado al cargar esta página. Inténtalo de nuevo.",
+    retry: "Reintentar",
+  },
   cookies: {
     title: "Uso de Cookies",
     message:

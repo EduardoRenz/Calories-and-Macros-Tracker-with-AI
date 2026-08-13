@@ -16,7 +16,8 @@
 - **Backend providers** (set via `NEXT_PUBLIC_BACKEND_PROVIDER`): `supabase`, `mock` (testing). Locked at build time.
 - **Payment providers** (set via `NEXT_PUBLIC_PAYMENT_PROVIDER`): `stripe`, `mock`.
 - **AI providers** (multi-provider fallback chain): OpenRouter > Gemini > OpenAI > DeepSeek. User can set own keys in-app (stored in `localStorage`). Server-side env vars used as fallback.
-- **Factories:** `RepositoryFactory` (Strategy pattern — maps provider → repo impls), `ServiceFactory` (AI service chains with fallback), `ClientGatewayFactory` (payment gateways).
+- **Factories:** `RepositoryFactory` (Strategy pattern — maps provider → repo impls), `ServiceFactory` (AI service chains with fallback), `ClientGatewayFactory` (payment gateways), `TelemetryFactory` (error tracking + analytics via `TelemetryService` implementations: Sentry, Google Analytics, Console, Noop — see `domain/services/TelemetryService.ts`).
+- **Telemetry:** errors/logs go through `TelemetryFactory.getTelemetryService().captureError/trackEvent` — never call Sentry/gtag directly. Sentry client-side is gated by cookie consent; server-side always on. Enabled by `NEXT_PUBLIC_ERROR_TRACKING_PROVIDER`/`NEXT_PUBLIC_ANALYTICS_PROVIDER` (no-op without DSN/consent).
 - **Singleton pattern:** All repositories and services expose `getInstance()` static method.
 - **State:** React Contexts in `contexts/` (Auth, ChatAssistant, FeatureFlag, Language, Profile, Subscription, Toast).
 
