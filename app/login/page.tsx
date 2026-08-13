@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { TelemetryFactory } from '@/data/TelemetryFactory';
 import Image from 'next/image';
 import { GoogleIcon } from '@/components/icons';
 import LoginPlansCard from '@/components/LoginPlansCard';
@@ -38,6 +39,10 @@ export default function LoginPage() {
                 await signInWithGoogle();
             } catch (error: unknown) {
                 console.error("Failed to sign in", error);
+                TelemetryFactory.getTelemetryService().captureError(error, {
+                    action: 'google_sign_in',
+                    category: 'auth',
+                });
                 if (error && typeof error === 'object' && 'code' in error) {
                     const firebaseError = error as { code?: string; message?: string };
                     if (firebaseError.code === 'auth/unauthorized-domain') {

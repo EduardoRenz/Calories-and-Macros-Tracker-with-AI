@@ -32,6 +32,13 @@ export const env = createEnv({
         // Supabase Service Role Key (for server-side operations and migrations)
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
 
+        // Sentry (server-side - error tracking). DSN is a public URL; also needed for
+        // source map uploads together with SENTRY_ORG, SENTRY_PROJECT and SENTRY_AUTH_TOKEN.
+        SENTRY_DSN: z.string().optional(),
+        SENTRY_ORG: z.string().optional(),
+        SENTRY_PROJECT: z.string().optional(),
+        SENTRY_AUTH_TOKEN: z.string().optional(),
+
         NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     },
 
@@ -43,6 +50,15 @@ export const env = createEnv({
     client: {
         // Backend Provider (Client-side selection)
         NEXT_PUBLIC_BACKEND_PROVIDER: z.enum(['firebase', 'supabase', 'mock']),
+
+        // Error tracking provider (Client-side selection)
+        NEXT_PUBLIC_ERROR_TRACKING_PROVIDER: z.enum(['sentry', 'none']).default('sentry'),
+
+        // Analytics provider (Client-side selection)
+        NEXT_PUBLIC_ANALYTICS_PROVIDER: z.enum(['ga4', 'none']).default('ga4'),
+
+        // Sentry DSN (public - safe to expose)
+        NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
 
         // Payment Provider (Client-side - for checkout provider selection)
         NEXT_PUBLIC_PAYMENT_PROVIDER: z.enum(['abacatepay', 'stripe', 'mock']).default('stripe'),
@@ -95,11 +111,18 @@ export const env = createEnv({
         FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
         FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        SENTRY_DSN: process.env.SENTRY_DSN,
+        SENTRY_ORG: process.env.SENTRY_ORG,
+        SENTRY_PROJECT: process.env.SENTRY_PROJECT,
+        SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 
         NODE_ENV: process.env.NODE_ENV,
 
         // Client variables
         NEXT_PUBLIC_BACKEND_PROVIDER: process.env.NEXT_PUBLIC_BACKEND_PROVIDER,
+        NEXT_PUBLIC_ERROR_TRACKING_PROVIDER: process.env.NEXT_PUBLIC_ERROR_TRACKING_PROVIDER,
+        NEXT_PUBLIC_ANALYTICS_PROVIDER: process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER,
+        NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
         NEXT_PUBLIC_PAYMENT_PROVIDER: process.env.NEXT_PUBLIC_PAYMENT_PROVIDER,
         NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_FAST_DEFAULT_MODEL,
         NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL: process.env.NEXT_PUBLIC_GEMINI_PRO_DEFAULT_MODEL,

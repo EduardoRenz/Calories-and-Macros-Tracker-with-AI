@@ -16,6 +16,7 @@ import DashboardNavigation from '@/components/DashboardNavigation';
 import DashboardWarningBar from '@/components/DashboardWarningBar';
 import FirstTimeSetup from '@/components/profile/FirstTimeSetup';
 import { RepositoryFactory } from '@/data/RepositoryFactory';
+import { TelemetryFactory } from '@/data/TelemetryFactory';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -255,8 +256,12 @@ export default function DashboardPage() {
         try {
             const updatedData = await dashboardRepository.removeIngredient(data.date, mealType, ingredientId);
             setData(updatedData);
-        } catch {
+        } catch (error) {
             showError(t('meals.remove_error'));
+            TelemetryFactory.getTelemetryService().captureError(error, {
+                action: 'remove_ingredient',
+                category: 'data',
+            });
         }
     };
 

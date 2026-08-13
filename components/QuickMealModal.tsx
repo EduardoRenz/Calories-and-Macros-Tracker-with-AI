@@ -7,9 +7,11 @@ import Modal from './ui/Modal';
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
 import { ImageCompressionService } from '../domain/services/ImageCompressionService';
 import { ServiceFactory } from '../data/ServiceFactory';
+import { TelemetryFactory } from '../data/TelemetryFactory';
 import { useLanguage } from '../contexts/LanguageContext';
-import { AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
 import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException } from '../domain/exceptions/ImageAnalysisException';
+import { isAccessErrorMessage } from '../utils/aiAccessError';
 import MarkdownRenderer from './assistant/MarkdownRenderer';
 
 
@@ -76,6 +78,10 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 file = await imageCompressionService.compress(file, 0.9, 2048, 2048);
             } catch (err) {
                 console.error("Compression failed, using original file", err);
+                TelemetryFactory.getTelemetryService().captureError(err, {
+                    action: 'quick_meal_image_compression',
+                    category: 'image_compression',
+                });
             }
 
             setImage(file);
@@ -106,6 +112,10 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 file = await imageCompressionService.compress(file, 0.9, 2048, 2048);
             } catch (err) {
                 console.error("Compression failed, using original file", err);
+                TelemetryFactory.getTelemetryService().captureError(err, {
+                    action: 'quick_meal_image_compression',
+                    category: 'image_compression',
+                });
             }
 
             setImage(file);
@@ -129,6 +139,23 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             setAnalyzedIngredients(ingredients);
         } catch (err) {
             console.error("Image Analysis Error:", err);
+            const telemetry = TelemetryFactory.getTelemetryService();
+            const message = err instanceof Error ? err.message : String(err);
+            const isAccessOutcome = err instanceof AiAccessException || isAccessErrorMessage(message);
+
+            if (isAccessOutcome) {
+                // Expected business outcome (premium/disabled/api keys) - measure frequency only
+                telemetry.trackEvent({
+                    name: 'user_error',
+                    params: { error_action: 'quick_meal_analyze', error_category: 'ai_access' },
+                });
+            } else {
+                telemetry.captureError(err, {
+                    action: 'quick_meal_analyze',
+                    category: 'ai_analysis',
+                    extras: { imageSizeBytes: image?.size ?? 0, promptLength: imagePrompt.length },
+                });
+            }
 
             if (err instanceof EmptyAnalysisResultException) {
                 setError(t('quick_meal_modal.analysis_empty_error'));
@@ -142,8 +169,16 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 setError(t('ai_errors.premium_required'));
             } else if (err instanceof ApiKeysRequiredException) {
                 setError(t('ai_errors.api_keys_required'));
+            } else if (isAccessErrorMessage(message)) {
+                const aiAccessService = ServiceFactory.getAiAccessService();
+                const minPlan = await aiAccessService.getMinPlan('quick_meal_photo');
+
+                if (minPlan === 'premium') {
+                    setError(t('ai_errors.premium_required'));
+                } else {
+                    setError(t('ai_errors.api_keys_required'));
+                }
             } else {
-                const message = err instanceof Error ? err.message : String(err);
                 setError(`${t('quick_meal_modal.analysis_error')} (${message})`);
             }
         } finally {
@@ -164,6 +199,10 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             onSuccess();
         } catch (err) {
             console.error("Failed to add ingredients:", err);
+            TelemetryFactory.getTelemetryService().captureError(err, {
+                action: 'quick_meal_add_to_diary',
+                category: 'data',
+            });
             setError(t('quick_meal_modal.add_error'));
             setIsLoading(false);
         }

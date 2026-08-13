@@ -16,6 +16,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import GoogleAnalyticsConsent from "@/components/seo/GoogleAnalyticsConsent";
 import Script from "next/script";
+import { env } from "@/env";
 
 const APP_URL = "https://levemente.ia.br";
 
@@ -123,7 +124,7 @@ export default function RootLayout({
                     </LanguageProvider>
                     <GoogleAnalyticsConsent />
                 </ThemeProvider>
-                <GoogleAnalytics gaId="G-R4STDHDWL8" />
+                {env.NEXT_PUBLIC_ANALYTICS_PROVIDER !== 'none' && <GoogleAnalytics gaId="G-R4STDHDWL8" />}
             </body>
         </html>
     );

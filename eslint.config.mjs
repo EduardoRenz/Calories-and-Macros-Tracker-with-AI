@@ -120,6 +120,15 @@ export default [
         sourceType: "module",
       },
     },
-    rules: Object.assign({}, ...typescriptRecommendedRules),
+    rules: Object.assign({}, ...typescriptRecommendedRules, {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    }),
   },
 ];

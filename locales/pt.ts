@@ -461,6 +461,11 @@ const pt = {
       "Este recurso requer uma assinatura [Premium](/plans) ou que você configure suas próprias [chaves de API nas configurações](/settings).",
     feature_premium_only: "Este recurso é exclusivo para assinantes Premium. Visite nossa [página de planos](/plans) para saber mais.",
   },
+  error_boundary: {
+    title: "Algo deu errado",
+    description: "Ocorreu um erro inesperado ao carregar esta página. Tente novamente.",
+    retry: "Tentar novamente",
+  },
   cookies: {
     title: "Uso de Cookies",
     message:
@@ -589,10 +594,10 @@ const pt = {
       button_dashboard: "Ir para o Dashboard",
     },
     footer: {
-      copyright: "© 2026 Levemente. All rights reserved.",
-      privacy: "Privacy Policy",
-      terms: "Terms of Service",
-      support: "Contact Support",
+      copyright: "© 2026 Levemente. Todos os direitos reservados.",
+      privacy: "Política de Privacidade",
+      terms: "Termos de Uso",
+      support: "Suporte",
     },
   },
   calculator: {

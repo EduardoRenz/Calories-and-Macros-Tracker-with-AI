@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { SparklesIcon, CalendarIcon, AlertIcon } from './icons';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { TelemetryFactory } from '@/data/TelemetryFactory';
 import { getSupabaseClient } from '@/data/supabaseClient';
 import Modal from './ui/Modal';
 
@@ -200,6 +201,14 @@ const SubscriptionCard: React.FC = () => {
             setIsCancelModalOpen(false);
         } catch (error) {
             console.error('Error cancelling subscription:', error);
+            TelemetryFactory.getTelemetryService().trackEvent({
+                name: 'user_error',
+                params: { error_action: 'cancel_subscription', error_category: 'billing' },
+            });
+            TelemetryFactory.getTelemetryService().captureError(error, {
+                action: 'cancel_subscription',
+                category: 'billing',
+            });
             setCancelError(
                 error instanceof Error
                     ? error.message

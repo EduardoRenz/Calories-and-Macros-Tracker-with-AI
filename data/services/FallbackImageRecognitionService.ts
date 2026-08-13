@@ -1,7 +1,9 @@
 import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
+import { TelemetryFactory } from '../TelemetryFactory';
 import { InvalidApiKeyException, ImageTooLargeException } from '../../domain/exceptions/ImageAnalysisException';
+import { isAccessErrorMessage } from '../../utils/aiAccessError';
 
 export class FallbackImageRecognitionService extends ImageRecognitionService {
     private services: ImageRecognitionService[];
@@ -43,18 +45,31 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
                 this.cooldownManager.recordFailure(serviceName, 30);
             } catch (error) {
                 console.warn(`[FallbackImageService] Service ${serviceName} failed:`, error);
-                
+
                 // If it is a known domain image analysis exception, propagate immediately
                 if (error instanceof InvalidApiKeyException || error instanceof ImageTooLargeException) {
                     throw error;
                 }
 
                 const message = error instanceof Error ? error.message : String(error);
-                // If it's a permission/access error, throw immediately to inform the UI
-                if (message.includes('Premium') || message.includes('premium') || 
-                    message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+                // Expected business outcomes (premium/disabled/api keys) - surface to the UI
+                // without tracking them as provider errors.
+                if (isAccessErrorMessage(message)) {
                     throw error;
                 }
+
+                // Per-provider failures stay in analytics as a metric; errors are captured
+                // once by the API route to avoid duplicate Sentry events per request.
+                TelemetryFactory.getTelemetryService().trackEvent({
+                    name: 'ai_provider_error',
+                    params: {
+                        action: 'image_analysis',
+                        category: 'ai_analysis',
+                        provider: serviceName,
+                        attempt: index + 1,
+                        totalServices: this.services.length,
+                    },
+                });
 
                 errors.push(error as Error);
                 // Record failure to trigger cooldown (60s for hard failures)

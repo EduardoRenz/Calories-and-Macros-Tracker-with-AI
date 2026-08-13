@@ -3,14 +3,6 @@
 import { useEffect } from 'react';
 import { getCookieConsentStatus } from '@/utils/cookieConsent';
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-wrapper-object-types */
-declare global {
-    interface Window {
-        dataLayer?: Object[];
-        gtag?: (...args: any[]) => void;
-    }
-}
-
 export default function GoogleAnalyticsConsent() {
     useEffect(() => {
         if (typeof window === 'undefined') return;

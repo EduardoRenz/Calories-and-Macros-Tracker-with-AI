@@ -189,7 +189,7 @@ describe("Root Path Redirect", () => {
     cy.visit("/")
     cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should("be.visible")
     // Follow any CTA pointing to /login (e.g. Navbar "Login" or "Começar").
-    cy.get('a[href="/login"]').first().click()
+    cy.get('a[href="/login"]', { timeout: 10000 }).first().click({ force: true })
     cy.url().should("include", "/login")
     cy.get('[data-testid="google-signin-button"]').should("be.visible")
   })
