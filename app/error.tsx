@@ -14,6 +14,9 @@ export default function Error({
     const { t } = useTranslation();
 
     useEffect(() => {
+        // Sentry auto-captures render errors reaching error boundaries, so manual
+        // capture only when its client SDK is not active to avoid duplicates.
+        if (TelemetryFactory.usesSentry) return;
         const telemetry = TelemetryFactory.getTelemetryService();
         telemetry.captureError(error, { action: 'route_error_boundary', category: 'render' });
     }, [error]);

@@ -9,6 +9,16 @@ import { SentryTelemetryService } from './services/SentryTelemetryService';
 export class TelemetryFactory {
     private static telemetryService: TelemetryService | null = null;
 
+    /**
+     * True when the Sentry client SDK is enabled (provider set + DSN configured).
+     * Sentry then auto-captures render errors reaching error boundaries, so
+     * manual captures from error components can be skipped to avoid duplicates.
+     */
+    public static get usesSentry(): boolean {
+        return env.NEXT_PUBLIC_ERROR_TRACKING_PROVIDER === 'sentry'
+            && !!process.env.NEXT_PUBLIC_SENTRY_DSN;
+    }
+
     public static getTelemetryService(): TelemetryService {
         if (!this.telemetryService) {
             const trackers: TelemetryService[] = [];

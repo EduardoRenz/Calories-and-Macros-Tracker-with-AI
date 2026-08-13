@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { TelemetryFactory } from '../data/TelemetryFactory';
 import en from '../locales/en';
 import es from '../locales/es';
@@ -22,6 +22,11 @@ function t(key: string): string {
     return typeof value === 'string' ? value : key;
 }
 
+function getStoredLanguage(): string {
+    if (typeof window === 'undefined') return 'en';
+    return window.localStorage.getItem(LANGUAGE_STORAGE_KEY) || 'en';
+}
+
 export default function GlobalError({
     error,
     reset,
@@ -29,13 +34,18 @@ export default function GlobalError({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
+    const [lang] = useState(() => getStoredLanguage());
+
     useEffect(() => {
+        // Sentry auto-captures render errors reaching error boundaries, so manual
+        // capture only when its client SDK is not active to avoid duplicates.
+        if (TelemetryFactory.usesSentry) return;
         const telemetry = TelemetryFactory.getTelemetryService();
         telemetry.captureError(error, { action: 'global_error_boundary', category: 'render' });
     }, [error]);
 
     return (
-        <html lang="en">
+        <html lang={lang}>
             <body style={{ margin: 0, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                 <div
                     style={{

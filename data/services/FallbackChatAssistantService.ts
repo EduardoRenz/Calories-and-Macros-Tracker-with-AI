@@ -34,11 +34,17 @@ export class FallbackChatAssistantService implements ChatAssistantService {
                 return result;
             } catch (error) {
                 console.warn(`[FallbackChatService] Service ${serviceName} failed:`, error);
-                TelemetryFactory.getTelemetryService().captureError(error, {
-                    action: 'chat_assistant',
-                    category: 'ai_analysis',
-                    provider: serviceName,
-                    extras: { attempt: index + 1, totalServices: this.services.length },
+                // Per-provider failures stay in analytics as a metric; errors are captured
+                // once by the API route to avoid duplicate Sentry events per request.
+                TelemetryFactory.getTelemetryService().trackEvent({
+                    name: 'ai_provider_error',
+                    params: {
+                        action: 'chat_assistant',
+                        category: 'ai_analysis',
+                        provider: serviceName,
+                        attempt: index + 1,
+                        totalServices: this.services.length,
+                    },
                 });
                 errors.push(error as Error);
                 // Record failure to trigger cooldown

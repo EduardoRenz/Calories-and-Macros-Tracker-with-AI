@@ -11,6 +11,7 @@ import { ServiceFactory } from '@/data/ServiceFactory';
 import { TelemetryFactory } from '@/data/TelemetryFactory';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '@/domain/exceptions/AiAccessException';
+import { isAccessErrorMessage } from '@/utils/aiAccessError';
 import MarkdownRenderer from '@/components/assistant/MarkdownRenderer';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { ReportTabs } from '@/components/ReportTabs';
@@ -152,7 +153,10 @@ export default function FoodAnalysisPage() {
         } catch (err) {
             console.error('Error generating food analysis:', err);
             const telemetry = TelemetryFactory.getTelemetryService();
-            if (err instanceof AiAccessException) {
+            const message = err instanceof Error ? err.message : String(err);
+            const isAccessOutcome = err instanceof AiAccessException || isAccessErrorMessage(message);
+
+            if (isAccessOutcome) {
                 // Expected business outcome (premium/disabled/api keys) - measure frequency only
                 telemetry.trackEvent({
                     name: 'user_error',
@@ -175,13 +179,10 @@ export default function FoodAnalysisPage() {
                 return;
             }
 
-            const message = err instanceof Error ? err.message : String(err);
-            if (message.includes('Premium') || message.includes('premium') || 
-                message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
-                
+            if (isAccessErrorMessage(message)) {
                 const aiAccessService = ServiceFactory.getAiAccessService();
                 const minPlan = await aiAccessService.getMinPlan('food_analysis');
-                
+
                 if (minPlan === 'premium') {
                     setError(t('ai_errors.premium_required'));
                 } else {

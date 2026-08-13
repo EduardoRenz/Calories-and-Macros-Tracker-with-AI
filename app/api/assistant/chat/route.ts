@@ -6,10 +6,12 @@ import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 import { captureServerError } from '../../_telemetry';
 
 export async function POST(req: NextRequest) {
+    let userId: string | undefined;
     try {
         const authHeader = req.headers.get('Authorization');
         const accessCheck = await checkAiAccess(authHeader, 'chatbot');
-        if (accessCheck) return accessCheck;
+        if (accessCheck.response) return accessCheck.response;
+        userId = accessCheck.userId;
 
         const rateLimitCheck = await checkRateLimit(authHeader, 'chatbot');
         if (rateLimitCheck) return rateLimitCheck;
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(response);
     } catch (error: unknown) {
         console.error('API Error:', error);
-        void captureServerError(error, 'assistant_chat_api', req.headers.get('Authorization'));
+        void captureServerError(error, 'assistant_chat_api', req.headers.get('Authorization'), 'ai_analysis', userId);
         return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }

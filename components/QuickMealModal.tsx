@@ -10,6 +10,7 @@ import { ServiceFactory } from '../data/ServiceFactory';
 import { TelemetryFactory } from '../data/TelemetryFactory';
 import { useLanguage } from '../contexts/LanguageContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import { isAccessErrorMessage } from '../utils/aiAccessError';
 import MarkdownRenderer from './assistant/MarkdownRenderer';
 
 
@@ -143,7 +144,10 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
         } catch (err) {
             console.error("Image Analysis Error:", err);
             const telemetry = TelemetryFactory.getTelemetryService();
-            if (err instanceof AiAccessException) {
+            const message = err instanceof Error ? err.message : String(err);
+            const isAccessOutcome = err instanceof AiAccessException || isAccessErrorMessage(message);
+
+            if (isAccessOutcome) {
                 // Expected business outcome (premium/disabled/api keys) - measure frequency only
                 telemetry.trackEvent({
                     name: 'user_error',
@@ -166,22 +170,17 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 } else {
                     setError(t('quick_meal_modal.analysis_error'));
                 }
-            } else {
-                const message = err instanceof Error ? err.message : String(err);
-                if (message.includes('Premium') || message.includes('premium') ||
-                    message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
+            } else if (isAccessErrorMessage(message)) {
+                const aiAccessService = ServiceFactory.getAiAccessService();
+                const minPlan = await aiAccessService.getMinPlan('quick_meal_photo');
 
-                    const aiAccessService = ServiceFactory.getAiAccessService();
-                    const minPlan = await aiAccessService.getMinPlan('quick_meal_photo');
-
-                    if (minPlan === 'premium') {
-                        setError(t('ai_errors.premium_required'));
-                    } else {
-                        setError(t('ai_errors.api_keys_required'));
-                    }
+                if (minPlan === 'premium') {
+                    setError(t('ai_errors.premium_required'));
                 } else {
-                    setError(t('quick_meal_modal.analysis_error'));
+                    setError(t('ai_errors.api_keys_required'));
                 }
+            } else {
+                setError(t('quick_meal_modal.analysis_error'));
             }
         } finally {
             setIsLoading(false);

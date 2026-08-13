@@ -3,7 +3,9 @@ import { TelemetryService } from '../../domain/services/TelemetryService';
 import type { ErrorContext, TelemetryEvent } from '../../domain/entities/telemetry';
 import { hasCookieConsent } from '../../utils/cookieConsent';
 
-const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
+// DSN is a public URL. Prefer the public var (available client-side) and fall
+// back to the server-only one so a single configured DSN works everywhere.
+const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN;
 
 let consentGranted = typeof window === 'undefined' || hasCookieConsent();
 
