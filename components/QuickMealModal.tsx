@@ -7,11 +7,15 @@ import Modal from './ui/Modal';
 import { ImageRecognitionService } from '../domain/services/ImageRecognitionService';
 import { ImageCompressionService } from '../domain/services/ImageCompressionService';
 import { ServiceFactory } from '../data/ServiceFactory';
+import { RepositoryFactory } from '../data/RepositoryFactory';
 import { TelemetryFactory } from '../data/TelemetryFactory';
 import { useLanguage } from '../contexts/LanguageContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
-import { isAccessErrorMessage } from '../utils/aiAccessError';
+import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException, RateLimitedException } from '../domain/exceptions/ImageAnalysisException';
 import MarkdownRenderer from './assistant/MarkdownRenderer';
+
+// Upper bound for the (already compressed) image payload sent to AI providers.
+const MAX_IMAGE_SIZE_BYTES = 4.5 * 1024 * 1024;
 
 
 
@@ -83,6 +87,12 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 });
             }
 
+            // Prevent analysis upfront when the payload is over the provider limit.
+            if (file.size > MAX_IMAGE_SIZE_BYTES) {
+                setError(t('quick_meal_modal.payload_too_large_error'));
+                return;
+            }
+
             setImage(file);
             setImagePreview(URL.createObjectURL(file));
             setAnalyzedIngredients([]);
@@ -117,6 +127,12 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 });
             }
 
+            // Prevent analysis upfront when the payload is over the provider limit.
+            if (file.size > MAX_IMAGE_SIZE_BYTES) {
+                setError(t('quick_meal_modal.payload_too_large_error'));
+                return;
+            }
+
             setImage(file);
             setImagePreview(URL.createObjectURL(file));
             setAnalyzedIngredients([]);
@@ -127,6 +143,11 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
     const handleAnalyzeMeal = async () => {
         if (!image || !imageRecognitionService) return;
 
+        if (image.size > MAX_IMAGE_SIZE_BYTES) {
+            setError(t('quick_meal_modal.payload_too_large_error'));
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
 
@@ -135,17 +156,14 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             await aiAccessService.checkAccess('quick_meal_photo');
 
             const ingredients = await imageRecognitionService.analyzeMealImage(image, language, imagePrompt);
-
-            if (ingredients && ingredients.length > 0) {
-                setAnalyzedIngredients(ingredients);
-            } else {
-                setError(t('quick_meal_modal.analysis_error'));
-            }
+            setAnalyzedIngredients(ingredients);
         } catch (err) {
             console.error("Image Analysis Error:", err);
             const telemetry = TelemetryFactory.getTelemetryService();
-            const message = err instanceof Error ? err.message : String(err);
-            const isAccessOutcome = err instanceof AiAccessException || isAccessErrorMessage(message);
+            // Only expected subscription outcomes are access events; everything else
+            // (including local failures like an invalid custom key) must reach error
+            // tracking so issues that never hit the server are still observable.
+            const isAccessOutcome = err instanceof AiAccessException;
 
             if (isAccessOutcome) {
                 // Expected business outcome (premium/disabled/api keys) - measure frequency only
@@ -160,25 +178,24 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                     extras: { imageSizeBytes: image?.size ?? 0, promptLength: imagePrompt.length },
                 });
             }
-            if (err instanceof AiAccessException) {
-                if (err instanceof AiDisabledException) {
-                    setError(t('ai_errors.disabled'));
-                } else if (err instanceof PremiumOnlyException) {
-                    setError(t('ai_errors.premium_required'));
-                } else if (err instanceof ApiKeysRequiredException) {
-                    setError(t('ai_errors.api_keys_required'));
-                } else {
-                    setError(t('quick_meal_modal.analysis_error'));
-                }
-            } else if (isAccessErrorMessage(message)) {
-                const aiAccessService = ServiceFactory.getAiAccessService();
-                const minPlan = await aiAccessService.getMinPlan('quick_meal_photo');
 
-                if (minPlan === 'premium') {
-                    setError(t('ai_errors.premium_required'));
-                } else {
-                    setError(t('ai_errors.api_keys_required'));
-                }
+            if (err instanceof EmptyAnalysisResultException) {
+                setError(t('quick_meal_modal.analysis_empty_error'));
+            } else if (err instanceof ImageTooLargeException) {
+                setError(t('quick_meal_modal.payload_too_large_error'));
+            } else if (err instanceof RateLimitedException) {
+                setError(t('quick_meal_modal.analysis_transient_error'));
+            } else if (err instanceof InvalidApiKeyException) {
+                // Only tell users about custom keys when they actually configured one;
+                // paying users without keys should never be sent to key management.
+                const hasCustomKeys = RepositoryFactory.getUserApiKeysRepository().hasApiKeys();
+                setError(hasCustomKeys ? t('quick_meal_modal.custom_key_failed_error') : t('quick_meal_modal.analysis_error'));
+            } else if (err instanceof AiDisabledException) {
+                setError(t('ai_errors.disabled'));
+            } else if (err instanceof PremiumOnlyException) {
+                setError(t('ai_errors.premium_required'));
+            } else if (err instanceof ApiKeysRequiredException) {
+                setError(t('ai_errors.api_keys_required'));
             } else {
                 setError(t('quick_meal_modal.analysis_error'));
             }

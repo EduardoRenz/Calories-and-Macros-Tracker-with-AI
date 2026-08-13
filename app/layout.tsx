@@ -124,7 +124,7 @@ export default function RootLayout({
                     </LanguageProvider>
                     <GoogleAnalyticsConsent />
                 </ThemeProvider>
-                {env.NEXT_PUBLIC_ANALYTICS_PROVIDER !== 'none' && <GoogleAnalytics gaId="G-R4STDHDWL8" />}
+                {env.NEXT_PUBLIC_BACKEND_PROVIDER !== 'mock' && env.NEXT_PUBLIC_ANALYTICS_PROVIDER !== 'none' && <GoogleAnalytics gaId="G-R4STDHDWL8" />}
             </body>
         </html>
     );

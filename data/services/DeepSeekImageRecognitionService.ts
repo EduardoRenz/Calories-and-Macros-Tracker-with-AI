@@ -4,7 +4,7 @@ import { Ingredient } from '../../domain/entities/dashboard';
 export class DeepSeekImageRecognitionService extends OpenAIImageRecognitionService {
     constructor(apiKey: string, model?: string) {
         // DeepSeek API is OpenAI-compatible.
-        super(apiKey, 'https://api.deepseek.com', model || 'deepseek-v4-flash');
+        super(apiKey, 'https://api.deepseek.com', model || 'deepseek-v4-flash', 'deepseek');
     }
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {

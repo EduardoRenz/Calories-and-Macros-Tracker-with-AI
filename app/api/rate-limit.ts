@@ -17,7 +17,7 @@ export async function checkRateLimit(
     const retrySeconds = Math.ceil(result.resetMs / 1000);
 
     return NextResponse.json(
-        { error: `Rate limit exceeded. Please wait ${retrySeconds} seconds before trying again.` },
+        { error: `Rate limit exceeded. Please wait ${retrySeconds} seconds before trying again.`, code: 'RATE_LIMITED' },
         {
             status: 429,
             headers: {
