@@ -129,7 +129,7 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             if (ingredients && ingredients.length > 0) {
                 setAnalyzedIngredients(ingredients);
             } else {
-                setError(t('quick_meal_modal.analysis_error'));
+                setError(t('quick_meal_modal.analysis_empty_error'));
             }
         } catch (err) {
             console.error("Image Analysis Error:", err);
@@ -156,8 +156,27 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                     } else {
                         setError(t('ai_errors.api_keys_required'));
                     }
+                } else if (message.includes('413') || message.toLowerCase().includes('large') || message.toLowerCase().includes('too large')) {
+                    setError(t('quick_meal_modal.payload_too_large_error'));
                 } else {
-                    setError(t('quick_meal_modal.analysis_error'));
+                    let hasSavedKeys = false;
+                    try {
+                        const savedKeysStr = localStorage.getItem('ai_api_keys');
+                        if (savedKeysStr) {
+                            const parsed = JSON.parse(savedKeysStr);
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                hasSavedKeys = true;
+                            }
+                        }
+                    } catch {
+                        // ignore
+                    }
+
+                    if (hasSavedKeys) {
+                        setError(`${t('quick_meal_modal.custom_key_failed_error')} (${message})`);
+                    } else {
+                        setError(`${t('quick_meal_modal.analysis_error')} (${message})`);
+                    }
                 }
             }
         } finally {
