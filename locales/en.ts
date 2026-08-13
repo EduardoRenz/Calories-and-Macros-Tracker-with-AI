@@ -456,6 +456,11 @@ const en = {
       "This feature requires a [Premium](/plans) subscription or that you configure your own [API keys in the settings](/settings).",
     feature_premium_only: "This feature is exclusive for Premium subscribers. Visit our [plans page](/plans) to learn more.",
   },
+  error_boundary: {
+    title: "Something went wrong",
+    description: "An unexpected error occurred while loading this page. Please try again.",
+    retry: "Try again",
+  },
   cookies: {
     title: "Cookie Consent",
     message:
