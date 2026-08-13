@@ -19,17 +19,22 @@ const getSystemLanguage = (): Language | null => {
   return null;
 };
 
-const getStoredLanguage = (): Language => {
-  if (typeof window === 'undefined') return 'pt';
-  const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  if (stored) return stored as Language;
-  return getSystemLanguage() || 'pt';
-};
-
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>(() => getStoredLanguage());
+  const [language, setLanguage] = useState<Language>('pt');
+
+  useEffect(() => {
+    const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (stored) {
+      setLanguage(stored as Language);
+    } else {
+      const systemLang = getSystemLanguage();
+      if (systemLang) {
+        setLanguage(systemLang);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);

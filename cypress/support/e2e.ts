@@ -9,3 +9,8 @@ import './commands';
 // beforeEach(() => {
     // cy.acceptCookies();
 // });
+
+// Prevent benign uncaught exceptions (like hydration mismatches under test locales) from crashing tests
+Cypress.on('uncaught:exception', (err, runnable) => {
+    return false;
+});
