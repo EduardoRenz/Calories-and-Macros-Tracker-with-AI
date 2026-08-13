@@ -3,6 +3,7 @@ import { ImageRecognitionService } from '../../domain/services/ImageRecognitionS
 import type { Ingredient } from '../../domain/entities/dashboard';
 import { env } from '../../env';
 import { FOOD_CATEGORIES_LIST } from "../../domain/constants/foodCategories";
+import { InvalidApiKeyException, EmptyAnalysisResultException } from '../../domain/exceptions/ImageAnalysisException';
 
 const blobToBase64 = async (blob: Blob): Promise<string> => {
     // Check if we are in a browser environment
@@ -86,15 +87,24 @@ export class GeminiImageRecognitionService extends ImageRecognitionService {
             if (!jsonString) throw new Error("Empty response from Gemini");
             const result = JSON.parse(jsonString);
 
-            if (result.ingredients && Array.isArray(result.ingredients)) {
+            if (result.ingredients && Array.isArray(result.ingredients) && result.ingredients.length > 0) {
                 return result.ingredients;
             }
 
-            return [];
+            throw new EmptyAnalysisResultException();
         } catch (err) {
             console.error("Gemini API Error in GeminiImageRecognitionService:", err);
-            // Re-throw the error to be handled by the caller
-            throw new Error("Failed to analyze image with Gemini API.");
+
+            if (err instanceof EmptyAnalysisResultException) {
+                throw err;
+            }
+
+            const message = err instanceof Error ? err.message : String(err);
+            if (message.includes('API_KEY_INVALID') || message.includes('API key not valid') || message.includes('apiKey') || message.includes('not authorized')) {
+                throw new InvalidApiKeyException('gemini', message);
+            }
+
+            throw new Error(`Failed to analyze image with Gemini API: ${message}`);
         }
     }
 }

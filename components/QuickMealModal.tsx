@@ -8,7 +8,8 @@ import { ImageRecognitionService } from '../domain/services/ImageRecognitionServ
 import { ImageCompressionService } from '../domain/services/ImageCompressionService';
 import { ServiceFactory } from '../data/ServiceFactory';
 import { useLanguage } from '../contexts/LanguageContext';
-import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import { AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException } from '../domain/exceptions/ImageAnalysisException';
 import MarkdownRenderer from './assistant/MarkdownRenderer';
 
 
@@ -125,59 +126,25 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
             await aiAccessService.checkAccess('quick_meal_photo');
 
             const ingredients = await imageRecognitionService.analyzeMealImage(image, language, imagePrompt);
-
-            if (ingredients && ingredients.length > 0) {
-                setAnalyzedIngredients(ingredients);
-            } else {
-                setError(t('quick_meal_modal.analysis_empty_error'));
-            }
+            setAnalyzedIngredients(ingredients);
         } catch (err) {
             console.error("Image Analysis Error:", err);
-            if (err instanceof AiAccessException) {
-                if (err instanceof AiDisabledException) {
-                    setError(t('ai_errors.disabled'));
-                } else if (err instanceof PremiumOnlyException) {
-                    setError(t('ai_errors.premium_required'));
-                } else if (err instanceof ApiKeysRequiredException) {
-                    setError(t('ai_errors.api_keys_required'));
-                } else {
-                    setError(t('quick_meal_modal.analysis_error'));
-                }
+
+            if (err instanceof EmptyAnalysisResultException) {
+                setError(t('quick_meal_modal.analysis_empty_error'));
+            } else if (err instanceof ImageTooLargeException) {
+                setError(t('quick_meal_modal.payload_too_large_error'));
+            } else if (err instanceof InvalidApiKeyException) {
+                setError(`${t('quick_meal_modal.custom_key_failed_error')} (${err.message})`);
+            } else if (err instanceof AiDisabledException) {
+                setError(t('ai_errors.disabled'));
+            } else if (err instanceof PremiumOnlyException) {
+                setError(t('ai_errors.premium_required'));
+            } else if (err instanceof ApiKeysRequiredException) {
+                setError(t('ai_errors.api_keys_required'));
             } else {
                 const message = err instanceof Error ? err.message : String(err);
-                if (message.includes('Premium') || message.includes('premium') ||
-                    message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
-
-                    const aiAccessService = ServiceFactory.getAiAccessService();
-                    const minPlan = await aiAccessService.getMinPlan('quick_meal_photo');
-
-                    if (minPlan === 'premium') {
-                        setError(t('ai_errors.premium_required'));
-                    } else {
-                        setError(t('ai_errors.api_keys_required'));
-                    }
-                } else if (message.includes('413') || message.toLowerCase().includes('large') || message.toLowerCase().includes('too large')) {
-                    setError(t('quick_meal_modal.payload_too_large_error'));
-                } else {
-                    let hasSavedKeys = false;
-                    try {
-                        const savedKeysStr = localStorage.getItem('ai_api_keys');
-                        if (savedKeysStr) {
-                            const parsed = JSON.parse(savedKeysStr);
-                            if (Array.isArray(parsed) && parsed.length > 0) {
-                                hasSavedKeys = true;
-                            }
-                        }
-                    } catch {
-                        // ignore
-                    }
-
-                    if (hasSavedKeys) {
-                        setError(`${t('quick_meal_modal.custom_key_failed_error')} (${message})`);
-                    } else {
-                        setError(`${t('quick_meal_modal.analysis_error')} (${message})`);
-                    }
-                }
+                setError(`${t('quick_meal_modal.analysis_error')} (${message})`);
             }
         } finally {
             setIsLoading(false);

@@ -1,5 +1,6 @@
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { Ingredient } from '../../domain/entities/dashboard';
+import { InvalidApiKeyException, ImageTooLargeException, EmptyAnalysisResultException } from '../../domain/exceptions/ImageAnalysisException';
 
 export class OpenAIImageRecognitionService extends ImageRecognitionService {
     private apiKey: string;
@@ -50,6 +51,12 @@ export class OpenAIImageRecognitionService extends ImageRecognitionService {
 
             if (!response.ok) {
                 const errorData = await response.text();
+                if (response.status === 401 || errorData.includes('invalid_api_key') || errorData.includes('incorrect_api_key')) {
+                    throw new InvalidApiKeyException('openai', errorData);
+                }
+                if (response.status === 413) {
+                    throw new ImageTooLargeException(errorData);
+                }
                 throw new Error(`OpenAI API Error: ${response.status} - ${errorData}`);
             }
 
@@ -59,12 +66,22 @@ export class OpenAIImageRecognitionService extends ImageRecognitionService {
             if (!content) throw new Error("Empty response from OpenAI");
 
             const result = JSON.parse(content);
-            if (!result || !Array.isArray(result.ingredients)) {
-                throw new Error("Invalid response format from OpenAI");
+            if (!result || !Array.isArray(result.ingredients) || result.ingredients.length === 0) {
+                throw new EmptyAnalysisResultException();
             }
             return result.ingredients;
         } catch (error) {
             console.error("OpenAI Image Recognition Error:", error);
+
+            if (error instanceof InvalidApiKeyException || error instanceof ImageTooLargeException || error instanceof EmptyAnalysisResultException) {
+                throw error;
+            }
+
+            const message = error instanceof Error ? error.message : String(error);
+            if (message.includes('413') || message.toLowerCase().includes('large') || message.toLowerCase().includes('too large')) {
+                throw new ImageTooLargeException(message);
+            }
+
             throw error;
         }
     }

@@ -1,6 +1,7 @@
 import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
+import { InvalidApiKeyException, ImageTooLargeException } from '../../domain/exceptions/ImageAnalysisException';
 
 export class FallbackImageRecognitionService extends ImageRecognitionService {
     private services: ImageRecognitionService[];
@@ -41,9 +42,14 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
                 // Shorter cooldown (30s) for empty array vs full failure (60s)
                 this.cooldownManager.recordFailure(serviceName, 30);
             } catch (error) {
-                const message = error instanceof Error ? error.message : String(error);
                 console.warn(`[FallbackImageService] Service ${serviceName} failed:`, error);
                 
+                // If it is a known domain image analysis exception, propagate immediately
+                if (error instanceof InvalidApiKeyException || error instanceof ImageTooLargeException) {
+                    throw error;
+                }
+
+                const message = error instanceof Error ? error.message : String(error);
                 // If it's a permission/access error, throw immediately to inform the UI
                 if (message.includes('Premium') || message.includes('premium') || 
                     message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
