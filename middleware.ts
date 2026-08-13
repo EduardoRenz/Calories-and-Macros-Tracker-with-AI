@@ -1,3 +1,4 @@
+import './sentry.edge.config';
 import { NextRequest, NextResponse } from 'next/server';
 import { shouldIndexHost } from './utils/seo/index-gating';
 

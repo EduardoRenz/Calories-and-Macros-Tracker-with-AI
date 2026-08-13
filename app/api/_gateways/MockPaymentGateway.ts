@@ -120,7 +120,6 @@ export class MockPaymentGateway implements PaymentGateway {
         ];
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async createCheckoutSession(_planId: string, _userId: string): Promise<string> {
         await new Promise((resolve) => setTimeout(resolve, 300));
         return `sess_${Math.random().toString(36).substring(7)}`;

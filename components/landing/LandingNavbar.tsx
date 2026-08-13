@@ -67,8 +67,8 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <LanguageSwitcher showBorder={false} />
-          <ThemeSwitcher showBorder={false} />
+          <LanguageSwitcher compact />
+          <ThemeSwitcher compact />
           {isAuthenticated ? (
             <KineticButton href="/dashboard" size="sm">
               {t('landing.navbar.dashboard')}

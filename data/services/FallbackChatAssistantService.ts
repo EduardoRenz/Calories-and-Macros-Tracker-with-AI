@@ -1,6 +1,7 @@
 import { ChatAssistantService, ChatAssistantContextData } from '../../domain/services/ChatAssistantService';
 import { ChatMessage } from '../../domain/entities/ChatMessage';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
+import { TelemetryFactory } from '../TelemetryFactory';
 
 export class FallbackChatAssistantService implements ChatAssistantService {
     private services: ChatAssistantService[];
@@ -33,6 +34,18 @@ export class FallbackChatAssistantService implements ChatAssistantService {
                 return result;
             } catch (error) {
                 console.warn(`[FallbackChatService] Service ${serviceName} failed:`, error);
+                // Per-provider failures stay in analytics as a metric; errors are captured
+                // once by the API route to avoid duplicate Sentry events per request.
+                TelemetryFactory.getTelemetryService().trackEvent({
+                    name: 'ai_provider_error',
+                    params: {
+                        action: 'chat_assistant',
+                        category: 'ai_analysis',
+                        provider: serviceName,
+                        attempt: index + 1,
+                        totalServices: this.services.length,
+                    },
+                });
                 errors.push(error as Error);
                 // Record failure to trigger cooldown
                 this.cooldownManager.recordFailure(serviceName);

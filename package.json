@@ -1,7 +1,7 @@
 {
   "name": "caloriecounter-profile-goals",
   "private": true,
-  "version": "1.16.4",
+  "version": "1.16.6",
   "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@next/third-parties": "^16.3.0",
+    "@sentry/nextjs": "^10.69.0",
     "@supabase/supabase-js": "^2.89.0",
     "@t3-oss/env-nextjs": "^0.13.10",
     "firebase": "^12.4.0",
@@ -48,5 +49,10 @@
   "resolutions": {
     "string-width": "4.2.3",
     "strip-ansi": "6.0.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@sentry/cli"
+    ]
   }
 }

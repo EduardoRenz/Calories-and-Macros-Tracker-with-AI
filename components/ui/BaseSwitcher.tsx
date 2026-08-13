@@ -15,6 +15,7 @@ interface BaseSwitcherProps<T> {
     selectedValue: T;
     onChange: (value: T) => void;
     showBorder?: boolean;
+    compact?: boolean;
 }
 
 /**
@@ -26,8 +27,34 @@ export function BaseSwitcher<T>({
     options,
     selectedValue,
     onChange,
-    showBorder = true
+    showBorder = true,
+    compact = false
 }: BaseSwitcherProps<T>) {
+    if (compact) {
+        return (
+            <div className="inline-flex items-center bg-surface-container-high rounded-full p-1 gap-1">
+                {options.map((option) => {
+                    const isActive = selectedValue === option.value;
+                    return (
+                        <button
+                            key={option.id}
+                            onClick={() => onChange(option.value)}
+                            className={`px-3 py-1.5 rounded-full transition-all flex items-center justify-center min-w-[32px] text-xs font-bold ${
+                                isActive
+                                    ? 'bg-secondary text-on-secondary shadow-sm scale-105'
+                                    : 'text-neutral-text-secondary hover:text-neutral-text-primary hover:bg-neutral-card active:scale-95'
+                            }`}
+                            title={option.title}
+                            type="button"
+                        >
+                            {option.label}
+                        </button>
+                    );
+                })}
+            </div>
+        );
+    }
+
     return (
         <div className={`w-full flex items-center justify-between px-4 py-2 ${showBorder ? 'border-b border-neutral-border' : ''}`}>
             <span className="text-sm text-neutral-text-secondary font-medium">{label}</span>

@@ -453,6 +453,11 @@ const es = {
     feature_premium_only:
       "Esta función es exclusiva para suscriptores Premium. Visita nuestra [página de planes](/plans) para obtener más información.",
   },
+  error_boundary: {
+    title: "Algo salió mal",
+    description: "Ocurrió un error inesperado al cargar esta página. Inténtalo de nuevo.",
+    retry: "Reintentar",
+  },
   cookies: {
     title: "Uso de Cookies",
     message:
@@ -581,10 +586,10 @@ const es = {
       button_dashboard: "Ir al Panel",
     },
     footer: {
-      copyright: "© 2026 Levemente. All rights reserved.",
-      privacy: "Privacy Policy",
-      terms: "Terms of Service",
-      support: "Contact Support",
+      copyright: "© 2026 Levemente. Todos los derechos reservados.",
+      privacy: "Política de Privacidad",
+      terms: "Términos de Uso",
+      support: "Soporte",
     },
   },
   calculator: {

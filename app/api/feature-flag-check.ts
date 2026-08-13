@@ -7,6 +7,13 @@ import { checkPremiumAccess } from './subscription-check';
 
 const cacheManager = new DataCacheManager();
 
+export interface AiAccessCheckResult {
+    /** Response when the request must be blocked, or null when access is allowed. */
+    response: NextResponse | null;
+    /** Resolved user id when authentication succeeded, so routes can reuse it. */
+    userId?: string;
+}
+
 /**
  * Gets the current AI access mode from feature flags.
  * Defaults to 'premium_only' if not set.
@@ -109,7 +116,7 @@ async function resolvePremiumAccess(authHeader: string | null): Promise<{ isPrem
 export async function checkAiAccess(
     authHeader: string | null,
     featureName?: keyof FeatureRequirements
-): Promise<NextResponse | null> {
+): Promise<AiAccessCheckResult> {
     const mode = await getAIAccessMode();
     console.log(`[Backend] AI Access Mode: ${mode}, Feature: ${featureName || 'none'}`);
     console.log(`[Backend] Auth header present: ${!!authHeader}, Length: ${authHeader?.length || 0}`);
@@ -117,10 +124,12 @@ export async function checkAiAccess(
     // Mode: disabled - block all AI access
     if (mode === 'disabled') {
         console.warn('[Backend] AI access blocked: mode is disabled');
-        return NextResponse.json(
-            { error: 'AI features are currently disabled' },
-            { status: 403 }
-        );
+        return {
+            response: NextResponse.json(
+                { error: 'AI features are currently disabled' },
+                { status: 403 }
+            )
+        };
     }
 
     // Mode: open - allow all access (skip checks)
@@ -130,61 +139,72 @@ export async function checkAiAccess(
             try {
                 const user = await verifyAuth(authHeader);
                 const { isPremium, response } = await resolvePremiumAccess(authHeader);
-                if (response) return response;
+                if (response) return { response };
                 const featureCheck = await checkFeatureAccess(featureName, user.uid, isPremium);
-                if (featureCheck) return featureCheck;
+                if (featureCheck) return { response: featureCheck };
+                return { response: null, userId: user.uid };
             } catch {
                 // If auth fails, still allow in open mode
             }
         }
-        return null;
+        return { response: null };
     }
 
     // Verify user auth for remaining modes
     let isPremium: boolean;
+    let userId: string | undefined;
     try {
-        await verifyAuth(authHeader);
+        const user = await verifyAuth(authHeader);
+        userId = user.uid;
         const premiumResult = await resolvePremiumAccess(authHeader);
         if (premiumResult.response) {
-            return premiumResult.response;
+            return { response: premiumResult.response, userId };
         }
         isPremium = premiumResult.isPremium;
     } catch {
-        return NextResponse.json(
+        return { response: NextResponse.json(
             { error: 'Authentication required' },
             { status: 401 }
-        );
+        ) };
     }
 
     // Mode: premium_only - only premium users
     if (mode === 'premium_only') {
         if (isPremium) {
-            return null;
+            return { response: null, userId };
         }
-        return NextResponse.json(
-            { error: 'Premium subscription required. Please upgrade to access this feature.' },
-            { status: 403 }
-        );
+        return {
+            response: NextResponse.json(
+                { error: 'Premium subscription required. Please upgrade to access this feature.' },
+                { status: 403 }
+            ),
+            userId
+        };
     }
 
     // Mode: free_plan_api_keys_only - premium bypasses, free needs keys
     if (mode === 'free_plan_api_keys_only') {
         if (isPremium) {
-            return null;
+            return { response: null, userId };
         }
 
         // NOTE: Backend cannot verify API keys (stored in frontend localStorage).
         // Free users are always blocked from server-side AI in this mode.
-        return NextResponse.json(
-            { error: 'Please add your API keys in settings to use this feature' },
-            { status: 403 }
-        );
+        return {
+            response: NextResponse.json(
+                { error: 'Please add your API keys in settings to use this feature' },
+                { status: 403 }
+            ),
+            userId
+        };
     }
 
     // Unknown mode - default to blocking
     console.error(`[Backend] Unknown AI access mode: ${mode}`);
-    return NextResponse.json(
-        { error: 'AI access configuration error' },
-        { status: 500 }
-    );
+    return {
+        response: NextResponse.json(
+            { error: 'AI access configuration error' },
+            { status: 500 }
+        )
+    };
 }

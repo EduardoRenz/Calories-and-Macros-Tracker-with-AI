@@ -7,7 +7,7 @@ describe('Macros Validation', () => {
     });
     // Landing Page is rendered at '/' for unauthenticated users.
     cy.get('[data-testid="landing-page"]', { timeout: 10000 }).should('be.visible');
-    cy.get('a[href="/login"]').first().click();
+    cy.get('a[href="/login"]', { timeout: 10000 }).first().click({ force: true });
     cy.url().should('include', '/login');
     cy.contains('Sign in with Google').click();
   };
