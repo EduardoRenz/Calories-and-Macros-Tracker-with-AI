@@ -33,3 +33,11 @@ export class EmptyAnalysisResultException extends ImageAnalysisException {
         Object.setPrototypeOf(this, EmptyAnalysisResultException.prototype);
     }
 }
+
+export class RateLimitedException extends ImageAnalysisException {
+    constructor(message: string = 'AI service is rate limited, please try again later') {
+        super(message, 'RATE_LIMITED');
+        this.name = 'RateLimitedException';
+        Object.setPrototypeOf(this, RateLimitedException.prototype);
+    }
+}

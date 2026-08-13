@@ -2,7 +2,7 @@ import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
 import { PremiumOnlyException, ApiKeysRequiredException } from '../../domain/exceptions/AiAccessException';
-import { ImageTooLargeException, EmptyAnalysisResultException } from '../../domain/exceptions/ImageAnalysisException';
+import { ImageTooLargeException, EmptyAnalysisResultException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
 
 export class NextApiImageRecognitionService extends ImageRecognitionService {
     constructor(private authRepository: AuthRepository) {
@@ -49,8 +49,16 @@ export class NextApiImageRecognitionService extends ImageRecognitionService {
                 throw new PremiumOnlyException(errorMessage);
             }
 
-            if (errorMessage.includes('413') || errorMessage.toLowerCase().includes('large') || errorMessage.toLowerCase().includes('too large')) {
+            if (response.status === 429) {
+                throw new RateLimitedException(errorMessage);
+            }
+
+            if (errorData.code === 'IMAGE_TOO_LARGE') {
                 throw new ImageTooLargeException(errorMessage);
+            }
+
+            if (errorData.code === 'RATE_LIMITED') {
+                throw new RateLimitedException(errorMessage);
             }
 
             throw new Error(errorMessage);

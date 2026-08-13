@@ -4,6 +4,7 @@ import { checkAiAccess } from '../feature-flag-check';
 import { checkRateLimit } from '../rate-limit';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 import { captureServerError } from '../_telemetry';
+import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException } from '@/domain/exceptions/ImageAnalysisException';
 
 export async function POST(req: NextRequest) {
     let userId: string | undefined;
@@ -39,6 +40,27 @@ export async function POST(req: NextRequest) {
     } catch (error: unknown) {
         console.error('API Error:', error);
         void captureServerError(error, 'recognize_image_api', req.headers.get('Authorization'), 'ai_analysis', userId);
-        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
+
+        // Server AI keys come from env vars only, so an invalid key here is a server
+        // misconfiguration - surface a generic error instead of blaming the user's key.
+        if (error instanceof InvalidApiKeyException) {
+            return NextResponse.json(
+                { error: 'AI service is temporarily unavailable. Please try again later.', code: 'SERVER_ERROR' },
+                { status: 500 }
+            );
+        }
+
+        if (error instanceof ImageTooLargeException) {
+            return NextResponse.json({ error: error.message, code: error.code }, { status: 413 });
+        }
+
+        // No provider recognized any food: return an empty list so the client can
+        // present the "no food identified" outcome.
+        if (error instanceof EmptyAnalysisResultException) {
+            return NextResponse.json([]);
+        }
+
+        const message = error instanceof Error ? error.message : 'Internal Server Error';
+        return NextResponse.json({ error: message, code: 'INTERNAL_ERROR' }, { status: 500 });
     }
 }

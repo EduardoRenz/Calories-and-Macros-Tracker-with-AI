@@ -3,7 +3,7 @@ import { ImageRecognitionService } from '../../domain/services/ImageRecognitionS
 import type { Ingredient } from '../../domain/entities/dashboard';
 import { env } from '../../env';
 import { FOOD_CATEGORIES_LIST } from "../../domain/constants/foodCategories";
-import { InvalidApiKeyException, EmptyAnalysisResultException } from '../../domain/exceptions/ImageAnalysisException';
+import { InvalidApiKeyException, EmptyAnalysisResultException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
 
 const blobToBase64 = async (blob: Blob): Promise<string> => {
     // Check if we are in a browser environment
@@ -100,8 +100,11 @@ export class GeminiImageRecognitionService extends ImageRecognitionService {
             }
 
             const message = err instanceof Error ? err.message : String(err);
-            if (message.includes('API_KEY_INVALID') || message.includes('API key not valid') || message.includes('apiKey') || message.includes('not authorized')) {
+            if (message.includes('API_KEY_INVALID') || message.includes('API key not valid') || message.includes('not authorized') || message.includes('api_key_invalid')) {
                 throw new InvalidApiKeyException('gemini', message);
+            }
+            if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota') || message.includes('rate limit') || message.includes('429')) {
+                throw new RateLimitedException(message);
             }
 
             throw new Error(`Failed to analyze image with Gemini API: ${message}`);
