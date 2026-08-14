@@ -102,6 +102,8 @@ const pt = {
     cancel: "Cancelar",
     save: "Adicionar Ingrediente",
     analysis_error: "Serviço temporariamente indisponível. Por favor, tente novamente em um momento ou preencha os macros manualmente.",
+    analysis_transient_error: "O serviço de IA está ocupado no momento. Por favor, tente novamente daqui a pouco.",
+    custom_key_failed_error: "Sua chave de IA personalizada é inválida ou expirou. Verifique sua chave em Configurações e tente novamente.",
     analyze_button_aria: "Analisar ingrediente com IA",
     macros_required: "Por favor, preencha proteína, carboidratos e gorduras",
     name_required: "Por favor, preencha o nome do ingrediente",

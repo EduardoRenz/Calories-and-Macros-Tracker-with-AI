@@ -102,6 +102,8 @@ const es = {
     cancel: "Cancelar",
     save: "Añadir Ingrediente",
     analysis_error: "Servicio temporalmente no disponible. Por favor, inténtelo de nuevo en un momento o complete los macros manualmente.",
+    analysis_transient_error: "El servicio de IA está ocupado ahora mismo. Por favor, inténtalo de nuevo en un momento.",
+    custom_key_failed_error: "Su clave de API de IA personalizada no es válida o caducó. Revise su clave en Configuración e inténtelo de nuevo.",
     analyze_button_aria: "Analizar ingrediente con IA",
     macros_required: "Por favor, complete proteína, carbohidratos y grasas",
     name_required: "Por favor, complete el nombre del ingrediente",

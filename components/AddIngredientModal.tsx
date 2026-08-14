@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import type { Ingredient, MealSummary } from '../domain/entities/dashboard';
 import { ServiceFactory } from '../data/ServiceFactory';
+import { RepositoryFactory } from '../data/RepositoryFactory';
+import { TelemetryFactory } from '../data/TelemetryFactory';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SparklesIcon, SpinnerIcon } from './icons';
 import Modal from './ui/Modal';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
+import { InvalidApiKeyException, RateLimitedException } from '../domain/exceptions/ImageAnalysisException';
 import MarkdownRenderer from './assistant/MarkdownRenderer';
 
 interface AddIngredientModalProps {
@@ -139,6 +142,27 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         setError(t('add_ingredient_modal.analysis_error'));
       }
     } catch (err) {
+      console.error("Ingredient Analysis Error:", err);
+      const telemetry = TelemetryFactory.getTelemetryService();
+      // Only expected subscription outcomes are access events; everything else
+      // (including local failures like an invalid custom key) must reach error
+      // tracking so issues that never hit the server are still observable.
+      const isAccessOutcome = err instanceof AiAccessException;
+
+      if (isAccessOutcome) {
+        // Expected business outcome (premium/disabled/api keys) - measure frequency only
+        telemetry.trackEvent({
+          name: 'user_error',
+          params: { error_action: 'ingredient_search_analyze', error_category: 'ai_access' },
+        });
+      } else {
+        telemetry.captureError(err, {
+          action: 'ingredient_search_analyze',
+          category: 'ai_analysis',
+          extras: { ingredientName: formState.name, quantity: formState.quantity },
+        });
+      }
+
       if (err instanceof AiAccessException) {
         if (err instanceof AiDisabledException) {
           setError(t('ai_errors.disabled'));
@@ -149,23 +173,15 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         } else {
           setError(t('add_ingredient_modal.analysis_error'));
         }
+      } else if (err instanceof InvalidApiKeyException) {
+        // Only tell users about custom keys when they actually configured one;
+        // paying users without keys should never be sent to key management.
+        const hasCustomKeys = RepositoryFactory.getUserApiKeysRepository().hasApiKeys();
+        setError(hasCustomKeys ? t('add_ingredient_modal.custom_key_failed_error') : t('add_ingredient_modal.analysis_error'));
+      } else if (err instanceof RateLimitedException) {
+        setError(t('add_ingredient_modal.analysis_transient_error'));
       } else {
-        const message = err instanceof Error ? err.message : String(err);
-
-        if (message.includes('Premium') || message.includes('premium') ||
-          message.includes('API key') || message.includes('api_key') || message.includes('API Key')) {
-
-          const aiAccessService = ServiceFactory.getAiAccessService();
-          const minPlan = await aiAccessService.getMinPlan('ingredient_search');
-
-          if (minPlan === 'premium') {
-            setError(t('ai_errors.premium_required'));
-          } else {
-            setError(t('ai_errors.api_keys_required'));
-          }
-        } else {
-          setError(t('add_ingredient_modal.analysis_error'));
-        }
+        setError(t('add_ingredient_modal.analysis_error'));
       }
     }
     setIsAnalyzing(false);

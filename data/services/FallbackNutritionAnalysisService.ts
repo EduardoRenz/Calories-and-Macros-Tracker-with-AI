@@ -1,7 +1,8 @@
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
 import { TelemetryFactory } from '../TelemetryFactory';
-import { isAccessErrorMessage } from '../../utils/aiAccessError';
+import { InvalidApiKeyException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
+import { AiAccessException } from '../../domain/exceptions/AiAccessException';
 
 export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
     private services: NutritionAnalysisService[];
@@ -42,12 +43,11 @@ export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
                 // Shorter cooldown (30s) for null responses vs full failure (60s)
                 this.cooldownManager.recordFailure(serviceName, 30);
             } catch (error) {
-                const message = error instanceof Error ? error.message : String(error);
                 console.warn(`[FallbackNutritionService] Service ${serviceName} failed:`, error);
 
-                // Expected business outcomes (premium/disabled/api keys) - surface to the UI
-                // without tracking them as provider errors.
-                if (isAccessErrorMessage(message)) {
+                // Expected access outcomes (premium/disabled/keys required) surface to
+                // the UI as-is; they are not provider failures.
+                if (error instanceof AiAccessException) {
                     throw error;
                 }
 
@@ -71,9 +71,24 @@ export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
         }
 
         if (errors.length > 0) {
-            throw new Error(errors[errors.length - 1].message);
+            throw this.pickDominantError(errors);
         }
 
         return null;
+    }
+
+    /**
+     * Picks the most actionable domain exception to surface after every service
+     * in the chain failed, preferring a known outcome (invalid key, rate limit)
+     * over a generic error message.
+     */
+    private pickDominantError(errors: Error[]): Error {
+        const dominant = errors.find(
+            (error) =>
+                error instanceof InvalidApiKeyException ||
+                error instanceof RateLimitedException
+        );
+        if (dominant) return dominant;
+        return new Error(`All nutrition analysis services failed. Last error: ${errors[errors.length - 1].message}`);
     }
 }

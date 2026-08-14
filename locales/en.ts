@@ -102,6 +102,8 @@ const en = {
     cancel: "Cancel",
     save: "Add Ingredient",
     analysis_error: "Service temporarily unavailable. Please try again in a moment or fill macros manually.",
+    analysis_transient_error: "The AI service is busy right now. Please try again in a moment.",
+    custom_key_failed_error: "Your custom AI API key is invalid or expired. Check your key in Settings and try again.",
     analyze_button_aria: "Analyze ingredient with AI",
     macros_required: "Please fill in protein, carbs, and fats",
     name_required: "Please fill in the ingredient name",

@@ -1,7 +1,7 @@
 import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
-import { PremiumOnlyException, ApiKeysRequiredException } from '../../domain/exceptions/AiAccessException';
+import { PremiumOnlyException, ApiKeysRequiredException, AiDisabledException } from '../../domain/exceptions/AiAccessException';
 import { ImageTooLargeException, EmptyAnalysisResultException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
 
 export class NextApiImageRecognitionService extends ImageRecognitionService {
@@ -43,8 +43,12 @@ export class NextApiImageRecognitionService extends ImageRecognitionService {
 
             // Throw specific exceptions for access denied (403) or auth errors (401)
             if (response.status === 403) {
-                if (errorMessage.includes('API keys') || errorMessage.includes('keys')) {
+                if (errorData.code === 'API_KEYS_REQUIRED' ||
+                    (errorData.code === undefined && (errorMessage.includes('API keys') || errorMessage.includes('keys')))) {
                     throw new ApiKeysRequiredException(errorMessage);
+                }
+                if (errorData.code === 'AI_DISABLED') {
+                    throw new AiDisabledException(errorMessage);
                 }
                 throw new PremiumOnlyException(errorMessage);
             }

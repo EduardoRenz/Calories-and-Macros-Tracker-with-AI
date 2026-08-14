@@ -1,6 +1,8 @@
 import { FoodAnalysisReport } from '../../domain/entities/analysis';
 import { FoodAnalysisInput, FoodAnalysisService } from '../../domain/services/FoodAnalysisService';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
+import { AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../../domain/exceptions/AiAccessException';
+import { RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
 
 export class NextApiFoodAnalysisService implements FoodAnalysisService {
     constructor(private authRepository: AuthRepository) { }
@@ -24,8 +26,26 @@ export class NextApiFoodAnalysisService implements FoodAnalysisService {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to generate analysis');
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.error || 'Failed to generate analysis';
+
+            // Expected access outcomes are returned with a machine-readable code.
+            if (response.status === 403) {
+                if (errorData.code === 'API_KEYS_REQUIRED' ||
+                    (errorData.code === undefined && errorMessage.includes('keys'))) {
+                    throw new ApiKeysRequiredException(errorMessage);
+                }
+                if (errorData.code === 'AI_DISABLED') {
+                    throw new AiDisabledException(errorMessage);
+                }
+                throw new PremiumOnlyException(errorMessage);
+            }
+
+            if (response.status === 429 || errorData.code === 'RATE_LIMITED') {
+                throw new RateLimitedException(errorMessage);
+            }
+
+            throw new Error(errorMessage);
         }
 
         return await response.json();
