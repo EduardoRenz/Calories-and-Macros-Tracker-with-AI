@@ -11,7 +11,6 @@ import { ServiceFactory } from '@/data/ServiceFactory';
 import { TelemetryFactory } from '@/data/TelemetryFactory';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '@/domain/exceptions/AiAccessException';
-import { isAccessErrorMessage } from '@/utils/aiAccessError';
 import MarkdownRenderer from '@/components/assistant/MarkdownRenderer';
 import { useFeatureFlags } from '@/contexts/FeatureFlagContext';
 import { ReportTabs } from '@/components/ReportTabs';
@@ -153,8 +152,10 @@ export default function FoodAnalysisPage() {
         } catch (err) {
             console.error('Error generating food analysis:', err);
             const telemetry = TelemetryFactory.getTelemetryService();
-            const message = err instanceof Error ? err.message : String(err);
-            const isAccessOutcome = err instanceof AiAccessException || isAccessErrorMessage(message);
+            // Only expected subscription outcomes are access events; everything else
+            // (including local failures like an invalid custom key) must reach error
+            // tracking so issues that never hit the server are still observable.
+            const isAccessOutcome = err instanceof AiAccessException;
 
             if (isAccessOutcome) {
                 // Expected business outcome (premium/disabled/api keys) - measure frequency only
@@ -175,18 +176,6 @@ export default function FoodAnalysisPage() {
                     setError(t('ai_errors.api_keys_required'));
                 } else {
                     setError(t('food_analysis.error_generating'));
-                }
-                return;
-            }
-
-            if (isAccessErrorMessage(message)) {
-                const aiAccessService = ServiceFactory.getAiAccessService();
-                const minPlan = await aiAccessService.getMinPlan('food_analysis');
-
-                if (minPlan === 'premium') {
-                    setError(t('ai_errors.premium_required'));
-                } else {
-                    setError(t('ai_errors.api_keys_required'));
                 }
                 return;
             }

@@ -1,7 +1,8 @@
 import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { AuthRepository } from '../../domain/repositories/AuthRepository';
-import { PremiumOnlyException, ApiKeysRequiredException } from '../../domain/exceptions/AiAccessException';
+import { PremiumOnlyException, ApiKeysRequiredException, AiDisabledException } from '../../domain/exceptions/AiAccessException';
+import { ImageTooLargeException, EmptyAnalysisResultException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
 
 export class NextApiImageRecognitionService extends ImageRecognitionService {
     constructor(private authRepository: AuthRepository) {
@@ -33,20 +34,44 @@ export class NextApiImageRecognitionService extends ImageRecognitionService {
         });
 
         if (!response.ok) {
+            if (response.status === 413) {
+                throw new ImageTooLargeException();
+            }
+
             const errorData = await response.json().catch(() => ({}));
             const errorMessage = errorData.error || 'Failed to recognize image';
 
             // Throw specific exceptions for access denied (403) or auth errors (401)
             if (response.status === 403) {
-                if (errorMessage.includes('API keys') || errorMessage.includes('keys')) {
+                if (errorData.code === 'API_KEYS_REQUIRED' ||
+                    (errorData.code === undefined && (errorMessage.includes('API keys') || errorMessage.includes('keys')))) {
                     throw new ApiKeysRequiredException(errorMessage);
                 }
+                if (errorData.code === 'AI_DISABLED') {
+                    throw new AiDisabledException(errorMessage);
+                }
                 throw new PremiumOnlyException(errorMessage);
+            }
+
+            if (response.status === 429) {
+                throw new RateLimitedException(errorMessage);
+            }
+
+            if (errorData.code === 'IMAGE_TOO_LARGE') {
+                throw new ImageTooLargeException(errorMessage);
+            }
+
+            if (errorData.code === 'RATE_LIMITED') {
+                throw new RateLimitedException(errorMessage);
             }
 
             throw new Error(errorMessage);
         }
 
-        return await response.json();
+        const ingredients = await response.json();
+        if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+            throw new EmptyAnalysisResultException();
+        }
+        return ingredients;
     }
 }

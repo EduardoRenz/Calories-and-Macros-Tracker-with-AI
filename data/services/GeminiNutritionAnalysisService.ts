@@ -2,6 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
 import { env } from '../../env';
 import { FOOD_CATEGORIES_LIST } from "../../domain/constants/foodCategories";
+import { InvalidApiKeyException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
 
 export class GeminiNutritionAnalysisService extends NutritionAnalysisService {
     private ai: GoogleGenAI;
@@ -51,7 +52,20 @@ export class GeminiNutritionAnalysisService extends NutritionAnalysisService {
             return null;
         } catch (err) {
             console.error("Gemini API Error in GeminiNutritionAnalysisService:", err);
-            return null;
+
+            if (err instanceof InvalidApiKeyException || err instanceof RateLimitedException) {
+                throw err;
+            }
+
+            const message = err instanceof Error ? err.message : String(err);
+            if (message.includes('API_KEY_INVALID') || message.includes('API key not valid') || message.includes('not authorized') || message.includes('api_key_invalid')) {
+                throw new InvalidApiKeyException('gemini', message);
+            }
+            if (message.includes('RESOURCE_EXHAUSTED') || message.includes('quota') || message.includes('rate limit') || message.includes('429')) {
+                throw new RateLimitedException(message);
+            }
+
+            throw err;
         }
     }
 }

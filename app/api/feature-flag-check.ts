@@ -75,7 +75,7 @@ async function checkFeatureAccess(
         // NOTE: Backend cannot verify API keys (stored in frontend localStorage).
         // Free users are always blocked from server-side AI for these features.
         return NextResponse.json(
-            { error: 'Please add your API keys in settings to use this feature' },
+            { error: 'Please add your API keys in settings to use this feature', code: 'API_KEYS_REQUIRED' },
             { status: 403 }
         );
     }
@@ -83,7 +83,7 @@ async function checkFeatureAccess(
     // Premium required
     if (minPlan === 'premium') {
         return NextResponse.json(
-            { error: 'This feature is only available for premium users' },
+            { error: 'This feature is only available for premium users', code: 'PREMIUM_ONLY' },
             { status: 403 }
         );
     }
@@ -126,7 +126,7 @@ export async function checkAiAccess(
         console.warn('[Backend] AI access blocked: mode is disabled');
         return {
             response: NextResponse.json(
-                { error: 'AI features are currently disabled' },
+                { error: 'AI features are currently disabled', code: 'AI_DISABLED' },
                 { status: 403 }
             )
         };
@@ -175,7 +175,7 @@ export async function checkAiAccess(
         }
         return {
             response: NextResponse.json(
-                { error: 'Premium subscription required. Please upgrade to access this feature.' },
+                { error: 'Premium subscription required. Please upgrade to access this feature.', code: 'PREMIUM_ONLY' },
                 { status: 403 }
             ),
             userId
@@ -192,7 +192,7 @@ export async function checkAiAccess(
         // Free users are always blocked from server-side AI in this mode.
         return {
             response: NextResponse.json(
-                { error: 'Please add your API keys in settings to use this feature' },
+                { error: 'Please add your API keys in settings to use this feature', code: 'API_KEYS_REQUIRED' },
                 { status: 403 }
             ),
             userId
@@ -203,7 +203,7 @@ export async function checkAiAccess(
     console.error(`[Backend] Unknown AI access mode: ${mode}`);
     return {
         response: NextResponse.json(
-            { error: 'AI access configuration error' },
+            { error: 'AI access configuration error', code: 'SERVER_ERROR' },
             { status: 500 }
         )
     };

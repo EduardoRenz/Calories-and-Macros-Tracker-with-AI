@@ -2,7 +2,8 @@ import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
 import { TelemetryFactory } from '../TelemetryFactory';
-import { isAccessErrorMessage } from '../../utils/aiAccessError';
+import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException, RateLimitedException, InsufficientCreditsException } from '../../domain/exceptions/ImageAnalysisException';
+import { AiAccessException } from '../../domain/exceptions/AiAccessException';
 
 export class FallbackImageRecognitionService extends ImageRecognitionService {
     private services: ImageRecognitionService[];
@@ -19,6 +20,7 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
 
     async analyzeMealImage(image: Blob, language: string, prompt?: string): Promise<Omit<Ingredient, 'id'>[]> {
         const errors: Error[] = [];
+        let sawEmptyResult = false;
 
         for (let index = 0; index < this.services.length; index++) {
             const service = this.services[index];
@@ -37,18 +39,24 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
                     console.log(`[FallbackImageService] Success with ${serviceName}`);
                     return result;
                 }
-                // If result is empty array (but no error), treat as soft failure with shorter cooldown
-                // Typically empty means "I don't recognize any foods", which another AI might know.
-                console.warn(`[FallbackImageService] Service ${serviceName} returned empty array (no foods recognized).`);
-                // Shorter cooldown (30s) for empty array vs full failure (60s)
+                // Empty result means "I don't recognize any foods", which another AI might know.
+                console.warn(`[FallbackImageService] Service ${serviceName} returned empty (no foods recognized).`);
+                // Shorter cooldown (30s) for empty result vs full failure (60s)
+                sawEmptyResult = true;
                 this.cooldownManager.recordFailure(serviceName, 30);
             } catch (error) {
-                const message = error instanceof Error ? error.message : String(error);
                 console.warn(`[FallbackImageService] Service ${serviceName} failed:`, error);
 
-                // Expected business outcomes (premium/disabled/api keys) - surface to the UI
-                // without tracking them as provider errors.
-                if (isAccessErrorMessage(message)) {
+                // "No food found" is a soft failure: keep trying the next service.
+                if (error instanceof EmptyAnalysisResultException) {
+                    sawEmptyResult = true;
+                    this.cooldownManager.recordFailure(serviceName, 30);
+                    continue;
+                }
+
+                // Expected access outcomes (premium/disabled/keys required) surface to
+                // the UI as-is; they are not provider failures.
+                if (error instanceof AiAccessException) {
                     throw error;
                 }
 
@@ -71,10 +79,35 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
             }
         }
 
+        // A model analyzed the image successfully and found no food. That
+        // outcome is authoritative, so it wins over generic or per-provider
+        // failures from later models - the user should see the friendly
+        // "no food identified" message instead of an unrelated error.
+        if (sawEmptyResult) {
+            throw new EmptyAnalysisResultException();
+        }
+
         if (errors.length > 0) {
-            throw new Error(`All image recognition services failed. Last error: ${errors[errors.length - 1].message}`);
+            throw this.pickDominantError(errors);
         }
 
         throw new Error("All image recognition services failed.");
+    }
+
+    /**
+     * Picks the most actionable domain exception to surface after every service
+     * in the chain failed, preferring a known outcome (invalid key, oversized
+     * image, rate limit) over a generic error message.
+     */
+    private pickDominantError(errors: Error[]): Error {
+        const dominant = errors.find(
+            (error) =>
+                error instanceof InvalidApiKeyException ||
+                error instanceof InsufficientCreditsException ||
+                error instanceof ImageTooLargeException ||
+                error instanceof RateLimitedException
+        );
+        if (dominant) return dominant;
+        return new Error(`All image recognition services failed. Last error: ${errors[errors.length - 1].message}`);
     }
 }
