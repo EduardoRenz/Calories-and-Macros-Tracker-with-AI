@@ -1,7 +1,7 @@
 import { NutritionAnalysisService, NutritionalInfo } from '../../domain/services/NutritionAnalysisService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
 import { TelemetryFactory } from '../TelemetryFactory';
-import { InvalidApiKeyException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
+import { InvalidApiKeyException, RateLimitedException, InsufficientCreditsException } from '../../domain/exceptions/ImageAnalysisException';
 import { AiAccessException } from '../../domain/exceptions/AiAccessException';
 
 export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
@@ -86,6 +86,7 @@ export class FallbackNutritionAnalysisService extends NutritionAnalysisService {
         const dominant = errors.find(
             (error) =>
                 error instanceof InvalidApiKeyException ||
+                error instanceof InsufficientCreditsException ||
                 error instanceof RateLimitedException
         );
         if (dominant) return dominant;

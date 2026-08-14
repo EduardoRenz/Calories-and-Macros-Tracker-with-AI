@@ -8,7 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { SparklesIcon, SpinnerIcon } from './icons';
 import Modal from './ui/Modal';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
-import { InvalidApiKeyException, RateLimitedException } from '../domain/exceptions/ImageAnalysisException';
+import { InvalidApiKeyException, RateLimitedException, InsufficientCreditsException } from '../domain/exceptions/ImageAnalysisException';
 import MarkdownRenderer from './assistant/MarkdownRenderer';
 
 interface AddIngredientModalProps {
@@ -180,6 +180,11 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({ isOpen, onClose
         setError(hasCustomKeys ? t('add_ingredient_modal.custom_key_failed_error') : t('add_ingredient_modal.analysis_error'));
       } else if (err instanceof RateLimitedException) {
         setError(t('add_ingredient_modal.analysis_transient_error'));
+      } else if (err instanceof InsufficientCreditsException) {
+        // Only mention credits when the user owns the provider account (custom key);
+        // paying users on the server keys should see the generic message.
+        const hasCustomKeys = RepositoryFactory.getUserApiKeysRepository().hasApiKeys();
+        setError(hasCustomKeys ? t('add_ingredient_modal.analysis_credits_error') : t('add_ingredient_modal.analysis_error'));
       } else {
         setError(t('add_ingredient_modal.analysis_error'));
       }

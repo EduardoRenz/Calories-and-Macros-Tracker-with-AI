@@ -41,3 +41,11 @@ export class RateLimitedException extends ImageAnalysisException {
         Object.setPrototypeOf(this, RateLimitedException.prototype);
     }
 }
+
+export class InsufficientCreditsException extends ImageAnalysisException {
+    constructor(public readonly provider: string, message: string = 'The AI provider account has insufficient credits') {
+        super(message, 'INSUFFICIENT_CREDITS');
+        this.name = 'InsufficientCreditsException';
+        Object.setPrototypeOf(this, InsufficientCreditsException.prototype);
+    }
+}

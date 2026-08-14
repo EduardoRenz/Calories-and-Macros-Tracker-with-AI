@@ -11,7 +11,7 @@ import { RepositoryFactory } from '../data/RepositoryFactory';
 import { TelemetryFactory } from '../data/TelemetryFactory';
 import { useLanguage } from '../contexts/LanguageContext';
 import { AiAccessException, AiDisabledException, PremiumOnlyException, ApiKeysRequiredException } from '../domain/exceptions/AiAccessException';
-import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException, RateLimitedException } from '../domain/exceptions/ImageAnalysisException';
+import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException, RateLimitedException, InsufficientCreditsException } from '../domain/exceptions/ImageAnalysisException';
 import MarkdownRenderer from './assistant/MarkdownRenderer';
 
 // Upper bound for the (already compressed) image payload sent to AI providers.
@@ -185,6 +185,11 @@ const QuickMealModal: React.FC<QuickMealModalProps> = ({ isOpen, onClose, onSucc
                 setError(t('quick_meal_modal.payload_too_large_error'));
             } else if (err instanceof RateLimitedException) {
                 setError(t('quick_meal_modal.analysis_transient_error'));
+            } else if (err instanceof InsufficientCreditsException) {
+                // Only mention credits when the user owns the provider account (custom key);
+                // paying users on the server keys should see the generic message.
+                const hasCustomKeys = RepositoryFactory.getUserApiKeysRepository().hasApiKeys();
+                setError(hasCustomKeys ? t('quick_meal_modal.analysis_credits_error') : t('quick_meal_modal.analysis_error'));
             } else if (err instanceof InvalidApiKeyException) {
                 // Only tell users about custom keys when they actually configured one;
                 // paying users without keys should never be sent to key management.

@@ -4,7 +4,7 @@ import { checkAiAccess } from '../feature-flag-check';
 import { checkRateLimit } from '../rate-limit';
 import { getServerAiPriorityList } from '@/data/serverServiceConfig';
 import { captureServerError } from '../_telemetry';
-import { InvalidApiKeyException, RateLimitedException } from '@/domain/exceptions/ImageAnalysisException';
+import { InvalidApiKeyException, RateLimitedException, InsufficientCreditsException } from '@/domain/exceptions/ImageAnalysisException';
 import { AiAccessException } from '@/domain/exceptions/AiAccessException';
 
 export async function POST(req: NextRequest) {
@@ -49,9 +49,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: error.message, code: error.code }, { status: 429 });
         }
 
-        // Server AI keys come from env vars only, so an invalid key here is a server
-        // misconfiguration - surface a generic error instead of blaming the user's key.
-        if (error instanceof InvalidApiKeyException) {
+        // Server AI keys come from env vars only, so an invalid key or an account
+        // without credits here is a server misconfiguration - surface a generic
+        // error instead of blaming the user's key.
+        if (error instanceof InvalidApiKeyException || error instanceof InsufficientCreditsException) {
             return NextResponse.json(
                 { error: 'AI service is temporarily unavailable. Please try again later.', code: 'SERVER_ERROR' },
                 { status: 500 }

@@ -2,7 +2,7 @@ import { Ingredient } from '../../domain/entities/dashboard';
 import { ImageRecognitionService } from '../../domain/services/ImageRecognitionService';
 import { ServiceCooldownManager } from '../infrastructure/ServiceCooldownManager';
 import { TelemetryFactory } from '../TelemetryFactory';
-import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException, RateLimitedException } from '../../domain/exceptions/ImageAnalysisException';
+import { EmptyAnalysisResultException, ImageTooLargeException, InvalidApiKeyException, RateLimitedException, InsufficientCreditsException } from '../../domain/exceptions/ImageAnalysisException';
 import { AiAccessException } from '../../domain/exceptions/AiAccessException';
 
 export class FallbackImageRecognitionService extends ImageRecognitionService {
@@ -79,12 +79,16 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
             }
         }
 
-        if (errors.length > 0) {
-            throw this.pickDominantError(errors);
-        }
-
+        // A model analyzed the image successfully and found no food. That
+        // outcome is authoritative, so it wins over generic or per-provider
+        // failures from later models - the user should see the friendly
+        // "no food identified" message instead of an unrelated error.
         if (sawEmptyResult) {
             throw new EmptyAnalysisResultException();
+        }
+
+        if (errors.length > 0) {
+            throw this.pickDominantError(errors);
         }
 
         throw new Error("All image recognition services failed.");
@@ -93,15 +97,15 @@ export class FallbackImageRecognitionService extends ImageRecognitionService {
     /**
      * Picks the most actionable domain exception to surface after every service
      * in the chain failed, preferring a known outcome (invalid key, oversized
-     * image, empty result) over a generic error message.
+     * image, rate limit) over a generic error message.
      */
     private pickDominantError(errors: Error[]): Error {
         const dominant = errors.find(
             (error) =>
                 error instanceof InvalidApiKeyException ||
+                error instanceof InsufficientCreditsException ||
                 error instanceof ImageTooLargeException ||
-                error instanceof RateLimitedException ||
-                error instanceof EmptyAnalysisResultException
+                error instanceof RateLimitedException
         );
         if (dominant) return dominant;
         return new Error(`All image recognition services failed. Last error: ${errors[errors.length - 1].message}`);
