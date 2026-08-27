@@ -11,6 +11,7 @@ import { LandingAIFeatures } from './LandingAIFeatures';
 import { LandingClinicalFocus } from './LandingClinicalFocus';
 import { LandingVisualDemo } from './LandingVisualDemo';
 import { LandingPricing } from './LandingPricing';
+import { LandingFAQ } from './LandingFAQ';
 import { LandingCTA } from './LandingCTA';
 import { LandingFooter } from './LandingFooter';
 
@@ -44,6 +45,7 @@ export const LandingPageContent: React.FC = () => {
       </section>
       <LandingVisualDemo />
       <LandingPricing />
+      <LandingFAQ />
       <LandingCTA isAuthenticated={isAuthenticated} />
       <LandingFooter />
     </main>
