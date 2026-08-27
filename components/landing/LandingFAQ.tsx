@@ -25,6 +25,14 @@ export const LandingFAQ: React.FC = () => {
       question: t('landing.faq.q4'),
       answer: t('landing.faq.a4'),
     },
+    {
+      question: t('landing.faq.q5'),
+      answer: t('landing.faq.a5'),
+    },
+    {
+      question: t('landing.faq.q6'),
+      answer: t('landing.faq.a6'),
+    },
   ];
 
   const toggleFAQ = (index: number) => {

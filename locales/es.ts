@@ -593,6 +593,10 @@ const es = {
       a3: "No necesariamente. Los suscriptores del plan Premium cuentan con IA integrada lista para usar. Si prefieres el plan gratuito o usar tus propias claves (OpenAI, Gemini o OpenRouter), puedes configurarlas directamente en los Ajustes.",
       q4: "¿Cómo funciona el registro de comidas por foto o texto?",
       a4: "Nuestra IA analiza al instante descripciones en lenguaje natural (ej: '2 huevos revueltos y café') or fotos del plato, identificando los alimentos y calculando automáticamente las calorías y macronutrientes (proteínas, carbohidratos y grasas).",
+      q5: "¿Las metas generadas por Levemente AI son confiables?",
+      a5: "Levemente AI utiliza los cálculos y estándares más aceptados por profesionales de la nutrición, diseñados de forma segura y realista. Sin embargo, recomendamos siempre consultar a un profesional de la salud para un seguimiento individualizado.",
+      q6: "¿Los cálculos de macronutrientes son precisos?",
+      a6: "Los resultados se obtienen mediante análisis de Inteligencia Artificial y suelen ser muy cercanos a los valores nutricionales reales. Si necesitas mayor precisión, siempre puedes ajustar los valores manualmente o dar instrucciones adicionales a la IA.",
     },
     calculator_cta: {
       title: "Calculadora de Macros Gratis",

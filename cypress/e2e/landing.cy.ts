@@ -63,7 +63,7 @@ describe("Landing Page", () => {
     it('should render the FAQ section with id="faq" and expandable accordion items', () => {
       cy.visit("/")
       cy.get("section#faq", { timeout: 10000 }).should("be.visible")
-      cy.get('[data-testid="faq-item"]').should("have.length", 4)
+      cy.get('[data-testid="faq-item"]').should("have.length", 6)
 
       // First item should be expanded by default
       cy.get('#faq-answer-0').should("be.visible")
