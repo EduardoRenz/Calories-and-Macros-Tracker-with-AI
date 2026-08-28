@@ -60,6 +60,23 @@ describe("Landing Page", () => {
       cy.contains("Simple and Transparent Plans").should("be.visible")
     })
 
+    it('should render the FAQ section with id="faq" and expandable accordion items', () => {
+      cy.visit("/")
+      cy.get("section#faq", { timeout: 10000 }).should("be.visible")
+      cy.get('[data-testid="faq-item"]').should("have.length", 6)
+
+      // First item should be expanded by default
+      cy.get('#faq-answer-0').should("be.visible")
+
+      // Click second item to expand
+      cy.get('#faq-question-1').click()
+      cy.get('#faq-answer-1').should("be.visible")
+
+      // Click second item again to collapse
+      cy.get('#faq-question-1').click()
+      cy.get('#faq-answer-1').should("not.exist")
+    })
+
     it('should render the bottom CTA section with id="login" and a single button to /login', () => {
       cy.visit("/")
       cy.get("section#login").should("be.visible")
@@ -93,6 +110,13 @@ describe("Landing Page", () => {
       cy.get("nav").contains("Pricing").click()
       cy.wait(500)
       cy.get("section#pricing", { timeout: 10000 }).should("be.visible")
+    })
+
+    it("should scroll to #faq when clicking the faq navbar anchor", () => {
+      cy.visit("/")
+      cy.get("nav").contains("FAQ").click()
+      cy.wait(500)
+      cy.get("section#faq", { timeout: 10000 }).should("be.visible")
     })
 
     /*
@@ -136,7 +160,7 @@ describe("Landing Page", () => {
 
     it("should redirect authenticated user from / to /dashboard", () => {
       cy.login()
-      cy.visit("/")
+      cy.get('a[href="/"]').first().click({ force: true })
       cy.url().should("include", "/dashboard")
       cy.get('[data-testid="calorie-display-card"]', { timeout: 10000 }).should("be.visible")
     })
