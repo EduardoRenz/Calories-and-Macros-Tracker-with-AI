@@ -1,5 +1,7 @@
 # CalorieCounter
-<img width="650" height="573" alt="image" src="https://github.com/user-attachments/assets/4b1cb8c9-8001-4f29-b247-c7854799970e" />
+<img width="1656" height="927" alt="image" src="https://github.com/user-attachments/assets/aafef09a-0ba4-4e5b-b48b-78162cb2a4ab" />
+
+
 
 
 ## Run Locally
