@@ -64,6 +64,12 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
           >
             {t('landing.navbar.pricing')}
           </a>
+          <a
+            href="#faq"
+            className="text-on-surface-variant font-medium font-label hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200"
+          >
+            {t('landing.navbar.faq')}
+          </a>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -146,6 +152,13 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ isAuthenticated = 
               className="py-3 px-4 text-on-surface-variant font-medium font-label rounded-xl hover:bg-surface-container transition-colors"
             >
               {t('landing.navbar.pricing')}
+            </a>
+            <a
+              href="#faq"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="py-3 px-4 text-on-surface-variant font-medium font-label rounded-xl hover:bg-surface-container transition-colors"
+            >
+              {t('landing.navbar.faq')}
             </a>
             {!isAuthenticated && (
               <div className="border-t border-outline-variant/20 pt-3 mt-3">
