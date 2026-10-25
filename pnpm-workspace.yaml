@@ -1,0 +1,8 @@
+allowBuilds:
+  "@firebase/util": true
+  "@google/genai": true
+  "@sentry/cli": true
+  cypress: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
