@@ -2,7 +2,7 @@ import './sentry.edge.config';
 import { NextRequest, NextResponse } from 'next/server';
 import { shouldIndexHost } from './utils/seo/index-gating';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const host = request.headers.get('host');
 
   if (!shouldIndexHost(host)) {
